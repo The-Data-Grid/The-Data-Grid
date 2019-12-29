@@ -1,0 +1,12 @@
+2019-12-26 11:50:43.245 PST [16672] LOG:  database system was interrupted; last known up at 2019-12-26 10:54:44 PST
+2019-12-26 11:50:44.664 PST [16672] LOG:  database system was not properly shut down; automatic recovery in progress
+2019-12-26 11:50:44.673 PST [16672] LOG:  invalid record length at 0/16B6368: wanted 24, got 0
+2019-12-26 11:50:44.675 PST [16672] LOG:  redo is not required
+2019-12-26 11:50:44.740 PST [1124] LOG:  database system is ready to accept connections
+2019-12-28 16:00:34.118 PST [1124] LOG:  received fast shutdown request
+2019-12-28 16:00:34.133 PST [1124] LOG:  aborting any active transactions
+2019-12-28 16:00:34.144 PST [13880] FATAL:  terminating connection due to administrator command
+2019-12-28 16:00:34.147 PST [11672] FATAL:  terminating connection due to administrator command
+2019-12-28 16:00:34.213 PST [1124] LOG:  background worker "logical replication launcher" (PID 6860) exited with exit code 1
+2019-12-28 16:00:34.249 PST [11692] LOG:  shutting down
+2019-12-28 16:00:34.369 PST [1124] LOG:  database system is shut down

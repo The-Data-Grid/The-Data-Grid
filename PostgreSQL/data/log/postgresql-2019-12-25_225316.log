@@ -1,0 +1,18 @@
+2019-12-25 22:53:16.814 PST [17976] FATAL:  the database system is starting up
+2019-12-25 22:53:16.853 PST [35108] FATAL:  the database system is starting up
+2019-12-25 22:53:16.877 PST [11776] LOG:  database system was shut down at 2019-12-25 22:49:50 PST
+2019-12-25 22:53:16.892 PST [5184] FATAL:  the database system is starting up
+2019-12-25 22:53:16.897 PST [18176] LOG:  database system is ready to accept connections
+2019-12-25 22:54:29.462 PST [26068] ERROR:  syntax error at or near ";" at character 24
+2019-12-25 22:54:29.462 PST [26068] STATEMENT:  set default_tablespace
+	;
+2019-12-25 22:54:46.383 PST [26068] ERROR:  syntax error at or near "pg_default" at character 24
+2019-12-25 22:54:46.383 PST [26068] STATEMENT:  set default_tablespace pg_default
+	;
+2019-12-25 23:22:26.724 PST [18176] LOG:  received fast shutdown request
+2019-12-25 23:22:26.730 PST [18176] LOG:  aborting any active transactions
+2019-12-25 23:22:26.732 PST [16648] FATAL:  terminating connection due to administrator command
+2019-12-25 23:22:26.732 PST [33036] FATAL:  terminating connection due to administrator command
+2019-12-25 23:22:26.736 PST [18176] LOG:  background worker "logical replication launcher" (PID 19380) exited with exit code 1
+2019-12-25 23:22:26.754 PST [11828] LOG:  shutting down
+2019-12-25 23:22:26.801 PST [18176] LOG:  database system is shut down

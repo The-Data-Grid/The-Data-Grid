@@ -1,0 +1,121 @@
+2019-12-25 21:56:48.143 PST [21036] LOG:  database system was shut down at 2019-12-25 21:56:04 PST
+2019-12-25 21:56:48.146 PST [21036] LOG:  could not open directory "pg_tblspc/16400/PG_12_201909212": No such file or directory
+2019-12-25 21:56:48.180 PST [20704] LOG:  database system is ready to accept connections
+2019-12-25 21:56:55.378 PST [19936] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.378 PST [19936] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.466 PST [3628] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.466 PST [3628] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.501 PST [13600] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.501 PST [13600] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.535 PST [8496] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.535 PST [8496] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.568 PST [10008] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.568 PST [10008] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.632 PST [24568] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.632 PST [24568] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.664 PST [22732] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.664 PST [22732] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.702 PST [6596] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.702 PST [6596] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.737 PST [23324] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.737 PST [23324] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.776 PST [23668] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.776 PST [23668] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:55.808 PST [11292] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:55.808 PST [11292] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:56.524 PST [10700] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:56.524 PST [10700] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:57.532 PST [16448] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:57.532 PST [16448] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:58.526 PST [22620] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:58.526 PST [22620] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:56:59.534 PST [9040] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:56:59.534 PST [9040] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:00.525 PST [7744] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:00.525 PST [7744] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:01.530 PST [9056] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:01.530 PST [9056] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:02.520 PST [2292] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:02.520 PST [2292] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:03.526 PST [15696] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:03.526 PST [15696] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:04.522 PST [17404] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:04.522 PST [17404] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:05.522 PST [9764] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:05.522 PST [9764] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:06.527 PST [16800] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:06.527 PST [16800] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:07.531 PST [19584] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:07.531 PST [19584] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:08.361 PST [23044] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:08.361 PST [23044] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:08.523 PST [23260] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:08.523 PST [23260] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:09.533 PST [12160] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:09.533 PST [12160] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:10.531 PST [22324] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:10.531 PST [22324] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:11.623 PST [17548] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:11.623 PST [17548] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:12.094 PST [18864] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:12.094 PST [18864] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:12.123 PST [13688] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:12.123 PST [13688] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:12.533 PST [11432] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:12.533 PST [11432] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:13.541 PST [8532] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:13.541 PST [8532] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:14.533 PST [9760] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:14.533 PST [9760] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:15.528 PST [21836] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:15.528 PST [21836] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:16.521 PST [23980] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:16.521 PST [23980] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:17.536 PST [20604] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:17.536 PST [20604] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:18.537 PST [20160] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:18.537 PST [20160] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:19.533 PST [22316] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:19.533 PST [22316] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:20.550 PST [1860] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:20.550 PST [1860] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:21.536 PST [14144] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:21.536 PST [14144] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:22.533 PST [3740] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:22.533 PST [3740] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:23.534 PST [21252] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:23.534 PST [21252] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:24.633 PST [20340] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:24.633 PST [20340] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:25.533 PST [17856] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:25.533 PST [17856] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:26.517 PST [18392] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:26.517 PST [18392] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:26.553 PST [22636] FATAL:  database "asc_core_database" does not exist
+2019-12-25 21:57:26.553 PST [22636] DETAIL:  The database subdirectory "pg_tblspc/16400/PG_12_201909212/16401" is missing.
+2019-12-25 21:57:40.730 PST [20552] FATAL:  database "asc_core_database" does not exist
+2019-12-25 22:21:28.241 PST [20132] ERROR:  database "asc_core_database" is being accessed by other users
+2019-12-25 22:21:28.241 PST [20132] DETAIL:  There is 1 other session using the database.
+2019-12-25 22:21:28.241 PST [20132] STATEMENT:  drop database asc_core_database
+	;
+2019-12-25 22:21:53.736 PST [20132] ERROR:  syntax error at or near "drop" at character 33
+2019-12-25 22:21:53.736 PST [20132] STATEMENT:  drop database asc_core_database
+	drop database asc_core_database
+	;
+2019-12-25 22:22:09.234 PST [20132] ERROR:  syntax error at or near "drop" at character 33
+2019-12-25 22:22:09.234 PST [20132] STATEMENT:  drop database asc_core_database
+	drop database asc_core_database;
+2019-12-25 22:22:23.399 PST [20132] ERROR:  database "asc_core_database" is being accessed by other users
+2019-12-25 22:22:23.399 PST [20132] DETAIL:  There is 1 other session using the database.
+2019-12-25 22:22:23.399 PST [20132] STATEMENT:  drop database asc_core_database;
+2019-12-25 22:22:37.339 PST [20132] ERROR:  database "asc_core_database" is being accessed by other users
+2019-12-25 22:22:37.339 PST [20132] DETAIL:  There is 1 other session using the database.
+2019-12-25 22:22:37.339 PST [20132] STATEMENT:  drop database asc_core_database;
+2019-12-25 22:23:32.488 PST [20704] LOG:  received fast shutdown request
+2019-12-25 22:23:32.494 PST [20704] LOG:  aborting any active transactions
+2019-12-25 22:23:32.497 PST [19832] FATAL:  terminating connection due to administrator command
+2019-12-25 22:23:32.497 PST [20132] FATAL:  terminating connection due to administrator command
+2019-12-25 22:23:32.497 PST [9100] FATAL:  terminating connection due to administrator command
+2019-12-25 22:23:32.501 PST [20704] LOG:  background worker "logical replication launcher" (PID 22040) exited with exit code 1
+2019-12-25 22:23:32.521 PST [21524] LOG:  shutting down
+2019-12-25 22:23:32.575 PST [20704] LOG:  database system is shut down

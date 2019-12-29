@@ -1,0 +1,22 @@
+2019-12-26 10:54:42.427 PST [15460] LOG:  background worker "logical replication launcher" (PID 15780) was terminated by exception 0xC000013A
+2019-12-26 10:54:42.427 PST [15460] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2019-12-26 10:54:42.428 PST [15460] LOG:  terminating any other active server processes
+2019-12-26 10:54:42.446 PST [15460] LOG:  statistics collector process (PID 16852) was terminated by exception 0xC000013A
+2019-12-26 10:54:42.446 PST [15460] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2019-12-26 10:54:42.466 PST [15460] LOG:  all server processes terminated; reinitializing
+2019-12-26 10:54:42.585 PST [9944] LOG:  database system was interrupted; last known up at 2019-12-26 00:03:40 PST
+2019-12-26 10:54:44.064 PST [9944] LOG:  database system was not properly shut down; automatic recovery in progress
+2019-12-26 10:54:44.074 PST [9944] LOG:  redo starts at 0/16B6208
+2019-12-26 10:54:44.075 PST [9944] LOG:  invalid record length at 0/16B62F0: wanted 24, got 0
+2019-12-26 10:54:44.075 PST [9944] LOG:  redo done at 0/16B62B8
+2019-12-26 10:54:44.163 PST [15460] LOG:  database system is ready to accept connections
+2019-12-26 10:54:45.310 PST [15460] LOG:  background worker "logical replication launcher" (PID 11324) was terminated by exception 0xC000013A
+2019-12-26 10:54:45.310 PST [15460] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2019-12-26 10:54:45.311 PST [15460] LOG:  terminating any other active server processes
+2019-12-26 10:54:45.325 PST [15460] LOG:  statistics collector process (PID 16220) was terminated by exception 0xC000013A
+2019-12-26 10:54:45.325 PST [15460] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2019-12-26 10:54:45.341 PST [15460] LOG:  all server processes terminated; reinitializing
+2019-12-26 10:54:45.517 PST [13660] LOG:  database system was interrupted; last known up at 2019-12-26 10:54:44 PST
+2019-12-26 10:54:46.094 PST [15460] LOG:  startup process (PID 13660) was terminated by exception 0xC000013A
+2019-12-26 10:54:46.094 PST [15460] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2019-12-26 10:54:46.095 PST [15460] LOG:  aborting startup due to startup process failure

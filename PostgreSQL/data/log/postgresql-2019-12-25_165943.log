@@ -1,0 +1,170 @@
+2019-12-25 16:59:43.102 PST [13660] LOG:  database system was shut down at 2019-12-25 16:59:41 PST
+2019-12-25 16:59:43.131 PST [1360] LOG:  database system is ready to accept connections
+2019-12-25 17:00:58.543 PST [13764] FATAL:  password authentication failed for user "postgres"
+2019-12-25 17:00:58.543 PST [13764] DETAIL:  Password does not match for user "postgres".
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:20.446 PST [1468] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:20.446 PST [1468] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:24.240 PST [11916] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:24.240 PST [11916] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:35.701 PST [20076] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:35.701 PST [20076] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:39.312 PST [12112] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:39.312 PST [12112] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:40.252 PST [9736] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:40.252 PST [9736] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:44.647 PST [18328] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:44.647 PST [18328] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:46.103 PST [19832] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:46.103 PST [19832] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:48.951 PST [18768] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:48.951 PST [18768] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:04:50.171 PST [20344] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:04:50.171 PST [20344] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:05:54.867 PST [16184] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:05:54.867 PST [16184] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:09:46.423 PST [1756] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:09:46.423 PST [1756] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:09:53.545 PST [12984] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:09:53.545 PST [12984] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:09:55.605 PST [16972] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:09:55.605 PST [16972] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:09:56.917 PST [3776] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:09:56.917 PST [3776] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:13:49.684 PST [3004] FATAL:  password authentication failed for user "postgres"
+2019-12-25 17:13:49.684 PST [3004] DETAIL:  Password does not match for user "postgres".
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:14:37.044 PST [4620] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:14:37.044 PST [4620] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:22:59.078 PST [15520] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:22:59.078 PST [15520] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:23:24.104 PST [16648] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:23:24.104 PST [16648] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:23:34.560 PST [18548] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:23:34.560 PST [18548] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:23:36.700 PST [9400] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:23:36.700 PST [9400] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:23:39.442 PST [2072] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:23:39.442 PST [2072] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:33:23.303 PST [15100] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:33:23.303 PST [15100] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:41:37.608 PST [16776] FATAL:  password authentication failed for user "kiann"
+2019-12-25 17:41:37.608 PST [16776] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 17:43:01.585 PST [12780] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2019-12-25 17:53:38.928 PST [20388] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2019-12-25 17:59:18.947 PST [8364] ERROR:  syntax error at or near "ASC" at character 17
+2019-12-25 17:59:18.947 PST [8364] STATEMENT:  CREATE DATABASE ASC WITH LOCATION = 'C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data'
+	;
+2019-12-25 17:59:33.015 PST [8364] ERROR:  syntax error at or near "ASC" at character 17
+2019-12-25 17:59:33.015 PST [8364] STATEMENT:  CREATE DATABASE ASC WITH LOCATION = 'C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data';
+2019-12-25 17:59:49.449 PST [8364] ERROR:  syntax error at or near "'ASC'" at character 17
+2019-12-25 17:59:49.449 PST [8364] STATEMENT:  CREATE DATABASE 'ASC' WITH LOCATION = 'C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data';
+2019-12-25 18:00:06.692 PST [8364] ERROR:  syntax error at or near "ASC" at character 17
+2019-12-25 18:00:06.692 PST [8364] STATEMENT:  CREATE DATABASE ASC WITH LOCATION = 'C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data';
+2019-12-25 18:01:44.971 PST [15976] FATAL:  password authentication failed for user "-h"
+2019-12-25 18:01:44.971 PST [15976] DETAIL:  Role "-h" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 18:03:52.580 PST [10576] ERROR:  syntax error at or near "ASC" at character 17
+2019-12-25 18:03:52.580 PST [10576] STATEMENT:  CREATE DATABASE ASC WITH LOCATION = 'C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data';
+2019-12-25 18:04:00.057 PST [10576] ERROR:  syntax error at or near "asc" at character 17
+2019-12-25 18:04:00.057 PST [10576] STATEMENT:  CREATE DATABASE asc WITH LOCATION = 'C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data';
+2019-12-25 18:04:26.603 PST [10576] ERROR:  syntax error at or near "ASC" at character 17
+2019-12-25 18:04:26.603 PST [10576] STATEMENT:  create database ASC with location
+	;
+2019-12-25 18:12:47.825 PST [10576] ERROR:  syntax error at or near "roboo" at character 6
+2019-12-25 18:12:47.825 PST [10576] STATEMENT:  drop roboo
+	;
+2019-12-25 18:32:17.170 PST [10576] ERROR:  could not set permissions on directory "C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data": Permission denied
+2019-12-25 18:32:17.170 PST [10576] STATEMENT:  CREATE TABLESPACE ASC_TABLESPACE LOCATION 'C:\Users\kiann\Desktop\Bruin Audit Partnership Website\PostgreSQL\data';
+2019-12-25 18:32:39.746 PST [10004] FATAL:  password authentication failed for user "psostgres"
+2019-12-25 18:32:39.746 PST [10004] DETAIL:  Role "psostgres" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 18:32:42.306 PST [12800] FATAL:  password authentication failed for user "psostgres"
+2019-12-25 18:32:42.306 PST [12800] DETAIL:  Role "psostgres" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 18:32:47.548 PST [18768] FATAL:  password authentication failed for user "psostgres"
+2019-12-25 18:32:47.548 PST [18768] DETAIL:  Role "psostgres" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 18:32:53.584 PST [17268] FATAL:  password authentication failed for user "psostgres"
+2019-12-25 18:32:53.584 PST [17268] DETAIL:  Role "psostgres" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 18:33:11.922 PST [18456] ERROR:  could not set permissions on directory "C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data": Permission denied
+2019-12-25 18:33:11.922 PST [18456] STATEMENT:  CREATE TABLESPACE ASC_TABLESPACE LOCATION 'C:\Users\kiann\Desktop\Bruin Audit Partnership Website\PostgreSQL\data';
+2019-12-25 19:01:49.670 PST [13820] ERROR:  could not set permissions on directory "C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data": Permission denied
+2019-12-25 19:01:49.670 PST [13820] STATEMENT:  CREATE TABLESPACE "ASC_TABLESPACE"
+	  OWNER postgres
+	  LOCATION 'C:\Users\kiann\Desktop\Bruin Audit Partnership Website\PostgreSQL\data';
+	
+	
+2019-12-25 19:04:33.485 PST [10576] ERROR:  could not set permissions on directory "C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data": Permission denied
+2019-12-25 19:04:33.485 PST [10576] STATEMENT:  CREATE TABLESPACE ASC_TABLESPACE LOCATION 'C:\Users\kiann\Desktop\Bruin Audit Partnership Website\PostgreSQL\data';
+2019-12-25 19:04:49.436 PST [10576] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2019-12-25 19:05:35.396 PST [16804] ERROR:  could not set permissions on directory "C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data": Permission denied
+2019-12-25 19:05:35.396 PST [16804] STATEMENT:  CREATE TABLESPACE ASC_TABLESPACE LOCATION 'C:\Users\kiann\Desktop\Bruin Audit Partnership Website\PostgreSQL\data';
+2019-12-25 19:11:14.674 PST [16804] ERROR:  could not set permissions on directory "C:/Users/kiann/Desktop/Bruin Audit Partnership Website/PostgreSQL/data": Permission denied
+2019-12-25 19:11:14.674 PST [16804] STATEMENT:  CREATE TABLESPACE ASC_TABLESPACE LOCATION 'C:\Users\kiann\Desktop\Bruin Audit Partnership Website\PostgreSQL\data';
+2019-12-25 19:32:01.614 PST [16804] ERROR:  tablespace "ASC_TABLESPACE" does not exist
+2019-12-25 19:32:01.614 PST [16804] STATEMENT:  CREATE DATABASE ASC_CORE_DATABASE TABLESPACE = 'ASC_TABLESPACE';
+2019-12-25 19:32:20.689 PST [16804] ERROR:  tablespace "ASC_TABLESPACE" does not exist
+2019-12-25 19:32:20.689 PST [16804] STATEMENT:  CREATE DATABASE ASC_CORE_DATABASE TABLESPACE = 'ASC_TABLESPACE';
+2019-12-25 19:46:29.979 PST [16804] ERROR:  syntax error at or near "(" at character 47
+2019-12-25 19:46:29.979 PST [16804] STATEMENT:  CREATE TABLE test.beppo
+	(
+	    "Name" "char"[]
+	(
+	d
+	d
+	d
+	d
+	f
+	f
+	ff
+	;
+	;
+	;
+	)
+	;
+	);
+2019-12-25 19:48:20.959 PST [16804] ERROR:  schema "test" does not exist at character 14
+2019-12-25 19:48:20.959 PST [16804] STATEMENT:  CREATE TABLE test.beppo("Name" "char"[6])
+	;
+2019-12-25 19:49:03.368 PST [16804] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2019-12-25 19:49:09.469 PST [5176] FATAL:  password authentication failed for user "kiann"
+2019-12-25 19:49:09.469 PST [5176] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 19:49:21.730 PST [13924] ERROR:  schema "test" does not exist at character 14
+2019-12-25 19:49:21.730 PST [13924] STATEMENT:  CREATE TABLE test.beppo("Name" "char"[6]);
+2019-12-25 21:56:04.768 PST [1360] LOG:  received fast shutdown request
+2019-12-25 21:56:04.772 PST [1360] LOG:  aborting any active transactions
+2019-12-25 21:56:04.774 PST [17276] FATAL:  terminating connection due to administrator command
+2019-12-25 21:56:04.775 PST [13820] FATAL:  terminating connection due to administrator command
+2019-12-25 21:56:04.782 PST [18068] FATAL:  terminating connection due to administrator command
+2019-12-25 21:56:04.791 PST [1360] LOG:  background worker "logical replication launcher" (PID 20028) exited with exit code 1
+2019-12-25 21:56:04.802 PST [15052] LOG:  shutting down
+2019-12-25 21:56:04.848 PST [1360] LOG:  database system is shut down

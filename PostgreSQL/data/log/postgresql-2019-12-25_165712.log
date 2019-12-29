@@ -1,0 +1,7 @@
+2019-12-25 16:57:12.488 PST [12024] LOG:  database system was shut down at 2019-12-25 16:54:34 PST
+2019-12-25 16:57:12.515 PST [18360] LOG:  database system is ready to accept connections
+2019-12-25 16:59:41.448 PST [18360] LOG:  received fast shutdown request
+2019-12-25 16:59:41.452 PST [18360] LOG:  aborting any active transactions
+2019-12-25 16:59:41.466 PST [18360] LOG:  background worker "logical replication launcher" (PID 18780) exited with exit code 1
+2019-12-25 16:59:41.472 PST [13532] LOG:  shutting down
+2019-12-25 16:59:41.516 PST [18360] LOG:  database system is shut down

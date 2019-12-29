@@ -1,0 +1,19 @@
+2019-12-25 23:46:48.339 PST [7496] LOG:  database system was shut down at 2019-12-25 23:46:18 PST
+2019-12-25 23:46:48.366 PST [6952] LOG:  database system is ready to accept connections
+2019-12-25 23:47:52.854 PST [4004] FATAL:  password authentication failed for user "kiann"
+2019-12-25 23:47:52.854 PST [4004] DETAIL:  Role "kiann" does not exist.
+	Connection matched pg_hba.conf line 82: "host    all             all             ::1/128                 md5"
+2019-12-25 23:50:37.528 PST [15740] ERROR:  syntax error at or near "pg_ctl" at character 1
+2019-12-25 23:50:37.528 PST [15740] STATEMENT:  pg_ctl -D "C:\Program Files\PostgreSQL\9.6\data" start
+	;
+2019-12-25 23:51:48.789 PST [6952] LOG:  could not open file "postmaster.pid": No such file or directory
+2019-12-25 23:51:48.789 PST [6952] LOG:  performing immediate shutdown because data directory lock file is invalid
+2019-12-25 23:51:48.791 PST [6952] LOG:  received immediate shutdown request
+2019-12-25 23:51:48.792 PST [6952] LOG:  could not open file "postmaster.pid": No such file or directory
+2019-12-25 23:51:48.810 PST [7640] WARNING:  terminating connection because of crash of another server process
+2019-12-25 23:51:48.810 PST [7640] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2019-12-25 23:51:48.810 PST [7640] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2019-12-25 23:51:48.810 PST [9268] WARNING:  terminating connection because of crash of another server process
+2019-12-25 23:51:48.810 PST [9268] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2019-12-25 23:51:48.810 PST [9268] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2019-12-25 23:51:48.827 PST [6952] LOG:  database system is shut down

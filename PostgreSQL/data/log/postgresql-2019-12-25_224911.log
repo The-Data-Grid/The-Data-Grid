@@ -1,0 +1,12 @@
+2019-12-25 22:49:11.133 PST [33476] LOG:  database system was shut down at 2019-12-25 22:48:01 PST
+2019-12-25 22:49:11.135 PST [33476] LOG:  could not open directory "pg_tblspc/16419/PG_12_201909212": No such file or directory
+2019-12-25 22:49:11.165 PST [31784] LOG:  database system is ready to accept connections
+2019-12-25 22:49:25.833 PST [32952] ERROR:  database "asc_core_database" does not exist
+2019-12-25 22:49:25.833 PST [32952] STATEMENT:  drop database asc_core_database;
+2019-12-25 22:49:29.087 PST [32952] WARNING:  could not open directory "pg_tblspc/16419/PG_12_201909212": No such file or directory
+2019-12-25 22:49:50.024 PST [31784] LOG:  received fast shutdown request
+2019-12-25 22:49:50.029 PST [31784] LOG:  aborting any active transactions
+2019-12-25 22:49:50.030 PST [33524] FATAL:  terminating connection due to administrator command
+2019-12-25 22:49:50.044 PST [31784] LOG:  background worker "logical replication launcher" (PID 32976) exited with exit code 1
+2019-12-25 22:49:50.050 PST [32740] LOG:  shutting down
+2019-12-25 22:49:50.100 PST [31784] LOG:  database system is shut down
