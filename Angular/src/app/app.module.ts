@@ -4,24 +4,24 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from './api.service';
-import { HomeComponent } from './home/home.component';
+import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
-//import {MatMenuModule} from '@angular/material/menu';
-//import {MatButtonModule} from '@angular/material/button';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    IndexComponent,
     AuditsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
-    //MatMenuModule, 
-    //MatButtonModule,
-  ],
+    HttpClientModule,
+    MatMenuModule, 
+    MatButtonModule
+    ],
   providers: [ApiService],
   bootstrap: [AppComponent]
 })
