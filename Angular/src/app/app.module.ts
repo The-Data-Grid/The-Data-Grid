@@ -8,6 +8,8 @@ import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
+import { MatToolbarModule} from '@angular/material/toolbar';
+import { MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -20,8 +22,10 @@ import {MatButtonModule} from '@angular/material/button';
     AppRoutingModule,
     HttpClientModule,
     MatMenuModule, 
-    MatButtonModule
-    ],
+    MatButtonModule,
+    MatToolbarModule,
+    MatIconModule
+  ],
   providers: [ApiService],
   bootstrap: [AppComponent]
 })
