@@ -1,6 +1,4 @@
-/*@import '@angular/material/prebuilt-themes/indigo-pink.css';*/
-
-.btn {
+.alert {
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;
@@ -10,5 +8,3 @@
     display: inline-block;
     font-size: 16px;
   }
-
- 
