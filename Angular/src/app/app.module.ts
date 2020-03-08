@@ -6,10 +6,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from './api.service';
 import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatButtonModule} from '@angular/material/button';
+import { AlertModule } from './_alert';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule }  from '@angular/material/button';
 import { MatToolbarModule} from '@angular/material/toolbar';
-import { MatIconModule} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { MatIconModule} from '@angular/material/icon';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    AlertModule,
     MatMenuModule, 
     MatButtonModule,
     MatToolbarModule,

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
-//import { toiletObject } from './models'
+import { AlertService } from './_alert/alert.service';
 
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
@@ -13,7 +13,14 @@ const PORT = environment.port;
 })
 
 export class AppComponent{
-  constructor(private apiService: ApiService) {}
+  alert_options = {
+    autoClose: false,
+    keepAfterRouteChange: false
+  };
+
   title = 'The Data Grid';
+  
+  constructor(private apiService: ApiService, protected alertService: AlertService) {}
+
  ngOnInit() {}
 }
