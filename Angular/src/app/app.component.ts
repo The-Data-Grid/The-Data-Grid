@@ -14,7 +14,7 @@ const PORT = environment.port;
 
 export class AppComponent{
   alert_options = {
-    autoClose: false,
+    autoClose: true,
     keepAfterRouteChange: false
   };
 

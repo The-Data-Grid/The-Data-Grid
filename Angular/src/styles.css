@@ -1,1 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import url('https://fonts.googleapis.com/css?family=Inter&display=swap');
+
+.mat-toolbar-row {
+  background-color: rgb(25, 85, 250);
+  color: white;
+  font-family: 'Inter', sans-serif;
+}
+
+.mat-button{
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.mat-stroked-button {
+  color: gray;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.alert {
+    font-family:'Inter', sans-serif;;
+    border-radius: 3px;
+    background-color: rgb(82, 153, 76); /* Green */
+    border: none;
+    color: white;
+    padding: 10px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+  }
+
+  .close {
+    font-family:Roboto,"Helvetica Neue",sans-serif;
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }

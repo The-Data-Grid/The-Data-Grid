@@ -1,4 +1,4 @@
-<mat-toolbar color="primary">
+<mat-toolbar>
     <mat-toolbar-row>
       <span class="menu-spacer"></span>
       <div>
@@ -8,17 +8,15 @@
         <a mat-button [routerLink]="'/create-contact'"> Create Contact </a>
         <a mat-button [routerLink]="'/activities'"> Activities </a>
         <a mat-button [routerLink]="'/create-activity'"> Create Activity </a>-->
-  
       </div>
     </mat-toolbar-row>
   
   </mat-toolbar>
 
-  <br>
-  <alert></alert>
-  <br>
-  <br>
 
-  <button class="btn" (click)="alertService.success('Success!!', alert_options)">Upload</button>
+  <alert></alert>
+
+
+  <a mat-stroked-button (click)="alertService.success('Successfully Uploaded', alert_options)">UPLOAD</a>
 
 <router-outlet></router-outlet>
