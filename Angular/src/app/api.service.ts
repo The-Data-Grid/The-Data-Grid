@@ -18,9 +18,10 @@ export class ApiService {
     }
     var encoded = btoa(JSON.stringify(dataObj));
 
-    if (cmd == "getToilets") {
+    if (cmd == "getAllToiletObjects") {
       return this.httpClient.get(API_URL + '/toilets')
     }
+    
     if (cmd == "upload") {
       return this.httpClient.post(API_URL, encoded);
     }

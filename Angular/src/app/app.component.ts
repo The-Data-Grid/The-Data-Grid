@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
 import { AlertService } from './_alert/alert.service';
@@ -12,7 +12,8 @@ const PORT = environment.port;
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent{
+export class AppComponent implements OnInit{
+  
   alert_options = {
     autoClose: true,
     keepAfterRouteChange: false

@@ -1,5 +1,5 @@
 /* audit submission model */
-export class auditSubmission 
+export class AuditSubmission 
 {
     timeConducted: number;
     timeSubmitted: number;
@@ -9,14 +9,14 @@ export class auditSubmission
 }
 
 /* feature models */
-export class mirrorObject
+export class MirrorObject
 {
     objectType: "mirror";
     mirrorConditionID: number;
     comment: string;
 }
 
-export class toiletObject
+export class ToiletObject
 {
     objectType: "toilet";
     gpf: number;
@@ -26,9 +26,13 @@ export class toiletObject
     basinConditionID: number;
     flushometerConditionID: number;
     comment: string;
+
+    constructor(values: Object = {}) {
+        Object.assign(this, values);
+      }
 }
 
-export class urinalObject
+export class UrinalObject
 {
     objectType: "urinal";
     gpf: number;
@@ -40,7 +44,7 @@ export class urinalObject
     comment: string;
 }
 
-export class sinkObject
+export class SinkObject
 {
     objectType: "sink";
     gpm: number;

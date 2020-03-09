@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
+import { ToiletObject } from '../models'
 
 @Component({
   selector: 'app-audits',
@@ -8,13 +9,18 @@ import { ApiService } from '../api.service';
 })
 
 export class AuditsComponent implements OnInit { 
+  toiletObjects;
   constructor(private apiService: ApiService) { }
-  toiletAudits;
+
+
 
   ngOnInit() {
-     this.apiService.sendHttps("getToilets").subscribe((data)=>{
-       console.log(data);
-       this.toiletAudits = data;
-     });
+     this.apiService
+     .sendHttps("getAllToiletObjects")
+     .subscribe(
+       (toiletObjects) => {
+         this.toiletObjects = toiletObjects;
+     }
+     );
   }
 }

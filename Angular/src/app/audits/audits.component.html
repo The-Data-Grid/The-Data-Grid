@@ -1,4 +1,13 @@
-<p style="margin-left:1%"> AUDIT COMMENTS</p>
-<div *ngFor="let toiletAudit of toiletAudits">
-    <p style="margin-left:1%"> {{toiletAudit.comment}}</p>
+
+<h1> TOILET AUDIT DATA:</h1>
+<div *ngFor="let toiletObject of toiletObjects">
+    <p>GPF: {{toiletObject.gpf}}</p>
+    <p>Flushometer Brand: {{toiletObject.flushometerBrand}}</p>
+    <p>Basin Brand: {{toiletObject.basinBrand}}</p>
+    <p>ADAstall: {{toiletObject.ADAstall}}</p>
+    <p>basinConditionID: {{toiletObject.basinConditionID}}</p>
+    <p>flushometerConditionID: {{toiletObject.flushometerConditionID}}</p>
+    <p>comment: {{toiletObject.comment}}</p>
+
+    <br>
 </div>

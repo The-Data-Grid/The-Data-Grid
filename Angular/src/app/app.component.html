@@ -1,22 +1,15 @@
 <mat-toolbar>
-    <mat-toolbar-row>
-      <span class="menu-spacer"></span>
-      <div>
+  <mat-toolbar-row> 
         <a mat-button [routerLink]="'/index'"> {{title}} </a>
         <a mat-button [routerLink]="'/audits'"> Toilet Audit Comments </a>
-        <!--<a mat-button [routerLink]="'/contacts'"> Contacts </a>
-        <a mat-button [routerLink]="'/create-contact'"> Create Contact </a>
-        <a mat-button [routerLink]="'/activities'"> Activities </a>
-        <a mat-button [routerLink]="'/create-activity'"> Create Activity </a>-->
-      </div>
-    </mat-toolbar-row>
-  
-  </mat-toolbar>
+        <span class="example-spacer"></span>
+        <span flex></span>
+        <button mat-stroked-button style="color:white"> LOG IN </button>
+  </mat-toolbar-row>
+</mat-toolbar>
 
 
-  <alert></alert>
-
-
-  <a mat-stroked-button (click)="alertService.success('Successfully Uploaded', alert_options)">UPLOAD</a>
+<alert></alert>
+<a mat-stroked-button (click)="alertService.success('Successfully Uploaded', alert_options)">UPLOAD</a>
 
 <router-outlet></router-outlet>
