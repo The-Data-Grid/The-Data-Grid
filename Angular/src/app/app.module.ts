@@ -11,7 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule }  from '@angular/material/button';
 import { MatToolbarModule} from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
-
+import { MatTableModule } from '@angular/material/table'
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +26,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatMenuModule, 
     MatButtonModule,
     MatToolbarModule,
-    MatIconModule
+    MatIconModule,
+    MatTableModule
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

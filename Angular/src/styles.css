@@ -1,10 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import url('https://fonts.googleapis.com/css?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:500&display=swap');
 
 html * {
-   font-family: 'Inter', sans-serif;
-   text-align: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
 }
 
 .mat-toolbar-row {
@@ -22,11 +22,17 @@ html * {
 }
 
 .mat-stroked-button {
+  margin-top:10px;
+  margin-bottom:10px;
   color: gray;
   font-weight: 500;
 }
 
 .alert {
+  margin-top:10px;
+  margin-bottom:10px;
+  margin-left:10px;
+  margin-right:10px;
     border-radius: 3px;
     background-color: rgb(82, 153, 76); /* Green */
     border: none;
@@ -49,4 +55,20 @@ html * {
     transition: 0.3s;
   }
 
+#index {
+  text-align: center;
+}
+
+#app{
+  text-align: center;
+}
+
+#audits {
+  border-radius: 2px;
+  margin-left: auto;
+  margin-right: auto;
+ text-align: left;
+ width:90%;
+ padding: 40px;
+}
  

@@ -1,13 +1,45 @@
+<div id="audits">
+    <mat-table class="lessons-table mat-elevation-z8" [dataSource]="toiletObjects"
+               matSort matSortActive="seqNo" matSortDirection="asc" matSortDisableClear>
 
-<h1> TOILET AUDIT DATA:</h1>
-<div *ngFor="let toiletObject of toiletObjects">
-    <p>GPF: {{toiletObject.gpf}}</p>
-    <p>Flushometer Brand: {{toiletObject.flushometerBrand}}</p>
-    <p>Basin Brand: {{toiletObject.basinBrand}}</p>
-    <p>ADAstall: {{toiletObject.ADAstall}}</p>
-    <p>basinConditionID: {{toiletObject.basinConditionID}}</p>
-    <p>flushometerConditionID: {{toiletObject.flushometerConditionID}}</p>
-    <p>comment: {{toiletObject.comment}}</p>
+        <ng-container matColumnDef="GPF">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>GPF</mat-header-cell>
+            <mat-cell *matCellDef="let toiletObject">{{toiletObject.gpf}}</mat-cell>
+        </ng-container>
 
-    <br>
+        <ng-container matColumnDef="Flushometer Brand">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Flushometer Brand</mat-header-cell>
+            <mat-cell *matCellDef="let toiletObject">{{toiletObject.flushometerBrand}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Basin Brand">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Basin Brand</mat-header-cell>
+            <mat-cell *matCellDef="let toiletObject">{{toiletObject.basinBrand}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="ADA Stall">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>ADA Stall</mat-header-cell>
+            <mat-cell *matCellDef="let toiletObject">{{toiletObject.ADAstall}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Basin Condition ID">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Basin Condition ID</mat-header-cell>
+            <mat-cell *matCellDef="let toiletObject">{{toiletObject.basinConditionID}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Flushometer Condition ID">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Flushometer Condition ID</mat-header-cell>
+            <mat-cell *matCellDef="let toiletObject">{{toiletObject.flushometerConditionID}}</mat-cell>
+        </ng-container>
+ 
+        <ng-container matColumnDef="Comment">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Comment</mat-header-cell>
+            <mat-cell *matCellDef="let toiletObject">{{toiletObject.comment}}</mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+    </mat-table>
 </div>
+<br>

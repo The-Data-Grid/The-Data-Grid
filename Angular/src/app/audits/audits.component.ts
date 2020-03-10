@@ -10,6 +10,13 @@ import { ToiletObject } from '../models'
 
 export class AuditsComponent implements OnInit { 
   toiletObjects;
+  displayedColumns = ["GPF", 
+  "Flushometer Brand", 
+  "Basin Brand", 
+  "ADA Stall", 
+  "Basin Condition ID", 
+  "Flushometer Condition ID", 
+  "Comment"];
   constructor(private apiService: ApiService) { }
 
 

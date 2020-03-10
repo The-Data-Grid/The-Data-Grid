@@ -1,15 +1,18 @@
+<div id="app">
 <mat-toolbar>
   <mat-toolbar-row> 
         <a mat-button [routerLink]="'/index'"> {{title}} </a>
-        <a mat-button [routerLink]="'/audits'"> Toilet Audit Comments </a>
+        <a mat-button [routerLink]="'/audits'"> Audits </a>
+        <a mat-button > About </a>
         <span class="example-spacer"></span>
-        <span flex></span>
         <button mat-stroked-button style="color:white"> LOG IN </button>
+
   </mat-toolbar-row>
 </mat-toolbar>
 
 
 <alert></alert>
+<br>
 <a mat-stroked-button (click)="alertService.success('Successfully Uploaded', alert_options)">UPLOAD</a>
-
 <router-outlet></router-outlet>
+</div>
