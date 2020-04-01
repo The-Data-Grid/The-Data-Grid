@@ -7,9 +7,10 @@ html * {
   font-weight: 500;
 }
 
-.mat-toolbar-row {
-  background-color: rgb(25, 85, 250);
+.mat-toolbar {
+  background-color: rgb(24, 86, 255);
   color: white;
+  width: 100%;
 }
 
 .mat-button {
@@ -64,7 +65,7 @@ html * {
 }
 
 #audits {
-  border-radius: 2px;
+  border-radius: 4px;
   margin-left: auto;
   margin-right: auto;
  text-align: left;
@@ -72,3 +73,6 @@ html * {
  padding: 40px;
 }
  
+#upload-button {
+  text-align: center;
+}

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
 import { ToiletObject } from '../models'
+import {MatDialog, MatDialogConfig} from "@angular/material";
+import { DialogComponent} from '../dialog/dialog.component';
 
 @Component({
   selector: 'app-audits',
@@ -17,9 +19,14 @@ export class AuditsComponent implements OnInit {
   "Basin Condition ID", 
   "Flushometer Condition ID", 
   "Comment"];
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog) {}
 
-
+  openDialog() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    this.dialog.open(DialogComponent, dialogConfig);
+  }
 
   ngOnInit() {
      this.apiService

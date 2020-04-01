@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
 import { AlertService } from './_alert/alert.service';
 
+
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
 
@@ -19,9 +20,10 @@ export class AppComponent implements OnInit{
     keepAfterRouteChange: false
   };
 
-  title = 'The Data Grid';
+  title = 'THE DATA GRID';
   
-  constructor(private apiService: ApiService, protected alertService: AlertService) {}
-
+  constructor(private apiService: ApiService, protected alertService: AlertService ) {}
+  
+  
  ngOnInit() {}
 }
