@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
-import { AlertService } from './_alert/alert.service';
 
 
 const API_URL = environment.apiUrl;
@@ -15,14 +14,9 @@ const PORT = environment.port;
 
 export class AppComponent implements OnInit{
   
-  alert_options = {
-    autoClose: true,
-    keepAfterRouteChange: false
-  };
-
   title = 'THE DATA GRID';
   
-  constructor(private apiService: ApiService, protected alertService: AlertService ) {}
+  constructor(private apiService: ApiService ) {}
   
   
  ngOnInit() {}
