@@ -13,6 +13,7 @@ import { MatToolbarModule} from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatTabsModule} from '@angular/material/tabs';
 import { DialogComponent } from './dialog/dialog.component';
 
 @NgModule({
@@ -32,7 +33,8 @@ import { DialogComponent } from './dialog/dialog.component';
     MatToolbarModule,
     MatIconModule,
     MatTableModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTabsModule
   ],
   providers: [ApiService],
   bootstrap: [AppComponent],

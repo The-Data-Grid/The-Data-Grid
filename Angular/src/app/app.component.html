@@ -1,13 +1,23 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+</head>
+<body>
+        
 <div id="toolbar">
-<mat-toolbar>
-        <a mat-button [routerLink]="'/index'"> {{title}} </a>
-        <a mat-button [routerLink]="'/audits'"> Audits </a>
-        <a mat-button > About </a>
-        <span class="example-spacer"></span>
-        <button mat-stroked-button style="color:white" > LOG IN </button>
-</mat-toolbar>
-</div>
-
-<br>
-<router-outlet></router-outlet>
+        <mat-toolbar>
+                <a mat-button [routerLink]="'/index'"> {{title}} </a>
+                <a mat-button [routerLink]="'/audits'"> Audits </a>
+                <a mat-button > About </a>
+                <span class="example-spacer"></span>
+                <button mat-stroked-button style="color:white" > LOG IN </button>
+        </mat-toolbar>
+        </div>
+        
+        <br>
+        <router-outlet></router-outlet>
+</body>
+</html>
