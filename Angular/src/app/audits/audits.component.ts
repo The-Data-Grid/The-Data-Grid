@@ -3,7 +3,10 @@ import { ApiService } from '../api.service';
 import { ToiletObject } from '../models'
 import {MatDialog, MatDialogConfig} from "@angular/material";
 import { DialogComponent} from '../dialog/dialog.component';
-
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select'
 @Component({
   selector: 'app-audits',
   templateUrl: './audits.component.html',

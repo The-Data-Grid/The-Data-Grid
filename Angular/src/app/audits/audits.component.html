@@ -1,60 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audits</title>
 </head>
+
 <body>
-    
-<div id="upload-button">
-    <button  mat-stroked-button  (click)="openDialog()">UPLOAD</button>
-    </div>
-    
-    <div id="audits">
-        <mat-table class="lessons-table mat-elevation-z8" [dataSource]="toiletObjects"
-                   matSort matSortActive="seqNo" matSortDirection="asc" matSortDisableClear>
-    
-            <ng-container matColumnDef="GPF">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>GPF</mat-header-cell>
-                <mat-cell *matCellDef="let toiletObject">{{toiletObject.gpf}}</mat-cell>
-            </ng-container>
-    
-            <ng-container matColumnDef="Flushometer Brand">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Flushometer Brand</mat-header-cell>
-                <mat-cell *matCellDef="let toiletObject">{{toiletObject.flushometerBrand}}</mat-cell>
-            </ng-container>
-    
-            <ng-container matColumnDef="Basin Brand">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Basin Brand</mat-header-cell>
-                <mat-cell *matCellDef="let toiletObject">{{toiletObject.basinBrand}}</mat-cell>
-            </ng-container>
-    
-            <ng-container matColumnDef="ADA Stall">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>ADA Stall</mat-header-cell>
-                <mat-cell *matCellDef="let toiletObject">{{toiletObject.ADAstall}}</mat-cell>
-            </ng-container>
-    
-            <ng-container matColumnDef="Basin Condition ID">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Basin Condition ID</mat-header-cell>
-                <mat-cell *matCellDef="let toiletObject">{{toiletObject.basinConditionID}}</mat-cell>
-            </ng-container>
-    
-            <ng-container matColumnDef="Flushometer Condition ID">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Flushometer Condition ID</mat-header-cell>
-                <mat-cell *matCellDef="let toiletObject">{{toiletObject.flushometerConditionID}}</mat-cell>
-            </ng-container>
-     
-            <ng-container matColumnDef="Comment">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Comment</mat-header-cell>
-                <mat-cell *matCellDef="let toiletObject">{{toiletObject.comment}}</mat-cell>
-            </ng-container>
-    
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-    
-        </mat-table>
-    </div>
-    <br>
+    <mat-sidenav-container class="example-container">
+        <mat-sidenav mode="side" opened>Sidenav content</mat-sidenav>
+        <mat-sidenav-content>
+            <div id="upload-button">
+                <button mat-stroked-button (click)="openDialog()">UPLOAD</button>
+            </div>
+<div>
+            <mat-table class="audit-table" [dataSource]="toiletObjects" matSort matSortActive="seqNo"
+                matSortDirection="asc" matSortDisableClear>
+
+                <ng-container matColumnDef="GPF">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>GPF</mat-header-cell>
+                    <mat-cell *matCellDef="let toiletObject">{{toiletObject.gpf}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="Flushometer Brand">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Flushometer Brand</mat-header-cell>
+                    <mat-cell *matCellDef="let toiletObject">{{toiletObject.flushometerBrand}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="Basin Brand">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Basin Brand</mat-header-cell>
+                    <mat-cell *matCellDef="let toiletObject">{{toiletObject.basinBrand}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="ADA Stall">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ADA Stall</mat-header-cell>
+                    <mat-cell *matCellDef="let toiletObject">{{toiletObject.ADAstall}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="Basin Condition ID">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Basin Condition ID</mat-header-cell>
+                    <mat-cell *matCellDef="let toiletObject">{{toiletObject.basinConditionID}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="Flushometer Condition ID">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Flushometer Condition ID</mat-header-cell>
+                    <mat-cell *matCellDef="let toiletObject">{{toiletObject.flushometerConditionID}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="Comment">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Comment</mat-header-cell>
+                    <mat-cell *matCellDef="let toiletObject">{{toiletObject.comment}}</mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+            </mat-table> 
+        </div>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
 </body>
+
 </html>

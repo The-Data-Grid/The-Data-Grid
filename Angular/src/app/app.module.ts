@@ -15,6 +15,11 @@ import { MatTableModule } from '@angular/material/table';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatTabsModule} from '@angular/material/tabs';
 import { DialogComponent } from './dialog/dialog.component';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+
 
 @NgModule({
   declarations: [
@@ -34,7 +39,11 @@ import { DialogComponent } from './dialog/dialog.component';
     MatIconModule,
     MatTableModule,
     MatDialogModule,
-    MatTabsModule
+    MatTabsModule,
+    MatSidenavModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule
   ],
   providers: [ApiService],
   bootstrap: [AppComponent],
