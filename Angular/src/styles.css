@@ -1,14 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:500&display=swap');
-
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 500;
+  margin: 0;
 }
 
+html, body {
+  height: 100%;
+}
+
+
+
 .mat-toolbar {
-  background-color: rgb(86,156,215);
+  background-color: rgb(86, 156, 215);
   color: white;
   width: 100%;
 }
@@ -23,50 +30,71 @@ html * {
 }
 
 .mat-stroked-button {
-  margin-top:10px;
-  margin-bottom:10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   color: gray;
   font-weight: 500;
 }
 
-.example-container {
-  position: absolute;
+.sidenav-container {
+  position:relative;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
   background: #eee;
+  text-align: left;
+  height: 100%
 }
 
+.sidenav {
+  width: 18%;
+  text-align: center;
+  border: 0px solid;
+  border-top-color: rgb(166, 166, 255);
+  border-top-width: 10px;
+  padding-top: 10px;
+  
 
-  .close {
-    margin-left: 15px;
-    color: white;
-    font-weight: bold;
-    float: right;
-    font-size: 22px;
-    line-height: 20px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
+}
+
+.close {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
 
 #index {
   text-align: center;
 }
 
-#app{
+#app {
   text-align: center;
 }
 
-#audits {
+
+#audit-table {
   border-radius: 4px;
+
+}
+
+
+#audit-table-container {
   margin-left: auto;
   margin-right: auto;
- text-align: left;
- width:90%;
- padding: 40px;
+  text-align: left;
+  width: 90%;
+  padding: 40px;
 }
- 
+
 #upload-button {
-  text-align: center;
+  text-align: right;
+  margin-top: 10px;
+  margin-right: 30px;
+  margin-bottom: 10px;
 }
