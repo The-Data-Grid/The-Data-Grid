@@ -50,7 +50,7 @@ html, body {
   width: 18%;
   text-align: center;
   border: 0px solid;
-  border-top-color: rgb(166, 166, 255);
+  border-top-color:rgb(243, 212, 177);
   border-top-width: 10px;
   padding-top: 10px;
   
@@ -76,6 +76,9 @@ html, body {
   text-align: center;
 }
 
+#audits {
+    text-align: left;
+}
 
 #audit-table-container {
   margin-left: auto;
