@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
 import { ToiletObject } from '../models'
 import { MatDialog, MatDialogConfig } from "@angular/material";
@@ -12,7 +12,7 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 })
 
 export class AuditsComponent implements OnInit {
-  toiletObjects;
+  dataSource: MatTableDataSource<ToiletObject> = new MatTableDataSource([]);
   displayedColumns = ["GPF",
     "Flushometer Brand",
     "Basin Brand",
@@ -22,6 +22,9 @@ export class AuditsComponent implements OnInit {
     "Comment"];
   constructor(private apiService: ApiService, private dialog: MatDialog) { }
 
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+
   openDialog() {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
@@ -30,9 +33,18 @@ export class AuditsComponent implements OnInit {
   }
 
   ngOnInit() {
+    /* get api response */
     this.apiService.sendHttps("getAllToiletObjects")
-      .subscribe((toiletObjects) => {
-          this.toiletObjects = toiletObjects;
+      .subscribe((res) => {
+          this.dataSource.data = res;
         });
+
+    /* link sorter to data */
+    this.dataSource.sort = this.sort;
+
+     /* link paginator to data */
+     setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+    });
   }
 }

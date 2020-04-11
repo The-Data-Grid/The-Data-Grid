@@ -15,7 +15,7 @@
                 <button mat-stroked-button (click)="openDialog()">UPLOAD</button>
             </div>
             <div id="audit-table-container"  >
-                <mat-table id="audit-table" class="mat-elevation-z4" [dataSource]="toiletObjects" matSort matSortActive="seqNo" matSortDirection="asc"
+                <mat-table id="audit-table" class="mat-elevation-z4" [dataSource]="dataSource" matSort matSortActive="seqNo" matSortDirection="asc"
                     matSortDisableClear>
 
                     <ng-container matColumnDef="GPF">

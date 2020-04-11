@@ -12,7 +12,7 @@ const PORT = environment.port;
 export class ApiService {
   constructor(private http: HttpClient) { }
 
-  public sendHttps(cmd: string, obj: string = "") {
+  public sendHttps(cmd: string, obj: string = ""): Observable<ToiletObject[]> {
     var dataObj = {
           "command": cmd,
           "dataObject": obj
@@ -23,13 +23,13 @@ export class ApiService {
       return this.getAllToilets();
     }
     
-    if (cmd == "upload") {
-      return this.http.post(API_URL, encoded);
-    }
+    // if (cmd == "upload") {
+    //   return this.http.post(API_URL, encoded);
+    // }
   }
 
-  public getAllToilets(): Observable<ToiletObject>{
-    return this.http.get<ToiletObject>(API_URL + '/toilets');
+  public getAllToilets(): Observable<ToiletObject[]>{
+    return this.http.get<ToiletObject[]>(API_URL + '/toilets');
   }
 
 
