@@ -22,10 +22,6 @@ export class ApiService {
     if (cmd == "getAllToiletObjects") {
       return this.getAllToilets();
     }
-    
-    // if (cmd == "upload") {
-    //   return this.http.post(API_URL, encoded);
-    // }
   }
 
   public getAllToilets(): Observable<ToiletObject[]>{

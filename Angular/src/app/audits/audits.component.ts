@@ -20,6 +20,7 @@ export class AuditsComponent implements OnInit {
     "Basin Condition ID",
     "Flushometer Condition ID",
     "Comment"];
+    pageSizeOptions = [6, 12, 18]
   constructor(private apiService: ApiService, private dialog: MatDialog) { }
 
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;

@@ -14,8 +14,8 @@
             <div id="upload-button">
                 <button mat-stroked-button (click)="openDialog()">UPLOAD</button>
             </div>
-            <div id="audit-table-container"  >
-                <mat-table id="audit-table" class="mat-elevation-z4" [dataSource]="dataSource" matSort matSortActive="seqNo" matSortDirection="asc"
+            <div id="audit-table-container" class="mat-elevation-z4" >
+                <mat-table id="audit-table"  [dataSource]="dataSource" matSort matSortActive="seqNo" matSortDirection="asc"
                     matSortDisableClear>
 
                     <ng-container matColumnDef="GPF">
@@ -57,6 +57,8 @@
                     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 
                 </mat-table>
+                 <!-- paginator -->
+    <mat-paginator id="table-paginator" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons></mat-paginator>
             </div>
         </mat-sidenav-content>
     </mat-sidenav-container>

@@ -42,7 +42,6 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #eee;
   text-align: left;
   height: 100%
 }
@@ -78,18 +77,15 @@ html, body {
 }
 
 
-#audit-table {
-  border-radius: 4px;
-
-}
-
-
 #audit-table-container {
   margin-left: auto;
   margin-right: auto;
   text-align: left;
-  width: 90%;
-  padding: 40px;
+  width: 80%;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: white;
+
 }
 
 #upload-button {
@@ -97,4 +93,19 @@ html, body {
   margin-top: 10px;
   margin-right: 30px;
   margin-bottom: 10px;
+}
+
+
+#table-paginator{
+  display: flex;
+  justify-content: center;
+  font-size: x-small;
+  padding-top: 7px;
+}
+
+.mat-cell, .mat-header-cell {
+  font-size: x-small;
+  min-height: auto;
+  padding: 5px 30px 5px 0px;
+  text-align: left;
 }
