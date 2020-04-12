@@ -53,8 +53,7 @@ html, body {
   border-top-color:rgb(243, 212, 177);
   border-top-width: 10px;
   padding-top: 10px;
-  
-
+  box-shadow: 5px 0 3px -2px #888;
 }
 
 .close {
@@ -83,6 +82,7 @@ html, body {
 #audit-table-container {
   margin-left: auto;
   margin-right: auto;
+  margin-top: 20px;
   text-align: left;
   width: 80%;
   padding: 20px;
@@ -111,4 +111,9 @@ html, body {
   min-height: auto;
   padding: 5px 30px 5px 0px;
   text-align: left;
+}
+
+#search-bar {
+  font-size: x-small;
+
 }
