@@ -1,7 +1,5 @@
-<<<<<<< HEAD
-/node_modules/
-/PostgreSQL/data/
-=======
-node_modules/
-PostgreSQL/data
->>>>>>> 862c1a5fb98713ba57eb372b18aedfc11b63af8c
+node_modules/*
+PostgreSQL/data/*
+#exclude
+!node_modules/.gitkeep
+!PostgreSQL/data/.gitkeep
