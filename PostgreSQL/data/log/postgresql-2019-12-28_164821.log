@@ -1,9 +1,0 @@
-2019-12-28 16:48:21.443 PST [22448] LOG:  database system was shut down at 2019-12-28 16:00:34 PST
-2019-12-28 16:48:21.509 PST [17512] LOG:  database system is ready to accept connections
-2019-12-28 16:49:01.902 PST [17512] LOG:  received fast shutdown request
-2019-12-28 16:49:01.907 PST [17512] LOG:  aborting any active transactions
-2019-12-28 16:49:01.910 PST [20912] FATAL:  terminating connection due to administrator command
-2019-12-28 16:49:01.910 PST [18488] FATAL:  terminating connection due to administrator command
-2019-12-28 16:49:01.926 PST [17512] LOG:  background worker "logical replication launcher" (PID 22048) exited with exit code 1
-2019-12-28 16:49:01.942 PST [8516] LOG:  shutting down
-2019-12-28 16:49:02.008 PST [17512] LOG:  database system is shut down
