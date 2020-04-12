@@ -1,2 +1,5 @@
-node_modules/
-PostgreSQL/data
+node_modules/*
+PostgreSQL/data/*
+#exclude
+!node_modules/.gitkeep
+!PostgreSQL/data/.gitkeep
