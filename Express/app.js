@@ -1,4 +1,10 @@
-var express = require('express');
+const express = require('express');
+const toiletResponse = require('./toiletResponse.js');
 const app = express();
-app.get('/', (req, res) => res.send('Hello World!'));
-app.listen(4000, () => console.log(`Express server running on port 4000`));
+const port = 4001;
+
+
+app.get('/toiletJSON', (req, res) => res.send(toiletResponse));
+
+
+app.listen(port, () => console.log(`Express server running on port ${port}`));
