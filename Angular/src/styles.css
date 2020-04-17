@@ -63,8 +63,14 @@ html, body {
   border: 0px solid;
   border-top-color:rgb(243, 212, 177);
   border-top-width: 10px;
-  padding-top: 10px;
   box-shadow: 5px 0 3px -2px #888;
+  padding-top: 1rem;
+}
+
+/* form fields within sidenav bar */
+.sidenav .mat-form-field {
+  margin: 1rem, 1rem, 1rem, 1rem;
+  font-size: small;
 }
 
 .close {
@@ -123,17 +129,20 @@ html, body {
   text-align: left;
 }
 
-#search-bar {
-  font-size: small;
-}
+/* #search-bar {
+} */
 
 .mat-card {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 40px;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
   text-align: left;
-  width: 20em;
-  padding: 20px;
+  width: 24rem;
   border-radius: 4px;
   background-color: white;
+}
+
+.mat-card-content {
+  padding: 1rem 1.2rem 1rem 1.2rem;
 }

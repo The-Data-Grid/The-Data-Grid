@@ -9,10 +9,18 @@
 
 <body>
     <mat-sidenav-container class="sidenav-container">
-        <mat-sidenav class="sidenav" mode="side" opened >
+        <mat-sidenav class="sidenav" mode="side" opened>
             <!-- Filter -->
-            <mat-form-field id="search-bar">
-                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+            <mat-form-field >
+                <input id="search-bar" matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Favorite food</mat-label>
+                <mat-select>
+                    <mat-option *ngFor="let food of foods" [value]="food.value">
+                        {{food.viewValue}}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
         </mat-sidenav>
 
