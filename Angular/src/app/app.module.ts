@@ -22,6 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { UploadComponent } from './upload/upload.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     AppComponent,
     IndexComponent,
     AuditsComponent,
-    DialogComponent
+    DialogComponent,
+    UploadComponent
   ],
   imports: [
     BrowserModule,

@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { DialogComponent } from './dialog/dialog.component';
+import {MatMenuTrigger} from '@angular/material/menu'
 
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
@@ -16,6 +17,7 @@ const PORT = environment.port;
 export class AppComponent implements OnInit {
 
   title = 'THE DATA GRID';
+  isDataHover = false;
 
   constructor(private apiService: ApiService, private dialog: MatDialog) { }
 
@@ -26,6 +28,11 @@ export class AppComponent implements OnInit {
     dialogConfig.autoFocus = true;
     this.dialog.open(DialogComponent, dialogConfig);
   }
+
+  openMenu() {
+    console.log("SUCCESS!")
+  }
+
 
   ngOnInit() { }
 }
