@@ -4,15 +4,16 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=Rubik:wght@400;500&display=swap');
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
+  font-weight: 400;
+  
+  /* font-family: 'Rubik', sans-serif;
+  font-weight: 400;  */
 }
 
 html, body {
   height: 100%;
   margin: 0;
 
-  /* font-family: 'Rubik', sans-serif;
-  font-weight: 400;  */
 }
 
 .mat-toolbar {
@@ -116,6 +117,7 @@ html, body {
 
  .mat-header-cell, .mat-cell {
   font-size: x-small;
+  font-weight: 500;
   min-height: auto;
   padding: 5px 30px 5px 0px;
   text-align: left;
