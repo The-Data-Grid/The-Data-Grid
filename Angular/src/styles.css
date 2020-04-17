@@ -58,11 +58,12 @@ html, body {
 
 /* actual sidebar */
 .sidenav {
-  width: 18%;
+  width: 14rem;
   text-align: center;
   border: 0px solid;
-  border-top-color:rgb(243, 212, 177);
-  border-top-width: 10px;
+  /* border-top-color:rgb(243, 212, 177); */
+  border-top-color: rgb(95,167,132);
+  border-top-width: 12px;
   box-shadow: 5px 0 3px -2px #888;
   padding-top: 1rem;
 }
@@ -128,9 +129,6 @@ html, body {
   padding: 5px 30px 5px 0px;
   text-align: left;
 }
-
-/* #search-bar {
-} */
 
 .mat-card {
   margin-left: auto;

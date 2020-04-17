@@ -15,10 +15,11 @@ import { MatTableDataSource } from '@angular/material/table'
 
 export class AuditsComponent implements OnInit {
   dataSource: MatTableDataSource<ToiletObject> = new MatTableDataSource([]);
-  foods = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'}
+  types = [
+    {value: '0', viewValue: 'Water'},
+    {value: '1', viewValue: 'Food Waste'},
+    {value: '2', viewValue: 'Electricity'},
+    {value: '3', viewValue: 'Other'}
   ];
   displayedColumns = ["GPF",
     "Flushometer Brand",

@@ -15,10 +15,10 @@
                 <input id="search-bar" matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
             </mat-form-field>
             <mat-form-field>
-                <mat-label>Favorite food</mat-label>
+                <mat-label>Audit Type</mat-label>
                 <mat-select>
-                    <mat-option *ngFor="let food of foods" [value]="food.value">
-                        {{food.viewValue}}
+                    <mat-option *ngFor="let type of types" [value]="type.value">
+                        {{type.viewValue}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
