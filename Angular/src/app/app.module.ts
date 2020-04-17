@@ -23,6 +23,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { UploadComponent } from './upload/upload.component';
+import { AboutComponent } from './about/about.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { UploadComponent } from './upload/upload.component';
     IndexComponent,
     AuditsComponent,
     DialogComponent,
-    UploadComponent
+    UploadComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
