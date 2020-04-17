@@ -1,10 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=Rubik:wght@400;500&display=swap');
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
+  font-weight: 400;
   margin: 0;
 }
 
@@ -103,6 +103,7 @@ html, body {
   border-radius: 4px;
   background-color: white;
 
+
 }
 
 #upload-button {
@@ -120,7 +121,9 @@ html, body {
   padding-top: 7px;
 }
 
-.mat-cell, .mat-header-cell {
+ .mat-header-cell, .mat-cell {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 400;
   font-size: x-small;
   min-height: auto;
   padding: 5px 30px 5px 0px;
@@ -128,6 +131,6 @@ html, body {
 }
 
 #search-bar {
-  font-size: x-small;
+  font-size: small;
 
 }
