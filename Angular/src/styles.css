@@ -1,23 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=Rubik:wght@400;500&display=swap');
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  margin: 0;
+  font-weight: 400;
+  
+  /* font-family: 'Rubik', sans-serif;
+  font-weight: 400;  */
 }
 
 html, body {
   height: 100%;
+  margin: 0;
+
 }
-
-
 
 .mat-toolbar {
   background-color: rgb(86, 156, 215);
   color: white;
   width: 100%;
+  z-index: 9999;
+}
+
+.dropdown {
+  z-index: 9999;
 }
 
 .mat-button {
@@ -36,29 +43,39 @@ html, body {
   font-weight: 500;
 }
 
+/* entire sidenav including main content and sidenav bar */
 .sidenav-container {
   position:relative;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
   text-align: left;
-  height: 100%
+  height: 100%;
+  z-index: 1;
 }
 
+/* main conent (to the right of the sidenav bar) */
+.sidenav-container {
+  z-index: -1;
+}
+
+/* actual sidebar */
 .sidenav {
   width: 18%;
   text-align: center;
   border: 0px solid;
   border-top-color:rgb(243, 212, 177);
   border-top-width: 10px;
-  padding-top: 10px;
   box-shadow: 5px 0 3px -2px #888;
+  padding-top: 1rem;
+}
+
+/* form fields within sidenav bar */
+.sidenav .mat-form-field {
+  margin: 1rem, 1rem, 1rem, 1rem;
+  font-size: small;
 }
 
 .close {
   margin-left: 15px;
-  color: white;
+  color:white;
   font-weight: bold;
   float: right;
   font-size: 22px;
@@ -88,7 +105,6 @@ html, body {
   padding: 20px;
   border-radius: 4px;
   background-color: white;
-
 }
 
 #upload-button {
@@ -98,7 +114,6 @@ html, body {
   margin-bottom: 10px;
 }
 
-
 #table-paginator{
   display: flex;
   justify-content: center;
@@ -106,14 +121,28 @@ html, body {
   padding-top: 7px;
 }
 
-.mat-cell, .mat-header-cell {
+ .mat-header-cell, .mat-cell {
   font-size: x-small;
+  font-weight: 500;
   min-height: auto;
   padding: 5px 30px 5px 0px;
   text-align: left;
 }
 
-#search-bar {
-  font-size: x-small;
+/* #search-bar {
+} */
 
+.mat-card {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  text-align: left;
+  width: 24rem;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.mat-card-content {
+  padding: 1rem 1.2rem 1rem 1.2rem;
 }
