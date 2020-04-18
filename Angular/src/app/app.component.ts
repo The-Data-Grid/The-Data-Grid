@@ -17,7 +17,6 @@ const PORT = environment.port;
 export class AppComponent implements OnInit {
 
   title = 'THE DATA GRID';
-  isDataHover = false;
 
   constructor(private apiService: ApiService, private dialog: MatDialog) { }
 
