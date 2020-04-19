@@ -144,3 +144,7 @@ html, body {
 .mat-card-content {
   padding: 1rem 1.2rem 1rem 1.2rem;
 }
+
+.mat-divider {
+  border-top-color:  rgb(95,167,132);
+}
