@@ -36,7 +36,6 @@ export class AuditsComponent implements OnInit {
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-
   ngOnInit() {
     /* get api response */
     this.apiService.sendHttps("getAllToiletObjects")
@@ -102,5 +101,9 @@ export class AuditsComponent implements OnInit {
   public applyFilter = (value: string) => {
     console.log(value);
     this.dataSource.filter = value;
+  }
+
+  public clearFilters() {
+    this.dataSource.filter = "";
   }
 }
