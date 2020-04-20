@@ -1,11 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
 import { ToiletObject } from '../models'
-
-//import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { MatSort } from '@angular/material/sort'
 import { MatPaginator } from '@angular/material/paginator'
 import { MatTableDataSource } from '@angular/material/table'
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-audits',
@@ -16,10 +15,10 @@ import { MatTableDataSource } from '@angular/material/table'
 export class AuditsComponent implements OnInit {
   dataSource: MatTableDataSource<ToiletObject> = new MatTableDataSource([]);
   types = [
-    {value: '0', viewValue: 'Water'},
-    {value: '1', viewValue: 'Food Waste'},
-    {value: '2', viewValue: 'Electricity'},
-    {value: '3', viewValue: 'Other'}
+    { value: '0', viewValue: 'Water' },
+    { value: '1', viewValue: 'Food Waste' },
+    { value: '2', viewValue: 'Electricity' },
+    { value: '3', viewValue: 'Other' }
   ];
   displayedColumns = ["GPF",
     "Flushometer Brand",
@@ -27,13 +26,15 @@ export class AuditsComponent implements OnInit {
     "ADA Stall",
     "Basin Condition ID",
     "Flushometer Condition ID",
-    "Comment"];
+    "Comment",
+    "Date Conducted"];
   pageSizeOptions = [6, 12, 18]
-  constructor(private apiService: ApiService) { }
+
+  // constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-
 
 
   ngOnInit() {
@@ -69,6 +70,9 @@ export class AuditsComponent implements OnInit {
       else if (property == 'Comment') {
         return entry.comment;
       }
+      else if (property == 'Date Conducted') {
+        return entry.dateConducted;
+      }
       else {
         return entry[property];
       }
@@ -78,9 +82,25 @@ export class AuditsComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
     });
+
+    this.dataSource.filterPredicate = (entry, filter) => {
+      var dataStr = entry.gpf + " " + entry.flushometerBrand + " " + entry.basinBrand + " "
+        + entry.ADAstall + " " + entry.basinConditionID + " " + entry.flushometerConditionID + " "
+        + entry.comment + " " + entry.dateConducted;
+      dataStr = dataStr.trim().toLocaleLowerCase();
+      return dataStr.indexOf(filter) != -1;
+    }
   }
+
+  public applyDateFilter = (value: string) => {
+    value = this.datepipe.transform(value, 'M/d/yyyy');
+    console.log(value);
+    this.dataSource.filter = value;
+  }
+
   /* executes filtering upon user input */
   public applyFilter = (value: string) => {
-    this.dataSource.filter = value.trim().toLocaleLowerCase();
+    console.log(value);
+    this.dataSource.filter = value;
   }
 }

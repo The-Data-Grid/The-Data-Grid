@@ -26,7 +26,9 @@ import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import { UploadComponent } from './upload/upload.component';
 import { AboutComponent } from './about/about.component';
-
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -58,9 +60,11 @@ import { AboutComponent } from './about/about.component';
     FormsModule,
     ReactiveFormsModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
-  providers: [ApiService],
+  providers: [ApiService, DatePipe],
   bootstrap: [AppComponent],
   entryComponents: [DialogComponent]
 })

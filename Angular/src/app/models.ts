@@ -26,6 +26,7 @@ export class ToiletObject
     basinConditionID: number;
     flushometerConditionID: number;
     comment: string;
+    dateConducted: string;
 
     constructor(values: Object = {}) {
         Object.assign(this, values);

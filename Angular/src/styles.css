@@ -148,3 +148,7 @@ html, body {
 .mat-divider {
   border-top-color:  rgb(95,167,132);
 }
+
+.mat-form-field {
+  width: 80%;
+}

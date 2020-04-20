@@ -22,6 +22,12 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+            <mat-form-field>
+                <mat-label>Date Conducted</mat-label>
+                <input matInput [matDatepicker]="picker" (dateInput)="applyDateFilter($event.target.value)" >
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">
@@ -62,6 +68,11 @@
                     <ng-container matColumnDef="Comment">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Comment</mat-header-cell>
                         <mat-cell *matCellDef="let entry">{{entry.comment}}</mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Date Conducted">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Date Conducted</mat-header-cell>
+                        <mat-cell *matCellDef="let entry">{{entry.dateConducted}}</mat-cell>
                     </ng-container>
 
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
