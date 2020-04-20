@@ -83,9 +83,12 @@ export class AuditsComponent implements OnInit {
     });
 
     this.dataSource.filterPredicate = (entry, filter) => {
+      //var date = new Date(entry.dateConducted);
+      // let str = date.toDateString(); 
       var dataStr = entry.gpf + " " + entry.flushometerBrand + " " + entry.basinBrand + " "
         + entry.ADAstall + " " + entry.basinConditionID + " " + entry.flushometerConditionID + " "
-        + entry.comment + " " + entry.dateConducted;
+        + entry.comment + " " + entry.dateConducted; 
+        // new Date(entry.dateConducted);
       dataStr = dataStr.trim().toLocaleLowerCase();
       return dataStr.indexOf(filter) != -1;
     }

@@ -74,6 +74,7 @@
                     <ng-container matColumnDef="Date Conducted">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Date Conducted</mat-header-cell>
                         <mat-cell *matCellDef="let entry">{{entry.dateConducted}}</mat-cell>
+                        <!-- if using epoch time: {{entry.dateConducted | date: 'shortDate'}} -->
                     </ng-container>
 
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
