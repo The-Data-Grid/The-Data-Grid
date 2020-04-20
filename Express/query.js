@@ -1,25 +1,25 @@
-const {Pool} = require('pg');
-
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'tdg_db',
-  password: null,
-  port: 5432,
+    user: process.env.POSTGRES_USER,
+    host: 'localhost',
+    database: 'tdg_db',
+    password: process.env.POSTGRES_PASSWORD,
+    port: 5432,
 });
 
-const toilet = (req, res) => {
-    pool.query('SELECT drat FROM mtcars;')
-    .then(result => {
-        res.json(result.rows);
+// SELECT name FROM mtcars WHERE mpg < 17
+const lowmpg = (req, res) => {
+    pool.query('SELECT name FROM mtcars WHERE mpg < 17;', (error, results) => {
+        if (error){
+            throw error
+        }
+        res.status(200).json(results.rows)
     })
-    .catch(err => {
-        console.log(err);
-    })
-};
+}
 
 module.exports = {
-    toilet
-};
-
+    lowmpg,
+}
