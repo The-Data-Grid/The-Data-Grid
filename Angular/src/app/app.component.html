@@ -13,13 +13,24 @@
                         <mat-toolbar>
                                 <a mat-button [routerLink]="'/index'"> {{title}} </a>
                                 <a mat-button [routerLink]="'/audits'"> Audits </a>
-                                <a mat-button> About </a>
+                                <div class="dropdown">
+                                        <a mat-button [routerLink]="'/upload'">Upload</a>
+                                        <div class="dropdown-content">
+                                                <a mat-button> Upload Data </a>
+                                                <br>
+                                                <a mat-button>Retrieve Template</a>
+                                        </div>
+                                </div>
+                                <a mat-button [routerLink]="'/about'"> About </a>
                                 <span class="example-spacer"></span>
                                 <button mat-stroked-button (click)="openDialog()" style="color:white"> LOG IN </button>
                         </mat-toolbar>
                 </nav>
         </header>
         <router-outlet></router-outlet>
+
+
 </body>
+
 
 </html>

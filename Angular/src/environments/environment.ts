@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server",
+  // apiUrl: "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server",
+  apiUrl: "http://localhost:4001", 
   port: "2345"
 };
 
