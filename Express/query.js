@@ -15,7 +15,7 @@ const firstResponse = (req, res) => {
     pool.query('SELECT drat FROM mtcars;')
     .then(result => {
         n_queries ++;
-        res.json({"toilets":toilet.impute(toilet.toiletResponse.toilets, result.rows)});
+        res.json(toilet.impute(toilet.toiletResponse.toilets, result.rows));
     })
     .catch(err => {
         console.log(err);
