@@ -1,25 +1,29 @@
 const {Pool} = require('pg');
-
-
-const pool = new Pool({
-  user: 'postgres',
+const toilet = require('./toiletResponse')
+let n_queries = 0; //logging
+let n_errors = 0; //logging
+const pool = new Pool({ //PostgreSQL Connection
+  user: 'postgres', //Server user
   host: 'localhost',
-  database: 'tdg_db',
-  password: null,
-  port: 5432,
+  database: 'tdg_db', 
+  password: null, //choose the password of the user you are connecting as
+  port: 5432 //default postgreSQL port
 });
 
-const toilet = (req, res) => {
+const firstResponse = (req, res) => {
+
     pool.query('SELECT drat FROM mtcars;')
     .then(result => {
-        res.json(result.rows);
+        n_queries ++;
+        res.json({"toilets":toilet.impute(toilet.toiletResponse.toilets, result.rows)});
     })
     .catch(err => {
         console.log(err);
+        n_errors ++;
     })
 };
 
 module.exports = {
-    toilet
+    firstResponse
 };
 

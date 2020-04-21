@@ -4,6 +4,7 @@
   "description": "Development management at UCLA Bruin Home Solutions",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon ./Express/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
