@@ -30,7 +30,6 @@ export class AuditsComponent implements OnInit {
     "Date Conducted"];
   pageSizeOptions = [6, 12, 18]
 
-  // constructor(private apiService: ApiService) {
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
