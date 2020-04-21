@@ -25,7 +25,7 @@ export class ApiService {
   }
 
   public getAllToilets(): Observable<ToiletObject[]>{
-    return this.http.get<ToiletObject[]>(API_URL + '/toilets');
+    return this.http.get<ToiletObject[]>(API_URL + '/toilet');
   }
 
 

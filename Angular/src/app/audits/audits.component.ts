@@ -40,6 +40,7 @@ export class AuditsComponent implements OnInit {
     /* get api response */
     this.apiService.sendHttps("getAllToiletObjects")
       .subscribe((res) => {
+        console.log(res);
         this.dataSource.data = res;
       });
 
