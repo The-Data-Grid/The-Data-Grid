@@ -13,7 +13,11 @@ html * {
 html, body {
   height: 100%;
   margin: 0;
+}
 
+#logo {
+  width: 40%;
+  margin: 4rem;
 }
 
 .mat-toolbar {
