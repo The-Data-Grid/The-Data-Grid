@@ -1,0 +1,45 @@
+.login {
+    font-size: 48px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    position: relative;
+}
+
+body {
+    overflow: hidden;
+    background-position: center 120px;
+}
+
+.userNamePosition {
+    margin-top: 80px;
+}
+
+mat-form-field {
+    width: 90%;
+}
+
+.greyish {
+    background-color: #569CD7;
+    filter: grayscale(60%);
+    cursor: auto;
+    position: relative;
+    margin-top: -20px;
+}
+
+.normal {
+    background-color: #569CD7;
+}
+
+.logo {
+    width: 150px;
+    position: relative;
+}
+
+.closeButton {
+    position: relative;
+    background-color: white;
+    border: none;
+    font-size: 20px;
+    outline-color: white;
+    cursor: pointer;
+}
+
