@@ -15,11 +15,12 @@ import { DatePipe } from '@angular/common';
 export class AuditsComponent implements OnInit {
   dataSource: MatTableDataSource<ToiletObject> = new MatTableDataSource([]);
   types = [
-    { value: '0', viewValue: 'Water' },
-    { value: '1', viewValue: 'Food Waste' },
-    { value: '2', viewValue: 'Electricity' },
-    { value: '3', viewValue: 'Other' }
+    { value: 'water', viewValue: 'Water' },
+    { value: 'food_waste', viewValue: 'Food Waste' },
+    { value: 'electricity', viewValue: 'Electricity' },
+    { value: 'other', viewValue: 'Other' }
   ];
+  selectedType = "water";
   displayedColumns = ["GPF",
     "Flushometer Brand",
     "Basin Brand",
