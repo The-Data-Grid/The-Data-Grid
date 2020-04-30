@@ -26,10 +26,10 @@
             </mat-form-field>
         </p>
         <a style="font-size: 10px; position: relative; top: -80px; right: -18px;" href="">Forgot Your Password?</a>
-
-    <button mat-button color="primary" style="background-color: #5FA784; color: white; left: 12%; top: 20px; position: relative;">SIGN UP</button>
-    <button mat-button color="primary" style="position: relative; color: white; left: 17%; top: 20px;" [class.normal]="formsFilledOut" [class.greyish]="!formsFilledOut">SIGN IN</button>
-
+<div class="signbuttons">
+    <button mat-button color="primary" style="background-color: #5FA784; color: white; left: 55%; top: 80%; position: absolute;">SIGN UP</button>
+    <button mat-button color="primary" style="position: absolute; color: white; left: 45%; top: 80%;" [class.normal]="formsFilledOut" [class.greyish]="!formsFilledOut">SIGN IN</button>
+  </div>
 
    <script>
      function checkForms() {
