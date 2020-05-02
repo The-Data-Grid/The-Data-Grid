@@ -19,14 +19,15 @@ mat-form-field {
 
 .greyish {
     background-color: #569CD7;
+    top: 81%;
     filter: grayscale(60%);
     cursor: auto;
-    position: relative;
-    margin-top: -20px;
+    position: absolute;
 }
 
 .normal {
     background-color: #569CD7;
+    top: 81%;
 }
 
 .logo {
@@ -42,4 +43,3 @@ mat-form-field {
     outline-color: white;
     cursor: pointer;
 }
-
