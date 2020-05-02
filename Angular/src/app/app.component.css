@@ -15,5 +15,66 @@
 .dropdown:hover .dropdown-content {
     display: block;
  }
+
+ .bottomBar {
+     position: fixed;
+     bottom: 0;
+     height: 45px;
+ }
   
-      
+
+.igIcon {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin-left: 650%;
+    margin-bottom: -1px;
+}
+
+
+.igButton {
+    padding: 1px;
+    margin-left: 105px;
+    font-size: 18px;
+}
+
+.facebookIcon {
+    cursor: pointer;
+    margin-left: 750%;
+    margin-bottom: -3px;
+    height: 20px;
+    width: 20px;
+}
+
+.facebookButton {
+    font-size: 18px;
+    padding: 1px;
+    margin-left: 155px;
+}
+
+.subscribeIcon {
+    cursor: pointer;
+    margin-bottom: -1px;
+    height: 15px;
+    width: 20px;
+    margin-left: 900%;
+}
+
+.subscribeButton {
+    font-size: 18px;
+    padding: 1px;
+    margin-left: 190px;
+}
+
+.donateIcon{
+    cursor: pointer;
+    margin-bottom: -1px;
+    margin-left: 1300%;
+    height:20px;
+}
+
+.donateButton{
+    font-size: 18px;
+    padding: 1px;
+    margin-left: 200px;
+}
