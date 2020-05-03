@@ -7,7 +7,7 @@ import { MatDialogRef } from "@angular/material/dialog";
 })
 export class DialogComponent implements OnInit {
 
-  formsFilledOut = false;
+  formsFilledOut = false; 
 
   handleInput() {
     console.log("help");
