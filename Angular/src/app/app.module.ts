@@ -29,6 +29,7 @@ import { AboutComponent } from './about/about.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { DatePipe } from '@angular/common';
     MatCardModule,
     MatDividerModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    FlexLayoutModule
   ],
   providers: [ApiService, DatePipe],
   bootstrap: [AppComponent],

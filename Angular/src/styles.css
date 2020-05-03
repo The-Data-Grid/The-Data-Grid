@@ -139,7 +139,7 @@ margin-top: 3rem;
   text-align: left;
 }
 
-.mat-card {
+.about-container mat-card {
   margin-left: auto;
   margin-right: auto;
   margin-top: 3rem;
@@ -160,4 +160,10 @@ margin-top: 3rem;
 
 .mat-form-field {
   width: 80%;
+}
+
+.about-container {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
 }
