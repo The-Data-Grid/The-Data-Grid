@@ -1,32 +1,3 @@
---Functions
-CREATE FUNCTION community_location(fk) returns BOOLEAN AS $$
-  SELECT EXISTS (
-    SELECT 1
-    FROM loc 
-    WHERE location_id = $1
-    AND room_id IS NULL
-  );
-  $$ language sql;
-
-CREATE FUNCTION building_location(fk) returns BOOLEAN AS $$
-  SELECT EXISTS (
-    SELECT 1
-    FROM loc 
-    WHERE location_id = $1
-    AND room_id IS NULL
-  );
-  $$ language sql;
-
-  CREATE FUNCTION room_location(fk) returns BOOLEAN AS $$
-  SELECT EXISTS (
-    SELECT 1
-    FROM loc 
-    WHERE location_id = $1
-    AND room_id IS NOT NULL
-  );
-  $$ language sql;
-
-
 --Create Tables
 CREATE TABLE audit_template ( --strings of column names that represent user's template
   template_id SERIAL PRIMARY KEY, --uuid
@@ -366,6 +337,35 @@ CREATE TABLE item_type (
   item_type_id SERIAL PRIMARY KEY,
   item_name TEXT
 );
+
+--Functions
+CREATE FUNCTION community_location(INT) returns BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM loc 
+    WHERE location_id = $1
+    AND room_id IS NULL
+  );
+  $$ language sql;
+
+CREATE FUNCTION building_location(INT) returns BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM loc 
+    WHERE location_id = $1
+    AND room_id IS NULL
+  );
+  $$ language sql;
+
+  CREATE FUNCTION room_location(INT) returns BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM loc 
+    WHERE location_id = $1
+    AND room_id IS NOT NULL
+  );
+  $$ language sql;
+
 
 -- Foreign Key References
 
