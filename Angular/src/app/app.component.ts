@@ -20,6 +20,10 @@ export class AppComponent implements OnInit {
 
   constructor(private apiService: ApiService, private dialog: MatDialog) { }
 
+  check() {
+    console.log("lala");
+  }
+
 
   openDialog() {
     const dialogConfig = new MatDialogConfig();
