@@ -1,5 +1,5 @@
 --Create Tables
-CREATE TABLE audit_template ( --strings of column names that represent user's template
+CREATE TABLE item_template ( --strings of column names that represent user's template
   template_id SERIAL PRIMARY KEY, --uuid
   organization_id INT NOT NULL, --fk, uuid
   user_id INT NOT NULL, --fk, uuid
@@ -357,7 +357,7 @@ CREATE FUNCTION building_location(INT) returns BOOLEAN AS $$
   );
   $$ language sql;
 
-  CREATE FUNCTION room_location(INT) returns BOOLEAN AS $$
+CREATE FUNCTION room_location(INT) returns BOOLEAN AS $$
   SELECT EXISTS (
     SELECT 1
     FROM loc 
@@ -369,26 +369,24 @@ CREATE FUNCTION building_location(INT) returns BOOLEAN AS $$
 
 -- Foreign Key References
 
-ALTER TABLE audit_template ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
-ALTER TABLE audit_template ADD FOREIGN KEY (user_id) REFERENCES users;
+ALTER TABLE item_template ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
+ALTER TABLE item_template ADD FOREIGN KEY (user_id) REFERENCES users;
+
 ALTER TABLE audit_submission ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
 ALTER TABLE audit_submission ADD FOREIGN KEY (sop_id) REFERENCES sop;
+ALTER TABLE audit_submission ADD FOREIGN KEY (template_id) REFERENCES item_template;
 
 ALTER TABLE audit_sink ADD FOREIGN KEY (audit_id) REFERENCES audit_submission;
 ALTER TABLE audit_sink ADD FOREIGN KEY (location_id) REFERENCES loc;
 
-
 ALTER TABLE audit_urinal ADD FOREIGN KEY (audit_id) REFERENCES audit_submission;
 ALTER TABLE audit_urinal ADD FOREIGN KEY (location_id) REFERENCES loc;
-
 
 ALTER TABLE audit_mirror ADD FOREIGN KEY (audit_id) REFERENCES audit_submission;
 ALTER TABLE audit_mirror ADD FOREIGN KEY (location_id) REFERENCES loc;
 
-
 ALTER TABLE audit_toilet ADD FOREIGN KEY (audit_id) REFERENCES audit_submission;
 ALTER TABLE audit_toilet ADD FOREIGN KEY (location_id) REFERENCES loc;
-
 
 ALTER TABLE audit_room ADD FOREIGN KEY (audit_id) REFERENCES audit_submission;
 ALTER TABLE audit_room ADD FOREIGN KEY (location_id) REFERENCES loc;
