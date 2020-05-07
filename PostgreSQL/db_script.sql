@@ -16,7 +16,7 @@ CREATE TABLE audit_submission (
   organization_id INT NOT NULL, --uuid, fk
   sop_id INT NOT NULL, --fk
   template_id INT, --fk
-  time_submitted DATE NOT NULL
+  date_submitted DATE NOT NULL
 );
 
 CREATE TABLE audit_sink (
@@ -24,7 +24,7 @@ CREATE TABLE audit_sink (
   audit_id INT NOT NULL, --uuid, fk
   gpm NUMERIC,
   location_id INT,
-  time_conducted DATE NOT NULL,
+  date_conducted DATE NOT NULL,
   commentary TEXT
 );
 
@@ -83,7 +83,7 @@ CREATE TABLE audit_urinal (
   audit_id INT NOT NULL, --uuid, fk
   gpf NUMERIC,
   location_id INT,
-  time_conducted DATE NOT NULL,
+  date_conducted DATE NOT NULL,
   commentary TEXT
 );
 
@@ -151,7 +151,7 @@ CREATE TABLE audit_mirror (
   observation_id SERIAL PRIMARY KEY, --uuid
   audit_id INT NOT NULL, --uuid, fk
   location_id INT NOT NULL, --fk
-  time_conducted DATE NOT NULL,
+  date_conducted DATE NOT NULL,
   commentary TEXT
 );
 
@@ -169,7 +169,7 @@ CREATE TABLE audit_toilet (
   observation_id SERIAL PRIMARY KEY, --uuid
   audit_id INT NOT NULL, --uuid, fk
   gpf NUMERIC,
-  time_conducted DATE NOT NULL,
+  date_conducted DATE NOT NULL,
   location_id INT,
   commentary TEXT
 );
@@ -239,7 +239,7 @@ CREATE TABLE audit_room (
   audit_id INT NOT NULL, --uuid, fk
   location_id INT, -- fk
   exhaust_exit BOOLEAN,
-  time_conducted DATE NOT NULL,
+  date_conducted DATE NOT NULL,
   access_panel BOOLEAN,
   commentary TEXT
 );
