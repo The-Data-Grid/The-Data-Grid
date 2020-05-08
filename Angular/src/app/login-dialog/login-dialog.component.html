@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+  <mat-dialog-actions>
+    <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
+  </mat-dialog-actions>
+
+  <img src="https://i.imgur.com/IxY4SeO.png" alt="The Data Grid Logo" class="logo" style="top: -40px; right: -2%;">
+    <h2 class="logIn" style="font-size: 48px; font-weight: 5; position:relative; right: -5%; top: -70px;">Log In</h2>
+    <p>
+        <mat-form-field appearance="outline" style="top: -65px; left: 5%; font-size: 14px;">
+          <mat-label>Username or Email</mat-label>
+          <input id="username" matInput (input) = "checkForms()" placeholder="">
+        </mat-form-field>
+    </p>
+    <p>
+            <mat-form-field appearance="outline" style="top: -45px; left: 5%; font-size: 14px;">
+              <mat-label>Password</mat-label>
+              <input id="password" matInput (input)="checkForms()" placeholder="">
+            </mat-form-field>
+        </p>
+        <a style="font-size: 10px; position: relative; top: -80px; right: -18px;" href="">Forgot Your Password?</a>
+<div class="signbuttons">
+    <button mat-button color="primary" style="background-color: #5FA784; color: white; left: 55%; top: 80%; position: absolute;">SIGN UP</button>
+    <button mat-button color="primary" style="position: absolute; color: white; left: 45%; top: 80%;" [class.normal]="formsFilledOut" [class.greyish]="!formsFilledOut">SIGN IN</button>
+  </div>
+
+   <script>
+     function checkForms() {
+       var x = document.getElementById("chess").value;
+      console.log(x);
+     }
+    </script>
+  </body>
+</html>

@@ -20,6 +20,23 @@ const lowmpg = (req, res) => {
     })
 }
 
+let featureQuery = (filters, path, sql, res) => {
+    pool.query('something')
+    .then(result => {
+        res.json(result)
+    })
+    .catch(error => {
+        console.log(error);
+        throw error;
+    })
+}
+
+let auditQuery = (filters, path, sql, res) => {
+    // do some stuff
+};
+
 module.exports = {
     lowmpg,
+    featureQuery,
+    auditQuery,
 }

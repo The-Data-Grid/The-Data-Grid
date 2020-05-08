@@ -1,0 +1,44 @@
+
+.dropdown {
+       position: relative;
+       display: inline-block;
+      }
+      
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: rgb(86, 156, 215);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+ }
+
+ .bottomBar {
+     position: fixed;
+     bottom: 0px;
+     height: 45px;
+ }
+  
+
+.ig {
+    position: absolute;
+    margin-left: 8%;
+}
+
+.fb {
+    position: absolute;
+    margin-left: 33%;
+}
+
+.sub {
+    position: absolute;
+    margin-left: 59%;
+}
+
+.donate {
+    position: absolute;
+    margin-left: 80%;
+}

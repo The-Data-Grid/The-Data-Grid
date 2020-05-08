@@ -9,15 +9,30 @@
 
 <body>
     <mat-sidenav-container class="sidenav-container">
-        <mat-sidenav class="sidenav" mode="side" opened >
+        <mat-sidenav class="sidenav" mode="side" opened>
             <!-- Filter -->
-            <mat-form-field id="search-bar">
-                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+            <mat-form-field >
+                <input id="search-bar" matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
             </mat-form-field>
+            <mat-form-field>
+                <mat-label>Audit Type</mat-label>
+                <mat-select [(ngModel)]="selectedType">
+                    <mat-option *ngFor="let type of types" [value]="type.value">
+                        {{type.viewValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Date Conducted</mat-label>
+                <input #datepicker matInput [matDatepicker]="picker" (dateInput)="applyDateFilter($event.target.value)" >
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+              <button mat-button (click)="clearFilters()">CLEAR FILTERS</button>
         </mat-sidenav>
 
-        <mat-sidenav-content>
-            <div id="audit-table-container" class="mat-elevation-z4">
+        <mat-sidenav-content class="sidenav-content">
+            <div *ngIf="selectedType === 'water'" id="audit-table-container" class="mat-elevation-z4">
                 <mat-table id="audit-table" [dataSource]="dataSource" matSort matSortActive="seqNo"
                     matSortDirection="asc" matSortDisableClear>
 
@@ -54,6 +69,12 @@
                     <ng-container matColumnDef="Comment">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Comment</mat-header-cell>
                         <mat-cell *matCellDef="let entry">{{entry.comment}}</mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Date Conducted">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Date Conducted</mat-header-cell>
+                        <mat-cell *matCellDef="let entry">{{entry.dateConducted}}</mat-cell>
+                        <!-- if using epoch time: {{entry.dateConducted | date: 'shortDate'}} -->
                     </ng-container>
 
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

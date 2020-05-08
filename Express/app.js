@@ -3,6 +3,8 @@ const express = require('express');
 const toiletResponse = require('./toiletResponse.js');
 const bodyParser = require('body-parser');
 const db = require('./query.js');
+const parse = require('./parse.js');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 4001;
@@ -37,5 +39,8 @@ app.use(
 );
 
 app.get('/cars/lowmpg', db.lowmpg);
+
+app.get('/api/f/:feature/:include', cors(), parse.featureParse); 
+app.get('/api/a/:include', cors());
 
 app.listen(port, () => console.log(`Express server running on port ${port}`));

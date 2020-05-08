@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
-import { DialogComponent } from './dialog/dialog.component';
+import { DialogComponent } from './login-dialog/login-dialog.component';
+import {MatMenuTrigger} from '@angular/material/menu'
 
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
@@ -26,6 +27,11 @@ export class AppComponent implements OnInit {
     dialogConfig.autoFocus = true;
     this.dialog.open(DialogComponent, dialogConfig);
   }
+
+  openMenu() {
+    console.log("SUCCESS!")
+  }
+
 
   ngOnInit() { }
 }

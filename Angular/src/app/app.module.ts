@@ -14,7 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatTabsModule} from '@angular/material/tabs';
-import { DialogComponent } from './dialog/dialog.component';
+import { DialogComponent } from './login-dialog/login-dialog.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -22,14 +22,22 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-
+import {MatCardModule} from '@angular/material/card';
+import {MatDividerModule} from '@angular/material/divider';
+import { UploadComponent } from './upload/upload.component';
+import { AboutComponent } from './about/about.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
     AppComponent,
     IndexComponent,
     AuditsComponent,
-    DialogComponent
+    DialogComponent,
+    UploadComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -50,9 +58,13 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     MatPaginatorModule,
     MatSortModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatCardModule,
+    MatDividerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
-  providers: [ApiService],
+  providers: [ApiService, DatePipe],
   bootstrap: [AppComponent],
   entryComponents: [DialogComponent]
 })
