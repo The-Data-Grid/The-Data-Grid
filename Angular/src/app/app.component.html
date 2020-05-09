@@ -1,3 +1,4 @@
+  
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,19 +14,19 @@
         <header>
                 <nav id="toolbar">
                         <mat-toolbar>
-                                <a mat-button [routerLink]="'/index'"> {{title}} </a>
-                                <a mat-button [routerLink]="'/audits'"> Audits </a>
+                                <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> Home </a>
+                                <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> Data Filtering & Management </a>
                                 <div class="dropdown">
-                                        <a mat-button [routerLink]="'/upload'">Upload</a>
+                                        <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 14px;">Upload</a>
                                         <div class="dropdown-content">
                                                 <a mat-button> Upload Data </a>
                                                 <br>
                                                 <a mat-button>Retrieve Template</a>
                                         </div>
                                 </div>
-                                <a mat-button [routerLink]="'/about'"> About </a>
+                                <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> About Us </a>
                                 <span class="example-spacer"></span>
-                                <button mat-stroked-button (click)="openDialog()" style="color:white"> LOG IN </button>
+                                <a mat-button (click)="openDialog()" style="right: 0%; height: 100%; padding: 14px;">Log In</a>
                         </mat-toolbar>
                 </nav>
         </header>
