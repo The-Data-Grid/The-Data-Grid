@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
 import { ToiletObject } from '../models'
-import { MatSort } from '@angular/material/sort'
+// import { MatSort } from '@angular/material/sort'
 // import { MatPaginator } from '@angular/material/paginator'
 // import { MatTableDataSource } from '@angular/material/table'
 // import { DatePipe } from '@angular/common';
@@ -18,7 +18,6 @@ import { MatSort } from '@angular/material/sort'
 
 export class AuditsComponent implements OnInit {
   rows = [];
-  temp = [];
   columns = [
     { name: "GPF", width: "80" },
     { name: "Flushometer Brand" },
@@ -29,54 +28,66 @@ export class AuditsComponent implements OnInit {
     { name: "Comment" },
     { name: "Date Conducted" }
   ];
+  response;
+  filteredData = [];
 
   // @ViewChild(DatatableComponent) table: DatatableComponent;
 
   // ColumnMode = ColumnMode;
 
   constructor(private apiService: ApiService) { }
+  types = [
+    { value: 'water', viewValue: 'Water' },
+    { value: 'food_waste', viewValue: 'Food Waste' },
+    { value: 'electricity', viewValue: 'Electricity' },
+    { value: 'other', viewValue: 'Other' }
+  ];
+  selectedType = "water";
+  displayedColumns = ["GPF",
+    "Flushometer Brand",
+    "Basin Brand",
+    "ADA Stall",
+    "Basin Condition ID",
+    "Flushometer Condition ID",
+    "Comment",
+    "Date Conducted"];
 
   ngOnInit() {
     /* get api response */
     this.apiService.sendHttps("getAllToiletObjects")
       .subscribe((res) => {
-        console.log(res);
+        this.response = res;
         this.rows = res;
+        this.filteredData= res;
       });
   }
 
-  updateFilter(event) {
-    const val = event.target.value.toLowerCase();
-
-    // filter our data
-    const temp = this.temp.filter(function (d) {
-      return d.name.toLowerCase().indexOf(val) !== -1 || !val;
+  filterDatatable(event){
+    // get the value of the key pressed and make it lowercase
+    let val = event.target.value.toLowerCase();
+    // get the amount of columns in the table
+    let colsAmt = this.columns.length;
+    // get the key names of each column in the dataset
+    let keys = Object.keys(this.response[0]);
+    // assign filtered matches to the active datatable
+    this.rows = this.filteredData.filter(function(item){
+      // iterate through each row's column data
+      for (let i=0; i<colsAmt; i++){
+        // check for a match
+        if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val){
+          // found match, return true to add to result set
+          return true;
+        }
+      }
     });
-
-    // update the rows
-    this.rows = temp;
-    // Whenever the filter changes, always go back to the first page
+    // whenever the filter changes, always go back to the first page
     // this.table.offset = 0;
   }
 
 
 
   // dataSource: MatTableDataSource<ToiletObject> = new MatTableDataSource([]);
-  // types = [
-  //   { value: 'water', viewValue: 'Water' },
-  //   { value: 'food_waste', viewValue: 'Food Waste' },
-  //   { value: 'electricity', viewValue: 'Electricity' },
-  //   { value: 'other', viewValue: 'Other' }
-  // ];
-  // selectedType = "water";
-  // displayedColumns = ["GPF",
-  //   "Flushometer Brand",
-  //   "Basin Brand",
-  //   "ADA Stall",
-  //   "Basin Condition ID",
-  //   "Flushometer Condition ID",
-  //   "Comment",
-  //   "Date Conducted"];
+
   // pageSizeOptions = [6, 12, 18]
 
   // constructor(private apiService: ApiService, public datepipe: DatePipe) { }

@@ -60,8 +60,9 @@ html, body {
 }
 
 /* main conent (to the right of the sidenav bar) */
-.sidenav-container {
+.sidenav-content {
   z-index: -1;
+  background-color: white;
 }
 
 /* actual sidebar */
