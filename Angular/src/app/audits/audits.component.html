@@ -10,8 +10,10 @@
 <body>
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav class="sidenav" mode="side" opened>
-            <!-- Filter -->
-            <mat-form-field >
+
+            <input type="text" style="padding:8px;margin:15px auto;width:70%;" placeholder="Search"
+                (keyup)="updateFilter($event)" />
+            <!-- <mat-form-field >
                 <input id="search-bar" matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
             </mat-form-field>
             <mat-form-field>
@@ -28,63 +30,16 @@
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
               </mat-form-field>
-              <button mat-button (click)="clearFilters()">CLEAR FILTERS</button>
+              <button mat-button (click)="clearFilters()">CLEAR FILTERS</button> -->
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">
-            <div *ngIf="selectedType === 'water'" id="audit-table-container" class="mat-elevation-z4">
-                <mat-table id="audit-table" [dataSource]="dataSource" matSort matSortActive="seqNo"
-                    matSortDirection="asc" matSortDisableClear>
-
-                    <ng-container matColumnDef="GPF">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>GPF</mat-header-cell>
-                        <mat-cell *matCellDef="let entry">{{entry.gpf}}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="Flushometer Brand">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Flushometer Brand</mat-header-cell>
-                        <mat-cell *matCellDef="let entry">{{entry.flushometerBrand}}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="Basin Brand">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Basin Brand</mat-header-cell>
-                        <mat-cell *matCellDef="let entry">{{entry.basinBrand}}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="ADA Stall">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>ADA Stall</mat-header-cell>
-                        <mat-cell *matCellDef="let entry">{{entry.ADAstall}}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="Basin Condition ID">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Basin Condition ID</mat-header-cell>
-                        <mat-cell *matCellDef="let entry">{{entry.basinConditionID}}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="Flushometer Condition ID">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Flushometer Condition ID</mat-header-cell>
-                        <mat-cell *matCellDef="let entry">{{entry.flushometerConditionID}}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="Comment">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Comment</mat-header-cell>
-                        <mat-cell *matCellDef="let entry">{{entry.comment}}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="Date Conducted">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Date Conducted</mat-header-cell>
-                        <mat-cell *matCellDef="let entry">{{entry.dateConducted}}</mat-cell>
-                        <!-- if using epoch time: {{entry.dateConducted | date: 'shortDate'}} -->
-                    </ng-container>
-
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-
-                </mat-table>
-                <!-- paginator -->
-                <mat-paginator id="table-paginator" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons>
-                </mat-paginator>
+            <div id="audit-table-container">
+                <ngx-datatable class="material" [columns]="columns" [headerHeight]="50" [footerHeight]="50"
+                    rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
+                </ngx-datatable>
             </div>
+           
         </mat-sidenav-content>
     </mat-sidenav-container>
 </body>

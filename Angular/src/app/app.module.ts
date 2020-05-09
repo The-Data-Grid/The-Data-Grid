@@ -30,6 +30,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatDividerModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    NgxDatatableModule
   ],
   providers: [ApiService, DatePipe],
   bootstrap: [AppComponent],
