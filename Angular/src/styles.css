@@ -54,6 +54,7 @@ html, body {
 /* entire sidenav including main content and sidenav bar */
 .sidenav-container {
   position:relative;
+  min-height: 500px;
   text-align: left;
   height: 100%;
   z-index: 1;

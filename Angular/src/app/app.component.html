@@ -1,76 +1,82 @@
-  
 <!DOCTYPE html>
 <html lang="en">
-
+ 
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/x-icon" href="../../favicon.png" />
-        <title>Document</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <link rel="icon" type="image/x-icon" href="../../favicon.png" />
+       <title>Document</title>
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-
+  
+ 
+ 
 <body>
-        <header>
-                <nav id="toolbar">
-                        <mat-toolbar>
-                                <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> Home </a>
-                                <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> Data Filtering & Management </a>
-                                <div class="dropdown">
-                                        <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 14px;">Upload</a>
-                                        <div class="dropdown-content">
-                                                <a mat-button> Upload Data </a>
-                                                <br>
-                                                <a mat-button>Retrieve Template</a>
-                                        </div>
-                                </div>
-                                <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> About Us </a>
-                                <span class="example-spacer"></span>
-                                <a mat-button (click)="openDialog()" style="right: 0%; height: 100%; padding: 14px;">Log In</a>
-                        </mat-toolbar>
-                </nav>
-        </header>
-        <footer>
-                <nav>
-                        <mat-toolbar class = "bottomBar">
-                                <div class="ig">
-                                <a href="https://www.instagram.com">
-                                <img src="assets/instagram.png" alt="Instagram" style="margin-bottom: -2px; width: 15px; height: 15px;">
-                                </a>
-                                <a href="https://www.instagram.com" mat-button style="margin-bottom: 3px; font-size: 18px; padding: 6px;">Instagram</a>
-                                </div>
-
-                                
-                                <div class="fb">
-                                <a href="https://www.facebook.com">
-                                <img src="assets/facebook.png" alt="Facebook" style="margin-bottom: -3px; height: 20px; width: 20px;">
-                                </a>
-                                <a href="https://www.facebook.com" mat-button style="font-size: 18px; padding: 6px;">Facebook</a>
-                                </div>
-
-
-                                <div class="sub">
-                                <a>
-                                <img src="assets/subscribe.png" alt="Subscribe" style="margin-bottom: -1px; height: 15px; width: 20px;">
-                                </a>
-                                <a mat-button class="subscribeButton" style="font-size: 18px; padding: 6px; margin-bottom: -1px;">Subscribe</a>
-                                </div>
-
-                                
-                                <div class="donate">
-                                <a href="https://www.paypal.com">
-                                <img src="assets/donate.png" alt="Donate" style="height: 20px; margin-bottom: -2px;">
-                                </a>
-                                <a href="https://www.paypal.com" mat-button style="font-size: 18px; padding: 6px;">Donate</a>
-                                </div>
-
-                        </mat-toolbar>
-                </nav>
-        </footer>
-        <router-outlet></router-outlet>
-
-
+       <div id="wrapper">             
+ 
+       <header>
+               <nav>
+                       <mat-toolbar>
+                               <a mat-button [routerLink]="'/index'"> {{title}} </a>
+                               <a mat-button [routerLink]="'/audits'"> Audits </a>
+                               <div class="dropdown">
+                                       <a mat-button [routerLink]="'/upload'">Upload</a>
+                                       <div class="dropdown-content">
+                                               <a mat-button> Upload Data </a>
+                                               <br>
+                                               <a mat-button>Retrieve Template</a>
+                                       </div>
+                               </div>
+                               <a mat-button [routerLink]="'/about'"> About </a>
+                               <span class="example-spacer"></span>
+                               <button mat-stroked-button (click)="openDialog()" style="color:white"> LOG IN </button>
+                       </mat-toolbar>
+               </nav>
+       </header>
+       <footer id="footer">
+               <nav>                           
+                       <mat-toolbar>
+                               <div class="ig">
+                               <a href="https://www.instagram.com">
+                               <img src="assets/instagram.png" alt="Instagram" style="margin-bottom: -2px; width: 15px; height: 15px;">
+                               </a>
+                               <a href="https://www.instagram.com" mat-button style="margin-bottom: 3px; font-size: 18px; padding: 6px;">Instagram</a>
+                               </div>
+ 
+                              
+                               <div class="fb">
+                               <a href="https://www.facebook.com">
+                               <img src="assets/facebook.png" alt="Facebook" style="margin-bottom: -3px; height: 20px; width: 20px;">
+                               </a>
+                               <a href="https://www.facebook.com" mat-button style="font-size: 18px; padding: 6px;">Facebook</a>
+                               </div>
+ 
+ 
+                               <div class="sub">
+                               <a>
+                               <img src="assets/subscribe.png" alt="Subscribe" style="margin-bottom: -1px; height: 15px; width: 20px;">
+                               </a>
+                               <a mat-button class="subscribeButton" style="font-size: 18px; padding: 6px; margin-bottom: -1px;">Subscribe</a>
+                               </div>
+ 
+                              
+                               <div class="donate">
+                               <a href="https://www.paypal.com">
+                               <img src="assets/donate.png" alt="Donate" style="height: 20px; margin-bottom: -2px;">
+                               </a>
+                               <a href="https://www.paypal.com" mat-button style="font-size: 18px; padding: 6px;">Donate</a>
+                               </div>
+                                    
+ 
+                       </mat-toolbar>
+               </nav>       
+                    
+       </footer>            
+       <router-outlet></router-outlet>
+ 
+</div>
+ 
 </body>
-
-
+ 
+ 
 </html>
