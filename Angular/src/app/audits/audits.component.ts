@@ -4,7 +4,7 @@ import { ToiletObject } from '../models'
 // import { MatSort } from '@angular/material/sort'
 // import { MatPaginator } from '@angular/material/paginator'
 // import { MatTableDataSource } from '@angular/material/table'
-// import { DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 // import { DatatableComponent } from '../../../../src/lib/components/datatable.component';
 // import { ColumnMode } from 'projects/swimlane/ngx-datatable/src/public-api';
 // import { DatatableComponent } from '../../../@swimlane/ngx-datatable/lib/components/datatable.component';
@@ -24,18 +24,14 @@ export class AuditsComponent implements OnInit {
     { name: "Basin Brand" },
     { prop: "ADAstall", name: "ADA Stall" },
     { prop: "basinConditionID", name: "Basin Condition ID" },
-    { prop: "flushometerConditionID", name: "Flushometer Condition ID",width: "200" },
+    { prop: "flushometerConditionID", name: "Flushometer Condition ID", width: "200" },
     { name: "Comment" },
     { name: "Date Conducted" }
   ];
   response;
   filteredData = [];
 
-  // @ViewChild(DatatableComponent) table: DatatableComponent;
-
-  // ColumnMode = ColumnMode;
-
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, public datepipe: DatePipe) { }
   types = [
     { value: 'water', viewValue: 'Water' },
     { value: 'food_waste', viewValue: 'Food Waste' },
@@ -50,7 +46,8 @@ export class AuditsComponent implements OnInit {
     "Basin Condition ID",
     "Flushometer Condition ID",
     "Comment",
-    "Date Conducted"];
+    "Date Conducted"
+  ];
 
   ngOnInit() {
     /* get api response */
@@ -58,11 +55,11 @@ export class AuditsComponent implements OnInit {
       .subscribe((res) => {
         this.response = res;
         this.rows = res;
-        this.filteredData= res;
+        this.filteredData = res;
       });
   }
 
-  filterDatatable(event){
+  filterDatatable(event) {
     // get the value of the key pressed and make it lowercase
     let val = event.target.value.toLowerCase();
     // get the amount of columns in the table
@@ -70,18 +67,28 @@ export class AuditsComponent implements OnInit {
     // get the key names of each column in the dataset
     let keys = Object.keys(this.response[0]);
     // assign filtered matches to the active datatable
-    this.rows = this.filteredData.filter(function(item){
+    this.rows = this.filteredData.filter(function (item) {
       // iterate through each row's column data
-      for (let i=0; i<colsAmt; i++){
+      for (let i = 0; i < colsAmt; i++) {
         // check for a match
-        if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val){
+        if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val) {
           // found match, return true to add to result set
           return true;
         }
       }
     });
-    // whenever the filter changes, always go back to the first page
-    // this.table.offset = 0;
+  }
+
+
+  applyDateFilter = (val: string) => {
+    console.log(val);
+    val = this.datepipe.transform(val, 'M/d/yyyy');
+    // this.dataSource.filter = value;
+    this.rows = this.filteredData.filter(function (item) {
+      if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
+        return true;
+      }
+    });
   }
 
 
@@ -154,11 +161,7 @@ export class AuditsComponent implements OnInit {
   //   }
   // }
 
-  // public applyDateFilter = (value: string) => {
-  //   value = this.datepipe.transform(value, 'M/d/yyyy');
-  //   console.log(value);
-  //   this.dataSource.filter = value;
-  // }
+
 
   // /* executes filtering upon user input */
   // public applyFilter = (value: string) => {

@@ -9,27 +9,36 @@
 
 <body>
     <mat-sidenav-container class="sidenav-container">
-        <mat-sidenav class="sidenav" mode="side" opened>
-            <mat-form-field >
-                <input id="search-bar" matInput (keyup)="filterDatatable($event)" placeholder="Search">
-            </mat-form-field>
-            <!-- <input type="text" style="padding:8px;margin:15px auto;width:80%;" placeholder="Search"
-                (keyup)="updateFilter($event)" /> -->
-            <mat-form-field>
-                <mat-label>Audit Type</mat-label>
-                <mat-select [(ngModel)]="selectedType">
-                    <mat-option *ngFor="let type of types" [value]="type.value">
-                        {{type.viewValue}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <!-- <mat-form-field>
-                <mat-label>Date Conducted</mat-label>
-                <input #datepicker matInput [matDatepicker]="picker" (dateInput)="applyDateFilter($event.target.value)" >
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-              </mat-form-field>
-              <button mat-button (click)="clearFilters()">CLEAR FILTERS</button>  -->
+        <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center" >
+
+            <div class="global-filters">
+                Global Values
+                <mat-form-field>
+                    <input id="search-bar" matInput (keyup)="filterDatatable($event)" placeholder="Search">
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Date Conducted</mat-label>
+                    <input #datepicker matInput [matDatepicker]="picker"
+                        (dateInput)="applyDateFilter($event.target.value)">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="audit-filters">
+                Audits
+                <mat-form-field>
+                    <mat-label>Audit Type</mat-label>
+                    <mat-select [(ngModel)]="selectedType">
+                        <mat-option *ngFor="let type of types" [value]="type.value">
+                            {{type.viewValue}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="features-filters">
+                Features
+            </div>
+            <!-- <button mat-button (click)="clearFilters()">CLEAR FILTERS</button>  -->
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">
@@ -38,7 +47,7 @@
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
                 </ngx-datatable>
             </div>
-           
+
         </mat-sidenav-content>
     </mat-sidenav-container>
 </body>
