@@ -69,3 +69,7 @@ body {
    position: absolute;
    margin-left: 80%;
 }
+
+.activeButton {
+   background-color: #5FA784;
+} 
