@@ -37,6 +37,7 @@ app.use(
     extended: true,
   })
 );
+app.set('json spaces', 3);   //to prettify the response json
 
 app.get('/cars/lowmpg', db.lowmpg);
 
