@@ -31,6 +31,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     AuditsComponent,
     DialogComponent,
     UploadComponent,
-    AboutComponent
+    AboutComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
