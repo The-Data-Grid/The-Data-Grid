@@ -1,12 +1,15 @@
 const {sql} = require('./statement.js');
-const {setup} = require('./statement.js');
-const {Pool} = require('pg');
-const pool = new Pool({ //PostgreSQL Connection
-  user: 'postgres', //Server user
-  host: 'localhost',
-  database: 'tdg_db', 
-  password: null, //choose the password of the user you are connecting as
-  port: 5432 //default postgreSQL port
+const {setup} = require('.statement.js');
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
+dotenv.config();
+
+const pool = new Pool({
+    user: process.env.POSTGRES_USER,
+    host: 'localhost',
+    database: 'tdg_db',
+    password: null, //choose the password of the user you are connecting as
+    port: 5432 //default postgreSQL port
 });
 
 let featureQuery = (filters, path, sql, res) => {
@@ -29,13 +32,6 @@ for(let obj of sql)  {
         Object.name(obj)
     }
 }
-
-
-
-
-
-
-
 
 
 let setupQuery = (req, res) => {
