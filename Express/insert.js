@@ -111,24 +111,26 @@ data.audit = new insertAudit(input.auditSubmission).insert()
 // a new item_room with that room number in the database
 
 db.tx(async t => { 
-    const audit_id = await t.one(insert_audit_submission, data.audit);
+    // Audit Submission
+    const audit_id = await t.one(insert_audit_submission, data.audit); 
+    // Location
     if(data.location_type == 'room') { //dealing with room/building location
         const loc_type = 'room_id';
-        const community_id = await t.one(check_community_id); 
-        const building_id = await t.one(check_building_id);
-        const loc_id = await t.oneOrNone(check_room_id);
+        const community_id = await t.one(check_community_id); //community must exist
+        const building_id = await t.one(check_building_id); //building must exist
+        const loc_id = await t.oneOrNone(check_room_id); //create new room if one doesn't exist
         if(!loc_id) {
             const loc_id = await t.one(insert_room);
         };
     } else if(data.location_type == 'point') {
         const loc_type = 'point_id';
-        const loc_id = await t.oneOrNone(check_point_id);
+        const loc_id = await t.oneOrNone(check_point_id); //create new point if one doesn't exist
         if(!loc_id) {
             const loc_id = await t.one(insert_point_id);
         };
     } else if(data.location_type == 'geom_region') {
         const loc_type = 'geom_region_id';
-        const loc_id = await t.oneOrNone(check_geom_region_id);
+        const loc_id = await t.oneOrNone(check_geom_region_id); //create new geom region if one doesn't exist
         if(!loc_id) {
             const loc_id = await t.one(insert_geom_region)
         };
@@ -137,9 +139,10 @@ db.tx(async t => {
     if(!location_id) {
         const location_id = await t.one(insert_location);
     };
+    // Many to Many
 
+    // Feature Table
     
-
 });
 
 
