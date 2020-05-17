@@ -1,16 +1,23 @@
+////// SETUP //////
+const pgp = require('pg-promise');
 const {sql} = require('./statement.js');
 const {setup} = require('.statement.js');
-const { Pool } = require('pg');
+
 const dotenv = require('dotenv');
 dotenv.config();
 
-const pool = new Pool({
-    user: process.env.POSTGRES_USER,
+const cn = { //connection info
     host: 'localhost',
-    database: 'tdg_db',
-    password: null, //choose the password of the user you are connecting as
-    port: 5432 //default postgreSQL port
-});
+    port: 5432,
+    database: 'my-database-name',
+    user: process.env.POSTGRES_USER,
+    password: null,
+    max: 30 // use up to 30 connections
+};
+
+const db = pgp(cn); //db.function is used for pg-promise queries
+
+////// END OF SETUP //////
 
 let featureQuery = (filters, path, sql, res) => {
     pool.query('something')
@@ -45,6 +52,7 @@ let auditQuery = (filters, path, sql, res) => {
 module.exports = {
     featureQuery,
     auditQuery,
-    setupQuery
+    setupQuery,
+    db,
 };
 
