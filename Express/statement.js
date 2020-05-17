@@ -20,7 +20,13 @@ let toiletPath1 = { //all of these are just examples and should be deleted
     columns: ['gpf', 'commentary', 'date_conducted']
 }
 
-
+let toiletPath = {
+    type: 'toilet',
+    query: 'SELECT a_t.gpf, a_t.commentary, a_t.date_conducted \
+            FROM ("audit_toilet" AS a_t OUTER JOIN "audit_submission" as a_s ON a_s.audit_id = a_t.audit_id \
+            OUTER JOIN "loc" as loc ON a_t.location_id = loc.location_id',
+    columns: [a_t.gpf, a_t.commentary, a_t.date_conducted]
+}
 
 
 
