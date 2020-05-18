@@ -9,7 +9,7 @@ dotenv.config();
 const cn = { //connection info
     host: 'localhost',
     port: 5432,
-    database: 'my-database-name',
+    database: 'tgd_db',
     user: process.env.POSTGRES_USER,
     password: null,
     max: 30 // use up to 30 connections
@@ -18,6 +18,16 @@ const cn = { //connection info
 const db = pgp(cn); //db.function is used for pg-promise queries
 
 ////// END OF SETUP //////
+
+// SELECT name FROM mtcars WHERE mpg < 17
+const lowmpg = (req, res) => {
+    pool.query('SELECT name FROM mtcars WHERE mpg < 17;', (error, results) => {
+        if (error){
+            throw error
+        }
+        res.status(200).json(results.rows)
+    })
+}
 
 let featureQuery = (filters, path, sql, res) => {
     pool.query('something')
@@ -28,7 +38,7 @@ let featureQuery = (filters, path, sql, res) => {
         console.log(error);
         throw error;
     })
-};
+}
 
 //
 let statementArray = [];
@@ -50,6 +60,7 @@ let auditQuery = (filters, path, sql, res) => {
 };
 
 module.exports = {
+    lowmpg,
     featureQuery,
     auditQuery,
     setupQuery,

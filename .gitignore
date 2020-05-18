@@ -3,3 +3,5 @@ PostgreSQL/data/*
 #exclude
 !node_modules/.gitkeep
 !PostgreSQL/data/.gitkeep
+
+.env
