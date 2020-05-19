@@ -4,11 +4,11 @@ let join = {}; //at the end we will put all the variables inside this JS object,
  
 // Select and Where clauses //
 const select = {
-    query: 'SELECT $(columns:csv) FROM $(feature:name)'
+    query: 'SELECT $(returnColumns:name) FROM $(feature:name)'
 };
 
-const where = { // ex: {clause: 'AND', feature: "item_sop", filter: "sop_name", operation: "=", value: "Example SOP #1"}
-    query: '$(clause:value) $(feature:value).$(filter:value) $(operation:value) $(value:value)' 
+const where = { // ex: {clause: 'AND', filter: "item_sop.sop_name", operation: "=", value: "Example SOP #1"}
+    query: '$(clause:value) $(filterColumns:value) $(operation:value) $(value:value)' 
 };
 
 // Column map //
@@ -38,19 +38,16 @@ let columnMap = {
 let loc = {
     query: 'LEFT JOIN loc ON $(feature:value).location_id = loc.location_id',
     dependencies: [],
-    get depth() {return this.dependencies.length}
 };
 
 let item_sop = {
     query: 'INNER JOIN sop ON audit_submission.sop_id = item_sop.sop_id',
     dependencies: ['audit_submission'],
-    get depth() {return this.dependencies.length}
 };
 
 let newQueryFormatTemplate = {
     query: '',
     dependencies: [],
-    get depth() {return this.dependencies.length}
 };
 
 // Old Query Format
