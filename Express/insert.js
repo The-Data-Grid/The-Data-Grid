@@ -1,5 +1,5 @@
 // SETUP //
-const pgp = require("pg-promise");
+const pgp = require("pg-promise")();
 const PS = pgp.PreparedStatement;
 const {db} = require('./query.js')
 // END OF SETUP //

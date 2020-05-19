@@ -38,10 +38,9 @@ app.use(
 );
 app.set('json spaces', 3);   //to prettify the response json
 
-app.get('/cars/lowmpg', db.lowmpg);
 
 app.get('/api/f/:feature/:include', cors(), parse.featureParse); 
 app.get('/api/a/:include', cors());
-app.get('/api/s/filter', cors(), query.setupQuery(req, res));
+//app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
 app.listen(port, () => console.log(`Express server running on port ${port}`));

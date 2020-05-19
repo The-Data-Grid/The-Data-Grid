@@ -1,4 +1,4 @@
-const q = require('./query')
+//const q = require('./query')
 const sql = require('./statement.js');
 
 function operation_map(operation) {
