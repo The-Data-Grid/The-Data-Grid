@@ -1,6 +1,50 @@
+const pgp = require("pg-promise");
+const PS = pgp.PreparedStatement;
 let sql = {}; //at the end we will put all the variables inside this JS object, but for now just write them all as seperate variable declarations
  
+// PATHS //
+const toiletPath = new PS({
+    text: 'SELECT $(columns) FROM "audit_toilet"'
+});
 
+const urinalPath = new PS({
+    text: 'SELECT $(columns) FROM "audit_urinal"'
+});
+
+const sinkPath = new PS({
+    text: 'SELECT $(columns) FROM "audit_sink"'
+});
+
+const mirrorPath = new PS({
+    text: 'SELECT $(columns) FROM "audit_mirror"'
+});
+
+const roomPath = new PS({
+    text: 'SELECT $(columns) FROM "audit_room"'
+});
+
+// Column map //
+
+/*
+let columnMap = {
+    flushometer_condition_name: ''
+    flushometer_brand_name:
+    basin_condition_name:
+    basin_brand_name:
+    stall_condition_name:
+    sensor_condition_name:
+    room_number:
+    building_name:
+    building_community_name:
+}
+date_submitted, template_name, sop_name, organization_name
+
+let columnMap = {
+    toilet : ['gpf','commentary','date_conducted'],
+    audit : ['date_submitted'],
+    toilet_s_c : 
+}
+*/
 
 
 let toiletFilter1 = { 
@@ -14,17 +58,14 @@ let somePath1 = {
     this: 'is just an example'
 };
 
-let toiletPath1 = { //all of these are just examples and should be deleted
-    type: 'toilet',
-    query: 'SELECT $(columns) FROM "audit_toilet";',
-    columns: ['gpf', 'commentary', 'date_conducted']
-}
 
-let toiletPath = {
+
+let toiletPathFull = {
     type: 'toilet',
     query: 'SELECT a_t.gpf, a_t.commentary, a_t.date_conducted \
-            FROM ("audit_toilet" AS a_t OUTER JOIN "audit_submission" as a_s ON a_s.audit_id = a_t.audit_id \
-            OUTER JOIN "loc" as loc ON a_t.location_id = loc.location_id;',
+            FROM "audit_toilet" AS a_t \
+            INNER JOIN "audit_submission" as a_s ON a_s.audit_id = a_t.audit_id \
+            LEFT JOIN "loc" as loc ON a_t.location_id = loc.location_id;',
     columns: [a_t.gpf, a_t.commentary, a_t.date_conducted]
 }
 let auditSubmissionFilter = {

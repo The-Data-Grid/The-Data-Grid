@@ -20,14 +20,6 @@ const db = pgp(cn); //db.function is used for pg-promise queries
 ////// END OF SETUP //////
 
 // SELECT name FROM mtcars WHERE mpg < 17
-const lowmpg = (req, res) => {
-    pool.query('SELECT name FROM mtcars WHERE mpg < 17;', (error, results) => {
-        if (error){
-            throw error
-        }
-        res.status(200).json(results.rows)
-    })
-}
 
 let featureQuery = (filters, path, sql, res) => {
     pool.query('something')

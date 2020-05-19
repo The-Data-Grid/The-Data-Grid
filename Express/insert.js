@@ -13,7 +13,7 @@ function sqlDateConverter(date) { //converts MM-DD-YYYY to SQL preferred YYYY-MM
 // Prepared Statements //
 const insert_audit_submission = new PS({
     name: 'audit_submission',
-    text: 'INSERT INTO audit_submission ($/columns:csv/) VALUES ($/values:csv/) RETURNING audit_id'
+    text: 'INSERT INTO audit_submission ($/columns:csv/) VALUES ($/values:csv/) RETURNING audit_id',
 });
 
 const insert_audit_toilet = new PS({
@@ -100,8 +100,11 @@ class insertAudit { //formats Audit Submission data
 
 // Formatting //
 
-let data = {}
-data.audit = new insertAudit(input.auditSubmission).insert()
+function insertFormat(input) {
+    let data = {}
+    data.audit = new insertAudit(input.auditSubmission).insert()
+
+}
 
 
 // pg-promise //
