@@ -51,59 +51,6 @@ html, body {
   font-weight: 500;
 }
 
-/* entire sidenav including main content and sidenav bar */
-.sidenav-container {
-  position:relative;
-  min-height: 500px;
-  text-align: left;
-  height: 100%;
-  z-index: 1;
-}
-
-/* main content (to the right of the sidenav bar) */
-.sidenav-content {
-  z-index: -1;
-  background-color: white;
-}
-
-/* actual sidebar */
-.sidenav {
-  width: 14rem;
-  text-align: center;
-  border: 0px solid;
-  /* border-top-color:rgb(243, 212, 177); */
-  /* border-top-color: rgb(95,167,132); */
-  /* border-top-width: 12px; */
-  box-shadow: 5px 0 3px -2px #888;
-  padding-top: 1rem;
-}
-
-/* form fields within sidenav bar */
-.sidenav .mat-form-field {
-  margin: 1rem, 1rem, 1rem, 1rem;
-  font-size: small;
-}
-
-.sidenav .mat-button {
-background-color:  rgb(95,167,132);
-margin-top: 3rem;
-}
-
-/* .sidenav div {
-  margin-bottom: .5rem;
-} */
-
-#global-filters {
-  background-color: rgba(73,116,165,0.8);
-}
-
-#audit-filters {
-  background-color: rgba(73,116,165,0.72);
-}
-
-#features-filters {
-background-color: rgba(95,167,132,0.8);
-}
 
 
 .close {
@@ -191,3 +138,6 @@ background-color: rgba(95,167,132,0.8);
   margin-left: auto;
   margin-right: auto;
 }
+
+
+

@@ -81,9 +81,9 @@ export class AuditsComponent implements OnInit {
 
 
   applyDateFilter = (val: string) => {
+    val = this.datepipe.transform(val, 'MM-dd-yyyy');
     console.log(val);
-    val = this.datepipe.transform(val, 'M/d/yyyy');
-    // this.dataSource.filter = value;
+
     this.rows = this.filteredData.filter(function (item) {
       if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
         return true;
