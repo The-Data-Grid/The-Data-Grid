@@ -1,0 +1,118 @@
+.main {
+    padding-bottom: 20%;
+    margin-left: 30%;
+}
+
+.header {
+    color: #757575;
+    text-decoration: underline;
+    font-size: 23px;
+    margin-top: 70px;
+    margin-left: -50px;
+}
+
+.selectText {
+  position: absolute;
+  font-size: 16px;
+  margin-top: 50px;
+  color: #757575;
+  margin-left: 0px;
+  font-weight: 500;
+}
+
+.noSelectionDownload {
+  background-color: green;
+  color: white;
+}
+
+.inputForm {
+    width: 180px;
+    margin-top: 30px;
+    margin-left: 220px;
+}
+
+
+.container {
+    margin-left: -20px;
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    /* margin-bottom: 12px; */
+    margin-top: 17px;
+    cursor: pointer;
+    font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .checkmarkLocation {
+    margin-top: 80px;
+  }
+  
+  /* Hide the browser's default checkbox */
+  .container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  
+  /* Create a custom checkbox */
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 500px;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+  }
+  
+  /* On mouse-over, add a grey background color */
+  .container:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
+  
+  /* When the checkbox is checked, add a blue background */
+  .container input:checked ~ .checkmark {
+    background-color: #2196F3;
+  }
+  
+  /* Create the checkmark/indicator (hidden when not checked) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  /* Show the checkmark when checked */
+  .container input:checked ~ .checkmark:after {
+    display: block;
+  }
+  
+  /* Style the checkmark/indicator */
+  .container .checkmark:after {
+    left: 6px;
+    top: 2.5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+
+  .wrapper {
+      width: 520px;
+      border: 1px solid lightgray;
+      /* border-radius: 4px; */
+      height: 50px;
+  }
+
+  .isNotActive {
+    filter: grayscale(50%);
+  }
+  

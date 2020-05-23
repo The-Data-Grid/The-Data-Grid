@@ -22,9 +22,9 @@
                         <div class="dropdown">
                                 <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 14px;">Upload</a>
                                 <div class="dropdown-content">
-                                        <a mat-button> Upload Data </a>
+                                        <a mat-button [routerLink]="'/upload-files'" > Upload Data </a>
                                         <br>
-                                        <a mat-button>Retrieve Template</a>
+                                        <a mat-button [routerLink]="'/download'">Retrieve Template</a>
                                 </div>
                         </div>
                         <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> About Us </a>
