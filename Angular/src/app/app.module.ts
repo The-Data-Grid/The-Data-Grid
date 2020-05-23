@@ -32,6 +32,8 @@ import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ProfileComponent } from './profile/profile.component';
+import { UploadFilesComponent } from './upload-files/upload-files.component';
+import { DownloadComponent } from './download/download.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +43,9 @@ import { ProfileComponent } from './profile/profile.component';
     DialogComponent,
     UploadComponent,
     AboutComponent,
-    ProfileComponent
+    ProfileComponent,
+    UploadFilesComponent,
+    DownloadComponent,
   ],
   imports: [
     BrowserModule,
