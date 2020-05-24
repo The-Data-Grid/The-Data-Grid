@@ -34,6 +34,9 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ProfileComponent } from './profile/profile.component';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { DownloadComponent } from './download/download.component';
+import { UploadDialogComponent } from './upload-dialog/upload-dialog.component';
+
+
 
 @NgModule({
   declarations: [
@@ -46,6 +49,7 @@ import { DownloadComponent } from './download/download.component';
     ProfileComponent,
     UploadFilesComponent,
     DownloadComponent,
+    UploadDialogComponent,
   ],
   imports: [
     BrowserModule,
