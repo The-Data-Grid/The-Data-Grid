@@ -15,7 +15,6 @@ interface DialogData {
 })
 export class UploadDialogComponent implements OnInit {
 
-  uploadedFiles = ["bari", "bari"];
 
   constructor(
     public dialogRef: MatDialogRef<UploadDialogComponent>,
