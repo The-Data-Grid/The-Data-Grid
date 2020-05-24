@@ -1,1 +1,36 @@
-<p>upload-files works!</p>
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="main">
+        <h1 class="header">Upload Files to Our Database</h1>
+        <h2 class="subheading">Selected Files</h2>
+
+        <div *ngIf='uploadedFiles == 0'>
+            <div id="rectangle"></div>
+            <p class="noFilesSelected">No Files Selected</p>
+            <input (change)="displayFiles()" type="file" id = "files" multiple=50 hidden="hidden"/>
+            <button (click)="chooseFiles()" onchange="displayFiles()" mat-button color="primary" style="background-color: #569CD7; color: white; margin-top: 95px; margin-left: 70px;">+  Add File(s)</button>
+        </div>
+
+        <div *ngIf='uploadedFiles != 0'>
+            <div *ngFor="let file of selectedFiles">
+                <div class='wrapper'>
+                    <label class="container" id="other1">{{ file.name }} ({{file.size}} bytes)
+                        <input class="checkmarklocation" type="checkbox" checked="checked">
+                        <span class="checkmark"></span>
+                      </label>
+                     </div>
+            </div>
+            <!-- <upload_child [customTitle]=throwaway hidden="hidden"></upload_child> -->
+            <button mat-button color="primary" (click)="cancel()" style="background-color: #5FA784; color: white; margin-top: 30px; margin-left: 170px;">Cancel</button>
+            <button mat-button color="primary" (click)="openDialog()" style="background-color: #569CD7; color: white; margin-top: 30px; margin-left: 32px;">Upload</button>
+              
+
+        </div>
+
+
+
+    </div>
+
+</body>
+</html>
