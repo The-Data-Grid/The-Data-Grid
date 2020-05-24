@@ -1,7 +1,60 @@
-let sql = {}; //at the end we will put all the variables inside this JS object, but for now just write them all as seperate variable declarations
+const pgp = require("pg-promise");
+const PS = pgp.PreparedStatement;
+let join = {}; //at the end we will put all the variables inside this JS object, but for now just write them all as seperate variable declarations
  
+// Select and Where clauses //
+const select = {
+    query: 'SELECT $(returnColumns:name) FROM $(feature:name)'
+};
 
+const where = { // ex: {clause: 'AND', filter: "item_sop.sop_name", operation: "=", value: "Example SOP #1"}
+    query: '$(clause:value) $(filterColumns:value) $(operation:value) $(value:value)' 
+};
 
+// Column map //
+
+/*
+let columnMap = {
+    flushometer_condition_name: ''
+    flushometer_brand_name:
+    basin_condition_name:
+    basin_brand_name:
+    stall_condition_name:
+    sensor_condition_name:
+    room_number:
+    building_name:
+    building_community_name:
+}
+date_submitted, template_name, sop_name, organization_name
+
+let columnMap = {
+    toilet : ['gpf','commentary','date_conducted'],
+    audit : ['date_submitted'],
+    toilet_s_c : 
+}
+*/
+// New Query Format
+
+let loc = {
+    query: 'LEFT JOIN loc ON $(feature:value).location_id = loc.location_id',
+    dependencies: [],
+};
+
+let item_sop = {
+    query: 'INNER JOIN sop ON audit_submission.sop_id = item_sop.sop_id',
+    dependencies: ['audit_submission'],
+};
+
+let newQueryFormatTemplate = {
+    query: '',
+    dependencies: [],
+};
+
+// Old Query Format
+
+/* 
+
+Commented out because it threw error at runtime. 
 
 let toiletFilter1 = { 
     type: 'toilet',
@@ -10,16 +63,14 @@ let toiletFilter1 = {
     operator: ['=','>=']
 };
 
-let somePath1 = { 
-    this: 'is just an example'
-};
-
-let toiletPath1 = { //all of these are just examples and should be deleted
+let toiletPathFull = {
     type: 'toilet',
-    query: 'SELECT $(columns) FROM "audit_toilet";',
-    columns: ['gpf', 'commentary', 'date_conducted']
+    query: 'SELECT a_t.gpf, a_t.commentary, a_t.date_conducted \
+            FROM "audit_toilet" AS a_t \
+            INNER JOIN "audit_submission" as a_s ON a_s.audit_id = a_t.audit_id \
+            LEFT JOIN "loc" as loc ON a_t.location_id = loc.location_id;',
+    columns: [a_t.gpf, a_t.commentary, a_t.date_conducted]
 }
-
 let auditSubmissionFilter = {
     type: 'audit',
     query: 'WHERE $(columns)$(operator)$(value);',
@@ -37,6 +88,7 @@ let auditSubmissionPath = {
     ;',
     columns: [a_s.date_submitted, a_s.template_id, a_s.sop_id, i_o.organization_name, i_c.community_name, i_c.city, i_c.state, i_c.country]
 }
+*/
 
 
 
@@ -46,5 +98,8 @@ let auditSubmissionPath = {
 
 
 
-
-module.exports = sql; //this will export everything to the query engine 
+module.exports = {
+    select,
+    where,
+    join
+}; //this will export everything to the query engine 
