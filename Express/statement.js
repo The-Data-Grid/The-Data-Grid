@@ -50,31 +50,56 @@ let newQueryFormatTemplate = {
     dependencies: []
 };
 
-// Maggie: table joins for toilet location columns and toilet audit submission columns
+// table joins for toilet location columns and toilet audit submission columns
 // Left join for room and regions (null in location tables)
+// room_number
 let item_room = {
     query:'INNER JOIN item_room ON loc.room_id = item_room.room_id',
     dependencies: ['loc']
 }
 
-let item_organization = {
-    query: 'INNER JOIN item_organization ON audit_submission.organization_id = item_organization.organization_id',
-    dependencies: ['audit_submission']
-}
-
+// building_name
 let item_building = {
     query: 'INNER JOIN item_building ON item_room.building_id = item_building.building_id',
     dependencies: ['item_room', 'loc']
 }
 
-let item_template = {
-    query: 'INNER JOIN item_template ON audit_submission.organization_id = '
+// building_community_name
+let item_community = {
+    query: 'INNER JOIN loc ON loc.location_id = item_community.community_id',
+    dependencies: ['item_building', 'item_room', 'loc']
 }
 
-let item_community = {
-    query: 'INNER JOIN item_community'
-    dependencies: ['item_building', 'item_room', '']
+
+// date_submitted -- unsure
+let audit_submission = {
+    query: 'LEFT JOIN audit_submission ON $(feature:value).audit_id = audit_sumission.audit_id',
+    dependencies: []
 }
+
+
+// sop_name
+let item_sop = {
+    query: 'INNER JOIN item_sop ON audit_submission.sop_id = item_sop.sop_id',
+    dependencies: ['audit_submission']
+};
+
+// organization_name
+let item_organization = {
+    query: 'INNER JOIN item_organization ON audit_submission.organization_id = item_organization.organization_id',
+    dependencies: ['audit_submission']
+}
+
+// template_name
+let item_template = {
+    query: 'INNER JOIN item_template ON audit_submission.template_id = item_template.template_id',
+    // query: 'INNER JOIN item_template ON audit_submission.organization_id = item_template.organization_id',
+    dependencies: ['audit_submission']
+}
+
+
+
+let 
 
 /*let toiletLocations = {
     query: 'LEFT JOIN loc ON audit_toilet.location_id = loc.location_id\
