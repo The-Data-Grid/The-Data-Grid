@@ -50,6 +50,23 @@ let newQueryFormatTemplate = {
     dependencies: [],
 };
 
+// Maggie: table joins for toilet location columns and toilet audit submission columns
+/*let toiletLocations = {
+    query: 'LEFT JOIN loc ON audit_toilet.location_id = loc.location_id\
+    LEFT JOIN item_room ON loc.room_id = item_room.room_id\
+    LEFT JOIN item_building on loc.location_id = item_building.location_id',
+    dependencies: ['loc', 'item_room', 'item_building'],
+}
+
+let auditSubmission = {
+    query: '"audit_submission" AS a_s OUTER JOIN "item_template" as i_t ON a_s.organization_id = i_t.organization_id) \
+          OUTER JOIN "sop" as sop ON a_s.sop_id = sop.sop_id \
+          OUTER JOIN "item_organization" as i_o ON a_s.organization_id = i_o.organization_id \
+          OUTER JOIN "item_community" as i_c on i_o.community_id = i_c.community_id,',
+    dependencies: ['audit_submission','item_template', 'sop', 'item_organization', 'item_community'],
+}
+*/
+
 // Old Query Format
 
 /* 
@@ -84,7 +101,7 @@ let auditSubmissionPath = {
           FROM ("audit_submission" AS a_s OUTER JOIN "item_template" as i_t ON a_s.organization_id = i_t.organization_id) \
           OUTER JOIN "sop" as sop ON a_s.sop_id = sop.sop_id \
           OUTER JOIN "item_organization" as i_o ON a_s.organization_id = i_o.organization_id \
-          OUTER JOIN "item_community" as i_c on i_t.community_id = i_c.community_id \
+          OUTER JOIN "item_community" as i_c on i_o.community_id = i_c.community_id \
     ;',
     columns: [a_s.date_submitted, a_s.template_id, a_s.sop_id, i_o.organization_name, i_c.community_name, i_c.city, i_c.state, i_c.country]
 }
