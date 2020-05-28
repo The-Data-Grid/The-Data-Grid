@@ -88,18 +88,16 @@ let item_sop = {
 let item_organization = {
     query: 'INNER JOIN item_organization ON audit_submission.organization_id = item_organization.organization_id',
     dependencies: ['audit_submission']
-}
+};
 
 // template_name
 let item_template = {
     query: 'INNER JOIN item_template ON audit_submission.template_id = item_template.template_id',
     // query: 'INNER JOIN item_template ON audit_submission.organization_id = item_template.organization_id',
     dependencies: ['audit_submission']
-}
+};
 
 
-
-let 
 
 /*let toiletLocations = {
     query: 'LEFT JOIN loc ON audit_toilet.location_id = loc.location_id\
@@ -156,12 +154,6 @@ let auditSubmissionPath = {
     columns: [a_s.date_submitted, a_s.template_id, a_s.sop_id, i_o.organization_name, i_c.community_name, i_c.city, i_c.state, i_c.country]
 }
 */
-
-
-
-
-
-
 
 
 
