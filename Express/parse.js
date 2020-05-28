@@ -28,7 +28,7 @@ function operation_map(operation) {
     return op
 }
 
-const featureParse = (req, res) => {
+const featureParse = (req, res, next) => {
     let filter = req.query;
     let {feature} = req.params; 
     let {include} = req.params;
@@ -53,7 +53,8 @@ const featureParse = (req, res) => {
     }
     
 //    q.featureQuery(filters, path, sql, res); //send to query engine.
-    res.json({request: "f", features: feature, columns: include, filters: filters});
+    res.locals.parsed = {request: "f", features: feature, columns: include, filters: filters};
+    next();
 };
 
 module.exports = {

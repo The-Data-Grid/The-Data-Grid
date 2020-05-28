@@ -49,8 +49,7 @@ function featureQuery(req, res) {
 
     // SELECT Clause
     data.returnColumns = res.locals.parsed.columns.map(element => {return columnAndTable[element]}) // transforms each column to table.column
-    select.values = data;
-    query.push(select);
+    query.push({query: select.query, values: data});
 
     // JOIN Clauses
     let tables = [...new Set(allJoins.map(element => {return columnToTable[element]}))]; // get list of unique needed tables
@@ -67,10 +66,7 @@ function featureQuery(req, res) {
     tableEntries = tableEntries.sort((a,b) => {a[1] - b[1]}).map(element => {return element[0]}); 
 
     for(let table of tableEntries) {  // pushing each join to the query in order
-        let joinClause = {};
-        joinClause.query = join[table].query;
-        joinClause.values = data
-        query.push(join[table])  
+        query.push({query: join[table].query, values: data})  
     };
     
     // WHERE Clauses
@@ -83,13 +79,19 @@ function featureQuery(req, res) {
             filter.clause = 'AND'
         }
         filter.filterColumns = data.columnAndTable[filter]; //getting the correct table.column string
-        where.values = filter; // adding the data object to where
-        query.push(where);
+        query.push({query: where.query, values: filter});
     }
 
     // Performing the query
-    let finalQuery = pgp.helpers.concat(query)
-}
+    let finalQuery = pgp.helpers.concat(query);
+    db.any(finalQuery)
+        .then(data => {
+            console.log(data)
+            res.json(data);
+        }).catch(err => {
+            console.log(err)
+        });
+};
 
 
 

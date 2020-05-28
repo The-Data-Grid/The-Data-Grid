@@ -8,6 +8,8 @@ const cors = require('cors');
 const port = process.env.PORT || 4001;
 // END OF SETUP //
 
+app.use(cors());
+
 //Get all toilet objects from the JSON
 app.get('/getObject', (req, res) => res.send(toiletResponse));
 
@@ -39,7 +41,7 @@ app.use(
 app.set('json spaces', 3);   //to prettify the response json
 
 
-app.get('/api/f/:feature/:include', cors(), parse.featureParse); 
+app.get('/api/f/:feature/:include', parse.featureParse, query.featureParse); 
 app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
