@@ -12,6 +12,13 @@ const PORT = environment.port;
 export class ApiService {
   constructor(private http: HttpClient) { }
 
+  suffix: string;
+
+  newUrl(array) {
+    this.suffix = array.join('&');
+    return API_URL + '/' + this.suffix;
+  }
+
   public sendHttps(cmd: string, obj: string = ""): Observable<ToiletObject[]> {
     var dataObj = {
           "command": cmd,

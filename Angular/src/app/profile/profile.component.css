@@ -149,7 +149,8 @@ input:focus {
    color: #757575;
    position: absolute;
    font-size: 12px;
-   margin-left: -130px;
+   /* margin-left: 70px; */
+   margin-left: -95px;
    margin-top: -28px;
 }
 
@@ -157,6 +158,7 @@ input:focus {
    position: absolute;
    height: 15px;
    margin-top: -28px;
-   margin-left: -70px;
+   /* margin-left: 100px; */
+   margin-left: -120px;
    cursor: pointer;
 }

@@ -68,6 +68,9 @@ export class AuditsComponent implements OnInit {
         this.rows = res;
         this.filteredData = res;
       });
+
+      // console.log(this.apiService.newUrl(["flushometer_brand_name", "time_submitted", "gpf"]));
+
   }
 
   filterDatatable(event) {
