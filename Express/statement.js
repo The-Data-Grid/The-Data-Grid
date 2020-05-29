@@ -4,14 +4,14 @@ const PS = pgp.PreparedStatement;
  
 // Select and Where clauses //
 const select = {
-    query: 'SELECT $(returnColumns:name) FROM $(feature:name)'
+    query: 'SELECT $(returnColumns:raw) FROM $(feature:name)'
 };
 
 const where = { // ex: {clause: 'AND', filter: "item_sop.sop_name", operation: "=", value: "Example SOP #1"}
     query: '$(clause:value) $(filterColumns:value) $(operation:value) $(value:value)' 
 };
 
-let join = { //All of the table joins
+const commonJoin = { //JOINS THAT ARE SHARED BETWEEN FEATURES
 
 /***********************************
  ** LOCATION AND AUDIT SUBMISSION **
@@ -40,7 +40,7 @@ item_building : {
 
 // building_community_name
 item_community : {
-    query: 'INNER JOIN loc ON loc.location_id = item_community.community_id',
+    query: 'INNER JOIN item_community ON item_building.location_id = item_community.community_id',
     dependencies: ['item_building', 'item_room', 'loc']
 },
 
@@ -67,8 +67,11 @@ item_template : {
     query: 'INNER JOIN item_template ON audit_submission.template_id = item_template.template_id',
     // query: 'INNER JOIN item_template ON audit_submission.organization_id = item_template.organization_id',
     dependencies: ['audit_submission']
-},
+}
 
+};
+
+const urinalJoin = { 
 /****************
  ** URINAL M2M **
  ****************/
@@ -105,8 +108,11 @@ urinal_basin_condition : {
 urinal_basin_brand : {
     query: 'INNER JOIN urinal_basin_brand_m2m ON urinal_basin_brand_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_basin_brand ON urinal_basin_brand_m2m.basin_brand_id = urinal_basin_brand.basin_brand_id',
     dependencies: []
-},
+}
 
+};
+
+const toiletJoin = {
 /****************
  ** TOILET M2M **
  ****************/
@@ -143,8 +149,11 @@ toilet_stall_condition : {
 toilet_basin_brand : {
     query: 'INNER JOIN toilet_basin_brand_m2m ON audit_toilet.observation_id = toilet_basin_brand_m2m.observation_id INNER JOIN toilet_basin_brand ON toilet_basin_brand_m2m.basin_brand_id = toilet_basin_brand.basin_brand_id',
     dependencies: []
-},
+}
 
+};
+
+const sinkJoin = {
 /**************
  ** SINK M2M **
  **************/
@@ -171,8 +180,11 @@ sink_basin_brand : {
 sink_sensor_condition : {
     query: 'INNER JOIN sink_sensor_condition_m2m ON audit_sink.observation_id = sink_sensor_condition_m2m.observation_id INNER JOIN sink_sensor_condition ON sink_sensor_condition_m2m.sensor_condition_id = sink_sensor_condition.sensor_condition_id',
     dependencies: []
-},
+}
 
+};
+
+const mirrorJoin = {
 /****************
  ** MIRROR M2M **
  ****************/
@@ -181,9 +193,9 @@ mirror_condition : {
     dependencies: []
 }
 
-}; // END OF JOIN OBJECT
+}; 
 
-console.log(Object.keys(join))
+/***** END OF JOINS *****/
 
 
 /*let toiletLocations = {
@@ -245,5 +257,9 @@ let auditSubmissionPath = {
 module.exports = {
     select,
     where,
-    join
+    commonJoin,
+    urinalJoin,
+    toiletJoin,
+    sinkJoin,
+    mirrorJoin
 }; //this will export everything to the query engine 
