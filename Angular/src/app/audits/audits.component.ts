@@ -30,6 +30,8 @@ export class AuditsComponent implements OnInit {
   ];
   response;
   filteredData = [];
+  filterConfig;
+  globalColumns = [];
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
   types = [
@@ -51,6 +53,15 @@ export class AuditsComponent implements OnInit {
 
   ngOnInit() {
     /* get api response */
+    this.apiService.getFilterConfig().subscribe((res) => {
+      console.log(res);
+      this.filterConfig = res;
+
+      this.filterConfig.globalColumns.forEach(globalColumn => {
+           this.stagedData.push(seeker.doc);
+       });
+    });
+
     this.apiService.sendHttps("getAllToiletObjects")
       .subscribe((res) => {
         this.response = res;
@@ -91,85 +102,4 @@ export class AuditsComponent implements OnInit {
     });
   }
 
-
-
-  // dataSource: MatTableDataSource<ToiletObject> = new MatTableDataSource([]);
-
-  // pageSizeOptions = [6, 12, 18]
-
-  // constructor(private apiService: ApiService, public datepipe: DatePipe) { }
-
-  // @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
-  // @ViewChild(MatSort, { static: true }) sort: MatSort;
-
-  // ngOnInit() {
-  //   /* get api response */
-  //   this.apiService.sendHttps("getAllToiletObjects")
-  //     .subscribe((res) => {
-  //       console.log(res);
-  //       this.dataSource.data = res;
-  //     });
-
-  //   /* link sorter to data */
-  //   this.dataSource.sort = this.sort;
-
-  //   /* let sorter know where to find the data to be sorted */
-  //   this.dataSource.sortingDataAccessor = (entry, property) => {
-  //     if (property === 'GPF') {
-  //       return entry.gpf;
-  //     }
-  //     else if (property == 'Flushometer Brand') {
-  //       return entry.flushometerBrand;
-  //     }
-  //     else if (property == 'Basin Brand') {
-  //       return entry.basinBrand;
-  //     }
-  //     else if (property == 'ADA Stall') {
-  //       return entry.ADAstall;
-  //     }
-  //     else if (property == 'Basin Condition ID') {
-  //       return entry.basinConditionID;
-  //     }
-  //     else if (property == 'Flushometer Condition ID') {
-  //       return entry.flushometerConditionID;
-  //     }
-  //     else if (property == 'Comment') {
-  //       return entry.comment;
-  //     }
-  //     else if (property == 'Date Conducted') {
-  //       return entry.dateConducted;
-  //     }
-  //     else {
-  //       return entry[property];
-  //     }
-  //   };
-
-  //   /* link paginator to data */
-  //   setTimeout(() => {
-  //     this.dataSource.paginator = this.paginator;
-  //   });
-
-  //   this.dataSource.filterPredicate = (entry, filter) => {
-  //     //var date = new Date(entry.dateConducted);
-  //     // let str = date.toDateString(); 
-  //     var dataStr = entry.gpf + " " + entry.flushometerBrand + " " + entry.basinBrand + " "
-  //       + entry.ADAstall + " " + entry.basinConditionID + " " + entry.flushometerConditionID + " "
-  //       + entry.comment + " " + entry.dateConducted; 
-  //       // new Date(entry.dateConducted);
-  //     dataStr = dataStr.trim().toLocaleLowerCase();
-  //     return dataStr.indexOf(filter) != -1;
-  //   }
-  // }
-
-
-
-  // /* executes filtering upon user input */
-  // public applyFilter = (value: string) => {
-  //   console.log(value);
-  //   this.dataSource.filter = value;
-  // }
-
-  // public clearFilters() {
-  //   this.dataSource.filter = "";
-  // }
 }

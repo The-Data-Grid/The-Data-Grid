@@ -4,7 +4,7 @@
 }
 
 ::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple {
-    background-color: rgb(228, 228, 228) !important;
+    background-color: rgba(228, 228, 228, 0.5) !important;
 }
 
 /* entire sidenav including main content and sidenav bar */
