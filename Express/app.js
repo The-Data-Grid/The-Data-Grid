@@ -41,7 +41,7 @@ app.use(
 app.set('json spaces', 3);   //to prettify the response json
 
 
-app.get('/api/f/:feature/:include', parse.featureParse, query.featureQuery); 
+app.get('/api/a/:feature/:include', parse.featureParse, query.featureQuery); 
 app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
