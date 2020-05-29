@@ -1,6 +1,6 @@
 const pgp = require("pg-promise");
 const PS = pgp.PreparedStatement;
-let join = {}; //at the end we will put all the variables inside this JS object, but for now just write them all as seperate variable declarations
+
  
 // Select and Where clauses //
 const select = {
@@ -11,6 +11,8 @@ const where = { // ex: {clause: 'AND', filter: "item_sop.sop_name", operation: "
     query: '$(clause:value) $(filterColumns:value) $(operation:value) $(value:value)' 
 };
 
+let join = { //All of the table joins
+
 /***********************************
  ** LOCATION AND AUDIT SUBMISSION **
  ***********************************/
@@ -19,53 +21,53 @@ const where = { // ex: {clause: 'AND', filter: "item_sop.sop_name", operation: "
 // Left join for room and regions (null in location tables)
 
 // loc
-let loc = {
+loc : {
     query: 'LEFT JOIN loc ON $(feature:value).location_id = loc.location_id',
     dependencies: []
-};
+},
 
 // room_number
-let item_room = {
+item_room : {
     query:'INNER JOIN item_room ON loc.room_id = item_room.room_id',
     dependencies: ['loc']
-};
+},
 
 // building_name
-let item_building = {
+item_building : {
     query: 'INNER JOIN item_building ON item_room.building_id = item_building.building_id',
     dependencies: ['item_room', 'loc']
-};
+},
 
 // building_community_name
-let item_community = {
+item_community : {
     query: 'INNER JOIN loc ON loc.location_id = item_community.community_id',
     dependencies: ['item_building', 'item_room', 'loc']
-};
+},
 
 // date_submitted -- unsure
-let audit_submission = {
+audit_submission : {
     query: 'LEFT JOIN audit_submission ON $(feature:value).audit_id = audit_sumission.audit_id',
     dependencies: []
-};
+},
 
 // sop_name
-let item_sop = {
+item_sop : {
     query: 'INNER JOIN item_sop ON audit_submission.sop_id = item_sop.sop_id',
     dependencies: ['audit_submission']
-};
+},
 
 // organization_name
-let item_organization = {
+item_organization : {
     query: 'INNER JOIN item_organization ON audit_submission.organization_id = item_organization.organization_id',
     dependencies: ['audit_submission']
-};
+},
 
 // template_name
-let item_template = {
+item_template : {
     query: 'INNER JOIN item_template ON audit_submission.template_id = item_template.template_id',
     // query: 'INNER JOIN item_template ON audit_submission.organization_id = item_template.organization_id',
     dependencies: ['audit_submission']
-};
+},
 
 /****************
  ** URINAL M2M **
@@ -75,35 +77,35 @@ SELECT urinal_divider_condition.divider_condition_name, audit_urinal.gpf, audit_
 FROM audit_urinal INNER JOIN urinal_divider_condition_m2m ON urinal_divider_condition_m2m.observation_id = audit_urinal.observation_id
 INNER JOIN urinal_divider_condition ON urinal_divider_condition.divider_condition_id = urinal_divider_condition_m2m.divider_condition_id;
 */
-let urinal_divider_condition = {
+urinal_divider_condition : {
     query: 'INNER JOIN urinal_divider_condition_m2m ON urinal_divider_condition_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_divider_condition ON urinal_divider_condition.divider_condition_id = urinal_divider_condition_m2m.divider_condition_id',
     dependencies: []
-};
+},
 
-let urinal_flushometer_condition = {
+urinal_flushometer_condition : {
     query: 'INNER JOIN urinal_flushometer_condition_m2m ON urinal_flushometer_condition_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_flushometer_condition ON urinal_flushometer_condition_m2m.flushometer_condition_id = urinal_flushometer_condition.flushometer_condition_id',
     dependencies: []
-};
+},
 
-let urinal_sensor_condition = {
+urinal_sensor_condition : {
     query: 'INNER JOIN urinal_sensor_condition_m2m ON urinal_sensor_condition_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_sensor_condition ON urinal_sensor_condition_m2m.sensor_condition_id = urinal_sensor_condition.sensor_condition_id',
     dependencies: []
-};
+},
 
-let urinal_flushometer_brand = {
+urinal_flushometer_brand : {
     query: 'INNER JOIN urinal_flushometer_brand_m2m ON urinal_flushometer_brand_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_flushometer_brand ON urinal_flushometer_brand_m2m.flushometer_brand_id = urinal_flushometer_brand.flushometer_brand_id',
     dependencies: []
-};
+},
 
-let urinal_basin_condition = {
+urinal_basin_condition : {
     query: 'INNER JOIN urinal_basin_condition_m2m ON urinal_basin_condition_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_basin_condition ON urinal_basin_condition_m2m.basin_condition_id = urinal_basin_condition.basin_condition_id',
     dependencies: []
-};
+},
 
-let urinal_basin_brand = {
+urinal_basin_brand : {
     query: 'INNER JOIN urinal_basin_brand_m2m ON urinal_basin_brand_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_basin_brand ON urinal_basin_brand_m2m.basin_brand_id = urinal_basin_brand.basin_brand_id',
     dependencies: []
-};
+},
 
 /****************
  ** TOILET M2M **
@@ -113,71 +115,75 @@ SELECT toilet_flushometer_brand.flushometer_brand_name, audit_toilet.gpf, audit_
 FROM audit_toilet INNER JOIN toilet_flushometer_brand_m2m ON audit_toilet.observation_id = toilet_flushometer_brand_m2m.observation_id
 INNER JOIN toilet_flushometer_brand ON toilet_flushometer_brand_m2m.flushometer_brand_id = toilet_flushometer_brand_m2m.flushometer_brand_id;
 */
-let toilet_flushometer_brand = {
+toilet_flushometer_brand : {
     query: 'INNER JOIN toilet_flushometer_brand_m2m ON audit_toilet.observation_id = toilet_flushometer_brand_m2m.observation_id INNER JOIN toilet_flushometer_brand ON toilet_flushometer_brand_m2m.flushometer_brand_id = toilet_flushometer_brand.flushometer_brand_id',
     dependencies: []
-};
+},
 
-let toilet_flushometer_condition = {
+toilet_flushometer_condition : {
     query: 'INNER JOIN toilet_flushometer_condition_m2m ON audit_toilet.observation_id = toilet_flushometer_condition_m2m.observation_id INNER JOIN toilet_flushometer_condition ON toilet_flushometer_condition_m2m.flushometer_condition_id = toilet_flushometer_condition.flushometer_condition_id',
     dependencies: []
-};
+},
 
-let toilet_basin_condition = {
+toilet_basin_condition : {
     query: 'INNER JOIN toilet_basin_condition_m2m ON audit_toilet.observation_id = toilet_basin_condition_m2m.observation_id INNER JOIN toilet_basin_condition ON toilet_basin_condition_m2m.basin_condition_id = toilet_basin_condition.basin_condition_id',
     dependencies: []
-};
+},
 
-let toilet_sensor_condition = {
+toilet_sensor_condition : {
     query: 'INNER JOIN toilet_sensor_condition_m2m ON audit_toilet.observation_id = toilet_sensor_condition_m2m.observation_id INNER JOIN toilet_sensor_condition ON toilet_sensor_condition_m2m.sensor_condition_id = toilet_sensor_condition.sensor_condition_id',
     dependencies: []
-};
+},
 
-let toilet_stall_condition = {
+toilet_stall_condition : {
     query: 'INNER JOIN toilet_stall_condition_m2m ON audit_toilet.observation_id = toilet_stall_condition_m2m.observation_id INNER JOIN toilet_stall_condition ON toilet_stall_condition_m2m.stall_condition_id = toilet_stall_condition.stall_condition_id',
     dependencies: []
-};
+},
 
-let toilet_basin_brand = {
+toilet_basin_brand : {
     query: 'INNER JOIN toilet_basin_brand_m2m ON audit_toilet.observation_id = toilet_basin_brand_m2m.observation_id INNER JOIN toilet_basin_brand ON toilet_basin_brand_m2m.basin_brand_id = toilet_basin_brand.basin_brand_id',
     dependencies: []
-};
+},
 
 /**************
  ** SINK M2M **
  **************/
-let sink_faucet_condition = {
+sink_faucet_condition : {
     query: 'INNER JOIN sink_faucet_condition_m2m ON audit_sink.observation_id = sink_faucet_condition_m2m.observation_id INNER JOIN sink_faucet_condition ON sink_faucet_condition_m2m.faucet_condition_id = sink_faucet_condition.faucet_condition_id',
     dependencies: []
-};
+},
 
-let sink_faucet_brand = {
+sink_faucet_brand : {
     query: 'INNER JOIN sink_faucet_brand_m2m ON audit_sink.observation_id = sink_faucet_brand_m2m.observation_id INNER JOIN sink_faucet_brand ON sink_faucet_brand_m2m.faucet_brand_id = sink_faucet_brand.faucet_brand_id',
     dependencies: []
-};
+},
 
-let sink_basin_condition = {
+sink_basin_condition : {
     query: 'INNER JOIN sink_basin_condition_m2m ON audit_sink.observation_id = sink_basin_condition_m2m.observation_id INNER JOIN sink_basin_condition ON sink_basin_condition_m2m.basin_condition_id = sink_basin_condition.basin_condition_id',
     dependencies: []
-};
+},
 
-let sink_basin_brand = {
+sink_basin_brand : {
     query: 'INNER JOIN sink_basin_brand_m2m ON audit_sink.observation_id = sink_basin_brand_m2m.observation_id INNER JOIN sink_basin_brand ON sink_basin_brand_m2m.basin_brand_id = sink_basin_brand.basin_brand_id',
     dependencies: []
-};
+},
 
-let sink_sensor_condition = {
+sink_sensor_condition : {
     query: 'INNER JOIN sink_sensor_condition_m2m ON audit_sink.observation_id = sink_sensor_condition_m2m.observation_id INNER JOIN sink_sensor_condition ON sink_sensor_condition_m2m.sensor_condition_id = sink_sensor_condition.sensor_condition_id',
     dependencies: []
-}
+},
 
 /****************
  ** MIRROR M2M **
  ****************/
-let mirror_condition = {
+mirror_condition : {
     query: 'INNER JOIN mirror_condition_m2m ON audit_mirror.observation_id = mirror_condition_m2m.observation_id INNER JOIN mirror_condition ON mirror_condition_m2m.mirror_condition_id = mirror_condition.mirror_condition_id',
     dependencies: []
-};
+}
+
+}; // END OF JOIN OBJECT
+
+console.log(Object.keys(join))
 
 
 /*let toiletLocations = {
