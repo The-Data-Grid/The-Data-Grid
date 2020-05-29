@@ -1,3 +1,10 @@
+// export class SwimlaneColumn {
+//     name: string;
+//     constructor(name: string) {
+//       this.name = name;
+//     }
+//   }
+
 /* audit submission model */
 export class AuditSubmission {
     timeConducted: number;
@@ -63,6 +70,13 @@ export class FilterConfig {
         };
     };
 }
+
+export class TableConfig {
+    columnViewValue: string[];
+    columnDataTypeKey: string[];
+    columnData: any[];
+}
+
 
 export class DataColumn {
     columnQueryValue: string;

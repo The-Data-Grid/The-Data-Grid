@@ -1,37 +1,31 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
-import { ToiletObject } from '../models'
-// import { MatSort } from '@angular/material/sort'
-// import { MatPaginator } from '@angular/material/paginator'
-// import { MatTableDataSource } from '@angular/material/table'
 import { DatePipe } from '@angular/common';
-// import { DatatableComponent } from '../../../../src/lib/components/datatable.component';
-// import { ColumnMode } from 'projects/swimlane/ngx-datatable/src/public-api';
-// import { DatatableComponent } from '../../../@swimlane/ngx-datatable/lib/components/datatable.component';
-// import { DatatableComponent } from '../../../../node_modules/@swimlane/ngx-datatable/lib/components/datatable.component';
-
+// import {SwimlaneColumn} from '../models'
 @Component({
   selector: 'app-audits',
   templateUrl: './audits.component.html',
   styleUrls: ['./audits.component.css']
 })
 
+
+
 export class AuditsComponent implements OnInit {
   rows = [];
   columns = [
-    { name: "GPF", width: "80" },
-    { name: "Flushometer Brand" },
-    { name: "Basin Brand" },
-    { prop: "ADAstall", name: "ADA Stall" },
-    { prop: "basinConditionID", name: "Basin Condition ID" },
-    { prop: "flushometerConditionID", name: "Flushometer Condition ID", width: "200" },
-    { name: "Comment" },
-    { name: "Date Conducted" }
+    { name: "GPF", prop: "GPF" },
+    { name: "Date Submitted", prop: "Date Submitted" },
+    { name: "Template Name", prop: "Template Name" },
+    {  name: "SOP", prop: "SOP"  },
+    { name: "Commentary", prop: "Commentary"  }
   ];
+  // columns = [];
   response;
   filteredData = [];
   filterConfig;
+  tableConfig;
   globalColumns = [];
+
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
   types = [
@@ -41,35 +35,51 @@ export class AuditsComponent implements OnInit {
     { value: 'other', viewValue: 'Other' }
   ];
   selectedType = "water";
-  displayedColumns = ["GPF",
-    "Flushometer Brand",
-    "Basin Brand",
-    "ADA Stall",
-    "Basin Condition ID",
-    "Flushometer Condition ID",
-    "Comment",
-    "Date Conducted"
-  ];
+
 
   ngOnInit() {
     /* get api response */
+    this.apiService.getTableConfig().subscribe((res) => {
+      // console.log(res);
+      this.tableConfig = res;
+      this.response = this.tableConfig.columnData;
+      this.rows = this.tableConfig.columnData;
+      this.filteredData = this.tableConfig.columnData;
+      console.log(this.rows);
+      
+      //construct the column header array "columns"
+      this.tableConfig.columnViewValue.forEach(entry => {
+        var col = {
+          name: entry,
+          prop: entry
+        }
+        // this.columns.push(col);
+      })
+    });
+    
+
     this.apiService.getFilterConfig().subscribe((res) => {
-      console.log(res);
+      // console.log(res);
       this.filterConfig = res;
 
       this.filterConfig.globalColumns.forEach(globalColumn => {
-           this.stagedData.push(seeker.doc);
-       });
+        if (globalColumn.selector) {
+          this.globalColumns.push(globalColumn);
+        }
+      });
     });
 
-    this.apiService.sendHttps("getAllToiletObjects")
-      .subscribe((res) => {
-        this.response = res;
-        this.rows = res;
-        this.filteredData = res;
-      });
+    // this.apiService.sendHttps("getAllToiletObjects")
+    //   .subscribe((res) => {
+    //     console.log(res);
+    //     this.response = res;
+    //     this.rows = res;
+    //     this.filteredData = res;
+    //   });
 
-      // console.log(this.apiService.newUrl(["flushometer_brand_name", "time_submitted", "gpf"]));
+
+
+    // console.log(this.apiService.newUrl(["flushometer_brand_name", "time_submitted", "gpf"]));
 
   }
 
@@ -96,7 +106,7 @@ export class AuditsComponent implements OnInit {
 
   applyDateFilter = (val: string) => {
     val = this.datepipe.transform(val, 'MM-dd-yyyy');
-    console.log(val);
+    // console.log(val);
 
     this.rows = this.filteredData.filter(function (item) {
       if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {

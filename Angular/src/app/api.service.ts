@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
-import {ToiletObject, FilterConfig} from './models';
+import {ToiletObject, FilterConfig, TableConfig} from './models';
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
 
@@ -38,6 +38,12 @@ export class ApiService {
   public getFilterConfig(): Observable<FilterConfig> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
     return this.http.get<FilterConfig>(API_URL + '/setup');
+
+  }
+
+  public getTableConfig(): Observable<TableConfig> {
+    // return this.http.get<FilterConfig>(API_URL + '/s/filter');
+    return this.http.get<TableConfig>(API_URL + '/table');
 
   }
 

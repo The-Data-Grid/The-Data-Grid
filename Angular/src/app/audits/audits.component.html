@@ -11,9 +11,10 @@
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
 
-            <div class="global-filters">
+            <div class="global-filters" > 
                 Global Values
-                <mat-form-field>
+                <p *ngFor="let column of globalColumns">{{column.columnViewValue}}</p>
+                <!-- <mat-form-field>
                     <input id="search-bar" matInput (keyup)="filterDatatable($event)" placeholder="Search">
                 </mat-form-field>
                 <mat-form-field>
@@ -22,18 +23,18 @@
                         (dateInput)="applyDateFilter($event.target.value)">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
+                </mat-form-field> -->
             </div>
             <div class="audit-filters">
                 Audits
-                <mat-form-field>
+                <!-- <mat-form-field>
                     <mat-label>Audit Type</mat-label>
                     <mat-select [(ngModel)]="selectedType">
                         <mat-option *ngFor="let type of types" [value]="type.value">
                             {{type.viewValue}}
                         </mat-option>
                     </mat-select>
-                </mat-form-field>
+                </mat-form-field> -->
             </div>
             <div class="features-filters">
                 Features
