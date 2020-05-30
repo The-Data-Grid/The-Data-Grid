@@ -74,7 +74,7 @@ let toiletResponse = { //Original 6 objects
     ]
 };
 
-function formatDate(date) { //d/m/yyy format
+function formatDate(date) { // d/m/yyy format
   let d = new Date(date);
   let month = d.getMonth() + 1;
   let day = d.getDate();
