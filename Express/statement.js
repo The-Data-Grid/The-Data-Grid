@@ -46,7 +46,7 @@ item_community : {
 
 // date_submitted -- unsure
 audit_submission : {
-    query: 'LEFT JOIN audit_submission ON $(feature:value).audit_id = audit_sumission.audit_id',
+    query: 'INNER JOIN audit_submission ON $(feature:value).audit_id = audit_submission.audit_id',
     dependencies: []
 },
 

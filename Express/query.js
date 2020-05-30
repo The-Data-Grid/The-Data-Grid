@@ -3,7 +3,7 @@ const pgp = require('pg-promise')();
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin, tableNames} = require('./statement.js');
+const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin} = require('./statement.js');
 const validate = require('./validate.js');
 
 const cn = { //connection info
@@ -136,7 +136,7 @@ function featureQuery(req, res) {
     for(let table of tableEntries) {  
         query.push(pgp.as.format(allTables[res.locals.parsed.features][table].query, data))  
     }; 
-    
+
     //// WHERE Clauses
     let initialWHERE = true;
     for(let filter in res.locals.parsed.filters) {
@@ -155,10 +155,11 @@ function featureQuery(req, res) {
 
     // Performing the query
     let finalQuery = query.join(' ') + ';';  //Everything has been formatted in place so now we just concatenate
-        
+    console.log(finalQuery);
+    
     db.any(finalQuery)  //Finally querying the database
         .then(data => {
-            console.log(data)
+            //console.log(data)
             res.json(data);
         }).catch(err => {
             console.log(err)
