@@ -1,7 +1,7 @@
 //const q = require('./query')
 const sql = require('./statement.js');
 
-function operation_map(operation) {
+function operation_map(operation, res) {
     op = operation;
     switch(operation){
         case 'gte':
@@ -23,7 +23,7 @@ function operation_map(operation) {
             op = 'Does not exist'
             break
         default:
-            break
+            res.status(400).json({'Bad Request': `${op} is not a valid operation`})
     }
     return op
 }
@@ -42,13 +42,21 @@ const featureParse = (req, res, next) => {
     for (const key in filter) {
         if (typeof(filter[key]) == "object") {
             let content = Object.keys(filter[key])
+            console.log(!isNaN(filter[key][content[0]]));
+
+            if(!isNaN(filter[key][content[0]])) { //if number parseInt
+                value = parseFloat(filter[key][content[0]]);
+            } else {
+                value = filter[key][content[0]] //else keep as string
+            }
+            
             filters[key] = {
-                "operation": operation_map(content[0]),
-                "value": parseInt(filter[key][content[0]])
+                "operation": operation_map(content[0], res),
+                "value": value
             }
         }
         else {
-            filters[key] = filter[key]
+            filters[key] = {operation: '=', value: filter[key]}
         }
     }
     

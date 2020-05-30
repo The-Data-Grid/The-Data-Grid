@@ -108,7 +108,8 @@ function columnTableFormat(lookup, feature) {
 ////// QUERY ENGINE //////
 
 function featureQuery(req, res) {  
-
+    console.log(res.locals.parsed.filters);
+    
     //// Validation
     validation(res.locals.parsed.features, res.locals.parsed.columns, Object.keys(res.locals.parsed.filters), res)
 
@@ -163,7 +164,7 @@ function featureQuery(req, res) {
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' ') + ';'; 
 
-    //console.log(finalQuery);  //** DEBUG: Show SQL Query **//
+    console.log(finalQuery);  //** DEBUG: Show SQL Query **//
     
     // Finally querying the database
     db.any(finalQuery)  

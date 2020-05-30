@@ -8,7 +8,7 @@ const select = {
 };
 
 const where = { // ex: {clause: 'AND', filter: "item_sop.sop_name", operation: "=", value: "Example SOP #1"}
-    query: '$(clause:value) $(filterColumns:value) $(operation:value) $(value:value)' 
+    query: '$(clause:value) $(filterColumns:value) $(operation:value) $(value)' 
 };
 
 const commonJoin = { //JOINS THAT ARE SHARED BETWEEN FEATURES
@@ -45,7 +45,7 @@ item_community : {
 },
 
 // date_submitted -- unsure
-audit_submission : {
+audit_submission : {  // note: changed to inner join
     query: 'INNER JOIN audit_submission ON $(feature:value).audit_id = audit_submission.audit_id',
     dependencies: []
 },
