@@ -13,31 +13,34 @@
 
             <div class="global-filters" > 
                 Global Values
-                <p *ngFor="let column of globalColumns">{{column.columnViewValue}}</p>
-                <!-- <mat-form-field>
-                    <input id="search-bar" matInput (keyup)="filterDatatable($event)" placeholder="Search">
+                <mat-form-field *ngFor="let column of globalColumnsDropdown">
+                    <mat-label>{{column.columnViewValue}}</mat-label>
+                    <mat-select >
+                        <mat-option *ngFor="let value of column.selector.selectorValues">
+                            {{value}}
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
-                <mat-form-field>
-                    <mat-label>Date Conducted</mat-label>
+
+                <mat-form-field *ngFor="let column of globalColumnsCalendarRange">
+                    <mat-label>{{column.columnViewValue}}</mat-label>
                     <input #datepicker matInput [matDatepicker]="picker"
                         (dateInput)="applyDateFilter($event.target.value)">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field> -->
+                </mat-form-field>
+
+                <!-- <mat-form-field>
+                    <input id="search-bar" matInput (keyup)="filterDatatable($event)" placeholder="Search">
+                </mat-form-field>
+ -->
             </div>
             <div class="audit-filters">
-                Audits
-                <!-- <mat-form-field>
-                    <mat-label>Audit Type</mat-label>
-                    <mat-select [(ngModel)]="selectedType">
-                        <mat-option *ngFor="let type of types" [value]="type.value">
-                            {{type.viewValue}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field> -->
+                <!-- Audits -->
+                
             </div>
             <div class="features-filters">
-                Features
+                <!-- Features -->
             </div>
             <!-- <button mat-button (click)="clearFilters()">CLEAR FILTERS</button>  -->
         </mat-sidenav>

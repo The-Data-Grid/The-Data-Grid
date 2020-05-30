@@ -16,15 +16,16 @@ export class AuditsComponent implements OnInit {
     { name: "GPF", prop: "GPF" },
     { name: "Date Submitted", prop: "Date Submitted" },
     { name: "Template Name", prop: "Template Name" },
-    {  name: "SOP", prop: "SOP"  },
-    { name: "Commentary", prop: "Commentary"  }
+    { name: "SOP", prop: "SOP" },
+    { name: "Commentary", prop: "Commentary" }
   ];
   // columns = [];
   response;
   filteredData = [];
   filterConfig;
   tableConfig;
-  globalColumns = [];
+  globalColumnsDropdown = [];
+  globalColumnsCalendarRange = [];
 
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
@@ -46,7 +47,7 @@ export class AuditsComponent implements OnInit {
       this.rows = this.tableConfig.columnData;
       this.filteredData = this.tableConfig.columnData;
       console.log(this.rows);
-      
+
       //construct the column header array "columns"
       this.tableConfig.columnViewValue.forEach(entry => {
         var col = {
@@ -56,7 +57,7 @@ export class AuditsComponent implements OnInit {
         // this.columns.push(col);
       })
     });
-    
+
 
     this.apiService.getFilterConfig().subscribe((res) => {
       // console.log(res);
@@ -64,7 +65,16 @@ export class AuditsComponent implements OnInit {
 
       this.filterConfig.globalColumns.forEach(globalColumn => {
         if (globalColumn.selector) {
-          this.globalColumns.push(globalColumn);
+          switch (globalColumn.selector.selectorKey) {
+            case "dropdown": {
+              this.globalColumnsDropdown.push(globalColumn);
+              break;
+            }
+            case "calendarRange": {
+              this.globalColumnsCalendarRange.push(globalColumn);
+              break;
+            }
+          }
         }
       });
     });
