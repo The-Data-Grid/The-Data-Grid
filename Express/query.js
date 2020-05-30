@@ -27,18 +27,19 @@ let validateFeatures = Object.keys(validate);
 
 function validation(feature, columns, filters, res) {
     if(!validateFeatures.includes(feature)) {
-        res.status(400).json({'Bad Request': `${feature} is not a valid feature`});
+        return res.status(400).json({'Bad Request': `${feature} is not a valid feature`});
     };
     for(let column of columns) {
         if(!validate[feature]['column'].includes(column)) {
-            res.status(400).json({'Bad Request': `${column} is not a valid column for the ${feature} feature`});
+            return res.status(400).json({'Bad Request': `${column} is not a valid column for the ${feature} feature`});
         };
     };
     for(let filter of filters) {
         if(!validate[feature]['filter'].includes(filter)) {
-            res.status(400).json({'Bad Request': `${filter} is not a valid filter for the ${feature} feature`});
+            return res.status(400).json({'Bad Request': `${filter} is not a valid filter for the ${feature} feature`});
         };
     };
+    return false // false means there is no validation error
 }
 
 //// Column to Table Relationships ////
@@ -108,11 +109,12 @@ function columnTableFormat(lookup, feature) {
 ////// QUERY ENGINE //////
 
 function featureQuery(req, res) {  
-    console.log(res.locals.parsed.filters);
     
     //// Validation
-    validation(res.locals.parsed.features, res.locals.parsed.columns, Object.keys(res.locals.parsed.filters), res)
-
+    let validate = validation(res.locals.parsed.features, res.locals.parsed.columns, Object.keys(res.locals.parsed.filters), res);
+    if(validate) { // if a validation error exists return it
+        return validate;
+    };
     //// Formatting the data
     let data = {};    // values object for SELECT and JOINS
     let query = [];    // array of clauses that make up the query
@@ -164,7 +166,7 @@ function featureQuery(req, res) {
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' ') + ';'; 
 
-    console.log(finalQuery);  //** DEBUG: Show SQL Query **//
+    //console.log(finalQuery);  //** DEBUG: Show SQL Query **//
     
     // Finally querying the database
     db.any(finalQuery)  

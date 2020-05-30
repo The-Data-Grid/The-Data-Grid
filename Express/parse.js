@@ -1,7 +1,7 @@
 //const q = require('./query')
 const sql = require('./statement.js');
 
-function operation_map(operation, res) {
+function operation_map(operation) {
     op = operation;
     switch(operation){
         case 'gte':
@@ -23,7 +23,7 @@ function operation_map(operation, res) {
             op = 'Does not exist'
             break
         default:
-            res.status(400).json({'Bad Request': `${op} is not a valid operation`})
+            op = null //set op to null if non-valid operation
     }
     return op
 }
@@ -42,7 +42,6 @@ const featureParse = (req, res, next) => {
     for (const key in filter) {
         if (typeof(filter[key]) == "object") {
             let content = Object.keys(filter[key])
-            console.log(!isNaN(filter[key][content[0]]));
 
             if(!isNaN(filter[key][content[0]])) { //if number parseInt
                 value = parseFloat(filter[key][content[0]]);
@@ -50,19 +49,23 @@ const featureParse = (req, res, next) => {
                 value = filter[key][content[0]] //else keep as string
             }
             
-            filters[key] = {
-                "operation": operation_map(content[0], res),
-                "value": value
+            let operation = operation_map(content[0])
+            if(operation === null) {
+                return res.status(400).json({'Bad Request': `${content[0]} is not a valid operation`})
+            } else {
+                filters[key] = {
+                    "operation": operation_map(content[0], res),
+                    "value": value
+                }
             }
         }
         else {
-            filters[key] = {operation: '=', value: filter[key]}
+            filters[key] = {operation: '=', value: filter[key]} // if no operator is given use = operator
         }
     }
     
-//    q.featureQuery(filters, path, sql, res); //send to query engine.
-    res.locals.parsed = {request: "f", features: feature, columns: include, filters: filters};
-    next();
+    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters};
+    next(); // passing to query.js 
 };
 
 module.exports = {
