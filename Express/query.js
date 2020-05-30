@@ -1,10 +1,13 @@
-////// SETUP //////
-const pgp = require('pg-promise')();
 const dotenv = require('dotenv');
 dotenv.config();
 
 const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin} = require('./statement.js');
 const validate = require('./validate.js');
+
+// Database info
+const pgp = require('pg-promise')();
+//const {types} = require('pgp.pg');
+pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
 
 const cn = { //connection info
     host: 'localhost',
@@ -14,29 +17,11 @@ const cn = { //connection info
     password: null,
     max: 30 // use up to 30 connections
 };
-
 const db = pgp(cn); //db.function is used for pg-promise queries
 
+////// SETUP //////
 
-/***********************************
-*** Column to Table Relationships **
-***********************************/
-
-const allTables = {
-    toilet: {...commonJoin, ...toiletJoin},
-    urinal: {...commonJoin, ...urinalJoin},
-    sink: {...commonJoin, ...sinkJoin},
-    mirror: {...commonJoin, ...mirrorJoin},
-    room: commonJoin
-};
-
-const allTableNames = {
-    toilet: Object.keys(commonJoin).concat(Object.keys(toiletJoin)),
-    urinal: Object.keys(commonJoin).concat(Object.keys(urinalJoin)),
-    sink: Object.keys(commonJoin).concat(Object.keys(sinkJoin)),
-    mirror: Object.keys(commonJoin).concat(Object.keys(mirrorJoin)),
-    room: Object.keys(commonJoin)
-};
+//// Validate request feature, columns, and filters ////
 
 let validateFeatures = Object.keys(validate);
 
@@ -56,18 +41,39 @@ function validation(feature, columns, filters, res) {
     };
 }
 
+//// Column to Table Relationships ////
 
-async function initialSetup() {
+//  All table join clauses for each feature to be filtered
+const joinClauseTables = {
+    toilet: {...commonJoin, ...toiletJoin},
+    urinal: {...commonJoin, ...urinalJoin},
+    sink: {...commonJoin, ...sinkJoin},
+    mirror: {...commonJoin, ...mirrorJoin},
+    room: commonJoin
+};
+
+// All table names for each feature to be filtered
+const joinClauseTableNames = {
+    toilet: Object.keys(commonJoin).concat(Object.keys(toiletJoin)),
+    urinal: Object.keys(commonJoin).concat(Object.keys(urinalJoin)),
+    sink: Object.keys(commonJoin).concat(Object.keys(sinkJoin)),
+    mirror: Object.keys(commonJoin).concat(Object.keys(mirrorJoin)),
+    room: Object.keys(commonJoin)
+};
+
+// Getting all Column to Table Relations for each feature request
+async function tableLookupSetup() {
     const setup = await db.many("select c.column_name, t.table_name from information_schema.tables as t inner join information_schema.columns as c on t.table_name = c.table_name where t.table_schema = 'public' and t.table_type = 'BASE TABLE'");
     validLookup = {};
     for(feature of validateFeatures) {
-        validLookup[feature] = setup.filter(pair => allTableNames[feature].includes(pair.table_name)) //this is crazy
+        validLookup[feature] = setup.filter(pair => joinClauseTableNames[feature].includes(pair.table_name)) //this is crazy
     }
 }
 
-initialSetup();
+tableLookupSetup();
 
-function columnLookup(feature, columns, res) {
+// Getting tables of columns and filters in request
+function tableLookup(feature, columns, res) {
     let out = {}
     for(let column of columns) {
         let match = validLookup[feature].filter(pair => pair.column_name == column);
@@ -83,6 +89,7 @@ function columnLookup(feature, columns, res) {
     return out
 };
 
+// Formatting column to table relationships as 'table.column'
 function columnTableFormat(lookup, feature) {
     let out = {}
     for(let column in lookup) {
@@ -110,7 +117,7 @@ function featureQuery(req, res) {
     let query = [];    // array of clauses that make up the query
     data.feature = 'audit_' + res.locals.parsed.features;
     let allJoins = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)))]; //array of unique columns from returned columns and filters
-    let columnToTable = columnLookup(res.locals.parsed.features, allJoins, res);  // each column has a unique table
+    let columnToTable = tableLookup(res.locals.parsed.features, allJoins, res);  // each column has a unique table
     let columnAndTable = columnTableFormat(columnToTable, res.locals.parsed.features);  // table.column syntax for SELECT and WHERE
 
     //// SELECT Clause
@@ -121,20 +128,20 @@ function featureQuery(req, res) {
     let tables = [...new Set(allJoins.map(element => {return columnToTable[element]}))]; // get list of unique needed tables
     tables = tables.filter(table => table != null);
     for(let table of tables) {  // adding dependent joins  
-        allTables[res.locals.parsed.features][table].dependencies.forEach(dependency => {tables.push(dependency)});
+        joinClauseTables[res.locals.parsed.features][table].dependencies.forEach(dependency => {tables.push(dependency)});
     };
     tables = [...new Set(tables)]; // removing duplicates again
 
     //**** Sorting table order by number of dependencies length ****/
     sortTables = {}
     for(let table of tables) {
-        sortTables[table] = allTables[res.locals.parsed.features][table].dependencies.length;
+        sortTables[table] = joinClauseTables[res.locals.parsed.features][table].dependencies.length;
     };
     let tableEntries = Object.keys(sortTables).sort((a,b) => sortTables[a] - sortTables[b])
 
     //**** Pushing each join to the query in order ****/
     for(let table of tableEntries) {  
-        query.push(pgp.as.format(allTables[res.locals.parsed.features][table].query, data))  
+        query.push(pgp.as.format(joinClauseTables[res.locals.parsed.features][table].query, data))  
     }; 
 
     //// WHERE Clauses
@@ -153,13 +160,17 @@ function featureQuery(req, res) {
         query.push(pgp.as.format(where.query, out));
     }
 
-    // Performing the query
-    let finalQuery = query.join(' ') + ';';  //Everything has been formatted in place so now we just concatenate
-    console.log(finalQuery);
+    // Concatenating clauses to make final SQL query
+    let finalQuery = query.join(' ') + ';'; 
+
+    //console.log(finalQuery);  //** DEBUG: Show SQL Query **//
     
-    db.any(finalQuery)  //Finally querying the database
+    // Finally querying the database
+    db.any(finalQuery)  
         .then(data => {
-            //console.log(data)
+
+            //console.log(data); //** DEBUG: Show response object **//
+
             res.json(data);
         }).catch(err => {
             console.log(err)
