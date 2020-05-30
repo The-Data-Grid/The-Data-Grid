@@ -11,24 +11,33 @@
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
 
-            <div class="global-filters" > 
+            <div class="global-filters">
                 Global Values
                 <mat-form-field *ngFor="let column of globalColumnsDropdown">
                     <mat-label>{{column.columnViewValue}}</mat-label>
-                    <mat-select >
+                    <mat-select>
                         <mat-option *ngFor="let value of column.selector.selectorValues">
                             {{value}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field *ngFor="let column of globalColumnsCalendarRange">
-                    <mat-label>{{column.columnViewValue}}</mat-label>
+                <div *ngFor="let column of globalColumnsCalendarRange">               
+                    <mat-form-field>
+                    <mat-label>{{column.columnViewValue}} Start</mat-label>
+                    <input #datepicker matInput [matDatepicker]="picker"
+                        (dateInput)="applyDateFilter($event.target.value)">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    </mat-form-field>
+                    <mat-form-field>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-label>{{column.columnViewValue}} End</mat-label>
                     <input #datepicker matInput [matDatepicker]="picker"
                         (dateInput)="applyDateFilter($event.target.value)">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
+                    </mat-form-field>
+                </div>
 
                 <!-- <mat-form-field>
                     <input id="search-bar" matInput (keyup)="filterDatatable($event)" placeholder="Search">
@@ -37,7 +46,7 @@
             </div>
             <div class="audit-filters">
                 <!-- Audits -->
-                
+
             </div>
             <div class="features-filters">
                 <!-- Features -->
@@ -56,4 +65,4 @@
     </mat-sidenav-container>
 </body>
 
-</html> 
+</html>
