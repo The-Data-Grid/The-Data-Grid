@@ -12,14 +12,14 @@ import { DatePipe } from '@angular/common';
 
 export class AuditsComponent implements OnInit {
   rows = [];
-  columns = [
-    { name: "GPF", prop: "GPF" },
-    { name: "Date Submitted", prop: "Date Submitted" },
-    { name: "Template Name", prop: "Template Name" },
-    { name: "SOP", prop: "SOP" },
-    { name: "Commentary", prop: "Commentary" }
-  ];
-  // columns = [];
+  // columns = [
+  //   { name: "GPF", prop: "GPF" },
+  //   { name: "Date Submitted", prop: "Date Submitted" },
+  //   { name: "Template Name", prop: "Template Name" },
+  //   { name: "SOP", prop: "SOP" },
+  //   { name: "Commentary", prop: "Commentary" }
+  // ];
+  columns = [];
   response;
   filteredData = [];
   filterConfig;
@@ -52,12 +52,12 @@ export class AuditsComponent implements OnInit {
       this.tableConfig.columnViewValue.forEach(entry => {
         var col = {
           name: entry,
-          prop: entry
+          prop:entry
         }
-        // this.columns.push(col);
+        this.columns.push(col);
       })
     });
-
+    console.log(this.columns);
 
     this.apiService.getFilterConfig().subscribe((res) => {
       // console.log(res);
@@ -86,8 +86,6 @@ export class AuditsComponent implements OnInit {
     //     this.rows = res;
     //     this.filteredData = res;
     //   });
-
-
 
     // console.log(this.apiService.newUrl(["flushometer_brand_name", "time_submitted", "gpf"]));
 

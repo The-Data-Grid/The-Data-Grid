@@ -56,8 +56,9 @@
 
         <mat-sidenav-content class="sidenav-content">
             <div id="audit-table-container">
-                <ngx-datatable #table class="material" [columns]="columns" [headerHeight]="50" [footerHeight]="50"
-                    rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
+                <ngx-datatable #table class="material"  [headerHeight]="50" [footerHeight]="50"
+                    rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true" >
+                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.prop"></ngx-datatable-column>
                 </ngx-datatable>
             </div>
 

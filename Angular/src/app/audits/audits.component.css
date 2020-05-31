@@ -10,7 +10,7 @@
 /* entire sidenav including main content and sidenav bar */
 
 .sidenav-container {
-    position: relative;
+    margin: 0px;
     text-align: left;
     height: 100%;
     z-index: 1;
@@ -20,6 +20,8 @@
 
 .sidenav-content {
     z-index: -1;
+    height: 100%;
+
     background-color: white;
 }
 
@@ -27,6 +29,8 @@
 
 .sidenav {
     width: 14rem;
+    height: 100%;
+
     text-align: center;
     border: 0px solid;
     color: rgb(228, 228, 228);
@@ -50,9 +54,21 @@
     margin-top: 3rem;
 }
 
-/* .sidenav div {
-    margin-bottom: .5rem;
-  } */
+
+#audit-table-container {
+    margin-left: auto;
+    margin-right: auto;
+    /* margin-top: 20px; */
+    /* margin-bottom: auto; */
+    text-align: left;
+    width: 90%;
+    height: 70vh;
+    padding-top: 10vh;
+    padding-bottom: 20vh;
+    border-radius: 4px;
+    background-color: white;
+  }
+  
 
 #global-filters {
     background-color: rgba(73, 116, 165, 0.8);
