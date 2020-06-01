@@ -4,6 +4,7 @@ import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
 import {ToiletObject, FilterConfig, TableConfig} from './models';
 const API_URL = environment.apiUrl;
+const temp_url = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server";
 const PORT = environment.port;
 
 @Injectable({
@@ -13,10 +14,11 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   suffix: string;
+  columnsString;
+  temp;
 
-  newUrl(array) {
-    this.suffix = array.join('&');
-    return API_URL + '/' + this.suffix;
+  makeColumnsString(array): string {
+    return array.join('&');
   }
 
   public sendHttps(cmd: string, obj: string = ""): Observable<ToiletObject[]> {
@@ -37,14 +39,16 @@ export class ApiService {
 
   public getFilterConfig(): Observable<FilterConfig> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-    return this.http.get<FilterConfig>(API_URL + '/setup');
-
+    // return this.http.get<FilterConfig>(API_URL + '/setup');
+    return this.http.get<FilterConfig>(temp_url + '/setup');
   }
 
-  public getTableConfig(): Observable<TableConfig> {
+  public getTableConfig(feature: string, columns: any):Observable<TableConfig> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-    return this.http.get<TableConfig>(API_URL + '/table');
-
+    this.columnsString = this.makeColumnsString(columns);
+    this.temp = API_URL + "/a/" + feature + "/" + this.columnsString;
+    console.log(this.temp);
+    return this.http.get<TableConfig>(this.temp);
   }
 
 

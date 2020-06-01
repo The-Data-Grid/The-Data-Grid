@@ -12,57 +12,41 @@ import { DatePipe } from '@angular/common';
 
 export class AuditsComponent implements OnInit {
   rows = [];
-  // columns = [
-  //   { name: "GPF", prop: "GPF" },
-  //   { name: "Date Submitted", prop: "Date Submitted" },
-  //   { name: "Template Name", prop: "Template Name" },
-  //   { name: "SOP", prop: "SOP" },
-  //   { name: "Commentary", prop: "Commentary" }
-  // ];
   columns = [];
+  defaultColumns = [];
   response;
   filteredData = [];
   filterConfig;
   tableConfig;
+  featureDropdownValues = [];
   globalColumnsDropdown = [];
   globalColumnsCalendarRange = [];
-
+  featureColumnsDropdown = [];
+  featureColumnsNumericChoice = [];
+  selectedItem;
+  selectedFeature;
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
-  types = [
-    { value: 'water', viewValue: 'Water' },
-    { value: 'food_waste', viewValue: 'Food Waste' },
-    { value: 'electricity', viewValue: 'Electricity' },
-    { value: 'other', viewValue: 'Other' }
-  ];
-  selectedType = "water";
+  // types = [
+  //   { value: 'water', viewValue: 'Water' },
+  //   { value: 'food_waste', viewValue: 'Food Waste' },
+  //   { value: 'electricity', viewValue: 'Electricity' },
+  //   { value: 'other', viewValue: 'Other' }
+  // ];
+  // selectedType = "water";
 
 
   ngOnInit() {
-    /* get api response */
-    this.apiService.getTableConfig().subscribe((res) => {
-      // console.log(res);
-      this.tableConfig = res;
-      this.response = this.tableConfig.columnData;
-      this.rows = this.tableConfig.columnData;
-      this.filteredData = this.tableConfig.columnData;
-      console.log(this.rows);
 
-      //construct the column header array "columns"
-      this.tableConfig.columnViewValue.forEach(entry => {
-        var col = {
-          name: entry,
-          prop:entry
-        }
-        this.columns.push(col);
-      })
-    });
-    console.log(this.columns);
 
     this.apiService.getFilterConfig().subscribe((res) => {
       // console.log(res);
       this.filterConfig = res;
 
+      // populate the array that holds feature options i.e. toilet, sink
+      this.featureDropdownValues = this.filterConfig.featureViewValues;
+
+      //get global filters
       this.filterConfig.globalColumns.forEach(globalColumn => {
         if (globalColumn.selector) {
           switch (globalColumn.selector.selectorKey) {
@@ -76,8 +60,35 @@ export class AuditsComponent implements OnInit {
             }
           }
         }
+        if (globalColumn.default) {
+          this.defaultColumns.push(globalColumn.queryValue);
+        }
       });
+
+      // console.log(this.filterConfig);
+      // console.log(this.filterConfig.featureColumns[0]);
+      //get feature-specific filters
+      this.filterConfig.featureColumns[0].forEach(featureColumn => {
+        console.log(featureColumn);
+        if (featureColumn.selector) {
+          switch (featureColumn.selector.selectorKey) {
+            case "dropdown": {
+              this.featureColumnsDropdown.push(featureColumn);
+              break;
+            }
+            case "numericChoice": {
+              this.featureColumnsNumericChoice.push(featureColumn);
+              break;
+            }
+          }
+        }
+        if (featureColumn.default) {
+          this.defaultColumns.push(featureColumn.queryValue);
+        }
+      });
+      console.log(this.featureColumnsDropdown);
     });
+
 
     // this.apiService.sendHttps("getAllToiletObjects")
     //   .subscribe((res) => {
@@ -88,8 +99,31 @@ export class AuditsComponent implements OnInit {
     //   });
 
     // console.log(this.apiService.newUrl(["flushometer_brand_name", "time_submitted", "gpf"]));
-
   }
+
+  applyFilters() {
+    /* get api response */
+    if (this.selectedFeature) {
+      this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns).subscribe((res) => {
+        // console.log(res);
+        this.tableConfig = res;
+        this.response = this.tableConfig.columnData;
+        this.rows = this.tableConfig.columnData;
+        this.filteredData = this.tableConfig.columnData;
+        // console.log(this.rows);
+
+        //construct the column header array "columns"
+        this.tableConfig.columnViewValue.forEach(entry => {
+          var col = {
+            name: entry,
+            prop: entry
+          }
+          this.columns.push(col);
+        })
+      });
+    }
+  }
+
 
   filterDatatable(event) {
     // get the value of the key pressed and make it lowercase
