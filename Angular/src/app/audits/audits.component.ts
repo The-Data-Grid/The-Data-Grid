@@ -105,7 +105,7 @@ export class AuditsComponent implements OnInit {
     /* get api response */
     if (this.selectedFeature) {
       this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns).subscribe((res) => {
-        // console.log(res);
+        console.log(res);
         this.tableConfig = res;
         this.response = this.tableConfig.columnData;
         this.rows = this.tableConfig.columnData;
