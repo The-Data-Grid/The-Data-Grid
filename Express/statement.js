@@ -21,8 +21,8 @@ const commonJoin = { //JOINS THAT ARE SHARED BETWEEN FEATURES
 // Left join for room and regions (null in location tables)
 
 // loc
-loc : {
-    query: 'LEFT JOIN loc ON $(feature:value).location_id = loc.location_id',
+loc : { // note: changed to inner join
+    query: 'INNER JOIN loc ON $(feature:value).location_id = loc.location_id',
     dependencies: []
 },
 

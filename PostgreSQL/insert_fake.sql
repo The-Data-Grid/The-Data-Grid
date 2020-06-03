@@ -105,7 +105,7 @@ INSERT INTO item_template
     (DEFAULT,
     currval('item_organization_organization_id_seq'), 
     currval('users_user_id_seq'),
-    '{"template_name": "Toilet Audit Template"}',
+    'Toilet Audit Template 1',
     '{"room_string": "test"}',
     '{"urinal_string": "test"}',
     '{"sink_string": "test"}',
