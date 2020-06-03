@@ -14,6 +14,7 @@
             <div class="global-filters">
                 Global Filters
 
+                <!-- features filter is a special global filter-->
                 <mat-form-field>
                     <mat-label>Features</mat-label>
                     <mat-select [(ngModel)]="selectedFeature">
@@ -23,6 +24,7 @@
                     </mat-select>
                 </mat-form-field>
 
+                <!-- global dropdowns -->
                 <mat-form-field *ngFor="let column of globalColumnsDropdown">
                     <mat-label>{{column.columnObject.columnViewValue}}</mat-label>
                     <mat-select [(ngModel)]="column.selection">
@@ -32,6 +34,7 @@
                     </mat-select>
                 </mat-form-field>
 
+                <!-- global calendarRange -->
                 <div *ngFor="let column of globalColumnsCalendarRange">
                     <mat-form-field>
                         <mat-label>{{column.columnViewValue}} Start</mat-label>
@@ -56,6 +59,7 @@
 
             <div class="features-filters" *ngIf="selectedFeature">
                 Feature Filters
+                <!-- feature dropdowns -->
                 <mat-form-field *ngFor="let column of featureColumnsDropdown">
                     <mat-label>{{column.columnObject.columnViewValue}}</mat-label>
                     <mat-select [(ngModel)]="column.selection">
@@ -64,6 +68,8 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+
+                <!-- feature numeric choice -->
                 <mat-form-field *ngFor="let column of featureColumnsNumericChoice">
                     <mat-label>Minimum {{column.columnObject.columnViewValue}}</mat-label>
                     <input matInput placeholder="ex: 4.5" [(ngModel)]='column.selection'>
@@ -74,6 +80,7 @@
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">
+            <!-- table -->
             <div id="audit-table-container">
                 <ngx-datatable *ngIf="tableConfig" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
