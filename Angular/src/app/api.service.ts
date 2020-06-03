@@ -46,8 +46,13 @@ export class ApiService {
   // public getTableConfig(feature: string, columns: any):Observable<TableConfig> {
   public getTableConfig(feature: string, columns: any, qsparams: any): any {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
+
+
     this.columnsString = this.makeColumnsString(columns);
-    this.temp = API_URL + "/a/" + feature + "/" + this.columnsString;
+    this.temp = API_URL + "/a/" + feature;
+    if (this.columnsString) {
+      this.temp = this.temp + "/" + this.columnsString;
+    }
     return this.http.get<TableConfig>(this.temp, { params: qsparams });
   }
 

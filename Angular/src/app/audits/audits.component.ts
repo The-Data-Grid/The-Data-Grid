@@ -35,13 +35,14 @@ export class AuditsComponent implements OnInit {
   globalColumnsCalendarRange = [];
   featureColumnsDropdown = [];
   featureColumnsNumericChoice = [];
-  selectedFeature;
+  selectedFeature = 'toilet';
   appliedFilterSelections = {};
 
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
   ngOnInit() {
+
     this.apiService.getFilterConfig().subscribe((res) => {
       this.filterConfig = res;
 
@@ -89,58 +90,63 @@ export class AuditsComponent implements OnInit {
           this.defaultColumns.push(featureColumn.queryValue);
         }
       });
+
+      this.applyFilters();
+
     });
 
   }
 
   applyFilters() {
     /* get api response */
-    if (this.selectedFeature) {
-      // check if any selections were made
-      this.globalColumnsDropdown.forEach(element => {
-        if (element.selection) {
-          this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
-        }
-      })
-      this.featureColumnsDropdown.forEach(element => {
-        if (element.selection) {
-          this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
-        }
-      })
-      this.featureColumnsNumericChoice.forEach(element => {
-        if (element.selection) {
-          console.log(element.selection);
-          this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
-        }
-        // if input was deleted, remove that property from the appliedFilterSelections object
-        else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
-          delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
-        }
-      })
-
-      this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
-        this.tableConfig = res;
-
-        // next three lines work for current (old) table response
-        this.response = res;
-        this.rows = res;
-        this.filteredData = res;
-
-        // DON'T DELETE THIS SECTION!!!!!!
-        // this.response = this.tableConfig.columnData;
-        // this.rows = this.tableConfig.columnData;
-        // this.filteredData = this.tableConfig.columnData;
-
-        //construct the column header array
-        // this.tableConfig.columnViewValue.forEach(element => {
-        //   var col = {
-        //     name: element,
-        //     prop: element
-        //   }
-        //   this.columns.push(col);
-        // })
-      });
+    if (!this.selectedFeature) {
+      return;
     }
+    // check if any selections were made
+    this.globalColumnsDropdown.forEach(element => {
+      if (element.selection) {
+        this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+      }
+    })
+    this.featureColumnsDropdown.forEach(element => {
+      if (element.selection) {
+        this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+      }
+    })
+    this.featureColumnsNumericChoice.forEach(element => {
+      if (element.selection) {
+        console.log(element.selection);
+        this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
+      }
+      // if input was deleted, remove that property from the appliedFilterSelections object
+      else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
+        delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
+      }
+    })
+
+    this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+      this.tableConfig = res;
+
+      // next three lines work for current (old) table response
+      this.response = res;
+      this.rows = res;
+      this.filteredData = res;
+
+      // DON'T DELETE THIS SECTION!!!!!!
+      // this.response = this.tableConfig.columnData;
+      // this.rows = this.tableConfig.columnData;
+      // this.filteredData = this.tableConfig.columnData;
+
+      //construct the column header array
+      // this.tableConfig.columnViewValue.forEach(element => {
+      //   var col = {
+      //     name: element,
+      //     prop: element
+      //   }
+      //   this.columns.push(col);
+      // })
+    });
+
   }
 
 
