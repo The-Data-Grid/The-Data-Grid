@@ -3,7 +3,7 @@ CREATE TABLE item_template ( --strings of column names that represent user's tem
   template_id SERIAL PRIMARY KEY, --uuid
   organization_id INT NOT NULL, --fk, uuid
   user_id INT NOT NULL, --fk, uuid
-  template_name jsonb NOT NULL,
+  template_name TEXT NOT NULL,
   room_string jsonb NOT NULL,  --a string of column names that references water_general
   urinal_string jsonb NOT NULL,  --a string of column names that references water_urinal
   sink_string jsonb NOT NULL,  --a string of column names that references water_sink

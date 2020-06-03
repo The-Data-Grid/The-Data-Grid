@@ -6,7 +6,6 @@ const validate = require('./validate.js');
 
 // Database info
 const pgp = require('pg-promise')();
-//const {types} = require('pgp.pg');
 pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
 
 const cn = { //connection info
@@ -172,7 +171,7 @@ function featureQuery(req, res) {
     db.any(finalQuery)  
         .then(data => {
 
-            //console.log(data); //** DEBUG: Show response object **//
+            console.log(data); //** DEBUG: Show response object **//
 
             res.json(data);
         }).catch(err => {
@@ -190,7 +189,7 @@ let auditQuery = (filters, path, sql, res) => {
     // do some stuff
 };
 
-
+ 
 module.exports = {
     featureQuery,
     auditQuery,
