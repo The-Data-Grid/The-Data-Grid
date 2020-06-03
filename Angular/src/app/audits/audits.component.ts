@@ -11,20 +11,35 @@ import { DatePipe } from '@angular/common';
 
 
 export class AuditsComponent implements OnInit {
+  // variables for table 
+  // columns = [];        DON'T DELETE
+  columns = [
+    { name: "Building Name", prop: "building_name" },
+    { name: "Basin Condition", prop: "basin_condition_name" },
+    { name: "Basin Brand", prop: "basin_brand_name" },
+    { name: "GPF", prop: "gpf" },
+    { name: "Template Name", prop: "template_name" },
+  ];
   rows = [];
-  columns = [];
+  filteredData = [];
   defaultColumns = [];
   response;
-  filteredData = [];
-  filterConfig;
   tableConfig;
+
+  // variables for filtering sidebar
+  filterConfig;
   featureDropdownValues = [];
   globalColumnsDropdown = [];
   globalColumnsCalendarRange = [];
   featureColumnsDropdown = [];
   featureColumnsNumericChoice = [];
-  selectedItem;
   selectedFeature;
+  appliedFilterSelections = {};
+
+  selectedBuilding;
+  selectedBasin;
+  selectedBrand;
+
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
   // types = [
@@ -37,8 +52,6 @@ export class AuditsComponent implements OnInit {
 
 
   ngOnInit() {
-
-
     this.apiService.getFilterConfig().subscribe((res) => {
       // console.log(res);
       this.filterConfig = res;
@@ -51,7 +64,7 @@ export class AuditsComponent implements OnInit {
         if (globalColumn.selector) {
           switch (globalColumn.selector.selectorKey) {
             case "dropdown": {
-              this.globalColumnsDropdown.push(globalColumn);
+              this.globalColumnsDropdown.push({ columnObject: globalColumn, selection: null });
               break;
             }
             case "calendarRange": {
@@ -65,19 +78,16 @@ export class AuditsComponent implements OnInit {
         }
       });
 
-      // console.log(this.filterConfig);
-      // console.log(this.filterConfig.featureColumns[0]);
       //get feature-specific filters
       this.filterConfig.featureColumns[0].forEach(featureColumn => {
-        console.log(featureColumn);
         if (featureColumn.selector) {
           switch (featureColumn.selector.selectorKey) {
             case "dropdown": {
-              this.featureColumnsDropdown.push(featureColumn);
+              this.featureColumnsDropdown.push({ columnObject: featureColumn, selection: null });
               break;
             }
             case "numericChoice": {
-              this.featureColumnsNumericChoice.push(featureColumn);
+              this.featureColumnsNumericChoice.push({ columnObject: featureColumn, selection: null });
               break;
             }
           }
@@ -86,7 +96,7 @@ export class AuditsComponent implements OnInit {
           this.defaultColumns.push(featureColumn.queryValue);
         }
       });
-      console.log(this.featureColumnsDropdown);
+      // console.log(this.featureColumnsDropdown);
     });
 
 
@@ -98,28 +108,57 @@ export class AuditsComponent implements OnInit {
     //     this.filteredData = res;
     //   });
 
-    // console.log(this.apiService.newUrl(["flushometer_brand_name", "time_submitted", "gpf"]));
   }
 
   applyFilters() {
     /* get api response */
     if (this.selectedFeature) {
-      this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns).subscribe((res) => {
-        console.log(res);
-        this.tableConfig = res;
-        this.response = this.tableConfig.columnData;
-        this.rows = this.tableConfig.columnData;
-        this.filteredData = this.tableConfig.columnData;
-        // console.log(this.rows);
+      // check if any selections were made
+      this.globalColumnsDropdown.forEach(element => {
+        if (element.selection) {
+          this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+        }
+      })
 
-        //construct the column header array "columns"
-        this.tableConfig.columnViewValue.forEach(entry => {
-          var col = {
-            name: entry,
-            prop: entry
-          }
-          this.columns.push(col);
-        })
+      this.featureColumnsDropdown.forEach(element => {
+        if (element.selection) {
+          this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+        }
+      })
+
+      this.featureColumnsNumericChoice.forEach(element => {
+        if (element.selection) {
+          console.log(element.selection);
+
+          this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
+        }
+        else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
+          delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
+        }
+      })
+      // console.log(this.appliedFilterSelections);
+
+      this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+        this.tableConfig = res;
+
+        // section for current table response
+        this.response = res;
+        this.rows = res;
+        this.filteredData = res;
+
+        // DON'T DELETE THIS SECTION!!!!!!
+        // this.response = this.tableConfig.columnData;
+        // this.rows = this.tableConfig.columnData;
+        // this.filteredData = this.tableConfig.columnData;
+
+        //construct the column header array "columns" 
+        // this.tableConfig.columnViewValue.forEach(element => {
+        //   var col = {
+        //     name: element,
+        //     prop: element
+        //   }
+        //   this.columns.push(col);
+        // })
       });
     }
   }

@@ -24,10 +24,10 @@
                 </mat-form-field>
 
                 <mat-form-field *ngFor="let column of globalColumnsDropdown">
-                    <mat-label>{{column.columnViewValue}}</mat-label>
-                    <mat-select>
-                        <mat-option *ngFor="let value of column.selector.selectorValues">
-                            {{value}}
+                    <mat-label>{{column.columnObject.columnViewValue}}</mat-label>
+                    <mat-select [(ngModel)]="column.selection">
+                        <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
+                            {{val}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -57,16 +57,16 @@
             <div class="features-filters" *ngIf="selectedFeature">
                 Feature Filters
                 <mat-form-field *ngFor="let column of featureColumnsDropdown">
-                    <mat-label>{{column.columnViewValue}}</mat-label>
-                    <mat-select>
-                        <mat-option *ngFor="let value of column.selector.selectorValues">
-                            {{value}}
+                    <mat-label>{{column.columnObject.columnViewValue}}</mat-label>
+                    <mat-select [(ngModel)]="column.selection">
+                        <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
+                            {{val}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field *ngFor="let column of featureColumnsNumericChoice">
-                    <mat-label>Minimum {{column.columnViewValue}}</mat-label>
-                    <input matInput placeholder="ex: 4.5">
+                    <mat-label>Minimum {{column.columnObject.columnViewValue}}</mat-label>
+                    <input matInput placeholder="ex: 4.5" [(ngModel)]='column.selection'>
                 </mat-form-field>
 
             </div>
@@ -77,7 +77,8 @@
             <div id="audit-table-container">
                 <ngx-datatable *ngIf="tableConfig" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
-                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.prop"></ngx-datatable-column>
+                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.prop" [name]="col.name">
+                    </ngx-datatable-column>
                 </ngx-datatable>
             </div>
 
