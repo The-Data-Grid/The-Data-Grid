@@ -1,0 +1,164 @@
+/* .body {
+   height: 100px;
+   width: 100vh;
+   position: absolute;
+} */
+ 
+.profile_info {
+    position: relative;
+    margin-left: 40%;
+    margin-top: 5%;
+    padding-bottom: 200px
+ }
+  
+ .avatar {
+    margin-left: -220px;
+    margin-top: 15px;
+    height: 120px;
+    border-radius: 50%;
+    cursor: pointer;
+ }
+  
+ .name {
+    font-weight: 400;
+    font-size: 26px;
+    margin-left: -220px;
+    font-family: 'IBM Plex Sans', sans-serif;
+ }
+  
+ .privileges {
+    margin-left: -250px;
+    font-size: 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+ }
+  
+ .account {
+    background-color: transparent;
+    border: none;
+    font-size: 40px;
+    margin-left: 90px;
+    margin-top: -250px;
+    color: #569CD7;
+    cursor: pointer;
+    position: absolute;
+ }
+  
+ .account:focus {
+    outline: none;
+    box-shadow: none;
+ }
+  
+ .slash {
+    font-size: 40px;
+    margin-left: 317px;
+    margin-top: -250px;
+    color: #5FA784;
+ }
+  
+ .edit {
+    background-color: transparent;
+    border: none;
+    font-size: 40px;
+    margin-left: 335px;
+    margin-top: -92px;
+    color: #5FA784;
+    cursor: pointer;
+    position: absolute;
+ }
+  
+ .edit:focus {
+    outline: none;
+    box-shadow: none;
+ }
+  
+ .isUnderlined {
+    text-decoration: underline;
+  }
+
+  .username {
+      width: 200px;
+      font-size: 18px;
+  }
+
+input {
+    line-height: 3.5em;
+    padding-left: 10px;
+    border-style: solid;
+    border-radius: 3px;
+    border-color: lightgray;
+    font-size: 12px;
+    border-width: thin;
+    margin-left: 200px;
+    margin-top: -45px;
+    position: absolute;
+}
+
+input:focus {
+    outline-width: thick;
+    outline-color: #bfe3ff;
+}
+
+.username_label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 100px;
+}
+
+.email_label {
+   font-size: 14px;
+   font-weight: 500;
+   margin-left: 100px;
+   margin-top: 25px;
+}
+
+.submit {
+    margin-top: 50px;
+}
+
+.noChanges {
+   background-color: #b9dded;
+   /* background-color: #569CD7; */
+   color: white;
+   /* filter: grayscale(60%); */
+   cursor: auto;
+   position: absolute;
+   margin-left: 390px;
+   margin-top: 15px;
+}
+
+.changesMade {
+   background-color: #569CD7;
+   color: white;
+   position: absolute;
+   cursor: pointer;
+   margin-left: 390px;
+   margin-top: 15px;
+}
+
+.exitButton {
+   background-color: #5FA784;
+   color: white;
+   position: absolute;
+   cursor: pointer;
+   margin-left: 300px;
+   margin-top: 15px;
+}
+
+.user_privileges {
+   color: #757575;
+   position: absolute;
+   font-size: 12px;
+   /* margin-left: 70px; */
+   margin-left: -95px;
+   margin-top: -28px;
+}
+
+.privilege_expansion {
+   position: absolute;
+   height: 15px;
+   margin-top: -28px;
+   /* margin-left: 100px; */
+   margin-left: -120px;
+   cursor: pointer;
+}

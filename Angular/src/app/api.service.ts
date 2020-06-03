@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
-import {ToiletObject} from './models';
+import {ToiletObject, FilterConfig, TableConfig} from './models';
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
 
@@ -11,6 +11,13 @@ const PORT = environment.port;
 })
 export class ApiService {
   constructor(private http: HttpClient) { }
+
+  suffix: string;
+
+  newUrl(array) {
+    this.suffix = array.join('&');
+    return API_URL + '/' + this.suffix;
+  }
 
   public sendHttps(cmd: string, obj: string = ""): Observable<ToiletObject[]> {
     var dataObj = {
@@ -26,6 +33,18 @@ export class ApiService {
 
   public getAllToilets(): Observable<ToiletObject[]>{
     return this.http.get<ToiletObject[]>(API_URL + '/toilet');
+  }
+
+  public getFilterConfig(): Observable<FilterConfig> {
+    // return this.http.get<FilterConfig>(API_URL + '/s/filter');
+    return this.http.get<FilterConfig>(API_URL + '/setup');
+
+  }
+
+  public getTableConfig(): Observable<TableConfig> {
+    // return this.http.get<FilterConfig>(API_URL + '/s/filter');
+    return this.http.get<TableConfig>(API_URL + '/table');
+
   }
 
 

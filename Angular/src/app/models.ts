@@ -1,6 +1,12 @@
+// export class SwimlaneColumn {
+//     name: string;
+//     constructor(name: string) {
+//       this.name = name;
+//     }
+//   }
+
 /* audit submission model */
-export class AuditSubmission 
-{
+export class AuditSubmission {
     timeConducted: number;
     timeSubmitted: number;
     sopID: number;
@@ -9,15 +15,13 @@ export class AuditSubmission
 }
 
 /* feature models */
-export class MirrorObject
-{
+export class MirrorObject {
     objectType: "mirror";
     mirrorConditionID: number;
     comment: string;
 }
 
-export class ToiletObject
-{
+export class ToiletObject {
     objectType: "toilet";
     gpf: number;
     flushometerBrand: string;
@@ -30,11 +34,10 @@ export class ToiletObject
 
     constructor(values: Object = {}) {
         Object.assign(this, values);
-      }
+    }
 }
 
-export class UrinalObject
-{
+export class UrinalObject {
     objectType: "urinal";
     gpf: number;
     flushometerBrand: string;
@@ -45,8 +48,7 @@ export class UrinalObject
     comment: string;
 }
 
-export class SinkObject
-{
+export class SinkObject {
     objectType: "sink";
     gpm: number;
     faucetBrand: string;
@@ -54,4 +56,40 @@ export class SinkObject
     faucetConditionID: number;
     basinConditionID: number;
     comment: string;
+}
+
+
+export class FilterConfig {
+    globalSelectors: FilterSelector[];
+    featureFilters: {
+        Sink: FilterSelector[];
+        Toilet: FilterSelector[];
+        featureColumns: {
+            Sink: DataColumn[];
+            Toilet: DataColumn[];
+        };
+    };
+}
+
+export class TableConfig {
+    columnViewValue: string[];
+    columnDataTypeKey: string[];
+    columnData: any[];
+}
+
+
+export class DataColumn {
+    columnQueryValue: string;
+    columnViewValue: string;
+    default: Boolean;
+
+}
+
+export class FilterSelector {
+    type: string;
+    filterQueryValue: string;
+    filterViewValue: string
+    values: string[] 
+    validation: string[] 
+
 }

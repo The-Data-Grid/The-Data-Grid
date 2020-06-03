@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100&display=swap" rel="stylesheet">
+</head>
+  <div class="profile_info">
+      <img src="assets/default-user.png" alt="Avatar" class="avatar">
+      <p class="name">Default User</p>
+      <p class='privileges'>User privileges:</p>
+      <p class='user_privileges'>Superuser</p>
+      <img src="assets/privileges.png" class="privilege_expansion">
+      <button class='account' [class.isUnderlined]="!isEdit" (click)="profileIsActive()">My Account</button>
+      <p class='slash'>/</p>
+      <button class='edit' [class.isUnderlined]="isEdit" (click)="editIsActive()">Edit</button>
+      
+   <div *ngIf="!isEdit">
+    <p class='username_label'>username:</p>
+    <form class='form' id="user">
+    <input disabled=disabled type="text" size = "40" id="username_input" value=""><br>
+    </form>
+
+
+    <p class='email_label'>email:</p>
+    <form class='form' id='email'>
+      <input disabled=disabled type="text" size="40" id="email_input" value=""><br>
+    </form>
+
+    <p class='email_label'>organization:</p>
+    <form class='form' id='organization'>
+      <input disabled=disabled type="text" size="40" id="organization_input" value=""><br>
+    </form>
+
+    <p class='email_label'>password:</p>
+    <form class='form' id='password'>
+      <input disabled=disabled type="text" size="40" id="password_input" value=""><br>
+    </form>
+
+
+
+
+
+
+</div>      
+   <div *ngIf="isEdit">
+       <p class='username_label'>username:</p>
+       <form class='form' id="user">
+       <input type="text" (input)="formsChanged()" size = "40" id="username_input_edit" value=""><br>
+       </form>
+
+       <p class='email_label'>email:</p>
+       <form class='form' id='email'>
+         <input type="text" (input)="formsChanged()" size="40" id="email_input_edit" value=""><br>
+       </form>
+
+       <p class='email_label'>organization:</p>
+       <form class='form' id='organization'>
+         <input type="text" (input)="formsChanged()" size="40" id="organization_input_edit" value=""><br>
+       </form>   
+
+       <p class='email_label'>password:</p>
+       <form class='form' id='password'>
+         <input type="text" (input)="formsChanged()" size="40" id="password_input_edit" value=""><br>
+       </form>
+       
+       <button mat-button color="primary" [class.noChanges]="!getFormStatus()" [class.changesMade]="getFormStatus()" (click)="changeInformation()">Save</button>
+       <button mat-button color="primary" class="exitButton" (click)="profileIsActive()">Exit</button>
+
+ 
+   
+   </div>      
+ 
+   </div>
+  
+<script>
+</script>
+ 
+</html>

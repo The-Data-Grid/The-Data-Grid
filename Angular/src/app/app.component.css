@@ -1,44 +1,75 @@
-
+html {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+}
+ 
+body {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+ 
+}
+ 
+#wrapper {
+   min-height: 100%;
+   position: relative;
+}
+ 
+#footer {
+   height: 35px;
+   width: 100%;
+   position: absolute;
+   bottom: 25px;
+}
+ 
+ 
+ 
 .dropdown {
-       position: relative;
-       display: inline-block;
-      }
-      
+      position: relative;
+      display: inline-block;
+     }
+    
 .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: rgb(86, 156, 215);
-    border-radius: 4px;
-    z-index: 1;
+   display: none;
+   position: absolute;
+   margin-bottom: calc(0%);
+   background-color: rgb(86, 156, 215);
+   border-radius: 4px;
+   z-index: 1;
 }
-
+ 
 .dropdown:hover .dropdown-content {
-    display: block;
- }
-
- .bottomBar {
-     position: fixed;
-     bottom: 0px;
-     height: 45px;
- }
-  
-
+   display: block;
+}
+ 
+.bottomBar {
+    position: fixed;
+    bottom: 0;
+    margin-top: 100%;
+    height: 45px;
+}
+ 
 .ig {
-    position: absolute;
-    margin-left: 8%;
+   position: absolute;
+   margin-left: 8%;
 }
-
+ 
 .fb {
-    position: absolute;
-    margin-left: 33%;
+   position: absolute;
+   margin-left: 33%;
 }
-
+ 
 .sub {
-    position: absolute;
-    margin-left: 59%;
+   position: absolute;
+   margin-left: 59%;
+}
+ 
+.donate {
+   position: absolute;
+   margin-left: 80%;
 }
 
-.donate {
-    position: absolute;
-    margin-left: 80%;
-}
+.activeButton {
+   background-color: #5FA784;
+} 

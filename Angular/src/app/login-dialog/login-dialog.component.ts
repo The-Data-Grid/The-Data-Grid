@@ -15,8 +15,8 @@ export class DialogComponent implements OnInit {
 
 
   checkForms() {
-    var user = (<HTMLInputElement>document.getElementById("username")).value;
-    var pass = (<HTMLInputElement>document.getElementById("password")).value;
+    var user = (<HTMLInputElement>document.getElementById("username_attempt")).value;
+    var pass = (<HTMLInputElement>document.getElementById("password_attempt")).value;
 
     if (user.length != 0 && pass.length!=0) {
       this.formsFilledOut = true;

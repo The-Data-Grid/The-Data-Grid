@@ -29,6 +29,14 @@ import { AboutComponent } from './about/about.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { ProfileComponent } from './profile/profile.component';
+import { UploadFilesComponent } from './upload-files/upload-files.component';
+import { DownloadComponent } from './download/download.component';
+import { UploadDialogComponent } from './upload-dialog/upload-dialog.component';
+
+
 
 @NgModule({
   declarations: [
@@ -37,7 +45,11 @@ import { DatePipe } from '@angular/common';
     AuditsComponent,
     DialogComponent,
     UploadComponent,
-    AboutComponent
+    AboutComponent,
+    ProfileComponent,
+    UploadFilesComponent,
+    DownloadComponent,
+    UploadDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,7 +74,9 @@ import { DatePipe } from '@angular/common';
     MatCardModule,
     MatDividerModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    FlexLayoutModule,
+    NgxDatatableModule
   ],
   providers: [ApiService, DatePipe],
   bootstrap: [AppComponent],

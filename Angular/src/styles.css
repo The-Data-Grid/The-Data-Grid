@@ -2,6 +2,10 @@
 
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=Rubik:wght@400;500&display=swap');
+@import '~@swimlane/ngx-datatable/index.css';
+@import '~@swimlane/ngx-datatable/themes/material.css';
+@import '~@swimlane/ngx-datatable/assets/icons.css';
+
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 400;
@@ -47,41 +51,7 @@ html, body {
   font-weight: 500;
 }
 
-/* entire sidenav including main content and sidenav bar */
-.sidenav-container {
-  position:relative;
-  text-align: left;
-  height: 100%;
-  z-index: 1;
-}
 
-/* main conent (to the right of the sidenav bar) */
-.sidenav-container {
-  z-index: -1;
-}
-
-/* actual sidebar */
-.sidenav {
-  width: 14rem;
-  text-align: center;
-  border: 0px solid;
-  /* border-top-color:rgb(243, 212, 177); */
-  border-top-color: rgb(95,167,132);
-  border-top-width: 12px;
-  box-shadow: 5px 0 3px -2px #888;
-  padding-top: 1rem;
-}
-
-/* form fields within sidenav bar */
-.sidenav .mat-form-field {
-  margin: 1rem, 1rem, 1rem, 1rem;
-  font-size: small;
-}
-
-.sidenav .mat-button {
-background-color:  rgb(95,167,132);
-margin-top: 3rem;
-}
 
 .close {
   margin-left: 15px;
@@ -106,17 +76,6 @@ margin-top: 3rem;
     text-align: left;
 }
 
-#audit-table-container {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 20px;
-  text-align: left;
-  width: 80%;
-  padding: 20px;
-  border-radius: 4px;
-  background-color: white;
-}
-
 #upload-button {
   text-align: right;
   margin-top: 10px;
@@ -139,7 +98,7 @@ margin-top: 3rem;
   text-align: left;
 }
 
-.mat-card {
+.about-container mat-card {
   margin-left: auto;
   margin-right: auto;
   margin-top: 3rem;
@@ -161,3 +120,12 @@ margin-top: 3rem;
 .mat-form-field {
   width: 80%;
 }
+
+.about-container {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
