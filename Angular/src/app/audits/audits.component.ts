@@ -42,14 +42,14 @@ export class AuditsComponent implements OnInit {
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
   ngOnInit() {
-
+    //get filter config aka setup table object 
     this.apiService.getFilterConfig().subscribe((res) => {
       this.filterConfig = res;
 
       // populate the array that holds feature options i.e. toilet, sink
       this.featureDropdownValues = this.filterConfig.featureViewValues;
 
-      //get global filters. sort them by the type of selector by pushing them into arrays
+      // get global filters. sort them by the type of selector by pushing them into arrays
       // columnObject holds information about the selector
       // selection will hold the user's selection when user interacts with sidebar
       this.filterConfig.globalColumns.forEach(globalColumn => {
@@ -124,6 +124,7 @@ export class AuditsComponent implements OnInit {
       }
     })
 
+    // get tableConfig, aka table Object
     this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableConfig = res;
 
@@ -131,6 +132,7 @@ export class AuditsComponent implements OnInit {
       this.response = res;
       this.rows = res;
       this.filteredData = res;
+      console.log(res);
 
       // DON'T DELETE THIS SECTION!!!!!!
       // this.response = this.tableConfig.columnData;

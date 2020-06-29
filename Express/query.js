@@ -165,7 +165,7 @@ function featureQuery(req, res) {
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' ') + ';'; 
 
-    // console.log(finalQuery);  //** DEBUG: Show SQL Query **//
+    console.log(finalQuery);  //** DEBUG: Show SQL Query **//
     
     // Finally querying the database
     db.any(finalQuery)  
