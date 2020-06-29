@@ -1,0 +1,86 @@
+[
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Boelter Hall",
+      "gpf": 1.5,
+      "basin_condition_name": "Leaking",
+      "basin_brand_name": "Toilet Basin Brand 2"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Boelter Hall",
+      "gpf": 1.3,
+      "basin_condition_name": "Broken/Missing seat",
+      "basin_brand_name": "Toilet Basin Brand 1"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Young Hall",
+      "gpf": 2.4,
+      "basin_condition_name": "Leaking",
+      "basin_brand_name": "Toilet Basin Brand 1"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Young Hall",
+      "gpf": 2.4,
+      "basin_condition_name": "Broken/Missing seat",
+      "basin_brand_name": "Toilet Basin Brand 1"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Young Hall",
+      "gpf": 2.6,
+      "basin_condition_name": "Leaking",
+      "basin_brand_name": "Toilet Basin Brand 2"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Young Hall",
+      "gpf": 1.2,
+      "basin_condition_name": "Leaking",
+      "basin_brand_name": "Toilet Basin Brand 2"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Young Hall",
+      "gpf": 2.2,
+      "basin_condition_name": "Broken/Missing seat",
+      "basin_brand_name": "Toilet Basin Brand 2"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Young Hall",
+      "gpf": 1.8,
+      "basin_condition_name": "Leaking",
+      "basin_brand_name": "Toilet Basin Brand 2"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Young Hall",
+      "gpf": 1.8,
+      "basin_condition_name": "Broken/Missing seat",
+      "basin_brand_name": "Toilet Basin Brand 2"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Boelter Hall",
+      "gpf": 1.4,
+      "basin_condition_name": "Leaking",
+      "basin_brand_name": "Toilet Basin Brand 1"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Boelter Hall",
+      "gpf": 1.3,
+      "basin_condition_name": "Broken/Missing seat",
+      "basin_brand_name": "Toilet Basin Brand 1"
+   },
+   {
+      "template_name": "Toilet Audit Template 1",
+      "building_name": "Boelter Hall",
+      "gpf": 1.3,
+      "basin_condition_name": "Leaking",
+      "basin_brand_name": "Toilet Basin Brand 1"
+   }
+]

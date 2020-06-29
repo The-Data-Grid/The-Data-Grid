@@ -25,10 +25,10 @@ export class AuditsComponent implements OnInit {
   rows = [];
   filteredData = [];
   response;
-  tableConfig;
+  tableObject;
 
   // variables for filtering sidebar
-  filterConfig;
+  setupObject;
   defaultColumns = [];
   featureDropdownValues = [];
   globalColumnsDropdown = [];
@@ -43,16 +43,16 @@ export class AuditsComponent implements OnInit {
 
   ngOnInit() {
     //get filter config aka setup table object 
-    this.apiService.getFilterConfig().subscribe((res) => {
-      this.filterConfig = res;
+    this.apiService.getSetupTableObject().subscribe((res) => {
+      this.setupObject = res;
 
       // populate the array that holds feature options i.e. toilet, sink
-      this.featureDropdownValues = this.filterConfig.featureViewValues;
+      this.featureDropdownValues = this.setupObject.featureViewValues;
 
       // get global filters. sort them by the type of selector by pushing them into arrays
       // columnObject holds information about the selector
       // selection will hold the user's selection when user interacts with sidebar
-      this.filterConfig.globalColumns.forEach(globalColumn => {
+      this.setupObject.globalColumns.forEach(globalColumn => {
         if (globalColumn.selector) {
           switch (globalColumn.selector.selectorKey) {
             case "dropdown": {
@@ -65,7 +65,7 @@ export class AuditsComponent implements OnInit {
             }
           }
         }
-        // keep track of the default columns denoted by filterConfig. 
+        // keep track of the default columns denoted by setupObject. 
         // need to use them later to request them from the api
         if (globalColumn.default) {
           this.defaultColumns.push(globalColumn.queryValue);
@@ -73,7 +73,7 @@ export class AuditsComponent implements OnInit {
       });
 
       //get feature-specific filters
-      this.filterConfig.featureColumns[0].forEach(featureColumn => {
+      this.setupObject.featureColumns[0].forEach(featureColumn => {
         if (featureColumn.selector) {
           switch (featureColumn.selector.selectorKey) {
             case "dropdown": {
@@ -124,9 +124,9 @@ export class AuditsComponent implements OnInit {
       }
     })
 
-    // get tableConfig, aka table Object
-    this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
-      this.tableConfig = res;
+    // get tableObject
+    this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+      this.tableObject = res;
 
       // next three lines work for current (old) table response
       this.response = res;
@@ -135,12 +135,12 @@ export class AuditsComponent implements OnInit {
       console.log(res);
 
       // DON'T DELETE THIS SECTION!!!!!!
-      // this.response = this.tableConfig.columnData;
-      // this.rows = this.tableConfig.columnData;
-      // this.filteredData = this.tableConfig.columnData;
+      // this.response = this.tableObject.columnData;
+      // this.rows = this.tableObject.columnData;
+      // this.filteredData = this.tableObject.columnData;
 
       //construct the column header array
-      // this.tableConfig.columnViewValue.forEach(element => {
+      // this.tableObject.columnViewValue.forEach(element => {
       //   var col = {
       //     name: element,
       //     prop: element
