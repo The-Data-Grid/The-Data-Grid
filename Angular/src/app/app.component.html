@@ -16,28 +16,28 @@
  
        <header>
                <nav>
-                       <mat-toolbar>
-                        <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> Home </a>
-                        <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> Data Filtering & Management </a>
+                       <mat-toolbar style="height: 50px;">
+                        <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Home &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+                        <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data Filtering & Management &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
                         <div class="dropdown">
-                                <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 14px;">Upload</a>
+                                <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 7px;">  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upload &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
                                 <div class="dropdown-content">
-                                        <a mat-button [routerLink]="'/upload-files'" > Upload Data </a>
+                                        <a mat-button [routerLink]="'/upload-files'" >  Upload Data  </a>
                                         <br>
-                                        <a mat-button [routerLink]="'/download'">Retrieve Template</a>
+                                        <a mat-button [routerLink]="'/download'">   Retrieve Template </a>
                                 </div>
                         </div>
-                        <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> About Us </a>
-                        <a mat-button [routerLink]="'/profile'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> My Profile (mock) </a>
+                        <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; About Us &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+                        <a mat-button [routerLink]="'/profile'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; My Profile (mock) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
                         <span class="example-spacer"></span>
-                        <a mat-button (click)="openDialog()" style="right: 0%; height: 100%; padding: 14px;">Log In</a>
+                        <a mat-button (click)="openDialog()" style="right: 0%; height: 100%; padding: 7px;">Log In</a>
                </mat-toolbar>
                </nav>
        </header>
        <router-outlet></router-outlet>
        <footer id="footer">
                <nav>                           
-                       <mat-toolbar >
+                       <mat-toolbar style="height: 52px">
                                <div class="ig">
                                <a href="https://www.instagram.com">
                                <img src="assets/instagram.png" alt="Instagram" style="margin-bottom: -2px; width: 15px; height: 15px;">
