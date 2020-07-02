@@ -79,7 +79,7 @@ class insertToilet { //Formats Toilet Data
     };
 };
 
-class insertAudit { //formats Audit Submission data
+class insertAuditClass { //formats Audit Submission data
     constructor(obj) {
         this.columns = obj;
         this.default = {
@@ -100,10 +100,10 @@ class insertAudit { //formats Audit Submission data
 
 // Formatting //
 
-function insertFormat(input) {
+function formatAudit(input) { 
     let data = {}
-    data.audit = new insertAudit(input.auditSubmission).insert()
-
+    data.audit = new insertAuditClass(input.auditSubmission).insert()
+    return data
 }
 
 
@@ -113,41 +113,49 @@ function insertFormat(input) {
 // exist as an item when uploading. The room and location however, do not need to exist, so referencing a room new number or new location in an audit creates
 // a new item_room with that room number in the database
 
-db.tx(async t => { 
-    // Audit Submission
-    const audit_id = await t.one(insert_audit_submission, data.audit); 
-    // Location
-    if(data.location_type == 'room') { //dealing with room/building location
-        const loc_type = 'room_id';
-        const community_id = await t.one(check_community_id); //community must exist
-        const building_id = await t.one(check_building_id); //building must exist
-        const loc_id = await t.oneOrNone(check_room_id); //create new room if one doesn't exist
-        if(!loc_id) {
-            const loc_id = await t.one(insert_room);
-        };
-    } else if(data.location_type == 'point') {
-        const loc_type = 'point_id';
-        const loc_id = await t.oneOrNone(check_point_id); //create new point if one doesn't exist
-        if(!loc_id) {
-            const loc_id = await t.one(insert_point_id);
-        };
-    } else if(data.location_type == 'geom_region') {
-        const loc_type = 'geom_region_id';
-        const loc_id = await t.oneOrNone(check_geom_region_id); //create new geom region if one doesn't exist
-        if(!loc_id) {
-            const loc_id = await t.one(insert_geom_region)
-        };
-    };
-    const location_id = await t.oneOrNone(check_location_id);
-    if(!location_id) {
-        const location_id = await t.one(insert_location);
-    };
-    // Many to Many
+function insertAudit(req, res) {
 
-    // Feature Table
-    
-});
+    // Formatting upload
+    let data = formatAudit(res.locals.parsed);
 
+    db.tx(async t => { 
+        // Audit Submission
+        const audit_id = await t.one(insert_audit_submission, data.audit); 
+        // Location
+        if(data.location_type == 'room') { //dealing with room/building location
+            const loc_type = 'room_id';
+            const community_id = await t.one(check_community_id); //community must exist
+            const building_id = await t.one(check_building_id); //building must exist
+            const loc_id = await t.oneOrNone(check_room_id); //create new room if one doesn't exist
+            if(!loc_id) {
+                const loc_id = await t.one(insert_room);
+            };
+        } else if(data.location_type == 'point') {
+            const loc_type = 'point_id';
+            const loc_id = await t.oneOrNone(check_point_id); //create new point if one doesn't exist
+            if(!loc_id) {
+                const loc_id = await t.one(insert_point_id);
+            };
+        } else if(data.location_type == 'geom_region') {
+            const loc_type = 'geom_region_id';
+            const loc_id = await t.oneOrNone(check_geom_region_id); //create new geom region if one doesn't exist
+            if(!loc_id) {
+                const loc_id = await t.one(insert_geom_region)
+            };
+        };
+        const location_id = await t.oneOrNone(check_location_id);
+        if(!location_id) {
+            const location_id = await t.one(insert_location);
+        };
+        // Many to Many
+
+        // Feature Table 
+    });
+    // IF SUCCESS
+    res.json({'status': 'OK'})
+    // IF FAILED
+    res.json({'status': errorCode})
+}
 
 
 
@@ -173,6 +181,9 @@ function makeInsert(input) {
 
 
 // SAMPLE INPUT. THE INPUT WILL BE IN THIS FORMAT //
+// The input will actually probably not in this format. It will likely 
+// be in the new compact response object format described in the API
+
 let input = {
     toilet: [
         {
@@ -192,6 +203,5 @@ let input = {
 
 
 module.exports = { //exporting data and item insertion
-    data,
-    item
+    insertAudit
 }
