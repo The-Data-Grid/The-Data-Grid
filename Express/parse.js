@@ -1,5 +1,4 @@
-//const q = require('./query')
-const sql = require('./statement.js');
+////// QUERY PARSING //////
 
 function operation_map(operation) {
     op = operation;
@@ -28,7 +27,7 @@ function operation_map(operation) {
     return op
 }
 
-const featureParse = (req, res, next) => {
+const queryParse = (req, res, next) => {
     let filter = req.query;
     let {feature} = req.params; 
     let {include} = req.params;
@@ -64,10 +63,23 @@ const featureParse = (req, res, next) => {
         }
     }
     
-    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters};
+    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters}; // attaching parsed object
     next(); // passing to query.js 
 };
 
+////// END OF QUERY PARSING //////
+
+////// UPLOAD PARSING ////// 
+
+function uploadParse(req, res) {
+    res.locals.parsed = {}; // attaching parsed object
+    next(); // passing to insert.js
+}
+
+////// END OF UPLOAD PARSING //////
+
+
 module.exports = {
-    featureParse,
+    queryParse,
+    uploadParse
 }

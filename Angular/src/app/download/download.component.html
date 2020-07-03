@@ -10,12 +10,12 @@
 <body>
     <div class = "main">
     <h1 class="header">Download our Data Template</h1>
-    <h2 class="selectText">Select Audit Type:</h2>
+    <h2 class="selectText">Select Audit Template:</h2>
     <!-- <button mat-raised-button>{{ selectedValue }}&nbsp; &nbsp; &nbsp; there</button> -->
     
     <form>
         <mat-form-field class='inputForm'>
-          <mat-label>Audit Type</mat-label>
+          <mat-label>Audit Template</mat-label>
           <mat-select [(ngModel)]="currentValue" name="audits">
             <mat-option *ngFor="let audits of audits" [value]="audits.value">
               {{audits.viewValue}}

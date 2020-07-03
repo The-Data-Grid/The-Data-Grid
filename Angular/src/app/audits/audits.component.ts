@@ -11,63 +11,52 @@ import { DatePipe } from '@angular/common';
 
 
 export class AuditsComponent implements OnInit {
+  // variables for table 
+  // columns = [];        DON'T DELETE
+
+  // the following columns array is for the "old" table object
+  columns = [
+    { name: "Building Name", prop: "building_name" },
+    { name: "Basin Condition", prop: "basin_condition_name" },
+    { name: "Basin Brand", prop: "basin_brand_name" },
+    { name: "GPF", prop: "gpf" },
+    { name: "Template Name", prop: "template_name" },
+  ];
   rows = [];
-  // columns = [
-  //   { name: "GPF", prop: "GPF" },
-  //   { name: "Date Submitted", prop: "Date Submitted" },
-  //   { name: "Template Name", prop: "Template Name" },
-  //   { name: "SOP", prop: "SOP" },
-  //   { name: "Commentary", prop: "Commentary" }
-  // ];
-  columns = [];
-  response;
   filteredData = [];
-  filterConfig;
+  response;
   tableConfig;
+
+  // variables for filtering sidebar
+  filterConfig;
+  defaultColumns = [];
+  featureDropdownValues = [];
   globalColumnsDropdown = [];
   globalColumnsCalendarRange = [];
+  featureColumnsDropdown = [];
+  featureColumnsNumericChoice = [];
+  selectedFeature = 'toilet';
+  appliedFilterSelections = {};
 
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
-  types = [
-    { value: 'water', viewValue: 'Water' },
-    { value: 'food_waste', viewValue: 'Food Waste' },
-    { value: 'electricity', viewValue: 'Electricity' },
-    { value: 'other', viewValue: 'Other' }
-  ];
-  selectedType = "water";
-
 
   ngOnInit() {
-    /* get api response */
-    this.apiService.getTableConfig().subscribe((res) => {
-      // console.log(res);
-      this.tableConfig = res;
-      this.response = this.tableConfig.columnData;
-      this.rows = this.tableConfig.columnData;
-      this.filteredData = this.tableConfig.columnData;
-      console.log(this.rows);
-
-      //construct the column header array "columns"
-      this.tableConfig.columnViewValue.forEach(entry => {
-        var col = {
-          name: entry,
-          prop:entry
-        }
-        this.columns.push(col);
-      })
-    });
-    console.log(this.columns);
 
     this.apiService.getFilterConfig().subscribe((res) => {
-      // console.log(res);
       this.filterConfig = res;
 
+      // populate the array that holds feature options i.e. toilet, sink
+      this.featureDropdownValues = this.filterConfig.featureViewValues;
+
+      //get global filters. sort them by the type of selector by pushing them into arrays
+      // columnObject holds information about the selector
+      // selection will hold the user's selection when user interacts with sidebar
       this.filterConfig.globalColumns.forEach(globalColumn => {
         if (globalColumn.selector) {
           switch (globalColumn.selector.selectorKey) {
             case "dropdown": {
-              this.globalColumnsDropdown.push(globalColumn);
+              this.globalColumnsDropdown.push({ columnObject: globalColumn, selection: null });
               break;
             }
             case "calendarRange": {
@@ -76,20 +65,90 @@ export class AuditsComponent implements OnInit {
             }
           }
         }
+        // keep track of the default columns denoted by filterConfig. 
+        // need to use them later to request them from the api
+        if (globalColumn.default) {
+          this.defaultColumns.push(globalColumn.queryValue);
+        }
       });
+
+      //get feature-specific filters
+      this.filterConfig.featureColumns[0].forEach(featureColumn => {
+        if (featureColumn.selector) {
+          switch (featureColumn.selector.selectorKey) {
+            case "dropdown": {
+              this.featureColumnsDropdown.push({ columnObject: featureColumn, selection: null });
+              break;
+            }
+            case "numericChoice": {
+              this.featureColumnsNumericChoice.push({ columnObject: featureColumn, selection: null });
+              break;
+            }
+          }
+        }
+        if (featureColumn.default) {
+          this.defaultColumns.push(featureColumn.queryValue);
+        }
+      });
+
+      this.applyFilters();
+
     });
 
-    // this.apiService.sendHttps("getAllToiletObjects")
-    //   .subscribe((res) => {
-    //     console.log(res);
-    //     this.response = res;
-    //     this.rows = res;
-    //     this.filteredData = res;
-    //   });
+  }
 
-    // console.log(this.apiService.newUrl(["flushometer_brand_name", "time_submitted", "gpf"]));
+  applyFilters() {
+    /* get api response */
+    if (!this.selectedFeature) {
+      return;
+    }
+    // check if any selections were made
+    this.globalColumnsDropdown.forEach(element => {
+      if (element.selection) {
+        this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+      }
+    })
+    this.featureColumnsDropdown.forEach(element => {
+      if (element.selection) {
+        this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+      }
+    })
+    this.featureColumnsNumericChoice.forEach(element => {
+      if (element.selection) {
+        console.log(element.selection);
+        this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
+      }
+      // if input was deleted, remove that property from the appliedFilterSelections object
+      else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
+        delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
+      }
+    })
+
+    this.apiService.getTableConfig(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+      this.tableConfig = res;
+
+      // next three lines work for current (old) table response
+      this.response = res;
+      this.rows = res;
+      this.filteredData = res;
+
+      // DON'T DELETE THIS SECTION!!!!!!
+      // this.response = this.tableConfig.columnData;
+      // this.rows = this.tableConfig.columnData;
+      // this.filteredData = this.tableConfig.columnData;
+
+      //construct the column header array
+      // this.tableConfig.columnViewValue.forEach(element => {
+      //   var col = {
+      //     name: element,
+      //     prop: element
+      //   }
+      //   this.columns.push(col);
+      // })
+    });
 
   }
+
 
   filterDatatable(event) {
     // get the value of the key pressed and make it lowercase
