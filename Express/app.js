@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const parse = require('./parse.js');
 const query = require('./query.js');
 const insert = require('./insert.js');
+const template = require('./template.js');
 const cors = require('cors');
 const port = process.env.PORT || 4001;
 
@@ -15,8 +16,15 @@ app.use(bodyParser.json());
 app.set('x-powered-by', false);
 
 ////// ROUTES //////
+
+// Data Query
 app.get('/api/a/:feature/:include', parse.queryParse, query.featureQuery); 
-app.get('/api/upload/...', parse.uploadParse, insert.insertAudit)
+
+// Audit Upload
+app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
+
+// Template Query
+app.get('/api/template/...', template.makeTemplate);
 
 // Incomplete Routes
 //app.get('/api/a/:include', cors());
