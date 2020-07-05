@@ -42,7 +42,11 @@ export class AuditsComponent implements OnInit {
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
   ngOnInit() {
-    //get filter config aka setup table object 
+    this.getSetupTableObject();
+    this.applyFilters();
+  }
+
+  getSetupTableObject() {
     this.apiService.getSetupTableObject().subscribe((res) => {
       this.setupObject = res;
 
@@ -91,11 +95,57 @@ export class AuditsComponent implements OnInit {
         }
       });
 
-      this.applyFilters();
 
+    });
+  }
+
+  getTableObject() {
+    this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+      this.tableObject = res;
+
+      // next three lines work for current (old) table response
+      this.response = res;
+      this.rows = res;
+      this.filteredData = res;
+      console.log(res);
+
+      // DON'T DELETE THIS SECTION!!!!!!
+      // this.response = this.tableObject.columnData;
+      // this.rows = this.tableObject.columnData;
+      // this.filteredData = this.tableObject.columnData;
+
+      //construct the column header array
+      // this.tableObject.columnViewValue.forEach(element => {
+      //   var col = {
+      //     name: element,
+      //     prop: element
+      //   }
+      //   this.columns.push(col);
+      // })
     });
 
   }
+
+
+  // filterDatatable(event) {
+  //   // get the value of the key pressed and make it lowercase
+  //   let val = event.target.value.toLowerCase();
+  //   // get the amount of columns in the table
+  //   let colsAmt = this.columns.length;
+  //   // get the key names of each column in the dataset
+  //   let keys = Object.keys(this.response[0]);
+  //   // assign filtered matches to the active datatable
+  //   this.rows = this.filteredData.filter(function (item) {
+  //     // iterate through each row's column data
+  //     for (let i = 0; i < colsAmt; i++) {
+  //       // check for a match
+  //       if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val) {
+  //         // found match, return true to add to result set
+  //         return true;
+  //       }
+  //     }
+  //   });
+  // }
 
   applyFilters() {
     /* get api response */
@@ -124,52 +174,7 @@ export class AuditsComponent implements OnInit {
       }
     })
 
-    // get tableObject
-    this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
-      this.tableObject = res;
-
-      // next three lines work for current (old) table response
-      this.response = res;
-      this.rows = res;
-      this.filteredData = res;
-      console.log(res);
-
-      // DON'T DELETE THIS SECTION!!!!!!
-      // this.response = this.tableObject.columnData;
-      // this.rows = this.tableObject.columnData;
-      // this.filteredData = this.tableObject.columnData;
-
-      //construct the column header array
-      // this.tableObject.columnViewValue.forEach(element => {
-      //   var col = {
-      //     name: element,
-      //     prop: element
-      //   }
-      //   this.columns.push(col);
-      // })
-    });
-
-  }
-
-
-  filterDatatable(event) {
-    // get the value of the key pressed and make it lowercase
-    let val = event.target.value.toLowerCase();
-    // get the amount of columns in the table
-    let colsAmt = this.columns.length;
-    // get the key names of each column in the dataset
-    let keys = Object.keys(this.response[0]);
-    // assign filtered matches to the active datatable
-    this.rows = this.filteredData.filter(function (item) {
-      // iterate through each row's column data
-      for (let i = 0; i < colsAmt; i++) {
-        // check for a match
-        if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val) {
-          // found match, return true to add to result set
-          return true;
-        }
-      }
-    });
+    this.getTableObject();
   }
 
 
