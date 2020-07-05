@@ -13,15 +13,6 @@ import { DatePipe } from '@angular/common';
 export class AuditsComponent implements OnInit {
   // variables for table 
   columns = [];        //DON'T DELETE
-
-  // the following columns array is for the "old" table object
-  // columns = [
-  //   { name: "Building Name", prop: "building_name" },
-  //   { name: "Basin Condition", prop: "basin_condition_name" },
-  //   { name: "Basin Brand", prop: "basin_brand_name" },
-  //   { name: "GPF", prop: "gpf" },
-  //   { name: "Template Name", prop: "template_name" },
-  // ];
   rows = [];
   filteredData = [];
   response;
@@ -54,49 +45,54 @@ export class AuditsComponent implements OnInit {
       this.featureDropdownValues = this.setupObject.featureViewValues;
 
       // get global filters. sort them by the type of selector by pushing them into arrays
-      // columnObject holds information about the selector
-      // selection will hold the user's selection when user interacts with sidebar
-      this.setupObject.globalColumns.forEach(globalColumn => {
-        if (globalColumn.selector) {
-          switch (globalColumn.selector.selectorKey) {
+      // "columnObject" property holds information about the selector
+      // "selection" property will hold the user's selection when user interacts with sidebar
+      this.setupObject.globalColumns.forEach(column => {
+        if (column.selector) {
+          switch (column.selector.selectorKey) {
             case "dropdown": {
-              this.globalColumnsDropdown.push({ columnObject: globalColumn, selection: null });
+              this.globalColumnsDropdown.push({ columnObject: column, selection: null });
               break;
             }
             case "calendarRange": {
-              this.globalColumnsCalendarRange.push(globalColumn);
+              this.globalColumnsCalendarRange.push({ columnObject: column, selection: null });
               break;
             }
           }
         }
-        // keep track of the default columns denoted by setupObject. 
+        // keep track of the default columns (denoted by setupObject) to be displayed in the table. 
         // need to use them later to request them from the api
-        if (globalColumn.default) {
-          this.defaultColumns.push(globalColumn.queryValue);
+        if (column.default) {
+          this.defaultColumns.push(column.queryValue);
         }
       });
 
       //get feature-specific filters
-      this.setupObject.featureColumns[0].forEach(featureColumn => {
-        if (featureColumn.selector) {
-          switch (featureColumn.selector.selectorKey) {
+      this.setupObject.featureColumns[0].forEach(column => {
+        if (column.selector) {
+          switch (column.selector.selectorKey) {
             case "dropdown": {
-              this.featureColumnsDropdown.push({ columnObject: featureColumn, selection: null });
+              this.featureColumnsDropdown.push({ columnObject: column, selection: null });
               break;
             }
             case "numericChoice": {
-              this.featureColumnsNumericChoice.push({ columnObject: featureColumn, selection: null });
+              this.featureColumnsNumericChoice.push({ columnObject: column, selection: null });
               break;
             }
           }
         }
-        if (featureColumn.default) {
-          this.defaultColumns.push(featureColumn.queryValue);
+        if (column.default) {
+          this.defaultColumns.push(column.queryValue);
         }
       });
-
-
     });
+  }
+
+  // there are many ways to do this
+  // pass in globalcolumns array from the setup object
+  // pass in a variable that tells you if its global column or feature column
+  parseSetupObject() {
+
   }
 
   getTableObject() {
