@@ -12,16 +12,16 @@ import { DatePipe } from '@angular/common';
 
 export class AuditsComponent implements OnInit {
   // variables for table 
-  // columns = [];        DON'T DELETE
+  columns = [];        //DON'T DELETE
 
   // the following columns array is for the "old" table object
-  columns = [
-    { name: "Building Name", prop: "building_name" },
-    { name: "Basin Condition", prop: "basin_condition_name" },
-    { name: "Basin Brand", prop: "basin_brand_name" },
-    { name: "GPF", prop: "gpf" },
-    { name: "Template Name", prop: "template_name" },
-  ];
+  // columns = [
+  //   { name: "Building Name", prop: "building_name" },
+  //   { name: "Basin Condition", prop: "basin_condition_name" },
+  //   { name: "Basin Brand", prop: "basin_brand_name" },
+  //   { name: "GPF", prop: "gpf" },
+  //   { name: "Template Name", prop: "template_name" },
+  // ];
   rows = [];
   filteredData = [];
   response;
@@ -102,11 +102,35 @@ export class AuditsComponent implements OnInit {
   getTableObject() {
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
+      
+      //switch to res once backend sends correct object
+      var responseString = "{ \"columnViewValue\": [ \"Date Submitted\", \"Template Name\", \"SOP\", \"GPF\", \"commentary\" ], \"columnDatatypeKey\": [ \"string\", \"string\", \"hyperlink\", \"string\", \"string\" ], \"rowData\": [ [ \"2020-01-14\", \"Restroom Audit v1\", { \"displayString\": \"Restroom SOP v1\", \"URL\": \"https:\/\/rat.com\/\" }, \"1.45\", \"smells bad man\" ], [ \"2020-01-15\", \"maintenance2\", { \"displayString\": \"frederick\u2019s SOP 2\", \"URL\": \"https:\/\/agar.io\/\" }, \"6.34\", \"violent flush\" ], [ \"2020-01-16\", \"e2\", { \"displayString\": \"ergo8\", \"URL\": \"https:\/\/facebook.com\/\" }, \"4.35\", \"high centripetal acceleration on flush, streamfunction computation out of bounds\" ] ] }";
+      this.tableObject = JSON.parse(responseString);
+      console.log(this.tableObject);
+
+      // construct the column header array
+      this.tableObject.columnViewValue.forEach(element => {
+        this.columns.push( { name: element, prop: element } );
+      })
+
+      //add rows to the table one by one
+      var row = [];
+      var i;
+
+      this.tableObject.rowData.forEach(element => {
+        for (i=0;i<this.tableObject.columnDatatypeKey.length;i++) {
+          if (this.tableObject.columnDatatypeKey[i] == "string")
+            row[this.tableObject.columnViewValue[i]] = element[i];
+          else if (this.tableObject.columnDatatypeKey[i] == "hyperlink")
+            row[this.tableObject.columnViewValue[i]] = element[i].displayString;
+        }
+        this.rows.push(row);
+      })
 
       // next three lines work for current (old) table response
-      this.response = res;
-      this.rows = res;
-      this.filteredData = res;
+      //this.response = res;
+      //this.rows = res;
+      //this.filteredData = res;
       console.log(res);
 
       // DON'T DELETE THIS SECTION!!!!!!
@@ -114,7 +138,7 @@ export class AuditsComponent implements OnInit {
       // this.rows = this.tableObject.columnData;
       // this.filteredData = this.tableObject.columnData;
 
-      //construct the column header array
+      // construct the column header array
       // this.tableObject.columnViewValue.forEach(element => {
       //   var col = {
       //     name: element,
