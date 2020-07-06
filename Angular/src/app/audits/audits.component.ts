@@ -140,25 +140,6 @@ export class AuditsComponent implements OnInit {
         this.rows.push(row);
       })
 
-      // next three lines work for current (old) table response
-      //this.response = res;
-      //this.rows = res;
-      //this.filteredData = res;
-      // console.log(res);
-
-      // DON'T DELETE THIS SECTION!!!!!!
-      // this.response = this.tableObject.columnData;
-      // this.rows = this.tableObject.columnData;
-      // this.filteredData = this.tableObject.columnData;
-
-      // construct the column header array
-      // this.tableObject.columnViewValue.forEach(element => {
-      //   var col = {
-      //     name: element,
-      //     prop: element
-      //   }
-      //   this.columns.push(col);
-      // })
     });
   }
 
