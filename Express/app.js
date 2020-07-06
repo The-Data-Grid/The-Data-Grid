@@ -24,7 +24,7 @@ app.get('/api/a/:feature/:include', parse.queryParse, query.featureQuery);
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
 
 // Template Query
-app.get('/api/template/...', template.makeTemplate);
+app.get('/api/template/', parse.templateParse, template.makeTemplate);
 
 // Incomplete Routes
 //app.get('/api/a/:include', cors());

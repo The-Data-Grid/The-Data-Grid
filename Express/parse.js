@@ -71,15 +71,25 @@ const queryParse = (req, res, next) => {
 
 ////// UPLOAD PARSING ////// 
 
-function uploadParse(req, res) {
+function uploadParse(req, res, next) {
     res.locals.parsed = {}; // attaching parsed object
     next(); // passing to insert.js
 }
 
 ////// END OF UPLOAD PARSING //////
 
+////// TEMPLATE PARSING //////
+
+function templateParse(req, res, next) {
+    res.locals.parsed = {}; // attaching parsed object
+    next(); // passing to template.js
+}
+
+////// END OF TEMPLATE PARSING //////
+
 
 module.exports = {
     queryParse,
-    uploadParse
+    uploadParse,
+    templateParse
 }
