@@ -84,7 +84,16 @@
             <div id="audit-table-container">
                 <ngx-datatable *ngIf="tableObject" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
-                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.prop" [name]="col.name">
+                    
+                    <!-- <ngx-datatable-column *ngFor="let col of columns" [prop]="col.prop" [name]="col.name">
+                    </ngx-datatable-column> -->
+                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.info.prop" [name]="col.info.name">
+                        <ng-template *ngIf="col.datatype==='string'" let-row="row" let-value="value">
+                            {{value.name}}
+                      </ng-template>
+                      <ng-template *ngIf="col.datatype==='hyperlink'" let-row="row" let-value="value">
+                        <a [href]="row['link']">{{value.name}}</a>
+                  </ng-template>
                     </ngx-datatable-column>
                 </ngx-datatable>
             </div>

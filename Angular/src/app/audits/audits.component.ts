@@ -98,28 +98,36 @@ export class AuditsComponent implements OnInit {
   getTableObject() {
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
-      
+
       //switch to res once backend sends correct object
       var responseString = "{ \"columnViewValue\": [ \"Date Submitted\", \"Template Name\", \"SOP\", \"GPF\", \"commentary\" ], \"columnDatatypeKey\": [ \"string\", \"string\", \"hyperlink\", \"string\", \"string\" ], \"rowData\": [ [ \"2020-01-14\", \"Restroom Audit v1\", { \"displayString\": \"Restroom SOP v1\", \"URL\": \"https:\/\/rat.com\/\" }, \"1.45\", \"smells bad man\" ], [ \"2020-01-15\", \"maintenance2\", { \"displayString\": \"frederick\u2019s SOP 2\", \"URL\": \"https:\/\/agar.io\/\" }, \"6.34\", \"violent flush\" ], [ \"2020-01-16\", \"e2\", { \"displayString\": \"ergo8\", \"URL\": \"https:\/\/facebook.com\/\" }, \"4.35\", \"high centripetal acceleration on flush, streamfunction computation out of bounds\" ] ] }";
       this.tableObject = JSON.parse(responseString);
       console.log(this.tableObject);
 
+      var i;
+
       // construct the column header array
-      this.tableObject.columnViewValue.forEach(element => {
-        this.columns.push( { name: element, prop: element } );
-      })
+      for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
+        this.columns.push({
+          info: {
+            name: this.tableObject.columnViewValue[i],
+            prop: this.tableObject.columnViewValue[i]
+          },
+          datatype: this.tableObject.columnDatatypeKey[i]
+        })
+      }
 
       //add rows to the table one by one
       var row = [];
-      var i;
-
       this.tableObject.rowData.forEach(element => {
-        for (i=0;i<this.tableObject.columnDatatypeKey.length;i++) {
+        for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
           if (this.tableObject.columnDatatypeKey[i] == "string")
             row[this.tableObject.columnViewValue[i]] = element[i];
           else if (this.tableObject.columnDatatypeKey[i] == "hyperlink")
             row[this.tableObject.columnViewValue[i]] = element[i].displayString;
+            row["link"] = element[i].displayString.URL;
         }
+        console.log(row);
         this.rows.push(row);
       })
 
@@ -127,7 +135,7 @@ export class AuditsComponent implements OnInit {
       //this.response = res;
       //this.rows = res;
       //this.filteredData = res;
-      console.log(res);
+      // console.log(res);
 
       // DON'T DELETE THIS SECTION!!!!!!
       // this.response = this.tableObject.columnData;
@@ -143,7 +151,6 @@ export class AuditsComponent implements OnInit {
       //   this.columns.push(col);
       // })
     });
-
   }
 
 
