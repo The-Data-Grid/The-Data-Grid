@@ -12,7 +12,8 @@ import { DatePipe } from '@angular/common';
 
 export class AuditsComponent implements OnInit {
   // variables for table 
-  columns = [];        //DON'T DELETE
+  columns = [];
+  hyperlinkColumns = [];
   rows = [];
   filteredData = [];
   response;
@@ -28,7 +29,7 @@ export class AuditsComponent implements OnInit {
   featureColumnsNumericChoice = [];
   selectedFeature = 'toilet';
   appliedFilterSelections = {};
-
+  datatypes = new Map();
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
@@ -107,27 +108,35 @@ export class AuditsComponent implements OnInit {
       var i;
 
       // construct the column header array
+      // this.tableObject.columnViewValue.forEach(element => {
+      //   this.columns.push( { name: element, prop: element } );
+      // })
       for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
-        this.columns.push({
-          info: {
+        if (this.tableObject.columnDatatypeKey[i] === "string") {
+          this.columns.push({
             name: this.tableObject.columnViewValue[i],
             prop: this.tableObject.columnViewValue[i]
-          },
-          datatype: this.tableObject.columnDatatypeKey[i]
-        })
+          });
+        }
+        else if (this.tableObject.columnDatatypeKey[i] === "hyperlink") {
+          this.hyperlinkColumns.push({
+            name: this.tableObject.columnViewValue[i],
+            prop: this.tableObject.columnViewValue[i]
+          });
+        }
       }
 
       //add rows to the table one by one
-      var row = [];
       this.tableObject.rowData.forEach(element => {
+        var row = {};
         for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
           if (this.tableObject.columnDatatypeKey[i] == "string")
             row[this.tableObject.columnViewValue[i]] = element[i];
-          else if (this.tableObject.columnDatatypeKey[i] == "hyperlink")
+          else if (this.tableObject.columnDatatypeKey[i] == "hyperlink") {
             row[this.tableObject.columnViewValue[i]] = element[i].displayString;
-            row["link"] = element[i].displayString.URL;
+            row["link"] = element[i].URL;
+          }
         }
-        console.log(row);
         this.rows.push(row);
       })
 
