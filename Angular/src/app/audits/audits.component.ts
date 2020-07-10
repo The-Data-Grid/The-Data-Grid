@@ -67,42 +67,14 @@ export class AuditsComponent implements OnInit {
       // "columnObject" property holds information about the selector
       // "selection" property will hold the user's selection when user interacts with sidebar
       this.setupObject.globalColumns.forEach(column => {
-        if (column.selector) {
-          switch (column.selector.selectorKey) {
-            case "dropdown": {
-              this.globalColumnsDropdown.push({ columnObject: column, selection: null });
-              break;
-            }
-            case "calendarRange": {
-              this.globalColumnsCalendarRange.push({ columnObject: column, selection: null });
-              break;
-            }
-          }
-        }
+        this.parseSetupObject(column, this.globalColumnsDropdown);
         // keep track of the default columns (denoted by setupObject) to be displayed in the table. 
         // need to use them later to request them from the api
-        if (column.default) {
-          this.defaultColumns.push(column.queryValue);
-        }
       });
 
       //get feature-specific filters
       this.setupObject.featureColumns[0].forEach(column => {
-        if (column.selector) {
-          switch (column.selector.selectorKey) {
-            case "dropdown": {
-              this.featureColumnsDropdown.push({ columnObject: column, selection: null });
-              break;
-            }
-            case "numericChoice": {
-              this.featureColumnsNumericChoice.push({ columnObject: column, selection: null });
-              break;
-            }
-          }
-        }
-        if (column.default) {
-          this.defaultColumns.push(column.queryValue);
-        }
+        this.parseSetupObject(column, this.featureColumnsDropdown);
       });
     });
   }
@@ -110,10 +82,29 @@ export class AuditsComponent implements OnInit {
   // there are many ways to do this
   // pass in globalcolumns array from the setup object
   // pass in a variable that tells you if its global column or feature column
-  parseSetupObject() {
+  parseSetupObject(column, arr) {
+    if (column.selector) {
+      switch (column.selector.selectorKey) {
+        case "dropdown": {
+          arr.push({ columnObject: column, selection: null });
+          break;
+        }
+        case "calendarRange": {
+          arr.push({ columnObject: column, selection: null });
+          break;
+        }
+        case "numericChoice": {
+          arr.push({ columnObject: column, selection: null });
+          break;
+    }
+      }
+    }
+    if (column.default) {
+      this.defaultColumns.push(column.queryValue);
+    }
 
-  }
-
+}
+ 
   getTableObject() {
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;

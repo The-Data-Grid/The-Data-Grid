@@ -38,3 +38,26 @@
 2020-04-30 19:59:20.352 PDT [6685] WARNING:  could not create listen socket for "localhost"
 2020-04-30 19:59:20.352 PDT [6685] FATAL:  could not create any TCP/IP sockets
 2020-04-30 19:59:20.352 PDT [6685] LOG:  database system is shut down
+2020-07-05 14:09:53.887 PDT [3066] LOG:  starting PostgreSQL 12.2 on x86_64-apple-darwin19.4.0, compiled by Apple clang version 11.0.3 (clang-1103.0.32.59), 64-bit
+2020-07-05 14:09:53.889 PDT [3066] LOG:  listening on IPv6 address "::1", port 5432
+2020-07-05 14:09:53.889 PDT [3066] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2020-07-05 14:09:53.890 PDT [3066] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2020-07-05 14:09:53.902 PDT [3067] LOG:  database system was shut down at 2020-07-05 14:06:25 PDT
+2020-07-05 14:09:53.910 PDT [3066] LOG:  database system is ready to accept connections
+2020-07-05 14:09:54.142 PDT [3074] FATAL:  role "postgres" does not exist
+2020-07-05 14:14:00.840 PDT [632] LOG:  starting PostgreSQL 12.2 on x86_64-apple-darwin19.4.0, compiled by Apple clang version 11.0.3 (clang-1103.0.32.59), 64-bit
+2020-07-05 14:14:00.843 PDT [632] LOG:  could not bind IPv6 address "::1": Address already in use
+2020-07-05 14:14:00.843 PDT [632] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2020-07-05 14:14:00.843 PDT [632] LOG:  could not bind IPv4 address "127.0.0.1": Address already in use
+2020-07-05 14:14:00.843 PDT [632] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2020-07-05 14:14:00.843 PDT [632] WARNING:  could not create listen socket for "localhost"
+2020-07-05 14:14:00.843 PDT [632] FATAL:  could not create any TCP/IP sockets
+2020-07-05 14:14:00.843 PDT [632] LOG:  database system is shut down
+2020-07-05 14:18:31.809 PDT [934] LOG:  starting PostgreSQL 12.2 on x86_64-apple-darwin19.4.0, compiled by Apple clang version 11.0.3 (clang-1103.0.32.59), 64-bit
+2020-07-05 14:18:31.811 PDT [934] LOG:  could not bind IPv6 address "::1": Address already in use
+2020-07-05 14:18:31.811 PDT [934] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2020-07-05 14:18:31.812 PDT [934] LOG:  could not bind IPv4 address "127.0.0.1": Address already in use
+2020-07-05 14:18:31.812 PDT [934] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2020-07-05 14:18:31.812 PDT [934] WARNING:  could not create listen socket for "localhost"
+2020-07-05 14:18:31.812 PDT [934] FATAL:  could not create any TCP/IP sockets
+2020-07-05 14:18:31.812 PDT [934] LOG:  database system is shut down
