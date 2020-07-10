@@ -14,18 +14,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatTabsModule} from '@angular/material/tabs';
-import { DialogComponent } from './login-dialog/login-dialog.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
-import { UploadComponent } from './upload/upload.component';
-import { AboutComponent } from './about/about.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
@@ -35,8 +31,11 @@ import { ProfileComponent } from './profile/profile.component';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { DownloadComponent } from './download/download.component';
 import { UploadDialogComponent } from './upload-dialog/upload-dialog.component';
-
-
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { DialogComponent } from './login-dialog/login-dialog.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { UploadComponent } from './upload/upload.component';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +75,8 @@ import { UploadDialogComponent } from './upload-dialog/upload-dialog.component';
     MatDatepickerModule,
     MatNativeDateModule,
     FlexLayoutModule,
-    NgxDatatableModule
+    NgxDatatableModule,
+    NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [ApiService, DatePipe],
   bootstrap: [AppComponent],

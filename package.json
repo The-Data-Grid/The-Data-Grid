@@ -28,6 +28,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "ng-multiselect-dropdown": "^0.2.10",
     "nodemon": "^2.0.4",
     "pg": "^8.0.2",
     "pg-promise": "^10.5.6",

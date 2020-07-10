@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
 import { DatePipe } from '@angular/common';
-// import {SwimlaneColumn} from '../models'
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+
 @Component({
   selector: 'app-audits',
   templateUrl: './audits.component.html',
@@ -29,7 +30,24 @@ export class AuditsComponent implements OnInit {
   featureColumnsNumericChoice = [];
   selectedFeature = 'toilet';
   appliedFilterSelections = {};
-  datatypes = new Map();
+  dropdownList = [
+    { item_id: 1, item_text: 'Mumbai' },
+    { item_id: 2, item_text: 'Bangaluru' },
+    { item_id: 3, item_text: 'Pune' },
+    { item_id: 4, item_text: 'Navsari' },
+    { item_id: 5, item_text: 'New Delhi' }
+  ];
+  selectedItems = [];
+  dropdownSettings:IDropdownSettings = {
+    singleSelection: false,
+    idField: 'item_id',
+    textField: 'item_text',
+    enableCheckAll: false,
+    // selectAllText: 'Select All',
+    // unSelectAllText: 'UnSelect All',
+    itemsShowLimit: 3,
+    allowSearchFilter: true
+  };
 
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
@@ -108,21 +126,12 @@ export class AuditsComponent implements OnInit {
       var i;
 
       // construct the column header array
-      // this.tableObject.columnViewValue.forEach(element => {
-      //   this.columns.push( { name: element, prop: element } );
-      // })
       for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
         if (this.tableObject.columnDatatypeKey[i] === "string") {
-          this.columns.push({
-            name: this.tableObject.columnViewValue[i],
-            prop: this.tableObject.columnViewValue[i]
-          });
+          this.columns.push({prop: this.tableObject.columnViewValue[i]});
         }
         else if (this.tableObject.columnDatatypeKey[i] === "hyperlink") {
-          this.hyperlinkColumns.push({
-            name: this.tableObject.columnViewValue[i],
-            prop: this.tableObject.columnViewValue[i]
-          });
+          this.hyperlinkColumns.push({prop: this.tableObject.columnViewValue[i]});
         }
       }
 
@@ -204,6 +213,14 @@ export class AuditsComponent implements OnInit {
         return true;
       }
     });
+  }
+
+
+  onItemSelect(item: any) {
+    console.log(item);
+  }
+  onSelectAll(items: any) {
+    console.log(items);
   }
 
 }

@@ -121,6 +121,40 @@ html, body {
   width: 80%;
 }
 
+ .multi .multiselect-dropdown .dropdown-btn {
+  display: inline-block;
+  border: none !important;
+  width: 70% !important;
+  /* padding: 6px 12px; */
+  /* margin-bottom: 0; */
+  /* font-size: 12px; */
+  /* font-weight: 400; */
+  /* line-height: 1.1; */
+  text-align: left !important;
+  /* vertical-align: middle; */
+  /* cursor: pointer; */
+  /* background-color: pink !important; */
+  border-radius: 0px !important;
+  }
+
+  .multi .dropdown-list {
+    width: 80% !important;
+    margin-left: 10% !important;
+    /* margin-right: auto !important; */
+    border-radius: 0px !important;
+    }
+
+    .multi .filter-textbox {
+      padding-left: 0 !important;
+      width: 80% !important;
+      /* margin-left: 10% !important; */
+      text-align: left !important;
+      /* margin-right: auto !important; */
+      border-radius: 0px !important;
+      }
+
+
+
 .about-container {
   width: 70%;
   margin-left: auto;

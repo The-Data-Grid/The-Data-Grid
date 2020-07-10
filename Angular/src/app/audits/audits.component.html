@@ -10,7 +10,7 @@
 <body>
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
-
+<br>
             <div class="global-filters">
                 Global Filters
 
@@ -74,20 +74,35 @@
                     <mat-label>Minimum {{column.columnObject.columnViewValue}}</mat-label>
                     <input matInput placeholder="ex: 4.5" [(ngModel)]='column.selection'>
                 </mat-form-field>
-
+              
+              <ng-multiselect-dropdown
+              class="multi"
+  [placeholder]="'yeet'"
+  [(ngModel)]="selectedItems"
+  [settings]="dropdownSettings"
+  [data]="dropdownList"
+  (onSelect)="onItemSelect($event)"
+  (onSelectAll)="onSelectAll($event)"
+>
+</ng-multiselect-dropdown>
             </div>
+
+            
             <button mat-button (click)="applyFilters()">APPLY</button>
+<br>
+            
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">
+           
             <!-- table -->
             <div id="audit-table-container">
                 <ngx-datatable *ngIf="tableObject" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
 
-                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.prop" [name]="col.name">
+                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.prop" [name]="col.prop">
                     </ngx-datatable-column>
-                    <ngx-datatable-column *ngFor="let col of hyperlinkColumns" [prop]="col.prop" [name]="col.name">
+                    <ngx-datatable-column *ngFor="let col of hyperlinkColumns" [prop]="col.prop" [name]="col.prop">
                         <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
                             <a [href]="row['link']">{{value}}</a>
                         </ng-template>
