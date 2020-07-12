@@ -5,11 +5,9 @@
 @import '~@swimlane/ngx-datatable/index.css';
 @import '~@swimlane/ngx-datatable/themes/material.css';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
-
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 400;
-  
   /* font-family: 'Rubik', sans-serif;
   font-weight: 400;  */
 }
@@ -51,11 +49,9 @@ html, body {
   font-weight: 500;
 }
 
-
-
 .close {
   margin-left: 15px;
-  color:white;
+  color: white;
   font-weight: bold;
   float: right;
   font-size: 22px;
@@ -73,7 +69,7 @@ html, body {
 }
 
 #audits {
-    text-align: left;
+  text-align: left;
 }
 
 #upload-button {
@@ -83,14 +79,14 @@ html, body {
   margin-bottom: 10px;
 }
 
-#table-paginator{
+#table-paginator {
   display: flex;
   justify-content: center;
   font-size: x-small;
   padding-top: 7px;
 }
 
- .mat-header-cell, .mat-cell {
+.mat-header-cell, .mat-cell {
   font-size: x-small;
   font-weight: 500;
   min-height: auto;
@@ -114,52 +110,88 @@ html, body {
 }
 
 .mat-divider {
-  border-top-color:  rgb(95,167,132);
+  border-top-color: rgb(95, 167, 132);
 }
 
 .mat-form-field {
   width: 80%;
 }
 
- .multi .multiselect-dropdown .dropdown-btn {
+/* the following selectors are for ng multiselect */
+
+.multi .multiselect-dropdown {
+  outline: none !important;
+}
+
+.multi .multiselect-dropdown .dropdown-btn {
   display: inline-block;
-  border: none !important;
-  width: 70% !important;
-  /* padding: 6px 12px; */
-  /* margin-bottom: 0; */
-  /* font-size: 12px; */
-  /* font-weight: 400; */
-  /* line-height: 1.1; */
+  width: 80% !important;
   text-align: left !important;
-  /* vertical-align: middle; */
-  /* cursor: pointer; */
-  /* background-color: pink !important; */
+  font-size: small !important;
   border-radius: 0px !important;
-  }
+  border-left: transparent !important;
+  border-top: transparent !important;
+  border-right: transparent !important;
+  border-width: 1.25px !important;
+  border-color: rgba(228, 228, 228, 0.5) !important;
+  /* padding-top: 0 !important; */
+  padding-bottom: 4px !important;
+  padding-left: 1px !important;
+  padding-right: 1px !important;
+  outline: none !important;
+}
 
-  .multi .dropdown-list {
-    width: 80% !important;
-    margin-left: 10% !important;
-    /* margin-right: auto !important; */
-    border-radius: 0px !important;
-    }
+.multi .dropdown-list {
+  width: 90% !important;
+  margin-left: 5% !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  font-size: small !important;
+  border-radius: 0 !important;
 
-    .multi .filter-textbox {
-      padding-left: 0 !important;
-      width: 80% !important;
-      /* margin-left: 10% !important; */
-      text-align: left !important;
-      /* margin-right: auto !important; */
-      border-radius: 0px !important;
-      }
+}
+
+.multi .filter-textbox {
+  padding-left: 0 !important;
+  width: auto !important;
+  text-align: left !important;
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+}
+
+.multi .filter-textbox input {
+  padding-left: 10px !important;
+}
 
 
+.multi .multiselect-dropdown .dropdown-btn span {
+  height: 100% !important;
+
+  /* padding: 0 !important; */
+  padding-right: 5px !important;
+  float: none !important;
+  font-size: small !important ;
+  /* background-color: lightblue !important; */
+}
+
+.multi .multiselect-dropdown .dropdown-btn .dropdown-down {
+  padding: 0 !important;
+  margin: 0 !important;
+  border-top:  5px solid rgb(228, 228, 228) !important;
+  border-left: 5px solid transparent !important;
+  border-right:  5px solid transparent !important;
+}
+
+.multi .multiselect-dropdown .dropdown-btn .dropdown-up {
+  padding: 0 !important;
+  margin: 0 !important;
+  border-bottom:  5px solid rgb(228, 228, 228) !important;
+  border-left: 5px solid transparent !important;
+  border-right:  5px solid transparent !important;
+}
 
 .about-container {
   width: 70%;
   margin-left: auto;
   margin-right: auto;
 }
-
-
-

@@ -10,7 +10,7 @@
 <body>
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
-<br>
+            <br>
             <div class="global-filters">
                 Global Filters
 
@@ -74,27 +74,25 @@
                     <mat-label>Minimum {{column.columnObject.columnViewValue}}</mat-label>
                     <input matInput placeholder="ex: 4.5" [(ngModel)]='column.selection'>
                 </mat-form-field>
-              
-              <ng-multiselect-dropdown
-              class="multi"
-  [placeholder]="'yeet'"
-  [(ngModel)]="selectedItems"
-  [settings]="dropdownSettings"
-  [data]="dropdownList"
-  (onSelect)="onItemSelect($event)"
-  (onSelectAll)="onSelectAll($event)"
->
-</ng-multiselect-dropdown>
+
+                <div *ngFor="let column of featureColumnsNumericChoice">
+                    {{column.columnObject.columnViewValue}}
+                </div>
+                
+                <ng-multiselect-dropdown class="multi" [placeholder]="'City'" [(ngModel)]="selectedItems"
+                    [settings]="dropdownSettings" [data]="dropdownList" (onSelect)="onItemSelect($event)"
+                    (onSelectAll)="onSelectAll($event)">
+                </ng-multiselect-dropdown>
             </div>
 
-            
+
             <button mat-button (click)="applyFilters()">APPLY</button>
-<br>
-            
+            <br>
+
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">
-           
+
             <!-- table -->
             <div id="audit-table-container">
                 <ngx-datatable *ngIf="tableObject" #table class="material" [headerHeight]="50" [footerHeight]="50"
