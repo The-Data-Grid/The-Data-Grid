@@ -75,10 +75,12 @@
                     <input matInput placeholder="ex: 4.5" [(ngModel)]='column.selection'>
                 </mat-form-field>
 
+
+                <!-- just display selector name -->
                 <div *ngFor="let column of featureColumnsNumericChoice">
                     {{column.columnObject.columnViewValue}}
                 </div>
-                
+
                 <ng-multiselect-dropdown class="multi" [placeholder]="'City'" [(ngModel)]="selectedItems"
                     [settings]="dropdownSettings" [data]="dropdownList" (onSelect)="onItemSelect($event)"
                     (onSelectAll)="onSelectAll($event)">
