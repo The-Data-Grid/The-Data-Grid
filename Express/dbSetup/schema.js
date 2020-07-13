@@ -4,8 +4,8 @@
 
 // additional column constructor
 const col = {
-    data: function(name, type, nullable='') {return `data_${name} ${type} ${nullable}`}, //data_... column
-    item: function(name, nullable='') {return `item_${name}_id INTEGER ${nullable}`}, //item_... column
+    data: function(name, type, nullable='') {return `data_${name} ${type} ${nullable}`},
+    item: function(name, nullable='') {return `item_${name}_id INTEGER ${nullable}`},
 }
 
 //Schema entry structure example:
@@ -14,16 +14,16 @@ let example = {
         additionalCols: [], //data or item columns for feature
         featureitem: {
             additionalCols: [], //data or item columns for featureitem of feature
-            location: '' // item_room, item_building, location_point, location_geom_region, location_line
+            location: ''
         },
         lists: [], //names of lists associated with feature
         subfeatures: {}, //recursive
     }
 }
 
-/////////////////////
-// current schemas //
-/////////////////////
+///////////////////////////
+// current audit schemas //
+///////////////////////////
 
 //Current waste audits
 const wasteAudit = {
@@ -32,7 +32,7 @@ const wasteAudit = {
             col.data('gpf', 'NUMERIC', 'NOT NULL'),
             col.data('commentary', 'TEXT', '')
         ],
-        featureitem: {location: 'item_room'}, 
+        featureitem: {location: 'item_room'},  /// SHOULD BE ALLOWED TO DO THIS,
         subfeatures: {
             flushometer: {
                 featureitem: {location: 'item_room'},

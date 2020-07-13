@@ -1,47 +1,50 @@
 // TODO: referencing items that were specified
-//       make entire thing a transaction?
+//       everything inside a transaction?
 
 // SETUP //
 const pgp = require("pg-promise")();
 const cn = { //connection info
     host: 'localhost',
     port: 5432,
-    database: 'tdg_db',
+    database: 'tdg_pls',
     user: 'postgres',
     password: null,
-    max: 1 // use 1 connection
+    max: 5 // use up to 5 connections
 };
 
-// db.function is used for pg-promise queries
+ //db.function is used for pg-promise queries
 const db = pgp(cn);
 
-// Audit type schemas to use for generation
-const schema = require("./schema.js")
+//custom schemas
+const schema = require('./schema.js');
+
 // END OF SETUP //
 
-// CONSTRUCTION FUNCTIONS AND HELPERS //
-
-// Make ALTER TABLE queries to add foreign key constraints
-// Note: This is async and runs after the CREATE TABLE queries
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
+  
 async function asyncConstructRelations(ms) {
     console.log("Setting up foreign key constraints...")
-    await timeout(ms); // wait for the CREATE TABLE promises to resolve
+    await timeout(ms); //we wait for the CREATE TABLE promises to resolve
+
+    // List of foreign key constrant queries
+    let fkQueries = [];
     for(let index = 0; index < fkTable.length; index++) {
-        db.none(pgp.as.format(reference.default, {fkTable: fkTable[index], fkCol: fkCol[index], pkTable: pkTable[index], pkCol: pkCol[index]}))
+        fkQueries.push(db.none(pgp.as.format(reference.default, {fkTable: fkTable[index], fkCol: fkCol[index], pkTable: pkTable[index], pkCol: pkCol[index]})))
     }
-    // Closing the connection pool
-    console.log("Database built successfully!")
-    db.$pool.end();
+
+    // Wait for all the queries to resolve and then close the connection
+    Promise.all(fkQueries).then( () => {
+        console.log("Done!")
+        // closing the connection
+        db.$pool.end();
+    })
 }
 
-
-///////////////////////////////
-// table creation statements //
-///////////////////////////////
+////////////////////////////////////////
+// table creation prepared statements //
+////////////////////////////////////////
 
 const createFeature = {
     default: 'CREATE TABLE feature_$(feature:value) (\
@@ -212,7 +215,6 @@ function makeSubfeatures(parent, dependencies) {
 // database constructor //
 //////////////////////////
 
-// Foreign key arrays. Constructed by index
 var fkTable = []; 
 var fkCol = [];
 var pkTable = [];
@@ -250,7 +252,7 @@ function constructDB(data) {
             //CREATE TABLE feature_... with no additional columns
             db.none(pgp.as.format(createFeature.default, {feature: feature}))
         }
-        
+         
         ///////////////////
         /// FEATUREITEM ///
         ///////////////////
@@ -324,7 +326,8 @@ function constructDB(data) {
     };
 }
 
-// CALLING CONSTRUCTOR FUNCTIONS //
+// CALLING //
 
-constructDB(schema.wasteAudit); // Change argument to construct a different schema
-asyncConstructRelations(2000) // Wait time is somewhat arbitrary, it just has to be long enough for CREATE TABLE queries to resolve first
+constructDB(schema.wasteAudit);
+asyncConstructRelations(1000); // The wait time is somewhat arbitrary, it is just allowing enough time for the CREATE TABLE queries to resolve
+
