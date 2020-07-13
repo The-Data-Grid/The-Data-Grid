@@ -38,7 +38,7 @@ item_building : {
     dependencies: ['item_room', 'loc']
 },
 
-// building_community_name
+// building_community_name //CHANGE TO COMMUNITY ID
 item_community : {
     query: 'INNER JOIN item_community ON item_building.location_id = item_community.community_id',
     dependencies: ['item_building', 'item_room', 'loc']

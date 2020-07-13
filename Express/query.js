@@ -193,6 +193,6 @@ let auditQuery = (filters, path, sql, res) => {
 module.exports = {
     featureQuery,
     auditQuery,
-    setupQuery,
+    setupQuery
 };
 

@@ -17,6 +17,9 @@ app.set('x-powered-by', false);
 
 ////// ROUTES //////
 
+// Testing routes
+
+
 // Data Query
 app.get('/api/a/:feature/:include', parse.queryParse, query.featureQuery); 
 

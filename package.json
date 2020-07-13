@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon ./Express/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd Angular && ng serve --proxy-config proxy.conf.json"
+    "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
+    "constructDB": "node ./Express/dbSetup/construct.js"
   },
   "author": "",
   "license": "ISC",
