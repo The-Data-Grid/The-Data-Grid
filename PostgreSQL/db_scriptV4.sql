@@ -1,3 +1,4 @@
+-- TABLES --
 
 -- Location
 CREATE TABLE location_point (
@@ -24,15 +25,15 @@ CREATE TABLE item_room (
 );
 
 CREATE TABLE item_building (
-    item_id SERIAL PRIMARY KEY, --uuid
-    item_community_id INT, --fk, uuid
+    item_id SERIAL PRIMARY KEY, 
+    item_community_id INT, --fk
     data_building_name TEXT NOT NULL,
     location_id INT NOT NULL --fk 
 );
 
 -- Community, Organization,
 CREATE TABLE item_community (
-    item_id SERIAL PRIMARY KEY, --uuid
+    item_id SERIAL PRIMARY KEY, 
     data_community_name TEXT UNIQUE NOT NULL,
     data_city TEXT NOT NULL,
     data_state TEXT NOT NULL,
@@ -41,17 +42,17 @@ CREATE TABLE item_community (
 );
 
 CREATE TABLE item_organization (
-    item_id SERIAL PRIMARY KEY,  --uuid
+    item_id SERIAL PRIMARY KEY,  
     data_organization_name TEXT NOT NULL,
     item_community_id INT NOT NULL --fk
 );
 
 -- SOP, SOP Many to Many, Template
 CREATE TABLE item_sop (
-    item_id SERIAL PRIMARY KEY, --uuid
+    item_id SERIAL PRIMARY KEY, 
     data_sop_filepath TEXT NOT NULL,
     data_sop_date_uploaded DATE NOT NULL,
-    item_organization_id INT NOT NULL, --fk, uuid
+    item_organization_id INT NOT NULL, --fk
     data_sop_name TEXT
 );
 
@@ -61,18 +62,18 @@ CREATE TABLE item_sop_m2m (
 );
 
 CREATE TABLE item_template (
-    item_id SERIAL PRIMARY KEY, --uuid
-    item_organization_id INT, --fk, uuid
-    tdg_user_id INT, --fk, uuid
+    item_id SERIAL PRIMARY KEY,
+    item_organization_id INT, --fk
+    tdg_user_id INT, --fk
     data_template_name TEXT NOT NULL,
     data_template_json JSONB NOT NULL
 );
 
 -- Users, Privilege
 CREATE TABLE tdg_users (
-  tdg_id SERIAL PRIMARY KEY, --uuid
-  tdg_privilege_id INT, --fk, uuid
-  item_organization_id INT, --fk, uuid
+  tdg_id SERIAL PRIMARY KEY,
+  tdg_privilege_id INT, --fk
+  item_organization_id INT, --fk
   data_first_name TEXT NOT NULL,
   data_last_name TEXT NOT NULL,
   data_email TEXT NOT NULL,
@@ -81,16 +82,24 @@ CREATE TABLE tdg_users (
 );
 
 CREATE TABLE tdg_privilege (
-  tdg_id INT PRIMARY KEY, --uuid
+  tdg_id INT PRIMARY KEY, 
   data_privilege_name TEXT NOT NULL
 );
 
 -- Submission
 CREATE TABLE submission (
     submission_id SERIAL PRIMARY KEY,
-    item_organization_id INTEGER NOT NULL, --FK
-    item_template_id INTEGER NOT NULL, --FK
+    item_organization_id INTEGER NOT NULL, --fk
+    item_template_id INTEGER NOT NULL, --fk
     date_submitted DATE NOT NULL
+);
+
+-- Auditor
+
+CREATE TABLE item_auditor (
+    item_id SERIAL PRIMARY KEY,
+    auditor_name TEXT NOT NULL,
+    user_id INTEGER --fk
 );
 
 -- Metadata
@@ -111,8 +120,40 @@ INSERT INTO metadata_selector
         (DEFAULT, 'checklistDropdown'),
         (DEFAULT, 'searchableChecklistDropdown');
 
+CREATE TABLE metadata_datatype (
+    datatype_id SERIAL PRIMARY KEY,
+    datatype_name TEXT NOT NULL,
+    frontend_name TEXT NOT NULL,
+    datatype_description TEXT NOT NULL
+);
 
--- Foreign Keys
+CREATE TABLE metadata_column ( -- Add featureitem_location??
+    column_id SERIAL PRIMARY KEY,
+    table_id INTEGER NOT NULL, --fk
+    frontend_name TEXT NOT NULL,
+    filter_selector INTEGER, --fk
+    input_selector INTEGER, --fk
+    information TEXT,
+    accuracy NUMERIC, 
+    nullable BOOLEAN,
+    datatype_id INTEGER --fk
+);
+
+CREATE TABLE metadata_table (
+    table_id SERIAL PRIMARY KEY,
+    frontend_name TEXT NOT NULL,
+    parent_id INTEGER --fk references itself
+);
+
+
+-- FOREIGN KEYS --
+
+-- Metadata
+ALTER TABLE metadata_column ADD FOREIGN KEY (table_id) REFERENCES metadata_table;
+ALTER TABLE metadata_column ADD FOREIGN KEY (filter_selector) REFERENCES metadata_selector;
+ALTER TABLE metadata_column ADD FOREIGN KEY (input_selector) REFERENCES metadata_selector;
+ALTER TABLE metadata_column ADD FOREIGN KEY (datatype_id) REFERENCES metadata_datatype;
+ALTER TABLE metadata_table ADD FOREIGN KEY (parent_id) REFERENCES metadata_table (table_id);
 
 -- Room, Building, Community, geom_region
 ALTER TABLE item_room ADD FOREIGN KEY (item_building_id) REFERENCES item_building;
@@ -133,70 +174,10 @@ ALTER TABLE item_sop ADD FOREIGN KEY (item_organization_id) REFERENCES item_orga
 ALTER TABLE item_template ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 ALTER TABLE item_template ADD FOREIGN KEY (tdg_user_id) REFERENCES tdg_users;
 
+-- Auditor
+ALTER TABLE item_auditor ADD FOREIGN KEY (user_id) REFERENCES tdg_users;
+
 -- Users, Privilege
 ALTER TABLE tdg_users ADD FOREIGN KEY (tdg_privilege_id) REFERENCES tdg_privilege;
 ALTER TABLE tdg_users ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- Feature tables
-
-/*
-CREATE TABLE feature_toilet (
-    observation_id SERIAL PRIMARY KEY,
-    submission_id INTEGER NOT NULL, --FK
-    featureitem_id INTEGER NOT NULL, --FK
-    data_date_conducted DATE NOT NULL, 
-    data_gpf NUMERIC,
-    data_commentary NUMERIC
-);
-
-CREATE TABLE subfeature_toilet_flushometer (
-    observation_id SERIAL PRIMARY KEY,
-    parent_id INTEGER NOT NULL, --FK
-    featureitem_id INTEGER NOT NULL, --FK
-    data_date_conducted DATE NOT NULL, 
-)
-
-CREATE TABLE list_m2m_toilet_flushometer_condition (
-    observation_id INTEGER NOT NULL, --FK
-    list_id INTEGER NOT NULL, --FK
-    PRIMARY KEY(observation_id, list_id)
-);
-
-CREATE TABLE list_m2m_toilet_flushometer_brand (
-    observation_id INTEGER NOT NULL, --FK
-    list_id INTEGER NOT NULL, --FK
-    PRIMARY KEY(observation_id, list_id)
-);
-
-CREATE TABLE feature_urinal (
-
-);
-
-
-*/
-
-
-
-
-
-
-
-
-
 

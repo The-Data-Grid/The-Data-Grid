@@ -1,12 +1,16 @@
 // TODO: referencing items that were specified
 //       everything inside a transaction?
 
+//       switch additionalCol into data and item
+//       because we need to differentiate item
+//       for item referencing 
+
 // SETUP //
 const pgp = require("pg-promise")();
 const cn = { //connection info
     host: 'localhost',
     port: 5432,
-    database: 'tdg_pls',
+    database: 'tdg_db_new',
     user: 'postgres',
     password: null,
     max: 5 // use up to 5 connections
@@ -51,11 +55,13 @@ const createFeature = {
         observation_id SERIAL PRIMARY KEY,\
         submission_id INTEGER NOT NULL,\
         featureitem_id INTEGER NOT NULL,\
+        auditor_id INTEGER,\
         data_date_conducted DATE NOT NULL)',
     additional: 'CREATE TABLE feature_$(feature:value) (\
         observation_id SERIAL PRIMARY KEY,\
         submission_id INTEGER NOT NULL,\
         featureitem_id INTEGER NOT NULL,\
+        auditor_id INTEGER,\
         data_date_conducted DATE NOT NULL,\
         $(additionalCols:value))'    
 };
@@ -65,11 +71,13 @@ const createSubfeature = {
         observation_id SERIAL PRIMARY KEY,\
         parent_id INTEGER NOT NULL,\
         featureitem_id INTEGER NOT NULL,\
+        auditor_id INTEGER,\
         data_date_conducted DATE NOT NULL)',
     additional: 'CREATE TABLE subfeature_$(parent:value)_$(subfeature:value) (\
         observation_id SERIAL PRIMARY KEY,\
         parent_id INTEGER NOT NULL,\
         featureitem_id INTEGER NOT NULL,\
+        auditor_id INTEGER,\
         data_date_conducted DATE NOT NULL, \
         $(additionalCols:value))'
 };
@@ -115,6 +123,12 @@ function makeSubfeatures(parent, dependencies) {
             //////////////////
             /// SUBFEATURE ///
             //////////////////
+
+            //feature to item_auditor
+            fkTable.push(`subfeature_${dependencies.join("_")}_${subfeature}`);
+            fkCol.push('auditor_id');
+            pkTable.push('item_auditor');
+            pkCol.push('item_id');
 
             //adding subfeature data and/or items
             
@@ -233,15 +247,21 @@ function constructDB(data) {
 
         //feature to submission foreign key
         fkTable.push(`feature_${feature}`);
-        fkCol.push('submission_id')
-        pkTable.push('submission')
-        pkCol.push('submission_id')
+        fkCol.push('submission_id');
+        pkTable.push('submission');
+        pkCol.push('submission_id');
 
         //sop_m2m to feature foreign key
-        fkTable.push('item_sop_m2m')
-        fkCol.push('observation_id')
+        fkTable.push('item_sop_m2m');
+        fkCol.push('observation_id');
         pkTable.push(`feature_${feature}`);
-        pkCol.push('observation_id')
+        pkCol.push('observation_id');
+
+        //feature to item_auditor
+        fkTable.push(`feature_${feature}`);
+        fkCol.push('auditor_id');
+        pkTable.push('item_auditor');
+        pkCol.push('item_id');
 
         //adding data and/or items
         if('additionalCols' in data[feature]) {
@@ -330,4 +350,5 @@ function constructDB(data) {
 
 constructDB(schema.wasteAudit);
 asyncConstructRelations(1000); // The wait time is somewhat arbitrary, it is just allowing enough time for the CREATE TABLE queries to resolve
+                               // With transactions this can change
 

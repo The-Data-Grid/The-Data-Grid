@@ -11,7 +11,10 @@ const col = {
 //Schema entry structure example:
 let example = {
     feature: {
-        additionalCols: [], //data or item columns for feature
+        additionalCols: [
+            col.data('some_rate', 'NUMERIC', "NOT NULL"),
+            col.item('')
+        ], //data or item columns for feature
         featureitem: {
             additionalCols: [], //data or item columns for featureitem of feature
             location: ''
@@ -90,7 +93,7 @@ const wasteAudit = {
             },
             basin: {
                 featureitem: {location: 'item_room'},
-                lists: ['condition']
+                lists: ['brand', 'condition']
             },
             sensor: {
                 featureitem: {location: 'item_room'},
