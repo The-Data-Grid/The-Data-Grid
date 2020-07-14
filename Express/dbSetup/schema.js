@@ -35,7 +35,7 @@ const wasteAudit = {
             col.data('gpf', 'NUMERIC', 'NOT NULL'),
             col.data('commentary', 'TEXT', '')
         ],
-        featureitem: {location: 'item_room'},  /// SHOULD BE ALLOWED TO DO THIS,
+        featureitem: {location: 'item_room'}, 
         subfeatures: {
             flushometer: {
                 featureitem: {location: 'item_room'},
