@@ -64,7 +64,7 @@ const joinClauseTableNames = {
 // Getting all Column to Table Relations for each feature request
 async function tableLookupSetup() {
     const setup = await db.many("select c.column_name, t.table_name from information_schema.tables as t inner join information_schema.columns as c on t.table_name = c.table_name where t.table_schema = 'public' and t.table_type = 'BASE TABLE'");
-    validLookup = {};
+    var validLookup = {};
     for(feature of validateFeatures) {
         validLookup[feature] = setup.filter(pair => joinClauseTableNames[feature].includes(pair.table_name)) //this is crazy
     }

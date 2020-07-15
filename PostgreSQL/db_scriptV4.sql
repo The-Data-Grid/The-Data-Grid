@@ -130,18 +130,21 @@ CREATE TABLE metadata_datatype (
 CREATE TABLE metadata_column ( -- Add featureitem_location??
     column_id SERIAL PRIMARY KEY,
     table_id INTEGER NOT NULL, --fk
-    frontend_name TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    backend_name TEXT NOT NULL,
+    list_name TEXT, --null if not list data
     filter_selector INTEGER, --fk
     input_selector INTEGER, --fk
+    nullable BOOLEAN NOT NULL,
     information TEXT,
     accuracy NUMERIC, 
-    nullable BOOLEAN,
-    datatype_id INTEGER --fk
+    datatype_id INTEGER NOT NULL --fk
 );
 
 CREATE TABLE metadata_table (
     table_id SERIAL PRIMARY KEY,
     frontend_name TEXT NOT NULL,
+    backend_name TEXT NOT NULL,
     parent_id INTEGER --fk references itself
 );
 
