@@ -130,7 +130,7 @@ CREATE TABLE metadata_datatype (
 CREATE TABLE metadata_column ( -- Add featureitem_location??
     column_id SERIAL PRIMARY KEY,
     table_id INTEGER NOT NULL, --fk
-    display_name TEXT NOT NULL,
+    frontend_name TEXT NOT NULL,
     backend_name TEXT NOT NULL,
     list_name TEXT, --null if not list data
     filter_selector INTEGER, --fk
