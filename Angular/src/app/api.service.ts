@@ -43,18 +43,17 @@ export class ApiService {
     return this.http.get<SetupTableObject>(temp_url + '/setup');
   }
 
-  // public getTableConfig(feature: string, columns: any):Observable<TableConfig> {
   public getTableObject(feature: string, columns: any, qsparams: any): any {
-    this.columnsString = this.makeColumnsString(columns);
-    this.temp = API_URL + "/a/" + feature;
-    if (this.columnsString) {
-      this.temp = this.temp + "/" + this.columnsString;
-    }
-    return this.http.get<TableObject>(this.temp, { params: qsparams });
+    // this.columnsString = this.makeColumnsString(columns);
+    // this.temp = API_URL + "/a/" + feature;
+    // if (this.columnsString) {
+    //   this.temp = this.temp + "/" + this.columnsString;
+    // }
+    // return this.http.get<TableObject>(this.temp, { params: qsparams });
 
 
 // for test server only:
-    // return this.http.get<TableObject>(temp_url + '/table');
+    return this.http.get<TableObject>(temp_url + '/table');
   }
 
 
