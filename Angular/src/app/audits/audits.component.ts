@@ -29,8 +29,14 @@ export class AuditsComponent implements OnInit {
   // }
   globalColumnsDropdown = [];
   globalColumnsCalendarRange = [];
+  globalCalenderEqual = [];
+  featureColumnsSearchableChecklistDropdown = [];
+  featureSearchableChecklistDropdown = [];
   featureColumnsDropdown = [];
+  featureColumnsSearchableDropdown = [];
   featureColumnsNumericChoice = [];
+  featureColumnsNumericEqual = [];
+  featureChecklistDropdown = [];
   selectedFeature = 'toilet';
   appliedFilterSelections = {};
   dropdownList = [
@@ -79,7 +85,29 @@ export class AuditsComponent implements OnInit {
       this.setupObject.featureColumns[0].forEach(column => {
         this.parseSetupObject(column, this.featureColumnsDropdown);
       });
+
+      this.setupObject.featureColumnsSearchableDropdown.forEach(column => {
+        this.parseSetupObject(column, this.featureColumnsSearchableDropdown);
+      });
+
+      this.setupObject.featureColumnsNumericEqual.forEach(column => {
+        this.parseSetupObject(column, this.featureColumnsNumericEqual);
+      });
+
+      this.setupObject.globalCalenderEqual.forEach(column => {
+        this.parseSetupObject(column, this.globalCalenderEqual);
+      });
+
+      this.setupObject.featureColumnsSearchableChecklistDropdown(column => {
+        this.parseSetupObject(column, this.featureColumnsSearchableChecklistDropdown);
+      })
+
+      this.setupObject.featureChecklistDropdown(column => {
+        this.parseSetupObject(column, this.featureChecklistDropdown);
+      })
+
     });
+
   }
 
   // there are many ways to do this
@@ -100,6 +128,21 @@ export class AuditsComponent implements OnInit {
           arr.push({ columnObject: column, selection: null });
           break;
     }
+        case "searchableDropdown": {
+          arr.push({ columnObject: column, selection: null});
+          break;
+        }
+        case "calendarEqual": {
+          arr.push({ columnObject: column, selection: null });
+          break;
+        }
+        case "searchableChecklistDropdown": {
+          arr.push({ columnObject: column, selection: null });
+          break;
+        }
+        case "checklistDropdown": {
+          arr.push({ columnObject: column, selection: null });
+        }
       }
     }
     if (column.default) {
@@ -187,6 +230,7 @@ export class AuditsComponent implements OnInit {
         delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
       }
     })
+
 
     this.getTableObject();
   }
