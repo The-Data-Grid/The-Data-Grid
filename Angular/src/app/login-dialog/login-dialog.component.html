@@ -16,7 +16,7 @@
     <h2 class="logIn" style="font-size: 48px; font-weight: 5; position:relative; right: -5%; top: -70px;">Log In</h2>
     <p>
         <mat-form-field appearance="outline" style="top: -65px; left: 5%; font-size: 14px;">
-          <mat-label>Username or Email</mat-label>
+          <mat-label>Email</mat-label>
           <input id="username_attempt" matInput (input) = "checkForms()" placeholder="">
         </mat-form-field>
     </p>
@@ -26,7 +26,7 @@
               <input id="password_attempt" matInput (input)="checkForms()" placeholder="">
             </mat-form-field>
         </p>
-        <a style="font-size: 10px; position: relative; top: -80px; right: -18px;" href="">Forgot Your Password?</a>
+        <a style="font-size: 10px; position: relative; top: -80px; right: -18px;" href="">Forgot Password?</a>
 <div class="signbuttons">
     <button mat-button color="primary" style="background-color: #5FA784; color: white; left: 35%; top: 80%; position: relative;">SIGN UP</button>
     <button mat-button color="primary" style="position: relative; color: white; left: 45%; top: 80%;" [class.normal]="formsFilledOut" [class.greyish]="!formsFilledOut">SIGN IN</button>
