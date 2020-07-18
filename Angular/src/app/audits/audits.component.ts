@@ -86,25 +86,25 @@ export class AuditsComponent implements OnInit {
         this.parseSetupObject(column, this.featureColumnsDropdown);
       });
 
-      this.setupObject.featureColumnsSearchableDropdown.forEach(column => {
-        this.parseSetupObject(column, this.featureColumnsSearchableDropdown);
-      });
+      // this.setupObject.featureColumnsSearchableDropdown.forEach(column => {
+      //   this.parseSetupObject(column, this.featureColumnsSearchableDropdown);
+      // });
 
-      this.setupObject.featureColumnsNumericEqual.forEach(column => {
-        this.parseSetupObject(column, this.featureColumnsNumericEqual);
-      });
+      // this.setupObject.featureColumnsNumericEqual.forEach(column => {
+      //   this.parseSetupObject(column, this.featureColumnsNumericEqual);
+      // });
 
-      this.setupObject.globalCalenderEqual.forEach(column => {
-        this.parseSetupObject(column, this.globalCalenderEqual);
-      });
+      // this.setupObject.globalCalenderEqual.forEach(column => {
+      //   this.parseSetupObject(column, this.globalCalenderEqual);
+      // });
 
-      this.setupObject.featureColumnsSearchableChecklistDropdown(column => {
-        this.parseSetupObject(column, this.featureColumnsSearchableChecklistDropdown);
-      })
+      // this.setupObject.featureColumnsSearchableChecklistDropdown(column => {
+      //   this.parseSetupObject(column, this.featureColumnsSearchableChecklistDropdown);
+      // })
 
-      this.setupObject.featureChecklistDropdown(column => {
-        this.parseSetupObject(column, this.featureChecklistDropdown);
-      })
+      // this.setupObject.featureChecklistDropdown(column => {
+      //   this.parseSetupObject(column, this.featureChecklistDropdown);
+      // })
 
     });
 
@@ -154,6 +154,7 @@ export class AuditsComponent implements OnInit {
   getTableObject() {
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
+      console.log(res);
       var i;
 
       // construct the column header array
@@ -169,12 +170,14 @@ export class AuditsComponent implements OnInit {
       //add rows to the table one by one
       this.tableObject.rowData.forEach(element => {
         var row = {};
+        row["hyperlinks"] = {};
         for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
           if (this.tableObject.columnDatatypeKey[i] == "string")
             row[this.tableObject.columnViewValue[i]] = element[i];
           else if (this.tableObject.columnDatatypeKey[i] == "hyperlink") {
             row[this.tableObject.columnViewValue[i]] = element[i].displayString;
-            row["link"] = element[i].URL;
+            row["hyperlinks"][this.tableObject.columnViewValue[i]] = element[i].URL;
+            console.log(row);
           }
         }
         this.rows.push(row);

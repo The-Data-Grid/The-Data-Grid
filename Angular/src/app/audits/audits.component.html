@@ -104,7 +104,7 @@
                     </ngx-datatable-column>
                     <ngx-datatable-column *ngFor="let col of hyperlinkColumns" [prop]="col.prop" [name]="col.prop">
                         <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
-                            <a [href]="row['link']">{{value}}</a>
+                            <a [href]="row['hyperlinks'][col.prop]">{{value}}</a>
                         </ng-template>
                     </ngx-datatable-column>
                 </ngx-datatable>
