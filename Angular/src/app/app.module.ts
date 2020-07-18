@@ -36,6 +36,7 @@ import { DialogComponent } from './login-dialog/login-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { UploadComponent } from './upload/upload.component';
 import { AboutComponent } from './about/about.component';
+import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { AboutComponent } from './about/about.component';
     UploadFilesComponent,
     DownloadComponent,
     UploadDialogComponent,
+    LockDialogComponent,
   ],
   imports: [
     BrowserModule,
