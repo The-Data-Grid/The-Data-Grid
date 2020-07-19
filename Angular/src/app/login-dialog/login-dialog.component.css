@@ -1,3 +1,10 @@
+@viewport {
+    width: 980px;
+    min-zoom: 0.25;
+    max-zoom: 5;
+    orientation: landscape;
+}
+
 .login {
     font-size: 48px;
     font-family: 'IBM Plex Sans', sans-serif;

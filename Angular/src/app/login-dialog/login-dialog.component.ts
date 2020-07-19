@@ -34,7 +34,7 @@ export class DialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dialogRef.updateSize('30%', '85%')
+    this.dialogRef.updateSize('400px', '550px')
   }
 
 
