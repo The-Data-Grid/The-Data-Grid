@@ -132,11 +132,11 @@ CREATE TABLE metadata_datatype (
 );
 
 CREATE TABLE metadata_column ( -- Add featureitem_location??
-    column_id SERIAL PRIMARY KEY,
+    column_id SERIAL PRIMARY KEY, -- used as the columnBackendID
     table_id INTEGER NOT NULL, --fk
     frontend_name TEXT NOT NULL,
     backend_name TEXT NOT NULL,
-    list_name TEXT, --null if not list data
+    query_string TEXT, -- query string to get dropdown, null if not dropdown
     filter_selector INTEGER, --fk
     input_selector INTEGER, --fk
     nullable BOOLEAN NOT NULL,
