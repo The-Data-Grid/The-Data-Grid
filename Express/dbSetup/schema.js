@@ -28,8 +28,8 @@ let example = {
 // current audit schemas //
 ///////////////////////////
 
-//Current waste audits
-const wasteAudit = {
+//Current water audits
+const waterAudit = {
     toilet: {
         additionalCols: [
             col.data('gpf', 'NUMERIC', 'NOT NULL'),
@@ -119,5 +119,5 @@ const wasteAudit = {
 }
 
 module.exports = {
-    wasteAudit
+    waterAudit
 }

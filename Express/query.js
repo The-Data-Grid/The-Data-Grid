@@ -11,7 +11,7 @@ pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a
 const cn = { //connection info
     host: 'localhost',
     port: 5432,
-    database: 'tdg_db',
+    database: 'tdg_db_new',
     user: 'postgres',
     password: null,
     max: 30 // use up to 30 connections

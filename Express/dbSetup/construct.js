@@ -32,7 +32,7 @@ async function asyncConstructRelations(ms) {
     console.log("Setting up foreign key constraints...")
     await timeout(ms); //we wait for the CREATE TABLE promises to resolve
 
-    // List of foreign key constrant queries
+    // Array of foreign key constrant queries
     let fkQueries = [];
     for(let index = 0; index < fkTable.length; index++) {
         fkQueries.push(db.none(pgp.as.format(reference.default, {fkTable: fkTable[index], fkCol: fkCol[index], pkTable: pkTable[index], pkCol: pkCol[index]})))
@@ -348,7 +348,7 @@ function constructDB(data) {
 
 // CALLING //
 
-constructDB(schema.wasteAudit);
+constructDB(schema.waterAudit);
 asyncConstructRelations(1000); // The wait time is somewhat arbitrary, it is just allowing enough time for the CREATE TABLE queries to resolve
                                // With transactions this can change
 
