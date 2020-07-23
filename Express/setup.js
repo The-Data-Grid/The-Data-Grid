@@ -25,7 +25,7 @@ const db = pgp(cn);
 // Making metadata JS objects
 async function metadataSetup() {
     // Select all columns and their respective tables
-    var column2Table = await db.any('SELECT col.backend_name, tab.backend_name FROM metadata_column AS col \
+    var column2Table = await db.any('SELECT col.column_id, col.backend_name, tab.backend_name FROM metadata_column AS col \
                                      INNER JOIN metadata_table AS tab ON col.table_id = tab.table_id');
 
     // Select all tables and their parents. If no parent then return NULL for parent.
