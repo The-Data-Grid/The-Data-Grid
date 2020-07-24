@@ -6,8 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-  <div>
-
+  <div *ngIf="modal=='sign_in'">
   <mat-dialog-actions>
     <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
   </mat-dialog-actions>
@@ -23,16 +22,116 @@
     <p>
             <mat-form-field appearance="outline" style="top: -45px; left: 5%; font-size: 14px;">
               <mat-label>Password</mat-label>
-              <input id="password_attempt" matInput (input)="checkForms()" placeholder="">
+              <input type="password" id="password_attempt" matInput (input)="checkForms()" placeholder="">
             </mat-form-field>
         </p>
         <a style="font-size: 10px; position: relative; top: -80px; right: -18px;" href="">Forgot Password?</a>
 
   <div style="position: absolute;">
-    <button mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white; margin-left: 150px;">SIGN UP</button>
+    <button (click)="sign_up_modal()" mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white; margin-left: 150px;">SIGN UP</button>
     <button mat-button color="primary" style="position: absolute; background-color:#569CD7; color: white; margin-left: 250px;">SIGN IN</button>
   </div>
 
 </div>
+
+<div *ngIf="modal=='sign_up'">
+
+  <mat-dialog-actions>
+    <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
+  </mat-dialog-actions>
+  <h1 class="sign_up_label">Sign Up</h1>
+
+  <p>
+    <mat-form-field appearance="outline" style="font-size: 14px; width:160px; font-size:12px;">
+      <mat-label>First Name</mat-label>
+      <input id="first_name" matInput placeholder="">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="font-size: 14px; width:160px; margin-left:20px; font-size:12px">
+      <mat-label>Last Name</mat-label>
+      <input id="last_name" matInput placeholder="">
+    </mat-form-field>
+</p>
+
+<p>
+  <mat-form-field class="sign_up_colors" appearance="outline" style="font-size: 14px; width:340px; font-size:12px; margin-top:-10px;">
+    <mat-label>Email</mat-label>
+    <input id="signup_email" matInput placeholder="">
+  </mat-form-field>
+
+</p>
+
+<p>
+  <mat-form-field appearance="outline" style="font-size: 14px; width:160px; font-size:12px; margin-top:-10px;">
+    <mat-label>Password</mat-label>
+    <input type="password" id="password_1" matInput placeholder="">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="font-size: 14px; width:160px; margin-left:20px; font-size:12px; margin-top:-10px;">
+    <mat-label>Confirm Password</mat-label>
+    <input type="password" id="password_2" matInput placeholder="" [disabled]="isPasswordAttempted()">
+  </mat-form-field>
+</p>
+<div *ngIf="!passwords_match()">
+  <p style="font-size:8px; margin-top:-30px; margin-left: 185px; color:red; position:absolute">Passwords don't match!</p>
+</div>
+
+<div>
+  <p style="margin-top: -12px; font-size: 12px; color: #707070">Date of Birth</p>
+</div>
+
+<div>
+<mat-form-field appearance="fill" style="font-size: 12px; width:110px;background:transparent !important;color: white !important;">
+  <mat-label>Month</mat-label>
+  <mat-select>
+    <mat-option *ngFor="let month of months" [value]="month.value">
+      {{month.viewValue}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field appearance="outline" style="font-size: 14px; font-size:12px;width:100px;margin-left:15px;top:-2px;">
+  <mat-label>Day</mat-label>
+  <input id="birthday_day" matInput placeholder="">
+</mat-form-field>
+
+<mat-form-field appearance="outline" style="font-size: 14px; font-size:12px;width:100px;margin-left:15px;top:-2px;">
+  <mat-label>Year</mat-label>
+  <input id="birthday_day" matInput placeholder="">
+</mat-form-field>
+
+
+</div>
+
+<div>
+    <mat-form-field appearance="outline" style="font-size: 14px; width:340px; font-size:12px; margin-top:6px;">
+    <mat-label>Gender</mat-label>
+    <input id="gender" matInput placeholder="">
+  </mat-form-field>
+
+</div>
+
+<div>
+
+</div>
+    <button (click)="checkSuccess()" mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white; margin-left: 240px;">REGISTER</button>
+    <button (click)="sign_in_modal()" mat-button color="primary" style="position: absolute; background-color:#BEBEBE; color: white; margin-left: 5px;">BACK</button>
+
+</div>
+
+<div *ngIf="modal=='success'">
+  <div style="color:white;background-color: #569CD7; width: 300px; margin-left:-24px;height:90px; position:absolute;margin-top: -24px;">
+  <h1 style="margin-left: 65px; margin-top:25px;">Success</h1>
+  <img src="assets/successicon.png" alt="Success!" style="position: absolute; height: 30px; width: 30px; margin-left: 200px; margin-top: -55px; z-index: 1001;">
+
+  <h2 style="margin-left: 50px; color:black; font-size:18px;margin-top:90px;">Successfully registered!</h2>
+  <button (click)="close()" mat-button color="primary" style="position: absolute; background-color: #569CD7; color: white; margin-left: 90px; margin-top:50px;">Continue to Site</button>
+
+</div>
+
+
+</div>
+
+
   </body>
 </html>

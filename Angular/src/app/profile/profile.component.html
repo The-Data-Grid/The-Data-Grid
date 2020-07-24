@@ -62,7 +62,7 @@
 
        <p class='email_label'>password:</p>
        <form class='form' id='password'>
-         <input type="text" (input)="formsChanged()" size="40" id="password_input_edit" value=""><br>
+         <input type="password" (input)="formsChanged()" size="40" id="password_input_edit" value=""><br>
        </form>
        
        <button mat-button color="primary" [class.noChanges]="!getFormStatus()" [class.changesMade]="getFormStatus()" (click)="changeInformation()">Save</button>
