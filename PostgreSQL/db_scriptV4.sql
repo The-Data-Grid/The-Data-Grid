@@ -149,7 +149,9 @@ CREATE TABLE metadata_table (
     table_id SERIAL PRIMARY KEY,
     frontend_name TEXT NOT NULL,
     backend_name TEXT NOT NULL,
-    parent_id INTEGER --fk references itself
+    parent_id INTEGER, --fk references itself
+    feature TEXT,
+    information TEXT
 );
 
 

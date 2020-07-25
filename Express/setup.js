@@ -24,9 +24,10 @@ const db = pgp(cn);
 
 // Making metadata JS objects
 async function metadataSetup() {
-    // Select all columns and their respective tables
-    var column2Table = await db.any('SELECT col.column_id, col.backend_name, tab.backend_name FROM metadata_column AS col \
-                                     INNER JOIN metadata_table AS tab ON col.table_id = tab.table_id');
+    // Select all column ids, column names and their respective table names
+    var id2Column2Table = await db.any('SELECT col.column_id, col.backend_name, tab.backend_name, tab.feature \
+                                        FROM metadata_column AS col \
+                                        INNER JOIN metadata_table AS tab ON col.table_id = tab.table_id');
 
     // Select all tables and their parents. If no parent then return NULL for parent.
     var tableParents = await db.any('SELECT child.backend_name, parent.backend_name FROM metadata_table AS child \
@@ -34,6 +35,20 @@ async function metadataSetup() {
 
     // Closing the connection !Important!
     db.$pool.end();
+    /* 
+    id2Column2Table format:
+    = {
+        id: {column: 'column name', table: 'table name', feature: 'feature name'}, //note that id is a string such as '3'
+        ...
+    }
+    to get table names from ids: (this will throw error if the id is not validated)
+    idInput = [1,4,23,9] //example
+    idInput.map(number => id2Column2Table[String(number)].table) 
+
+    construct table.column SQL syntax from ids:
+    idInput = [1,4,23,9] //example
+    idInput.map(number => id2Column2Table[String(number)]).map(object => `${object.table}.${object.column}`)
+     */
 };
 
 // Calling the metadata setup function
@@ -83,3 +98,8 @@ var metadata_selector;
 
 // Serves functionality of statement.js. We can use the format from statement.js
 // of ```tablename: {query: 'INNER JOIN...', dependencies: [] }```
+
+module.exports = {
+    id2Column2Table,
+    tableParents
+};
