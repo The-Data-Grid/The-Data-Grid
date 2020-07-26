@@ -12,6 +12,10 @@ const port = process.env.PORT || 4001;
 app.use(cors());
 app.use(bodyParser.json());
 
+// middleware
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: false}));
+
 // remove "X-Powered-By: Express" from header
 app.set('x-powered-by', false);
 
