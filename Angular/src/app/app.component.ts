@@ -42,6 +42,9 @@ export class AppComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
+    dialogConfig.width = "600px";
+    dialogConfig.height = "700px";
+
     this.dialog.open(LockDialogComponent, dialogConfig);
   }
 }

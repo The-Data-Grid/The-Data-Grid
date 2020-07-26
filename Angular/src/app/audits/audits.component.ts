@@ -86,25 +86,25 @@ export class AuditsComponent implements OnInit {
         this.parseSetupObject(column, this.featureColumnsDropdown);
       });
 
-      // this.setupObject.featureColumnsSearchableDropdown.forEach(column => {
-      //   this.parseSetupObject(column, this.featureColumnsSearchableDropdown);
-      // });
+      this.setupObject.featureColumns[0].forEach(column => {
+        this.parseSetupObject(column, this.featureColumnsSearchableDropdown);
+      });
 
-      // this.setupObject.featureColumnsNumericEqual.forEach(column => {
-      //   this.parseSetupObject(column, this.featureColumnsNumericEqual);
-      // });
+      this.setupObject.featureColumns[0].forEach(column => {
+        this.parseSetupObject(column, this.featureColumnsNumericEqual);
+      });
 
-      // this.setupObject.globalCalenderEqual.forEach(column => {
-      //   this.parseSetupObject(column, this.globalCalenderEqual);
-      // });
+      this.setupObject.globalCalenderEqual.forEach(column => {
+        this.parseSetupObject(column, this.globalCalenderEqual);
+      });
 
-      // this.setupObject.featureColumnsSearchableChecklistDropdown(column => {
-      //   this.parseSetupObject(column, this.featureColumnsSearchableChecklistDropdown);
-      // })
+      this.setupObject.featureColumns[0].forEach(column => {
+        this.parseSetupObject(column, this.featureColumnsSearchableChecklistDropdown);
+      })
 
-      // this.setupObject.featureChecklistDropdown(column => {
-      //   this.parseSetupObject(column, this.featureChecklistDropdown);
-      // })
+      this.setupObject.featureColumns[0].forEach(column => {
+        this.parseSetupObject(column, this.featureChecklistDropdown);
+      })
 
     });
 
