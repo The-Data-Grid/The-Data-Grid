@@ -81,9 +81,7 @@ function uploadParse(req, res, next) {
 ////// TEMPLATE PARSING //////
 
 function templateParse(req, res, next) {
-    const obj = JSON.parse(JSON.stringify(req.body));
-    res.send(obj); 
-    console.log(obj); // logging object after parsing
+    res.locals.parsed = JSON.parse(JSON.stringify(req.body));
     next(); // passing to template.js
 }
 

@@ -95,7 +95,8 @@ CREATE TABLE submission (
     submission_id SERIAL PRIMARY KEY,
     item_organization_id INTEGER NOT NULL, --fk
     item_template_id INTEGER NOT NULL, --fk
-    date_submitted DATE NOT NULL
+    date_submitted DATE NOT NULL,
+    data_submission_name TEXT
 );
 
 -- Auditor
