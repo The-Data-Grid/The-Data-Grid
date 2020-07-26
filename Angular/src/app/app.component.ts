@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
@@ -19,12 +19,18 @@ export class AppComponent implements OnInit {
 
   title = 'THE DATA GRID';
 
+
   constructor(private apiService: ApiService, private dialog: MatDialog) { }
 
   check() {
     console.log("lala");
   }
 
+  isHover = false;
+
+  changeHover() {
+    this.isHover = !this.isHover;
+  }
 
   openDialog() {
     const dialogConfig = new MatDialogConfig();
@@ -36,6 +42,8 @@ export class AppComponent implements OnInit {
   openMenu() {
     console.log("SUCCESS!")
   }
+
+
 
 
   ngOnInit() {

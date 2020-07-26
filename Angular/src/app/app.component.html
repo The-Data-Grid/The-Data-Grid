@@ -19,9 +19,9 @@
                        <mat-toolbar style="height: 50px;">
                         <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Home &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
                         <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data Filtering & Management &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                        <div class="dropdown">
+                        <div style="background-color:rgb(86, 156, 215);z-index: 1000;" (mouseenter)="changeHover()" (mouseleave)="changeHover()">
                                 <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 7px;">  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upload &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                                <div class="dropdown-content">
+                                <div *ngIf="isHover==true;" style="margin-top:0px;position: absolute;background-color: rgb(86, 156, 215);border-radius: 4px;">
                                         <a mat-button [routerLink]="'/upload-files'" >  Upload Data  </a>
                                         <br>
                                         <a mat-button [routerLink]="'/download'">   Retrieve Template </a>

@@ -23,20 +23,14 @@ body {
    bottom: 25px;
 }
  
- 
- 
-.dropdown {
-      position: relative;
-      display: inline-block;
-     }
-    
+      
 .dropdown-content {
    display: none;
    position: absolute;
    margin-bottom: calc(0%);
    background-color: rgb(86, 156, 215);
    border-radius: 4px;
-   z-index: 1;
+   z-index: -1;
 }
  
 .dropdown:hover .dropdown-content {
@@ -73,3 +67,4 @@ body {
 .activeButton {
    background-color: #5FA784;
 } 
+
