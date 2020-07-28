@@ -16,7 +16,7 @@ const cn = { //connection info
     password: null,
     max: 30 // use up to 30 connections
 };
-const db = pgp(cn); //db.function is used for pg-promise queries
+const db = pgp(cn); //db.function is used for pg-promise PostgreSQL queries
 
 ////// SETUP //////
 

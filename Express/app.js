@@ -25,7 +25,7 @@ app.set('x-powered-by', false);
 
 
 // Data Query
-app.get('/api/a/:feature/:include', parse.queryParse, query.featureQuery); 
+app.get('/api/audit/:feature/:include', parse.queryParse, query.featureQuery); 
 
 // Audit Upload
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);

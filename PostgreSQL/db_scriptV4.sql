@@ -132,6 +132,12 @@ CREATE TABLE metadata_datatype (
     datatype_description TEXT NOT NULL
 );
 
+/*
+INSERT INTO metadata_datatype (
+    (datatype_id, datatype_name, frontend_name, datatype_description)
+);
+*/
+
 CREATE TABLE metadata_column ( -- Add featureitem_location??
     column_id SERIAL PRIMARY KEY, -- used as the columnBackendID
     table_id INTEGER NOT NULL, --fk
