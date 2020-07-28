@@ -5,6 +5,68 @@ const PS = pgp.PreparedStatement;
  // NEW CODE
 const {idColumnTableLookup, tableParents} = require('./setup.js');
 
+// Inputs //
+
+let idColumnTableLookup = {
+    id: {column: 'column name', table: 'table name', feature: 'feature name'} //note that id is a string such as '3'
+}; // if idColumnTableLookup.feature == null, it is a global table
+
+let tableParents = {
+    table_name: parent_table_name, //if root feature parent_table_name is NULL
+};
+
+// // 
+
+// get all unique tables and features (if not null) from idCoumnTableLookup
+// [new ...Set(idColumnTableLookup)
+
+// Feature //
+/*
+You have to know how each table connects to the root
+
+>Within feature or subfeature
+    subfeature_... -> ... -> feature_...
+    feature_... (no join)
+
+>Location (??)
+    location_... -> featureitem_... (sometimes)
+
+>List
+    list_... -> list_m2m_... -> feature_...
+
+>Item
+    item_... -> subfeature_... -> feature
+
+
+*/
+// Global //
+
+// need to know foreign key and primary key 
+
+// need to know which table references which
+
+// Also know: What feature a table comes from or if it is global
+
+// get all globalClauseObjects and all featureClauseObjects
+
+// make tableNameSQLLookup from clauseObjects
+
+//toilet: {...globalClauseObjects, ...toiletClauseObjects}
+
+
+// Output
+
+let tableNameSQLLookup = {
+    feature1: { //ex: toilet and not feature_toilet
+        table_name: {query: 'SQL', dependencies: []}
+    }
+}
+
+
+
+
+
+
 
 // Select and Where clauses //
 const select = {
