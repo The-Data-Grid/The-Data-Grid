@@ -1,8 +1,9 @@
 const pgp = require("pg-promise");
 const PS = pgp.PreparedStatement;
 
- // NEW CODE
 
+ // NEW CODE
+const {idColumnTableLookup, tableParents} = require('./setup.js');
 
 
 // Select and Where clauses //
