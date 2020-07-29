@@ -19,6 +19,9 @@ let tableParents = {
 
 // get all unique tables and features (if not null) from idCoumnTableLookup
 // [new ...Set(idColumnTableLookup)
+let makeLocation = (locationTableName, referenceTableName, referenceColumnName) => `INNER JOIN ${locationTableName} ON ${referenceTableName}.${referenceColumnName} = ${locationTableName}.location_id`
+
+
 
 // Feature //
 /*
