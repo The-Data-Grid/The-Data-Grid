@@ -12,7 +12,7 @@
  
  
 <body>
-       <div id="wrapper">             
+       <div *ngIf="currentWindowWidth > 700" id="wrapper">             
  
        <header>
                <nav>
@@ -79,6 +79,30 @@
        
  
 </div>
+
+
+<div *ngIf="currentWindowWidth < 700" id="wrapper">             
+ 
+        <header>
+                <nav>
+                        <mat-toolbar style="height: 30px;">
+                                <h1 style="margin-left: 35%;">THE DATA GRID</h1>
+                </mat-toolbar>
+                </nav>
+        </header>
+        <router-outlet></router-outlet>
+        <footer id="footer">
+                <nav>                           
+                        <mat-toolbar style="height: 52px">
+                                <p style="margin-left: 47%;">2020</p>
+                        </mat-toolbar>
+                </nav>       
+                     
+        </footer>            
+        
+  
+ </div>
+ 
  
 </body>
  
