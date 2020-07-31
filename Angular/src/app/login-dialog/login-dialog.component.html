@@ -27,6 +27,7 @@
         </p>
         <a style="font-size: 10px; position: relative; top: -80px; right: -18px;" href="">Forgot Password?</a>
 
+        
   <div style="position: absolute;">
     <button (click)="sign_up_modal()" style="position:absolute; width:500px; outline: none; font-size:11px; background-color: transparent; border:0px; color: #581f8d; text-decoration: underline; cursor: pointer; margin-left:-40px; margin-top:10px;">SIGN UP</button>
     <!-- <button (click)="sign_up_modal()" mat-button style="font-size:11px;position: absolute; background-color:white; color: #4d79ff; margin-left: 170px; text-decoration: underline;">SIGN UP</button> -->
@@ -38,6 +39,7 @@
 <div *ngIf="modal=='sign_up'">
 
   <mat-dialog-actions>
+    <img src="https://i.imgur.com/IxY4SeO.png" alt="The Data Grid Logo" class="logo" style="top: -20px; right: 0%;">
     <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
   </mat-dialog-actions>
   <h1 class="sign_up_label">Sign Up</h1>
@@ -104,19 +106,19 @@
 
 </div>
 
-<div>
+<!-- <div>
     <mat-form-field appearance="outline" style="font-size: 14px; width:340px; font-size:12px; margin-top:6px;">
     <mat-label>Gender</mat-label>
     <input id="gender" matInput placeholder="">
   </mat-form-field>
 
-</div>
+</div> -->
 
 <div>
 
 </div>
-    <button (click)="checkSuccess()" mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white; margin-left: 240px;">REGISTER</button>
-    <button (click)="sign_in_modal()" mat-button color="primary" style="position: absolute; background-color:#BEBEBE; color: white; margin-left: 5px;">BACK</button>
+    <button (click)="checkSuccess()" mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white; margin-left: 240px; margin-top:20px;">REGISTER</button>
+    <button (click)="sign_in_modal()" mat-button color="primary" style="position: absolute; background-color:#BEBEBE; color: white; margin-left: 5px; margin-top:20px;">BACK</button>
 
 </div>
 
