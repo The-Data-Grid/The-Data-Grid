@@ -49,6 +49,19 @@ mat-form-field {
     font-family: 'IBM Plex Sans', sans-serif;
     margin-top:-66px;
 }
+
+/* .sign_up_button:hover {
+    background: none;
+} */
+
+.mat-button.sign_up_button ::ng-deep .mat-button-focus-overlay {
+    background: none;
+  }
+  
+
+.button:hover {
+    background-color: green !important;
+}
   
 
 mat-label {
