@@ -1,3 +1,12 @@
+/* entire sidenav including main content and sidenav bar */
+.sidenav-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    bottom: 50px;
+  }
+
 ::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {
     /*change color of label*/
     color: rgb(228, 228, 228) !important;
@@ -7,40 +16,27 @@
     background-color: rgba(228, 228, 228, 0.5) !important;
 }
 
-/* entire sidenav including main content and sidenav bar */
-
-.sidenav-container {
-    margin: 0px;
+/* main content */
+#audit-table-container {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
     text-align: left;
-    height: 100%;
-    z-index: 1;
-}
-
-/* main content (to the right of the sidenav bar) */
-
-.sidenav-content {
-    z-index: -1;
-    height: 100%;
-
-    background-color: white;
-}
+    width: 90%;
+  }
+  
 
 /* actual sidebar */
-
 .sidenav {
-    width: 14rem;
-    height: 100%;
-
+    width: 25%;
+    /* height: 100%; */
     text-align: center;
-    /* border: 0px solid; */
     color: rgb(228, 228, 228);
     background-color: rgba(73, 73, 73, .8) !important;
     box-shadow: 5px 0 3px -2px #888;
-    /* padding-top: 1rem; */
 }
 
 /* form fields within sidenav bar */
-
 .sidenav .mat-form-field {
     margin: 1rem, 1rem, 1rem, 1rem;
     font-size: small;
@@ -51,20 +47,6 @@
     margin-top: 3rem;
 }
 
-
-#audit-table-container {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-    width: 90%;
-    height: 70vh;
-    padding-top: 10vh;
-    padding-bottom: 20vh;
-    border-radius: 4px;
-    background-color: white;
-  }
-  
-
 #global-filters {
     background-color: rgba(73, 116, 165, 0.8);
 }
@@ -73,6 +55,6 @@
     background-color: rgba(73, 116, 165, 0.72);
 }
 
-#features-filters {
-    background-color: rgba(95, 167, 132, 0.8);
+#apply-button {
+    margin-bottom: 25px;
 }

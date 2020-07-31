@@ -47,7 +47,7 @@ export class AuditsComponent implements OnInit {
     { item_id: 5, item_text: 'New Delhi' }
   ];
   selectedItems = [];
-  dropdownSettings:IDropdownSettings = {
+  dropdownSettings: IDropdownSettings = {
     singleSelection: false,
     idField: 'item_id',
     textField: 'item_text',
@@ -127,9 +127,9 @@ export class AuditsComponent implements OnInit {
         case "numericChoice": {
           arr.push({ columnObject: column, selection: null });
           break;
-    }
+        }
         case "searchableDropdown": {
-          arr.push({ columnObject: column, selection: null});
+          arr.push({ columnObject: column, selection: null });
           break;
         }
         case "calendarEqual": {
@@ -149,8 +149,8 @@ export class AuditsComponent implements OnInit {
       this.defaultColumns.push(column.queryValue);
     }
 
-}
- 
+  }
+
   getTableObject() {
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
@@ -160,10 +160,10 @@ export class AuditsComponent implements OnInit {
       // construct the column header array
       for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
         if (this.tableObject.columnDatatypeKey[i] === "string") {
-          this.columns.push({prop: this.tableObject.columnViewValue[i]});
+          this.columns.push({ prop: this.tableObject.columnViewValue[i] });
         }
         else if (this.tableObject.columnDatatypeKey[i] === "hyperlink") {
-          this.hyperlinkColumns.push({prop: this.tableObject.columnViewValue[i]});
+          this.hyperlinkColumns.push({ prop: this.tableObject.columnViewValue[i] });
         }
       }
 
