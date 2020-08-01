@@ -4,7 +4,7 @@
 <head>
        <meta charset="UTF-8">
        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <link rel="icon" type="image/x-icon" href="../../favicon.png" />
+       <link rel="icon" type="image/x-icon" href="../../favicon2.png" />
        <title>Document</title>
        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -18,7 +18,7 @@
                <nav>
                        <mat-toolbar style="height: 50px;">
                         <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Home &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                        <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data Filtering & Management &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+                        <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Raw Data &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
                         <div style="background-color:rgb(86, 156, 215);z-index: 1000; margin-top:-1px;" (mouseenter)="changeHover()" (mouseleave)="changeHover()">
                                 <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 7px;">  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upload &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
                                 <div *ngIf="isHover==true;" style="margin-top:0px;position: absolute;background-color: rgb(86, 156, 215);border-radius: 4px;">

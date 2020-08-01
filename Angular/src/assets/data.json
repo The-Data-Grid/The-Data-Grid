@@ -1,0 +1,182 @@
+{
+    "setup": {
+        "globalColumns": [
+            {
+                "default": true,
+                "columnViewValue": "Template Name",
+                "queryValue": "template_name",
+                "selector": null
+            },
+            {
+                "default": false,
+                "columnViewValue": "SOP",
+                "queryValue": "sop",
+                "selector": null
+            },
+            {
+                "default": true,
+                "columnViewValue": "Building Name",
+                "queryValue": "building_name",
+                "selector": {
+                    "selectorKey": "dropdown",
+                    "selectorValues": [
+                        "Young Hall",
+                        "Boelter Hall"
+                    ]
+                }
+            }
+        ],
+        "featureViewValues": [
+            "toilet"
+        ],
+        "featureColumns": [
+            [
+                {
+                    "default": true,
+                    "columnViewValue": "GPF",
+                    "queryValue": "gpf",
+                    "selector": {
+                        "selectorKey": "numericChoice",
+                        "selectorValues": null
+                    }
+                },
+                {
+                    "default": true,
+                    "columnViewValue": "Basin Condition",
+                    "queryValue": "basin_condition_name",
+                    "selector": {
+                        "selectorKey": "dropdown",
+                        "selectorValues": [
+                            "Leaking",
+                            "Broken/Missing seat"
+                        ]
+                    }
+                },
+                {
+                    "default": true,
+                    "columnViewValue": "Basin Brand",
+                    "queryValue": "basin_brand_name",
+                    "selector": {
+                        "selectorKey": "dropdown",
+                        "selectorValues": [
+                            "Toilet Basin Brand 1",
+                            "Toilet Basin Brand 2"
+                        ]
+                    }
+                },
+                {
+                    "default": false,
+                    "columnViewValue": "GPF",
+                    "queryValue": "gpf",
+                    "selector": {
+                        "selectorKey": "numericEqual",
+                        "selectorValues": null
+                    }
+                },
+                {
+                    "default": true,
+                    "columnViewValue": "Date Submitted",
+                    "queryValue": "time_submitted",
+                    "selector": {
+                        "selectorKey": "calendarRange",
+                        "selectorValues": null
+                    }
+                },
+                {
+                    "default": false,
+                    "columnViewValue": "Date Submitted",
+                    "queryValue": "time_submitted",
+                    "selector": {
+                        "selectorKey": "calendarEqual",
+                        "selectorValues": null
+                    }
+                },
+                {
+                    "default": true,
+                    "columnViewValue": "Toilet Flushometer Brand",
+                    "queryValue": "flushometer_brand_name",
+                    "selector": {
+                        "selectorKey": "searchableDropdown",
+                        "selectorValues": [
+                            "Brand 1",
+                            "Brand 2"
+                        ]
+                    }
+                },
+                {
+                    "default": true,
+                    "columnViewValue": "Toilet Flushometer Condition",
+                    "queryValue": "flushometer_condition_name",
+                    "selector": {
+                        "selectorKey": "searchableDropdown",
+                        "selectorValues": [
+                            "Brand 1",
+                            "Brand 2"
+                        ]
+                    }
+                },
+                {
+                    "default": true,
+                    "columnViewValue": "Toilet Stall Condition",
+                    "queryValue": "stall_condition_name",
+                    "selector": {
+                        "selectorKey": "searchableChecklistDropdown",
+                        "selectorValues": [
+                            "Brand 1",
+                            "Brand 2"
+                        ]
+                    }
+                }
+            ]
+        ]
+    },
+    "table": {
+  "columnViewValue": [
+    "Date Submitted",
+    "Template Name",
+    "SOP",
+    "GPF",
+    "commentary"
+  ],
+  "columnDatatypeKey": [
+    "string",
+    "string",
+    "hyperlink",
+    "string",
+    "string"
+  ],
+  "rowData": [
+    [
+      "2020-01-14",
+      "Restroom Audit v1",
+      {
+        "displayString": "Restroom SOP v1",
+        "URL": "https://rat.com/"
+      },
+      "1.45",
+      "smells bad man"
+    ],
+    [
+      "2020-01-15",
+      "maintenance2",
+      {
+        "displayString": "frederick’s SOP 2",
+        "URL": "https://agar.io/"
+      },
+      "6.34",
+      "violent flush"
+    ],
+    [
+      "2020-01-16",
+      "e2",
+      {
+        "displayString": "ergo8",
+        "URL": "https://facebook.com/"
+      },
+      "4.35",
+      "high centripetal acceleration on flush, streamfunction computation out of bounds"
+    ]
+  ]
+}
+
+}
