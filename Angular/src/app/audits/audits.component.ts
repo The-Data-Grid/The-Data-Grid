@@ -25,7 +25,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 export class AuditsComponent implements OnInit {
   // variables for table 
-  columns = [];
+  dataTableColumns = [];
   hyperlinkColumns = [];
   rows = [];
   filteredData = [];
@@ -145,7 +145,7 @@ export class AuditsComponent implements OnInit {
       // construct the column header array
     //   for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
     //     if (this.tableObject.columnDatatypeKey[i] === "string") {
-    //       this.columns.push({ prop: this.tableObject.columnViewValue[i] });
+    //       this.dataTableColumns.push({ prop: this.tableObject.columnViewValue[i] });
     //     }
     //     else if (this.tableObject.columnDatatypeKey[i] === "hyperlink") {
     //       this.hyperlinkColumns.push({ prop: this.tableObject.columnViewValue[i] });

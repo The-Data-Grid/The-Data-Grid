@@ -91,7 +91,7 @@
                 <ngx-datatable *ngIf="tableObject" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
 
-                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col.prop" [name]="col.prop">
+                    <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
                     </ngx-datatable-column>
                     <ngx-datatable-column *ngFor="let col of hyperlinkColumns" [prop]="col.prop" [name]="col.prop">
                         <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
