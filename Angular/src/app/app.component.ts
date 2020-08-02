@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
@@ -18,6 +18,7 @@ const PORT = environment.port;
 export class AppComponent implements OnInit {
 
   title = 'THE DATA GRID';
+  currentWindowWidth;
 
 
   constructor(private apiService: ApiService, private dialog: MatDialog) { }
@@ -44,6 +45,10 @@ export class AppComponent implements OnInit {
   }
 
 
+  @HostListener('window:resize')
+  onResize() {
+    this.currentWindowWidth = window.innerWidth;
+  }
 
 
   ngOnInit() {
@@ -52,6 +57,7 @@ export class AppComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.width = "600px";
     dialogConfig.height = "700px";
+    this.currentWindowWidth = window.innerWidth;
 
     // this.dialog.open(LockDialogComponent, dialogConfig);
   }

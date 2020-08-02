@@ -12,7 +12,7 @@
  
  
 <body>
-       <div id="wrapper">             
+       <div *ngIf="currentWindowWidth > 700" id="wrapper">             
  
        <header>
                <nav>
@@ -22,9 +22,11 @@
                         <div style="background-color:rgb(86, 156, 215);z-index: 1000; margin-top:-1px;" (mouseenter)="changeHover()" (mouseleave)="changeHover()">
                                 <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 7px;">  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upload &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
                                 <div *ngIf="isHover==true;" style="margin-top:0px;position: absolute;background-color: rgb(86, 156, 215);border-radius: 4px;">
-                                        <a mat-button [routerLink]="'/upload-files'" >  Upload Data  </a>
+                                        <a mat-button [routerLink]="'/upload-files'" >  Upload Template  </a>
                                         <br>
-                                        <a mat-button [routerLink]="'/download'">   Retrieve Template </a>
+                                        <a mat-button [routerLink]="'/download'">   Download Template </a>
+                                        <br>
+                                        <a mat-button>   Online Audit </a>
                                 </div>
                         </div>
                         <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; About Us &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
@@ -77,6 +79,30 @@
        
  
 </div>
+
+
+<div *ngIf="currentWindowWidth < 700" id="wrapper">             
+ 
+        <header>
+                <nav>
+                        <mat-toolbar style="height: 30px;">
+                                <h1 style="margin-left: 35%;">THE DATA GRID</h1>
+                </mat-toolbar>
+                </nav>
+        </header>
+        <router-outlet></router-outlet>
+        <footer id="footer">
+                <nav>                           
+                        <mat-toolbar style="height: 52px">
+                                <p style="margin-left: 47%;">2020</p>
+                        </mat-toolbar>
+                </nav>       
+                     
+        </footer>            
+        
+  
+ </div>
+ 
  
 </body>
  
