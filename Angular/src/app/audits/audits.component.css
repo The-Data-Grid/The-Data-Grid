@@ -1,11 +1,12 @@
 /* entire sidenav including main content and sidenav bar */
+
 .sidenav-container {
     position: absolute;
     left: 0;
     right: 0;
     top: 50px;
     bottom: 50px;
-  }
+}
 
 ::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {
     /*change color of label*/
@@ -17,16 +18,17 @@
 }
 
 /* main content */
+
 #audit-table-container {
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
     text-align: left;
     width: 90%;
-  }
-  
+}
 
 /* actual sidebar */
+
 .sidenav {
     width: 25%;
     /* height: 100%; */
@@ -37,9 +39,10 @@
 }
 
 /* form fields within sidenav bar */
-.sidenav .mat-form-field {
+.mat-form-field {
     margin: 1rem, 1rem, 1rem, 1rem;
     font-size: small;
+    width: 80%;
 }
 
 .sidenav .mat-button {

@@ -12,7 +12,7 @@
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
             <br>
             <div class="global-filters">
-                Global Filters
+                <p>Global Filters</p> 
 
                 <!-- features filter is a special global filter-->
                 <mat-form-field>
@@ -25,30 +25,28 @@
                 </mat-form-field>
 
                 <!-- global dropdowns -->
-                <mat-form-field *ngFor="let column of globalColumnsDropdown">
-                    <mat-label>{{column.columnObject.columnViewValue}}</mat-label>
-                    <mat-select [(ngModel)]="column.selection">
-                        <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
+                <mat-form-field *ngFor="let column of globalSelectors.dropdown">
+                    <mat-label>{{column.columnFrontendName}}</mat-label>
+                    <mat-select [(ngModel)]="column.filterSelector.selectorValue">
+                        <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
                             {{val}}
-                        </mat-option>
+                        </mat-option> -->
                     </mat-select>
                 </mat-form-field>
 
                 <!-- global calendarRange -->
-                <div *ngFor="let column of globalColumnsCalendarRange">
-                    <mat-form-field>
-                        <mat-label>{{column.columnViewValue}} Start</mat-label>
-                        <input #datepicker matInput [matDatepicker]="picker"
+                <div *ngFor="let column of globalSelectors.calendarRange" fxLayout="row"
+                fxLayoutAlign="space-around center">
+                    <mat-form-field >
+                        <mat-label>{{column.columnFrontendName}} Range</mat-label>
+                        <input #datepicker matInput [matDatepicker]="picker1"
                             (dateInput)="applyDateFilter($event.target.value)">
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-datepicker #picker></mat-datepicker>
-                        <mat-label>{{column.columnViewValue}} End</mat-label>
-                        <input #datepicker matInput [matDatepicker]="picker"
+                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                        <input #datepicker matInput [matDatepicker]="picker2"
                             (dateInput)="applyDateFilter($event.target.value)">
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
                     </mat-form-field>
                 </div>
 
@@ -60,38 +58,30 @@
             <div class="features-filters" *ngIf="selectedFeature">
                 Feature Filters
                 <!-- feature dropdowns -->
-                <mat-form-field *ngFor="let column of featureColumnsDropdown">
-                    <mat-label>{{column.columnObject.columnViewValue}}</mat-label>
-                    <mat-select [(ngModel)]="column.selection">
-                        <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
+                <mat-form-field *ngFor="let column of featureSelectors.dropdown">
+                    <mat-label>{{column.columnFrontendName}}</mat-label>
+                    <mat-select [(ngModel)]="column.filterSelector.selectorValue">
+                        <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
                             {{val}}
-                        </mat-option>
+                        </mat-option> -->
                     </mat-select>
                 </mat-form-field>
 
                 <!-- feature numeric choice -->
-                <mat-form-field *ngFor="let column of featureColumnsNumericChoice">
-                    <mat-label>Minimum {{column.columnObject.columnViewValue}}</mat-label>
-                    <input matInput placeholder="ex: 4.5" [(ngModel)]='column.selection'>
+                <mat-form-field *ngFor="let column of featureSelectors.numericChoice">
+                    <mat-label>{{column.columnFrontendName}}</mat-label>
+                    <input matInput placeholder="ex: 4.5" [(ngModel)]='column.filterSelector.selectorValue'>
                 </mat-form-field>
 
-
-                <!-- just display selector name -->
-                <div *ngFor="let column of featureColumnsNumericChoice">
-                    {{column.columnObject.columnViewValue}}
-                </div>
-
-                <ng-multiselect-dropdown class="multi" [placeholder]="'City'" [(ngModel)]="selectedItems"
+                <!-- DON'T DELETE BELOW SECTION: MULTISELECT DROPDOWN EXAMPLE-->
+                <!-- <ng-multiselect-dropdown class="multi" [placeholder]="'City'" [(ngModel)]="selectedItems"
                     [settings]="dropdownSettings" [data]="dropdownList" (onSelect)="onItemSelect($event)"
                     (onSelectAll)="onSelectAll($event)">
-                </ng-multiselect-dropdown>
+                </ng-multiselect-dropdown> -->
             </div>
 
 
             <button id="apply-button" mat-button (click)="applyFilters()">APPLY</button>
-            <br>
-
-
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">

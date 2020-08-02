@@ -53,6 +53,6 @@ export class AppComponent implements OnInit {
     dialogConfig.width = "600px";
     dialogConfig.height = "700px";
 
-    this.dialog.open(LockDialogComponent, dialogConfig);
+    // this.dialog.open(LockDialogComponent, dialogConfig);
   }
 }

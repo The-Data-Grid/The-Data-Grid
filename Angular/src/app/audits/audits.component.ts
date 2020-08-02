@@ -9,6 +9,18 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
   styleUrls: ['./audits.component.css']
 })
 
+// export interface SelectorTypeObject {
+//   numericChoice: [];
+//   numericEqual: [];
+//   calendarRange: [];
+//   calendarEqual: [];
+//   dropdown: [];
+//   searchableDropdown: [];
+//   checklistDropdown: [];
+//   searchableChecklistDropdown: [];
+//   text: [];
+//   bool: [];
+// }
 
 
 export class AuditsComponent implements OnInit {
@@ -37,7 +49,7 @@ export class AuditsComponent implements OnInit {
   featureColumnsNumericChoice = [];
   featureColumnsNumericEqual = [];
   featureChecklistDropdown = [];
-  selectedFeature = 'toilet';
+  selectedFeature = 'Toilet';
   appliedFilterSelections = {};
   dropdownList = [
     { item_id: 1, item_text: 'Mumbai' },
@@ -58,6 +70,10 @@ export class AuditsComponent implements OnInit {
     allowSearchFilter: true
   };
 
+  // todo: figure out how to do this with types
+  featureSelectors = {};
+  globalSelectors = {};
+
   constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
   ngOnInit() {
@@ -69,119 +85,88 @@ export class AuditsComponent implements OnInit {
     this.apiService.getSetupTableObject().subscribe((res) => {
       this.setupObject = res;
 
-      // populate the array that holds feature options i.e. toilet, sink
-      this.featureDropdownValues = this.setupObject.featureViewValues;
+      // parse global columns
+      this.globalSelectors = this.parseColumn(this.setupObject.globalColumns);
 
-      // get global filters. sort them by the type of selector by pushing them into arrays
-      // "columnObject" property holds information about the selector
-      // "selection" property will hold the user's selection when user interacts with sidebar
-      this.setupObject.globalColumns.forEach(column => {
-        this.parseSetupObject(column, this.globalColumnsDropdown);
-        // keep track of the default columns (denoted by setupObject) to be displayed in the table. 
-        // need to use them later to request them from the api
+      // parse feature columns
+      this.setupObject.featureColumns.forEach(featureColumn => {
+        this.featureDropdownValues.push(featureColumn.frontendName);
+        this.featureSelectors[featureColumn.frontendName] = this.parseColumn(featureColumn.dataColumns);
       });
-
-      //get feature-specific filters
-      this.setupObject.featureColumns[0].forEach(column => {
-        this.parseSetupObject(column, this.featureColumnsDropdown);
-      });
-
-      this.setupObject.featureColumns[0].forEach(column => {
-        this.parseSetupObject(column, this.featureColumnsSearchableDropdown);
-      });
-
-      this.setupObject.featureColumns[0].forEach(column => {
-        this.parseSetupObject(column, this.featureColumnsNumericEqual);
-      });
-
-      this.setupObject.globalCalenderEqual.forEach(column => {
-        this.parseSetupObject(column, this.globalCalenderEqual);
-      });
-
-      this.setupObject.featureColumns[0].forEach(column => {
-        this.parseSetupObject(column, this.featureColumnsSearchableChecklistDropdown);
-      })
-
-      this.setupObject.featureColumns[0].forEach(column => {
-        this.parseSetupObject(column, this.featureChecklistDropdown);
-      })
-
+      console.log(this.globalSelectors);
+      console.log(this.featureSelectors);
     });
 
   }
 
-  // there are many ways to do this
-  // pass in globalcolumns array from the setup object
-  // pass in a variable that tells you if its global column or feature column
-  parseSetupObject(column, arr) {
-    if (column.selector) {
-      switch (column.selector.selectorKey) {
-        case "dropdown": {
-          arr.push({ columnObject: column, selection: null });
-          break;
-        }
-        case "calendarRange": {
-          arr.push({ columnObject: column, selection: null });
-          break;
-        }
-        case "numericChoice": {
-          arr.push({ columnObject: column, selection: null });
-          break;
-        }
-        case "searchableDropdown": {
-          arr.push({ columnObject: column, selection: null });
-          break;
-        }
-        case "calendarEqual": {
-          arr.push({ columnObject: column, selection: null });
-          break;
-        }
-        case "searchableChecklistDropdown": {
-          arr.push({ columnObject: column, selection: null });
-          break;
-        }
-        case "checklistDropdown": {
-          arr.push({ columnObject: column, selection: null });
+  parseColumn(columns): any {
+    let selectors = {
+      numericChoice: [],
+      numericEqual: [],
+      calendarRange: [],
+      calendarEqual: [],
+      dropdown: [],
+      searchableDropdown: [],
+      checklistDropdown: [],
+      searchableChecklistDropdown: [],
+      text: [],
+      bool: []
+    };
+
+    columns.forEach(column => {
+      if (column.filterSelector) {
+        switch (column.filterSelector.selectorKey) {
+          case "dropdown": { selectors.dropdown.push(column); break; }
+          case "numericChoice": { selectors.numericChoice.push(column); break; }
+          case "numericEqual": { selectors.numericEqual.push(column); break; }
+          case "calendarRange": { selectors.calendarRange.push(column); break; }
+          case "calendarEqual": { selectors.calendarEqual.push(column); break; }
+          case "searchableDropdown": { selectors.searchableDropdown.push(column); break; }
+          case "checklistDropdown": { selectors.checklistDropdown.push(column); break; }
+          case "searchableChecklistDropdown": { selectors.searchableChecklistDropdown.push(column); break; }
+          case "text": { selectors.text.push(column); break; }
+          case "bool": { selectors.bool.push(column); break; }
         }
       }
-    }
-    if (column.default) {
-      this.defaultColumns.push(column.queryValue);
-    }
+      if (column.default) {
+        this.defaultColumns.push(column.queryValue);
+      }
+    });
 
+    return selectors;
   }
 
   getTableObject() {
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
-      console.log(res);
+      // console.log(res);
       var i;
 
       // construct the column header array
-      for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
-        if (this.tableObject.columnDatatypeKey[i] === "string") {
-          this.columns.push({ prop: this.tableObject.columnViewValue[i] });
-        }
-        else if (this.tableObject.columnDatatypeKey[i] === "hyperlink") {
-          this.hyperlinkColumns.push({ prop: this.tableObject.columnViewValue[i] });
-        }
-      }
+    //   for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
+    //     if (this.tableObject.columnDatatypeKey[i] === "string") {
+    //       this.columns.push({ prop: this.tableObject.columnViewValue[i] });
+    //     }
+    //     else if (this.tableObject.columnDatatypeKey[i] === "hyperlink") {
+    //       this.hyperlinkColumns.push({ prop: this.tableObject.columnViewValue[i] });
+    //     }
+    //   }
 
-      //add rows to the table one by one
-      this.tableObject.rowData.forEach(element => {
-        var row = {};
-        row["hyperlinks"] = {};
-        for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
-          if (this.tableObject.columnDatatypeKey[i] == "string")
-            row[this.tableObject.columnViewValue[i]] = element[i];
-          else if (this.tableObject.columnDatatypeKey[i] == "hyperlink") {
-            row[this.tableObject.columnViewValue[i]] = element[i].displayString;
-            row["hyperlinks"][this.tableObject.columnViewValue[i]] = element[i].URL;
-            console.log(row);
-          }
-        }
-        this.rows.push(row);
-      })
+    //   //add rows to the table one by one
+    //   this.tableObject.rowData.forEach(element => {
+    //     var row = {};
+    //     row["hyperlinks"] = {};
+    //     for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
+    //       if (this.tableObject.columnDatatypeKey[i] == "string")
+    //         row[this.tableObject.columnViewValue[i]] = element[i];
+    //       else if (this.tableObject.columnDatatypeKey[i] == "hyperlink") {
+    //         row[this.tableObject.columnViewValue[i]] = element[i].displayString;
+    //         row["hyperlinks"][this.tableObject.columnViewValue[i]] = element[i].URL;
+    //         console.log(row);
+    //       }
+    //     }
+    //     this.rows.push(row);
+    //   })
 
     });
   }
