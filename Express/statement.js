@@ -8,7 +8,14 @@ const {idColumnTableLookup, tableParents} = require('./setup.js');
 // Inputs //
 
 let idColumnTableLookup = {
-    id: {column: 'column name', table: 'table name', feature: 'feature name'} //note that id is a string such as '3'
+    id: {
+            column: 'column name',
+            table: 'table name', 
+            feature: 'feature name',
+            referenceColumn: 'column name', 
+            referenceTable: 'table name' //null if type_name == local
+        }
+          //note that id is a string such as '3'
 }; // if idColumnTableLookup.feature == null, it is a global table
 
 let tableParents = {
@@ -19,24 +26,47 @@ let tableParents = {
 
 // get all unique tables and features (if not null) from idCoumnTableLookup
 // [new ...Set(idColumnTableLookup)
-let makeLocation = (locationTableName, referenceTableName, referenceColumnName) => `INNER JOIN ${locationTableName} ON ${referenceTableName}.${referenceColumnName} = ${locationTableName}.location_id`
-
-
 
 // Feature //
 /*
-You have to know how each table connects to the root
+
+!!!
+Feature, subfeature, and featureitem tables are joined only with the table name information. So a lookup
+that inputs only the names of backend tables
 
 >Within feature or subfeature
     subfeature_... -> ... -> feature_...
     feature_... (no join)
 
+>Featureitem
+    featureitem_... -> subfeature_... (or directly) -> feature_... 
+
+!!! Location, item, and list tables are joined with table name, reference column name, 
+    and reference table name information
+
 >Location (??)
     location_... -> featureitem_... (sometimes)
 
+*/
+let makeLocation = (locationTableName, referenceTableName, referenceColumnName) => `INNER JOIN ${locationTableName} ON ${referenceTableName}.${referenceColumnName} = ${locationTableName}.location_id`
+/*
 >List
     list_... -> list_m2m_... -> feature_...
+*/
+let listJoin = {
+    feature: {
+        listName_referenceTableName_referenceColumnName : { //Join m2m to audit table then join 
+            query: 'INNER JOIN $(listName:value)_m2m \
+                    ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
+                    INNER JOIN $(listName:value) \
+                    ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+            dependencies: [referenceTableName]
+        }
+    }
+    
+}
 
+/*
 >Item
     item_... -> subfeature_... -> feature
 
