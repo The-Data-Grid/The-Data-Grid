@@ -27,7 +27,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import { ProfileComponent } from './profile/profile.component';
+// import { ProfileComponent } from './profile/profile.component';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { DownloadComponent } from './download/download.component';
 import { UploadDialogComponent } from './upload-dialog/upload-dialog.component';
@@ -37,6 +37,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { UploadComponent } from './upload/upload.component';
 import { AboutComponent } from './about/about.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
+import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { PasswordAuthenticationComponent } from './password-authentication/password-authentication.component';
 
 @NgModule({
   declarations: [
@@ -46,11 +48,13 @@ import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
     DialogComponent,
     UploadComponent,
     AboutComponent,
-    ProfileComponent,
+    // ProfileComponent,
     UploadFilesComponent,
     DownloadComponent,
     UploadDialogComponent,
     LockDialogComponent,
+    ProfilePageComponent,
+    PasswordAuthenticationComponent,
   ],
   imports: [
     BrowserModule,

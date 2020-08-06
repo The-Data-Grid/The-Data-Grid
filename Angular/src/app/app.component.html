@@ -12,7 +12,8 @@
  
  
 <body>
-       <div *ngIf="currentWindowWidth > 700" id="wrapper">             
+       <!-- <div *ngIf="currentWindowWidth > 700" id="wrapper">              -->
+        <div id="wrapper">
  
        <header>
                <nav>
@@ -30,7 +31,7 @@
                                 </div>
                         </div>
                         <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; About Us &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                        <a mat-button [routerLink]="'/profile'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; My Profile (mock) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+                        <a mat-button [routerLink]="'/profile-page'" routerLinkActive="activeButton" style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; My Profile (mock) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
                         <span class="example-spacer"></span>
                         <a mat-button (click)="openDialog()" style="right: 0%; height: 100%; padding: 7px;">Log In</a>
                </mat-toolbar>
@@ -81,7 +82,7 @@
 </div>
 
 
-<div *ngIf="currentWindowWidth < 700" id="wrapper">             
+<!-- <div *ngIf="currentWindowWidth < 700" id="wrapper">             
  
         <header>
                 <nav>
@@ -101,7 +102,7 @@
         </footer>            
         
   
- </div>
+ </div> -->
  
  
 </body>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100&display=swap" rel="stylesheet">
+</head>
+
+<div class="profile_info">
+    <div style="width: 20px;" (mouseenter)="hoverOnAvatar()" (mouseleave)="hoverOnAvatar()">
+    <img class="avatar" [class.profile_hover]="isAvatarHover" src="assets/default-user.png" alt="Avatar">
+    <div *ngIf="isAvatarHover" (mouseenter)="hoverOnEditButton()">
+        <img style="cursor: pointer; position: absolute; width: 20px; margin-left: -160px; margin-top:-35px" src="assets/edit_icon.png">
+    </div>
+</div>
+    <h1 class="myInfoLabel">My Information</h1>
+    
+<div>
+<div style="display: inline-block;">
+  <p class='email_label'>email:</p>
+  <div>
+  <input style="margin-left: 80px; top: -35px;" disabled=disabled type="text" size="45" id="email_input" value="">
+</div>
+  <img (click)="openDialog()" style="cursor: pointer; top:-73px;position: relative;left:105%;width: 25px;display:inline-block" src="assets/edit_icon.png">
+</div>
+</div>
+  
+
+<div style="display: inline-block; margin-top: -50px;">
+  <p class='password_label'>password:</p>
+  <div>
+    <input style="margin-left: 80px; top:-35px" disabled=disabled type="password" size="45" id="password_input" value=""><br>
+</div>
+<img (click)="openDialog()" style="cursor: pointer; top:-73px;position: relative;left:105%;width: 25px;display:inline-block" src="assets/edit_icon.png">
+</div>
+
+<h2 class="preferencesLabel">Email Preferences</h2>
+
+<div>
+  <div style="margin-left: -10px; margin-top: -5px;">
+    <div class='wrapper'>
+    <label class="container" id="gpf">Quarterly Updates
+        <input class="checkmarklocation" type="checkbox" checked="checked">
+        <span class="checkmark"></span>
+    </label>
+  </div>
+  </div>
+  </div>
+
+  <h3 class="privacyLabel">Privacy</h3>
+
+  <div>
+    <div style="margin-left: -10px; margin-top: -8px;">
+      <div class='wrapper'>
+      <label class="container" id="gpf">Email visible to public
+          <input class="checkmarklocation" type="checkbox" checked="checked">
+          <span class="checkmark"></span>
+      </label>
+    </div>
+    </div>
+    </div>
+
+    <!-- <div id="audit-table-container">
+      <ngx-datatable #table class="material" [headerHeight]="50" [footerHeight]="50"
+          rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
+
+          <ngx-datatable-column *ngFor="let col of OrganizationColumns" [prop]="col.prop" [name]="col.prop">
+          </ngx-datatable-column>
+      </ngx-datatable>
+  </div> -->
+
+    <div id="OrganizationTable" style="width: 800px; margin-left: -200px; margin-top: 50px;">
+      <h3 style="margin-left: 315px;">
+        My Organizations
+      </h3>
+      <button mat-button class="AddOrganization">Add</button>
+      <ngx-datatable
+        class="material"
+        [rows]="rows"
+        columnMode="force"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        rowHeight="auto"
+        [scrollbarH]="true"
+        [limit]="5"
+      >
+      <ngx-datatable-column *ngFor="let col of OrganizationColumns" [prop]="col.prop" [name]="col.prop"></ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+
+    <div style="width: 800px; margin-left: -200px; margin-top: 50px;">
+      <h3 style="margin-left: 315px;">
+        Donations and Benefits
+      </h3>
+      <ngx-datatable
+        class="material"
+        [rows]="DonationRows"
+        columnMode="force"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        rowHeight="auto"
+        [scrollbarH]="true"
+        [limit]="5"
+      >
+      <ngx-datatable-column *ngFor="let col of DonationColumns" [prop]="col.prop" [name]="col.prop"></ngx-datatable-column>
+
+      </ngx-datatable>
+    </div>
+
+    <button mat-button class="deleteAccountButton">Delete Account</button>
+
+
+  
+
+</div>
