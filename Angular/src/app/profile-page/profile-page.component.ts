@@ -51,9 +51,9 @@ export class ProfilePageComponent implements OnInit {
 
 
   isAvatarHover = false;
-  LAAuditsMembers = ["Antonio Gramsci", "Amadeo Bordiga"]
+  LAAuditsMembers = ["Antonio Gramsci", "Thomas Pynchon"]
   MidwestMembers = ["Robert James Fischer", "Paul Charles Morphy", "Judit Pulgar"]
-  TriStateMembers = ["Louisa May Alcott", "Thomas Pynchon"]
+  TriStateMembers = ["Louisa May Alcott", "Orson Welles"]
 
   rows = [
     {Organization: 'Los Angeles Audits', Privileges: 'Superuser', Members: this.LAAuditsMembers.join(",  ") },
