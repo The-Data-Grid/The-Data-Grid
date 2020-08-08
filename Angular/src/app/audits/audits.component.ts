@@ -34,6 +34,7 @@ export class AuditsComponent implements OnInit {
 
   // variables for filtering sidebar
   setupObject;
+  datatypes;
   defaultColumns = [];
   featureDropdownValues = [];
   // global = {
@@ -93,8 +94,11 @@ export class AuditsComponent implements OnInit {
         this.featureDropdownValues.push(featureColumn.frontendName);
         this.featureSelectors[featureColumn.frontendName] = this.parseColumn(featureColumn.dataColumns);
       });
-      console.log(this.globalSelectors);
-      console.log(this.featureSelectors);
+
+      // get datatypes array
+      this.datatypes = this.setupObject.datatypes;
+      // console.log(this.globalSelectors);
+      // console.log(this.featureSelectors);
     });
 
   }
@@ -137,38 +141,102 @@ export class AuditsComponent implements OnInit {
   }
 
   getTableObject() {
+    // clear the column headers
+    this.dataTableColumns = [];
+    this.hyperlinkColumns = [];
+    var i;
+
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
-      // console.log(res);
       var i;
+      console.log(this.setupObject);
 
-      // construct the column header array
-    //   for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
-    //     if (this.tableObject.columnDatatypeKey[i] === "string") {
-    //       this.dataTableColumns.push({ prop: this.tableObject.columnViewValue[i] });
-    //     }
-    //     else if (this.tableObject.columnDatatypeKey[i] === "hyperlink") {
-    //       this.hyperlinkColumns.push({ prop: this.tableObject.columnViewValue[i] });
-    //     }
-    //   }
+      // construct the column header arrays
+      for (i = 0; i < this.tableObject.columnIndex.length; i++) {
+        // globals
+        if (this.tableObject.columnIndex[i][0] === null) {
+          var idx = this.tableObject.columnIndex[i][1];
+          var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
 
-    //   //add rows to the table one by one
-    //   this.tableObject.rowData.forEach(element => {
-    //     var row = {};
-    //     row["hyperlinks"] = {};
-    //     for (i = 0; i < this.tableObject.columnDatatypeKey.length; i++) {
-    //       if (this.tableObject.columnDatatypeKey[i] == "string")
-    //         row[this.tableObject.columnViewValue[i]] = element[i];
-    //       else if (this.tableObject.columnDatatypeKey[i] == "hyperlink") {
-    //         row[this.tableObject.columnViewValue[i]] = element[i].displayString;
-    //         row["hyperlinks"][this.tableObject.columnViewValue[i]] = element[i].URL;
-    //         console.log(row);
-    //       }
-    //     }
-    //     this.rows.push(row);
-    //   })
+          switch (this.datatypes[datatypeIdx]) {
+            case "string": {
+              this.dataTableColumns.push({
+                prop: this.setupObject.globalColumns[idx].columnFrontendName
+              }); break;
+            }
+            case "hyperlink": {
+              this.hyperlinkColumns.push({
+                prop: this.setupObject.globalColumns[idx].columnFrontendName
+              }); break;
+            }
+            case "bool": {
+              // TODO: make aray for bool
+              break;
+            }
+          }
+        }
+        // features
+        else {
+          var idx1 = this.tableObject.columnIndex[i][0];
+          var idx2 = this.tableObject.columnIndex[i][1];
+          var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
 
+          console.log(this.setupObject.featureColumns[idx1].dataColumns[idx2]);
+
+          switch (this.datatypes[datatypeIdx]) {
+            case "string": {
+              this.dataTableColumns.push({
+                prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName
+              }); break;
+            }
+            case "hyperlink": {
+              this.hyperlinkColumns.push({
+                prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName
+              }); break;
+            }
+            case "bool": {
+              // TODO: make aray for bool
+              break;
+            }
+          }
+        }
+      }
+
+      //   //add rows to the table one by one
+      this.tableObject.rowData.forEach(element => {
+        var row = {};
+        row["hyperlinks"] = {};
+        for (i = 0; i < this.tableObject.columnIndex.length; i++) {
+          if (this.tableObject.columnIndex[i][0] === null) {
+            var idx = this.tableObject.columnIndex[i][1];
+            var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
+
+            if (this.datatypes[datatypeIdx] == "string")
+              row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i];
+            else if (this.datatypes[datatypeIdx] == "hyperlink") {
+              row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i].displayString;
+              row["hyperlinks"][this.setupObject.globalColumns[idx].columnFrontendName] = element[i].URL;
+              // console.log(row);
+            }
+          }
+          else {
+            var idx1 = this.tableObject.columnIndex[i][0];
+            var idx2 = this.tableObject.columnIndex[i][1];
+            var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
+
+            if (this.datatypes[datatypeIdx] == "string")
+              row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i];
+            else if (this.datatypes[datatypeIdx] == "hyperlink") {
+              row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].displayString;
+              row["hyperlinks"][this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].URL;
+            }
+          }
+        }
+        // console.log(row);
+        this.rows.push(row);
+      })
     });
+    // console.log("rows: " + this.rows)
   }
 
 
@@ -218,7 +286,6 @@ export class AuditsComponent implements OnInit {
         delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
       }
     })
-
 
     this.getTableObject();
   }

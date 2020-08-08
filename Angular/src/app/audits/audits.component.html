@@ -58,7 +58,7 @@
             <div class="features-filters" *ngIf="selectedFeature">
                 Feature Filters
                 <!-- feature dropdowns -->
-                <mat-form-field *ngFor="let column of featureSelectors.dropdown">
+                <mat-form-field  *ngFor="let column of featureSelectors[selectedFeature].dropdown">
                     <mat-label>{{column.columnFrontendName}}</mat-label>
                     <mat-select [(ngModel)]="column.filterSelector.selectorValue">
                         <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
@@ -68,7 +68,7 @@
                 </mat-form-field>
 
                 <!-- feature numeric choice -->
-                <mat-form-field *ngFor="let column of featureSelectors.numericChoice">
+                <mat-form-field *ngFor="let column of featureSelectors[selectedFeature].numericChoice">
                     <mat-label>{{column.columnFrontendName}}</mat-label>
                     <input matInput placeholder="ex: 4.5" [(ngModel)]='column.filterSelector.selectorValue'>
                 </mat-form-field>
