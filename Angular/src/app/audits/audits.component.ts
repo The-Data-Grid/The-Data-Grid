@@ -50,6 +50,7 @@ export class AuditsComponent implements OnInit {
   featureColumnsNumericChoice = [];
   featureColumnsNumericEqual = [];
   featureChecklistDropdown = [];
+  datatypeMap = new Map(); //map columnfrontEndName to datatype
   selectedFeature = 'Toilet';
   appliedFilterSelections = {};
   dropdownList = [
@@ -149,7 +150,7 @@ export class AuditsComponent implements OnInit {
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
       var i;
-      console.log(this.setupObject);
+      // console.log(this.setupObject);
 
       // construct the column header arrays
       for (i = 0; i < this.tableObject.columnIndex.length; i++) {
@@ -181,7 +182,7 @@ export class AuditsComponent implements OnInit {
           var idx2 = this.tableObject.columnIndex[i][1];
           var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
 
-          console.log(this.setupObject.featureColumns[idx1].dataColumns[idx2]);
+          // console.log(this.setupObject.featureColumns[idx1].dataColumns[idx2]);
 
           switch (this.datatypes[datatypeIdx]) {
             case "string": {
@@ -232,11 +233,10 @@ export class AuditsComponent implements OnInit {
             }
           }
         }
-        // console.log(row);
+        console.log(row);
         this.rows.push(row);
       })
     });
-    // console.log("rows: " + this.rows)
   }
 
 
@@ -278,7 +278,7 @@ export class AuditsComponent implements OnInit {
     })
     this.featureColumnsNumericChoice.forEach(element => {
       if (element.selection) {
-        console.log(element.selection);
+        // console.log(element.selection);
         this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
       }
       // if input was deleted, remove that property from the appliedFilterSelections object

@@ -12,7 +12,7 @@
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
             <br>
             <div class="global-filters">
-                <p>Global Filters</p> 
+                <p>Global Filters</p>
 
                 <!-- features filter is a special global filter-->
                 <mat-form-field>
@@ -36,8 +36,8 @@
 
                 <!-- global calendarRange -->
                 <div *ngFor="let column of globalSelectors.calendarRange" fxLayout="row"
-                fxLayoutAlign="space-around center">
-                    <mat-form-field >
+                    fxLayoutAlign="space-around center">
+                    <mat-form-field>
                         <mat-label>{{column.columnFrontendName}} Range</mat-label>
                         <input #datepicker matInput [matDatepicker]="picker1"
                             (dateInput)="applyDateFilter($event.target.value)">
@@ -58,7 +58,7 @@
             <div class="features-filters" *ngIf="selectedFeature">
                 Feature Filters
                 <!-- feature dropdowns -->
-                <mat-form-field  *ngFor="let column of featureSelectors[selectedFeature].dropdown">
+                <mat-form-field *ngFor="let column of featureSelectors[selectedFeature].dropdown">
                     <mat-label>{{column.columnFrontendName}}</mat-label>
                     <mat-select [(ngModel)]="column.filterSelector.selectorValue">
                         <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
@@ -90,9 +90,10 @@
             <div id="audit-table-container">
                 <ngx-datatable *ngIf="tableObject" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
-
-                    <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
-                    </ngx-datatable-column>
+                    <ng-container *ngIf="tableObject">
+                        <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
+                        </ngx-datatable-column>
+                    </ng-container>
                     <ngx-datatable-column *ngFor="let col of hyperlinkColumns" [prop]="col.prop" [name]="col.prop">
                         <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
                             <a [href]="row['hyperlinks'][col.prop]">{{value}}</a>
