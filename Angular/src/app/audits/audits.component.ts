@@ -28,8 +28,6 @@ export class AuditsComponent implements OnInit {
   dataTableColumns = [];
   hyperlinkColumns = [];
   rows = [];
-  filteredData = [];
-  response;
   tableObject;
 
   // variables for filtering sidebar
@@ -37,19 +35,16 @@ export class AuditsComponent implements OnInit {
   datatypes;
   defaultColumns = [];
   featureDropdownValues = [];
-  // global = {
-  //   dropdown: []
-  // }
-  globalColumnsDropdown = [];
-  globalColumnsCalendarRange = [];
-  globalCalenderEqual = [];
-  featureColumnsSearchableChecklistDropdown = [];
-  featureSearchableChecklistDropdown = [];
-  featureColumnsDropdown = [];
-  featureColumnsSearchableDropdown = [];
-  featureColumnsNumericChoice = [];
-  featureColumnsNumericEqual = [];
-  featureChecklistDropdown = [];
+  // globalColumnsDropdown = [];
+  // globalColumnsCalendarRange = [];
+  // globalCalenderEqual = [];
+  // featureColumnsSearchableChecklistDropdown = [];
+  // featureSearchableChecklistDropdown = [];
+  // featureColumnsDropdown = [];
+  // featureColumnsSearchableDropdown = [];
+  // featureColumnsNumericChoice = [];
+  // featureColumnsNumericEqual = [];
+  // featureChecklistDropdown = [];
   datatypeMap = new Map(); //map columnfrontEndName to datatype
   selectedFeature = 'Toilet';
   appliedFilterSelections = {};
@@ -145,13 +140,11 @@ export class AuditsComponent implements OnInit {
     // clear the column headers
     this.dataTableColumns = [];
     this.hyperlinkColumns = [];
+    this.rows = [];
     var i;
 
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
-      var i;
-      // console.log(this.setupObject);
-
       // construct the column header arrays
       for (i = 0; i < this.tableObject.columnIndex.length; i++) {
         // globals
@@ -171,8 +164,9 @@ export class AuditsComponent implements OnInit {
               }); break;
             }
             case "bool": {
-              // TODO: make aray for bool
-              break;
+              this.dataTableColumns.push({
+                prop: this.setupObject.globalColumns[idx].columnFrontendName
+              }); break;
             }
           }
         }
@@ -181,8 +175,6 @@ export class AuditsComponent implements OnInit {
           var idx1 = this.tableObject.columnIndex[i][0];
           var idx2 = this.tableObject.columnIndex[i][1];
           var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
-
-          // console.log(this.setupObject.featureColumns[idx1].dataColumns[idx2]);
 
           switch (this.datatypes[datatypeIdx]) {
             case "string": {
@@ -196,118 +188,145 @@ export class AuditsComponent implements OnInit {
               }); break;
             }
             case "bool": {
-              // TODO: make aray for bool
-              break;
+              this.dataTableColumns.push({
+                prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName
+              }); break;
             }
           }
         }
       }
 
-      //   //add rows to the table one by one
+      //add rows to the table one by one
       this.tableObject.rowData.forEach(element => {
         var row = {};
         row["hyperlinks"] = {};
+
+        // fill out the row object
         for (i = 0; i < this.tableObject.columnIndex.length; i++) {
+          // global
           if (this.tableObject.columnIndex[i][0] === null) {
+            // console.log(i + " global");
             var idx = this.tableObject.columnIndex[i][1];
             var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
 
-            if (this.datatypes[datatypeIdx] == "string")
-              row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i];
-            else if (this.datatypes[datatypeIdx] == "hyperlink") {
-              row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i].displayString;
-              row["hyperlinks"][this.setupObject.globalColumns[idx].columnFrontendName] = element[i].URL;
-              // console.log(row);
+            switch (this.datatypes[datatypeIdx]) {
+              case "string": {
+                row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i]; break;
+              }
+              case "hyperlink": {
+                row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i].displayString;
+                row["hyperlinks"][this.setupObject.globalColumns[idx].columnFrontendName] = element[i].URL; break;
+              }
+              case "bool": {
+                if (element[i] === '0') {
+                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "False";
+                }
+                else {
+                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "True";
+                } break;
+              }
             }
           }
+          // feature
           else {
+            // console.log(i + " feature");
             var idx1 = this.tableObject.columnIndex[i][0];
             var idx2 = this.tableObject.columnIndex[i][1];
             var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
 
-            if (this.datatypes[datatypeIdx] == "string")
-              row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i];
-            else if (this.datatypes[datatypeIdx] == "hyperlink") {
-              row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].displayString;
-              row["hyperlinks"][this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].URL;
+            switch (this.datatypes[datatypeIdx]) {
+              case "string": {
+                row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i]; break;
+              }
+              case "hyperlink": {
+                row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].displayString;
+                row["hyperlinks"][this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].URL; break;
+              }
+              case "bool": {
+                if (element[i] === '0') {
+                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "False";
+                }
+                else {
+                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "True";
+                } break;
+              }
             }
           }
         }
         console.log(row);
         this.rows.push(row);
-      })
+      });
     });
   }
 
+// filterDatatable(event) {
+//   // get the value of the key pressed and make it lowercase
+//   let val = event.target.value.toLowerCase();
+//   // get the amount of columns in the table
+//   let colsAmt = this.columns.length;
+//   // get the key names of each column in the dataset
+//   let keys = Object.keys(this.response[0]);
+//   // assign filtered matches to the active datatable
+//   this.rows = this.filteredData.filter(function (item) {
+//     // iterate through each row's column data
+//     for (let i = 0; i < colsAmt; i++) {
+//       // check for a match
+//       if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val) {
+//         // found match, return true to add to result set
+//         return true;
+//       }
+//     }
+//   });
+// }
 
-  // filterDatatable(event) {
-  //   // get the value of the key pressed and make it lowercase
-  //   let val = event.target.value.toLowerCase();
-  //   // get the amount of columns in the table
-  //   let colsAmt = this.columns.length;
-  //   // get the key names of each column in the dataset
-  //   let keys = Object.keys(this.response[0]);
-  //   // assign filtered matches to the active datatable
-  //   this.rows = this.filteredData.filter(function (item) {
-  //     // iterate through each row's column data
-  //     for (let i = 0; i < colsAmt; i++) {
-  //       // check for a match
-  //       if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val) {
-  //         // found match, return true to add to result set
-  //         return true;
-  //       }
-  //     }
-  //   });
-  // }
-
-  applyFilters() {
-    /* get api response */
-    if (!this.selectedFeature) {
-      return;
-    }
-    // check if any selections were made
-    this.globalColumnsDropdown.forEach(element => {
-      if (element.selection) {
-        this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
-      }
-    })
-    this.featureColumnsDropdown.forEach(element => {
-      if (element.selection) {
-        this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
-      }
-    })
-    this.featureColumnsNumericChoice.forEach(element => {
-      if (element.selection) {
-        // console.log(element.selection);
-        this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
-      }
-      // if input was deleted, remove that property from the appliedFilterSelections object
-      else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
-        delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
-      }
-    })
-
-    this.getTableObject();
+applyFilters() {
+  /* get api response */
+  if (!this.selectedFeature) {
+    return;
   }
+  // check if any selections were made
+  // this.globalColumnsDropdown.forEach(element => {
+  //   if (element.selection) {
+  //     this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+  //   }
+  // })
+  // this.featureColumnsDropdown.forEach(element => {
+  //   if (element.selection) {
+  //     this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+  //   }
+  // })
+  // this.featureColumnsNumericChoice.forEach(element => {
+  //   if (element.selection) {
+  //     // console.log(element.selection);
+  //     this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
+  //   }
+  //   // if input was deleted, remove that property from the appliedFilterSelections object
+  //   else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
+  //     delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
+  //   }
+  // })
+
+  this.getTableObject();
+}
 
 
-  applyDateFilter = (val: string) => {
-    val = this.datepipe.transform(val, 'MM-dd-yyyy');
-    // console.log(val);
+applyDateFilter = (val: string) => {
+  val = this.datepipe.transform(val, 'MM-dd-yyyy');
+  // console.log(val);
 
-    this.rows = this.filteredData.filter(function (item) {
-      if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
-        return true;
-      }
-    });
-  }
+  // this.rows = this.filteredData.filter(function (item) {
+  //   if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
+  //     return true;
+  //   }
+  // });
+}
 
 
-  onItemSelect(item: any) {
-    console.log(item);
-  }
-  onSelectAll(items: any) {
-    console.log(items);
-  }
+onItemSelect(item: any) {
+  console.log(item);
+}
+onSelectAll(items: any) {
+  console.log(items);
+}
 
 }
