@@ -3,7 +3,7 @@ const PS = pgp.PreparedStatement;
 
 
  // NEW CODE
-const {idColumnTableLookup, tableParents} = require('./setup.js');
+//const {idColumnTableLookup, tableParents} = require('./setup.js');
 
 // Inputs //
 
@@ -13,14 +13,18 @@ let idColumnTableLookup = {
             table: 'table name', 
             feature: 'feature name',
             referenceColumn: 'column name', 
-            referenceTable: 'table name' //null if type_name == local
+            referenceTable: 'table name', //null if type_name == local
+            filterable: true //BOOLEAN
         }
           //note that id is a string such as '3'
 }; // if idColumnTableLookup.feature == null, it is a global table
 
+
+
 let tableParents = {
-    table_name: parent_table_name, //if root feature parent_table_name is NULL
+    table_name: 'parent_table_name', //if root feature parent_table_name is NULL
 };
+
 
 // // 
 
@@ -60,7 +64,7 @@ let listJoin = {
                     ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
                     INNER JOIN $(listName:value) \
                     ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
-            dependencies: [referenceTableName]
+            dependencies: ['referenceTableName']
         }
     }
     
