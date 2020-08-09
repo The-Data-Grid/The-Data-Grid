@@ -218,11 +218,12 @@ export class AuditsComponent implements OnInit {
                 row["hyperlinks"][this.setupObject.globalColumns[idx].columnFrontendName] = element[i].URL; break;
               }
               case "bool": {
-                if (element[i] === '0') {
-                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "False";
+                if (element[i]) {
+                  console.log(element[i])
+                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "True";
                 }
                 else {
-                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "True";
+                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "False";
                 } break;
               }
             }
@@ -243,11 +244,12 @@ export class AuditsComponent implements OnInit {
                 row["hyperlinks"][this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].URL; break;
               }
               case "bool": {
-                if (element[i] === '0') {
-                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "False";
+                if (element[i]) {
+                  console.log(element[i])
+                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "True";
                 }
                 else {
-                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "True";
+                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "False";
                 } break;
               }
             }
