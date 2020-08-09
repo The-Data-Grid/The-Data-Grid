@@ -28,17 +28,17 @@ function validation(feature, columnID, filterID, res) {
     if(!validateFeatures.includes(feature)) {
         return [true, res.status(400).send(`Bad Request: ${feature} is not a valid feature`)];
     };
-    for(let column of columns) {
+    for(let column of columnID) {
         if(!validate[feature]['column'].includes(column)) {
             return [true, res.status(400).send(`Bad Request: ${columnID} is not a valid column for the ${feature} feature`)];
         };
     };
-    for(let filter of filters) {
+    for(let filter of filterID) {
         if(!validate[feature]['filter'].includes(filter)) { 
             return [true, res.status(400).send(`Bad Request: ${filterID} is not a valid filter for the ${feature} feature`)];
         };
     };
-    return [false, res.status(500).send()] // false means there is no validation erro
+    return [false, res.status(500).send()] // false means there is no validation error
 }                                          // it should never send the res.status(500)
 
 //// Column to Table Relationships ////
