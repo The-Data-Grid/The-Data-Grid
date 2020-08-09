@@ -16,20 +16,32 @@ let idColumnTableLookup = {
             referenceTable: 'table name', //null if type_name == local
             filterable: true //BOOLEAN
         }
-          //note that id is a string such as '3'
+        //note that id is a string such as '3'
 }; // if idColumnTableLookup.feature == null, it is a global table
-
-
 
 let tableParents = {
     table_name: 'parent_table_name', //if root feature parent_table_name is NULL
 };
 
+class TreeNode {
+    constructor(table_id, parent) {
+        this.table_id = table_id;
+        this.parent = parent;
+    }
+}
 
-// // 
+node = new TreeNode(table_id, parent)
+temp = node;
 
-// get all unique tables and features (if not null) from idCoumnTableLookup
-// [new ...Set(idColumnTableLookup)
+while (temp != null)
+{
+    tableParents.add(node.parent)
+    temp = node.parent;
+}
+
+// get all unique tables and features (if not null) from idColumnTableLookup
+// not sure if the syntax for this is correct, particularly due to the part inside the brackets
+var tablesAndFeatures = new Set(idColumnTableLookup[id]);
 
 // Feature //
 /*
@@ -67,7 +79,6 @@ let listJoin = {
             dependencies: ['referenceTableName']
         }
     }
-    
 }
 
 /*
