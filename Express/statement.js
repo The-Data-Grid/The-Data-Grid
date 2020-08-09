@@ -20,24 +20,29 @@ let idColumnTableLookup = {
 }; // if idColumnTableLookup.feature == null, it is a global table
 
 let tableParents = {
+/*  feature_toilet: null,
+    subfeature_toilet_flushometer: 'feature_toilet',
+    feature_urinal: 'null',
+    subfeature_toilet_sensor: 'feature_toilet',
+    subfeature_urinal_sensor: 'feature_urinal'
+    ...
+*/
     table_name: 'parent_table_name', //if root feature parent_table_name is NULL
 };
 
-class TreeNode {
-    constructor(table_id, parent) {
-        this.table_id = table_id;
-        this.parent = parent;
+let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]])
+
+let subfeatureJoin = {
+    subfeature: {
+        query: 'INNER JOIN $(subfeature[1]) ON $(subfeature[1]).table_id = $(subfeature[0]).parent_id',
+        dependencies: [subfeature[1]]
     }
 }
 
-node = new TreeNode(table_id, parent)
-temp = node;
+let featureItemJoin = {
 
-while (temp != null)
-{
-    tableParents.add(node.parent)
-    temp = node.parent;
 }
+
 
 // get all unique tables and features (if not null) from idColumnTableLookup
 // not sure if the syntax for this is correct, particularly due to the part inside the brackets
