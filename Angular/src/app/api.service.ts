@@ -41,6 +41,7 @@ export class ApiService {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
     // return this.http.get<FilterConfig>(API_URL + '/setup');
     return this.http.get<SetupTableObject>(temp_url + '/setup');
+    // console log ret code here
   }
 
   public getTableObject(feature: string, columns: any, qsparams: any): any {
