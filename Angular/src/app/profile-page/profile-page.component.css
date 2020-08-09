@@ -112,22 +112,23 @@
  }
 
  .preferencesLabel {
-    margin-left: 110px;
+    margin-left: 70px;
     margin-top: 0px;
     font-size: 18px;
  }
 
  .privacyLabel {
-   margin-left: 150px;
+   margin-left: 110px;
    margin-top: 30px;
    font-size: 18px;
  }
 
  .wrapper {
-   width: 420px;
+   width: 600px;
    border: 1px solid lightgray;
    /* border-radius: 4px; */
    height: 50px;
+   margin-left: -150px;
 }
 
 .container {
@@ -197,7 +198,7 @@
  .checkmark {
    position: absolute;
    top: 0;
-   left: 400px;
+   left: 580px;
    height: 20px;
    width: 20px;
    background-color: #eee;
@@ -287,7 +288,7 @@
  .deleteAccountButton {
     position: absolute;
     background-color: #ff9999;
-    margin-left: 140px;
+    margin-left: 100px;
     margin-top: 80px;
  }
 
