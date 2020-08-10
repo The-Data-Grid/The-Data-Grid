@@ -22,13 +22,14 @@ app.set('x-powered-by', false);
 ////// ROUTES //////
 
 //** Testing request response cycle time (for dev only) **//
-function cycleTime(req, res, next) {
-    console.log('app.js entry - ' + Date.now())
+function cycleTimer(req, res, next) {
+    query.cycleTime.push(Date.now())
+    console.log('app.js entry - 0 ms')
     next()
 }
 
 //** Data Query **//
-app.get('/api/audit/:feature/:include', cycleTime, parse.queryParse, query.featureQuery); 
+app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, query.featureQuery); 
 
 // Audit Upload
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
