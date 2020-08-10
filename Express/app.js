@@ -21,11 +21,14 @@ app.set('x-powered-by', false);
 
 ////// ROUTES //////
 
-// Testing routes
-
+// Testing request response cycle time (for dev only)
+function cycleTime(req, res, next) {
+    console.log('app.js entry - ' + Date.now())
+    next()
+}
 
 // Data Query
-app.get('/api/audit/:feature/:include', parse.queryParse, query.featureQuery); 
+app.get(cycleTime, '/api/audit/:feature/:include', parse.queryParse, query.featureQuery); 
 
 // Audit Upload
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
