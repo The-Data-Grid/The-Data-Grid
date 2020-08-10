@@ -176,8 +176,8 @@ function featureQuery(req, res) {
             res.json(data);
 
             //**  Testing request response cycle time (for dev only) **//
-            console.log(console.log('query.js response - ' + Date.now()))
-            
+            console.log('query.js response - ' + Date.now())
+
         }).catch(err => {
             console.log(err)
         });
