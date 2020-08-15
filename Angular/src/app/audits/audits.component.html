@@ -10,7 +10,10 @@
 <body>
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
-            <br>
+            <mat-radio-group aria-label="Select an option">
+                <mat-radio-button value="1">Option 1</mat-radio-button>
+                <mat-radio-button value="2">Option 2</mat-radio-button>
+              </mat-radio-group>
             <div class="global-filters">
                 <p>Global Filters</p>
 
@@ -55,7 +58,7 @@
                 </mat-form-field> -->
             </div>
 
-            <div class="features-filters" *ngIf="selectedFeature">
+            <div class="features-filters" *ngIf="featureSelectors[selectedFeature]">
                 Feature Filters
                 <!-- feature dropdowns -->
                 <mat-form-field *ngFor="let column of featureSelectors[selectedFeature].dropdown">
@@ -90,13 +93,10 @@
             <div id="audit-table-container">
                 <ngx-datatable *ngIf="tableObject" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
-                    <ng-container *ngIf="tableObject">
-                        <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
-                        </ngx-datatable-column>
-                    </ng-container>
-                    <ngx-datatable-column *ngFor="let col of hyperlinkColumns" [prop]="col.prop" [name]="col.prop">
+                    <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
                         <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
-                            <a [href]="row['hyperlinks'][col.prop]">{{value}}</a>
+                            <a *ngIf="col.type==='hyperlink'" [href]="row['hyperlinks'][col.prop]">{{value}}</a>
+                            <p *ngIf="col.type==='string' || col.type==='bool'">{{value}}</p>
                         </ng-template>
                     </ngx-datatable-column>
                 </ngx-datatable>

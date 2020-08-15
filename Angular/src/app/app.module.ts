@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import {BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -8,22 +8,22 @@ import { ApiService } from './api.service';
 import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatButtonModule }  from '@angular/material/button';
-import { MatToolbarModule} from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatSortModule} from '@angular/material/sort';
-import {MatCardModule} from '@angular/material/card';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatNativeDateModule} from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -33,13 +33,14 @@ import { DownloadComponent } from './download/download.component';
 import { UploadDialogComponent } from './upload-dialog/upload-dialog.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { DialogComponent } from './login-dialog/login-dialog.component';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UploadComponent } from './upload/upload.component';
 import { AboutComponent } from './about/about.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { PasswordAuthenticationComponent } from './password-authentication/password-authentication.component';
-
+import { MatRadioModule } from '@angular/material/radio';
+import { MaterialModule } from './material.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,7 +62,7 @@ import { PasswordAuthenticationComponent } from './password-authentication/passw
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    MatMenuModule, 
+    MatMenuModule,
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
@@ -82,12 +83,14 @@ import { PasswordAuthenticationComponent } from './password-authentication/passw
     MatNativeDateModule,
     FlexLayoutModule,
     NgxDatatableModule,
+    MatRadioModule,
+    MaterialModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [ApiService, DatePipe],
   bootstrap: [AppComponent],
   entryComponents: [DialogComponent]
 })
-export class AppModule { 
-  
+export class AppModule {
+
 }

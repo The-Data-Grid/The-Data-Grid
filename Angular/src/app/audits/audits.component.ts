@@ -35,17 +35,6 @@ export class AuditsComponent implements OnInit {
   datatypes;
   defaultColumns = [];
   featureDropdownValues = [];
-  // globalColumnsDropdown = [];
-  // globalColumnsCalendarRange = [];
-  // globalCalenderEqual = [];
-  // featureColumnsSearchableChecklistDropdown = [];
-  // featureSearchableChecklistDropdown = [];
-  // featureColumnsDropdown = [];
-  // featureColumnsSearchableDropdown = [];
-  // featureColumnsNumericChoice = [];
-  // featureColumnsNumericEqual = [];
-  // featureChecklistDropdown = [];
-  datatypeMap = new Map(); //map columnfrontEndName to datatype
   selectedFeature = 'Toilet';
   appliedFilterSelections = {};
   dropdownList = [
@@ -75,7 +64,6 @@ export class AuditsComponent implements OnInit {
 
   ngOnInit() {
     this.getSetupTableObject();
-    this.applyFilters();
   }
 
   getSetupTableObject() {
@@ -95,8 +83,8 @@ export class AuditsComponent implements OnInit {
       this.datatypes = this.setupObject.datatypes;
       // console.log(this.globalSelectors);
       // console.log(this.featureSelectors);
+      this.applyFilters();
     });
-
   }
 
   parseColumn(columns): any {
@@ -143,6 +131,10 @@ export class AuditsComponent implements OnInit {
     this.rows = [];
     var i;
 
+    // if (!this.setupObject) {
+    //   return;
+    // }
+
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
       // construct the column header arrays
@@ -152,23 +144,10 @@ export class AuditsComponent implements OnInit {
           var idx = this.tableObject.columnIndex[i][1];
           var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
 
-          switch (this.datatypes[datatypeIdx]) {
-            case "string": {
-              this.dataTableColumns.push({
-                prop: this.setupObject.globalColumns[idx].columnFrontendName
-              }); break;
-            }
-            case "hyperlink": {
-              this.hyperlinkColumns.push({
-                prop: this.setupObject.globalColumns[idx].columnFrontendName
-              }); break;
-            }
-            case "bool": {
-              this.dataTableColumns.push({
-                prop: this.setupObject.globalColumns[idx].columnFrontendName
-              }); break;
-            }
-          }
+          this.dataTableColumns.push({
+            prop: this.setupObject.globalColumns[idx].columnFrontendName,
+            type: this.datatypes[datatypeIdx]
+          });
         }
         // features
         else {
@@ -176,23 +155,10 @@ export class AuditsComponent implements OnInit {
           var idx2 = this.tableObject.columnIndex[i][1];
           var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
 
-          switch (this.datatypes[datatypeIdx]) {
-            case "string": {
-              this.dataTableColumns.push({
-                prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName
-              }); break;
-            }
-            case "hyperlink": {
-              this.hyperlinkColumns.push({
-                prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName
-              }); break;
-            }
-            case "bool": {
-              this.dataTableColumns.push({
-                prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName
-              }); break;
-            }
-          }
+          this.dataTableColumns.push({
+            prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName,
+            type: this.datatypes[datatypeIdx]
+          });;
         }
       }
 
@@ -261,74 +227,74 @@ export class AuditsComponent implements OnInit {
     });
   }
 
-// filterDatatable(event) {
-//   // get the value of the key pressed and make it lowercase
-//   let val = event.target.value.toLowerCase();
-//   // get the amount of columns in the table
-//   let colsAmt = this.columns.length;
-//   // get the key names of each column in the dataset
-//   let keys = Object.keys(this.response[0]);
-//   // assign filtered matches to the active datatable
-//   this.rows = this.filteredData.filter(function (item) {
-//     // iterate through each row's column data
-//     for (let i = 0; i < colsAmt; i++) {
-//       // check for a match
-//       if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val) {
-//         // found match, return true to add to result set
-//         return true;
-//       }
-//     }
-//   });
-// }
+  // filterDatatable(event) {
+  //   // get the value of the key pressed and make it lowercase
+  //   let val = event.target.value.toLowerCase();
+  //   // get the amount of columns in the table
+  //   let colsAmt = this.columns.length;
+  //   // get the key names of each column in the dataset
+  //   let keys = Object.keys(this.response[0]);
+  //   // assign filtered matches to the active datatable
+  //   this.rows = this.filteredData.filter(function (item) {
+  //     // iterate through each row's column data
+  //     for (let i = 0; i < colsAmt; i++) {
+  //       // check for a match
+  //       if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val) {
+  //         // found match, return true to add to result set
+  //         return true;
+  //       }
+  //     }
+  //   });
+  // }
 
-applyFilters() {
-  /* get api response */
-  if (!this.selectedFeature) {
-    return;
+  applyFilters() {
+    /* get api response */
+    if (!this.selectedFeature) {
+      return;
+    }
+    // check if any selections were made
+    // this.globalColumnsDropdown.forEach(element => {
+    //   if (element.selection) {
+    //     this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+    //   }
+    // })
+    // this.featureColumnsDropdown.forEach(element => {
+    //   if (element.selection) {
+    //     this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
+    //   }
+    // })
+    // this.featureColumnsNumericChoice.forEach(element => {
+    //   if (element.selection) {
+    //     // console.log(element.selection);
+    //     this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
+    //   }
+    //   // if input was deleted, remove that property from the appliedFilterSelections object
+    //   else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
+    //     delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
+    //   }
+    // })
+
+    this.getTableObject();
   }
-  // check if any selections were made
-  // this.globalColumnsDropdown.forEach(element => {
-  //   if (element.selection) {
-  //     this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
-  //   }
-  // })
-  // this.featureColumnsDropdown.forEach(element => {
-  //   if (element.selection) {
-  //     this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
-  //   }
-  // })
-  // this.featureColumnsNumericChoice.forEach(element => {
-  //   if (element.selection) {
-  //     // console.log(element.selection);
-  //     this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
-  //   }
-  //   // if input was deleted, remove that property from the appliedFilterSelections object
-  //   else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
-  //     delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
-  //   }
-  // })
-
-  this.getTableObject();
-}
 
 
-applyDateFilter = (val: string) => {
-  val = this.datepipe.transform(val, 'MM-dd-yyyy');
-  // console.log(val);
+  applyDateFilter = (val: string) => {
+    val = this.datepipe.transform(val, 'MM-dd-yyyy');
+    // console.log(val);
 
-  // this.rows = this.filteredData.filter(function (item) {
-  //   if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
-  //     return true;
-  //   }
-  // });
-}
+    // this.rows = this.filteredData.filter(function (item) {
+    //   if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
+    //     return true;
+    //   }
+    // });
+  }
 
 
-onItemSelect(item: any) {
-  console.log(item);
-}
-onSelectAll(items: any) {
-  console.log(items);
-}
+  onItemSelect(item: any) {
+    console.log(item);
+  }
+  onSelectAll(items: any) {
+    console.log(items);
+  }
 
 }
