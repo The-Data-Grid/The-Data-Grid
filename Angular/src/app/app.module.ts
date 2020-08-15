@@ -7,23 +7,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from './api.service';
 import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -39,8 +22,8 @@ import { AboutComponent } from './about/about.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { PasswordAuthenticationComponent } from './password-authentication/password-authentication.component';
-import { MatRadioModule } from '@angular/material/radio';
 import { MaterialModule } from './material.module';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,30 +45,12 @@ import { MaterialModule } from './material.module';
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    MatMenuModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatTableModule,
-    MatDialogModule,
-    MatTabsModule,
-    MatSidenavModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatPaginatorModule,
-    MatSortModule,
     FormsModule,
     ReactiveFormsModule,
-    MatCardModule,
-    MatDividerModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     FlexLayoutModule,
     NgxDatatableModule,
-    MatRadioModule,
-    MaterialModule,
-    NgMultiSelectDropDownModule.forRoot()
+    NgMultiSelectDropDownModule.forRoot(),
+    MaterialModule
   ],
   providers: [ApiService, DatePipe],
   bootstrap: [AppComponent],
