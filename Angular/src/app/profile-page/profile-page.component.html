@@ -7,6 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100&display=swap" rel="stylesheet">
 </head>
 
+<div style="   width: 100%;
+max-width: 1600px;
+margin: 0 auto;
+
+">
 <div class="profile_info">
     <div style="width: 20px;" (mouseenter)="hoverOnAvatar()" (mouseleave)="hoverOnAvatar()">
     <img class="avatar" [class.profile_hover]="isAvatarHover" src="assets/default-user.png" alt="Avatar">
@@ -35,10 +40,11 @@
 <img (click)="openDialog()" style="cursor: pointer; top:-73px;position: relative;left:105%;width: 25px;display:inline-block" src="assets/edit_icon.png">
 </div>
 
+<div>
+
 <h2 class="preferencesLabel">Email Preferences</h2>
 
-<div>
-  <div style="margin-left: -10px; margin-top: -5px;">
+  <div style="margin-left: -5%; margin-top: -5px;">
     <div class='wrapper'>
     <label class="container" id="gpf">Quarterly Updates
         <input class="checkmarklocation" type="checkbox" checked="checked">
@@ -51,7 +57,7 @@
   <h3 class="privacyLabel">Privacy</h3>
 
   <div>
-    <div style="margin-left: -10px; margin-top: -8px;">
+    <div style="margin-left: -5%; margin-top: -8px;">
       <div class='wrapper'>
       <label class="container" id="gpf">Email visible to public
           <input class="checkmarklocation" type="checkbox" checked="checked">
@@ -70,7 +76,7 @@
       </ngx-datatable>
   </div> -->
 
-    <div id="OrganizationTable" style="width: 800px; margin-left: -250px; margin-top: 50px;">
+    <div id="OrganizationTable" style="width: 800px; margin-left: -260px; margin-top: 50px;">
       <h3 style="margin-left: 315px;">
         My Organizations
       </h3>
@@ -89,7 +95,7 @@
       </ngx-datatable>
     </div>
 
-    <div style="width: 800px; margin-left: -250px; margin-top: 50px;">
+    <div style="width: 800px; margin-left: -260px; margin-top: 50px;">
       <h3 style="margin-left: 315px;">
         Donations and Benefits
       </h3>
@@ -113,4 +119,5 @@
 
   
 
+</div>
 </div>
