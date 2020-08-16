@@ -2,118 +2,115 @@
 <html lang="en">
 
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/x-icon" href="../../favicon.png" />
-        <title>Document</title>
-        <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/x-icon" href="../../favicon.png" />
+	<title>Document</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-  
- 
- 
+
+
+
 <body style="background-color: #FBFBFB;">
-       <!-- <div *ngIf="currentWindowWidth > 700" id="wrapper">              -->
-        <div id="wrapper">
+	<!-- <div *ngIf="currentWindowWidth > 700" id="wrapper">              -->
+	<div id="wrapper">
 
-                <header>
-                        <nav>
-                                <mat-toolbar style="height: 50px;">
+		<header>
+			<nav>
+				<mat-toolbar style="height: 50px;">
 
-                                        <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}"
-                                                routerLinkActive="activeButton" style="height: 100%; padding: 7px;">
-                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="../../favicon.png"
-                                                        alt="tdg logo" style=" height: 20px; width: 20px;"> The Data Grid
-                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                                        <!-- <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}"
+					<a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}"
+						routerLinkActive="activeButton" style="height: 100%; padding: 7px;">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="../../favicon.png" alt="tdg logo"
+							style=" height: 20px; width: 20px;"> the data
+						grid
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+					<!-- <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}"
                                                 routerLinkActive="activeButton" style="height: 100%; padding: 7px;">
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tdg
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a> -->
-                                        <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton"
-                                                style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Raw
-                                                Data &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                                        <div style="background-color:rgb(86, 156, 215);z-index: 1000; margin-top:-1px;"
-                                                (mouseenter)="changeHover()" (mouseleave)="changeHover()">
-                                                <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton"
-                                                        style="left: 0%; height: 100%; padding: 7px;">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upload
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                                                <div *ngIf="isHover==true;"
-                                                        style="margin-top:0px;position: absolute;background-color: rgb(86, 156, 215);border-radius: 4px;">
-                                                        <a mat-button [routerLink]="'/upload-files'"> Upload Template
-                                                        </a>
-                                                        <br>
-                                                        <a mat-button [routerLink]="'/download'"> Download Template </a>
-                                                        <br>
-                                                        <a mat-button> Online Audit </a>
-                                                </div>
-                                        </div>
-                                        <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton"
-                                                style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                About Us &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                                        <a mat-button [routerLink]="'/profile-page'" routerLinkActive="activeButton"
-                                                style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; My
-                                                Profile (mock) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
-                                        <span class="example-spacer"></span>
-                                        <a mat-button (click)="openDialog()"
-                                                style="right: 0%; height: 100%; padding: 7px;">Log In</a>
-                                </mat-toolbar>
-                        </nav>
-                </header>
-                <router-outlet></router-outlet>
-                <footer id="footer">
-                        <nav>
-                                <mat-toolbar style="height: 52px">
-                                        <div class="ig">
-                                                <a href="https://www.instagram.com">
-                                                        <img src="assets/instagram.png" alt="Instagram"
-                                                                style="margin-bottom: -2px; width: 15px; height: 15px;">
-                                                </a>
-                                                <a href="https://www.instagram.com" mat-button
-                                                        style="margin-bottom: 3px; font-size: 18px; padding: 6px;">Instagram</a>
-                                        </div>
+					<a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton"
+						style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Raw
+						Data &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+					<div style="background-color:rgb(86, 156, 215);z-index: 1000; margin-top:-1px;"
+						(mouseenter)="changeHover()" (mouseleave)="changeHover()">
+						<a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton"
+							style="left: 0%; height: 100%; padding: 7px;">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upload
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+						<div *ngIf="isHover==true;"
+							style="margin-top:0px;position: absolute;background-color: rgb(86, 156, 215);border-radius: 4px;">
+							<a mat-button [routerLink]="'/upload-files'"> Upload Template
+							</a>
+							<br>
+							<a mat-button [routerLink]="'/download'"> Download Template </a>
+							<br>
+							<a mat-button> Online Audit </a>
+						</div>
+					</div>
+					<a mat-button [routerLink]="'/about'" routerLinkActive="activeButton"
+						style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						About Us &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+					<a mat-button [routerLink]="'/profile-page'" routerLinkActive="activeButton"
+						style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; My
+						Profile (mock) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
+					<span class="example-spacer"></span>
+					<a mat-button (click)="openDialog()" style="right: 0%; height: 100%; padding: 7px;">Log In</a>
+				</mat-toolbar>
+			</nav>
+		</header>
+		<router-outlet></router-outlet>
+		<footer id="footer">
+			<nav>
+				<mat-toolbar style="height: 52px">
+					<div class="ig">
+						<a href="https://www.instagram.com">
+							<img src="assets/instagram.png" alt="Instagram"
+								style="margin-bottom: -2px; width: 15px; height: 15px;">
+						</a>
+						<a href="https://www.instagram.com" mat-button
+							style="margin-bottom: 3px; font-size: 18px; padding: 6px;">Instagram</a>
+					</div>
 
 
-                                        <div class="fb">
-                                                <a href="https://www.facebook.com">
-                                                        <img src="assets/facebook.png" alt="Facebook"
-                                                                style="margin-bottom: -3px; height: 20px; width: 20px;">
-                                                </a>
-                                                <a href="https://www.facebook.com" mat-button
-                                                        style="font-size: 18px; padding: 6px;">Facebook</a>
-                                        </div>
+					<div class="fb">
+						<a href="https://www.facebook.com">
+							<img src="assets/facebook.png" alt="Facebook"
+								style="margin-bottom: -3px; height: 20px; width: 20px;">
+						</a>
+						<a href="https://www.facebook.com" mat-button
+							style="font-size: 18px; padding: 6px;">Facebook</a>
+					</div>
 
 
-                                        <div class="sub">
-                                                <a>
-                                                        <img src="assets/subscribe.png" alt="Subscribe"
-                                                                style="margin-bottom: -1px; height: 15px; width: 20px;">
-                                                </a>
-                                                <a mat-button class="subscribeButton"
-                                                        style="font-size: 18px; padding: 6px; margin-bottom: -1px;">Subscribe</a>
-                                        </div>
+					<div class="sub">
+						<a>
+							<img src="assets/subscribe.png" alt="Subscribe"
+								style="margin-bottom: -1px; height: 15px; width: 20px;">
+						</a>
+						<a mat-button class="subscribeButton"
+							style="font-size: 18px; padding: 6px; margin-bottom: -1px;">Subscribe</a>
+					</div>
 
 
-                                        <div class="donate">
-                                                <a href="https://www.paypal.com">
-                                                        <img src="assets/donate.png" alt="Donate"
-                                                                style="height: 20px; margin-bottom: -2px;">
-                                                </a>
-                                                <a href="https://www.paypal.com" mat-button
-                                                        style="font-size: 18px; padding: 6px;">Donate</a>
-                                        </div>
+					<div class="donate">
+						<a href="https://www.paypal.com">
+							<img src="assets/donate.png" alt="Donate" style="height: 20px; margin-bottom: -2px;">
+						</a>
+						<a href="https://www.paypal.com" mat-button style="font-size: 18px; padding: 6px;">Donate</a>
+					</div>
 
 
-                                </mat-toolbar>
-                        </nav>
+				</mat-toolbar>
+			</nav>
 
-                </footer>
-
-
-        </div>
+		</footer>
 
 
-        <!-- <div *ngIf="currentWindowWidth < 700" id="wrapper">             
+	</div>
+
+
+	<!-- <div *ngIf="currentWindowWidth < 700" id="wrapper">             
  
         <header>
                 <nav>

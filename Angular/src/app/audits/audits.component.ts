@@ -31,12 +31,14 @@ export class AuditsComponent implements OnInit {
   tableObject;
 
   // variables for filtering sidebar
+  filterBy = "Submission";
   setupObject;
   datatypes;
   defaultColumns = [];
   featureDropdownValues = [];
   selectedFeature = 'Toilet';
   appliedFilterSelections = {};
+  // the following are for multiselect dropdowns
   dropdownList = [
     { item_id: 1, item_text: 'Mumbai' },
     { item_id: 2, item_text: 'Bangaluru' },
@@ -56,7 +58,6 @@ export class AuditsComponent implements OnInit {
     allowSearchFilter: true
   };
 
-  // todo: figure out how to do this with types
   featureSelectors = {};
   globalSelectors = {};
 
@@ -130,10 +131,6 @@ export class AuditsComponent implements OnInit {
     this.hyperlinkColumns = [];
     this.rows = [];
     var i;
-
-    // if (!this.setupObject) {
-    //   return;
-    // }
 
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;

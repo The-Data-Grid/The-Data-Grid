@@ -18,7 +18,6 @@
 }
 
 /* main content */
-
 #audit-table-container {
     margin-left: auto;
     margin-right: auto;
@@ -28,7 +27,6 @@
 }
 
 /* actual sidebar */
-
 .sidenav {
     width: 25%;
     /* height: 100%; */
@@ -36,6 +34,7 @@
     color: rgb(228, 228, 228);
     background-color: rgba(73, 73, 73, .8) !important;
     box-shadow: 5px 0 3px -2px #888;
+    font-size: small;
 }
 
 /* form fields within sidenav bar */
@@ -43,6 +42,10 @@
     margin: 1rem, 1rem, 1rem, 1rem;
     font-size: small;
     width: 80%;
+}
+
+.mat-radio-button {
+    margin: 5px;
 }
 
 .sidenav .mat-button {
