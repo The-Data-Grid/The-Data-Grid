@@ -37,7 +37,7 @@ const queryParse = (req, res, next) => {
     // console.log('filters = ', filter);
     
     // do some stuff to get filters and path in good format
-    filters = {}
+    let filters = {}
     for (const key in filter) {
         if (typeof(filter[key]) == "object") {
             let content = Object.keys(filter[key])
@@ -53,8 +53,8 @@ const queryParse = (req, res, next) => {
                 return res.status(400).json({'Bad Request': `${content[0]} is not a valid operation`})
             } else {
                 filters[key] = {
-                    "operation": operation_map(content[0], res),
-                    "value": value
+                    operation: operation_map(content[0], res),
+                    value: value
                 }
             }
         }

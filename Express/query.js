@@ -20,6 +20,9 @@ const db = pgp(cn); //db.function is used for pg-promise PostgreSQL queries
 
 ////// SETUP //////
 
+//** Testing request response cycle time (for dev only) **//
+var cycleTime = [];
+
 //// Validate request feature, columns, and filters ////
 
 let validateFeatures = Object.keys(validate);
@@ -127,6 +130,7 @@ function featureQuery(req, res) {
     if(validate[0]) { // if a validation error exists return it
         return validate[1];
     };
+
     //// Formatting the data
     let data = {};    // values object for SELECT and JOINS
     let query = [];    // array of clauses that make up the query
@@ -148,6 +152,7 @@ function featureQuery(req, res) {
     tables = [...new Set(tables)]; // removing duplicates again
 
     //**** Sorting table order by number of dependencies length ****/
+    // Note: By getting the tables we could calculate the hiearchy and get order from that
     sortTables = {}
     for(let table of tables) {
         sortTables[table] = joinClauseTables[res.locals.parsed.features][table].dependencies.length;
@@ -178,16 +183,33 @@ function featureQuery(req, res) {
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' ') + ';'; 
 
-     console.log(finalQuery);  //** DEBUG: Show SQL Query **//
+     //** DEBUG: Show SQL Query **//
+     console.log(finalQuery); 
     
+    //**  Testing request response cycle time (for dev only) **//
+    cycleTime.push(Date.now())
+    console.log('query.js query - ' + cycleTime[1] - cycleTime[0], ' ms');
+
     // Finally querying the database
     db.any(finalQuery)  
         .then(data => {
 
-            console.log(data); //** DEBUG: Show response object **//
+            //** DEBUG: Show response object **//
+            console.log(data); 
 
-            res.json(data);
+            //**  Testing request response cycle time (for dev only) **//
+            cycleTime.push(Date.now())
+            console.log('query.js response - ' + cycleTime[2] - cycleTime[0], 'ms');
+            cycleTime = []
+            
+
+            return res.json(data);
+
         }).catch(err => {
+
+            // add internal error code
+            return res.status(500).send('<some error>');
+
             console.log(err)
         });
 };
@@ -201,11 +223,11 @@ let setupQuery = (req, res) => {
 let auditQuery = (filters, path, sql, res) => {
     // do some stuff
 };
-
  
 module.exports = {
     featureQuery,
     auditQuery,
-    setupQuery
+    setupQuery,
+    cycleTime
 };
 
