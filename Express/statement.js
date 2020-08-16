@@ -114,28 +114,31 @@ item_community : {
 },
 
 // date_submitted -- unsure
-audit_submission : {  // note: changed to inner join
-    query: 'INNER JOIN audit_submission ON $(feature:value).audit_id = audit_submission.audit_id',
+
+tdg_submission : {
+    query: 'INNER JOIN tdg_submission ON audit_submission.submission_id = tdg_submission.submission_id',
+    //Since tdg_submission can only be referenced by tdg_organization and tdg_template
     dependencies: []
 },
 
 // sop_name
 item_sop : {
     query: 'INNER JOIN item_sop ON audit_submission.sop_id = item_sop.sop_id',
-    dependencies: ['audit_submission']
+    //may need to change as it may not be referenced
+    dependencies: ['tdg_submission']
 },
 
 // organization_name
-item_organization : {
-    query: 'INNER JOIN item_organization ON audit_submission.organization_id = item_organization.organization_id',
-    dependencies: ['audit_submission']
+tdg_organization : {
+    query: 'INNER JOIN tdg_organization ON audit_submission.organization_id = tdg_organization.organization_id',
+    dependencies: ['tdg_submission']
 },
 
 // template_name
-item_template : {
-    query: 'INNER JOIN item_template ON audit_submission.template_id = item_template.template_id',
+tdg_template : {
+    query: 'INNER JOIN tdg_template ON audit_submission.template_id = tdg_template.template_id',
     // query: 'INNER JOIN item_template ON audit_submission.organization_id = item_template.organization_id',
-    dependencies: ['audit_submission']
+    dependencies: ['tdg_submission']
 }
 
 };
