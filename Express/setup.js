@@ -35,12 +35,14 @@ async function metadataSetup() {
 
     // Closing the connection !Important!
     db.$pool.end();
-    /* 
-    idColumnTableLookup format:
-    = {
-        id: {column: 'column name', table: 'table name', feature: 'feature name'}, //note that id is a string such as '3'
-        ...
-    }
+
+    module.exports = {
+        idColumnTableLookup,
+        tableParents
+    };
+
+    
+    /*
     to get table names from ids: (this will throw error if the id is not validated)
     idInput = [1,4,23,9] //example
     idInput.map(number => idColumnTableLookup[String(number)].table) 
@@ -99,7 +101,9 @@ var metadata_selector;
 // Serves functionality of statement.js. We can use the format from statement.js
 // of ```tablename: {query: 'INNER JOIN...', dependencies: [] }```
 
+/*
 module.exports = {
     idColumnTableLookup,
     tableParents
 };
+*/

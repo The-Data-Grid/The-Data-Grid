@@ -20,26 +20,41 @@ const db = pgp(cn); //db.function is used for pg-promise PostgreSQL queries
 
 ////// SETUP //////
 
+//** Testing request response cycle time (for dev only) **//
+var cycleTime = [];
+
 //// Validate request feature, columns, and filters ////
 
 let validateFeatures = Object.keys(validate);
 
-function validation(feature, columns, filters, res) {
+function validation(feature, columnID, filterID, res) {
+    let filterIDKeys = Object.keys(filterID);
     if(!validateFeatures.includes(feature)) {
-        return res.status(400).json({'Bad Request': `${feature} is not a valid feature`});
+        return [true, res.status(400).send(`Bad Request: ${feature} is not a valid feature`)];
     };
-    for(let column of columns) {
+    for(let column of columnID) {
         if(!validate[feature]['column'].includes(column)) {
-            return res.status(400).json({'Bad Request': `${column} is not a valid column for the ${feature} feature`});
+            return [true, res.status(400).send(`Bad Request: ${column} is not a valid column for the ${feature} feature`)];
         };
     };
-    for(let filter of filters) {
-        if(!validate[feature]['filter'].includes(filter)) {
-            return res.status(400).json({'Bad Request': `${filter} is not a valid filter for the ${feature} feature`});
-        };
+    
+    let index = 0;
+    for(let filter of filterIDKeys) {
+        if(!validate[feature]['filter'].includes(filter)) { 
+            return [true, res.status(400).send(`Bad Request: ${filter} is not a valid filter for the ${feature} feature`)];
+        } else {
+            // operator validation, which is only done on filterable columns
+            let operator = filterID[filter]['operation']; // find operator associated with filter (id), using filterID (which is now the entire filter object)
+            if(validate[feature]['sqlType'][index] === 'TEXT') { // case where type is text. If numeric, it will always be valid
+                if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
+                    return [true, res.status(400).send(`Bad Request: ${operator} is not a valid operator for the ${filter} filter`)];
+                }
+            }
+        }
+        index++;
     };
-    return false // false means there is no validation error
-}
+    return [false, res.status(500).send()] // false means there is no validation error
+}                                          // it should never send the res.status(500)
 
 //// Column to Table Relationships ////
 
@@ -110,10 +125,12 @@ function columnTableFormat(lookup, feature) {
 function featureQuery(req, res) {  
     
     //// Validation
-    let validate = validation(res.locals.parsed.features, res.locals.parsed.columns, Object.keys(res.locals.parsed.filters), res);
-    if(validate) { // if a validation error exists return it
-        return validate;
+   // let validate = validation(res.locals.parsed.features, res.locals.parsed.columns, Object.keys(res.locals.parsed.filters), res);
+    let validate = validation(res.locals.parsed.features, res.locals.parsed.columns, res.locals.parsed.filters, res); // pass in entire filters object
+    if(validate[0]) { // if a validation error exists return it
+        return validate[1];
     };
+
     //// Formatting the data
     let data = {};    // values object for SELECT and JOINS
     let query = [];    // array of clauses that make up the query
@@ -135,6 +152,7 @@ function featureQuery(req, res) {
     tables = [...new Set(tables)]; // removing duplicates again
 
     //**** Sorting table order by number of dependencies length ****/
+    // Note: By getting the tables we could calculate the hiearchy and get order from that
     sortTables = {}
     for(let table of tables) {
         sortTables[table] = joinClauseTables[res.locals.parsed.features][table].dependencies.length;
@@ -165,16 +183,33 @@ function featureQuery(req, res) {
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' ') + ';'; 
 
-     console.log(finalQuery);  //** DEBUG: Show SQL Query **//
+     //** DEBUG: Show SQL Query **//
+     console.log(finalQuery); 
     
+    //**  Testing request response cycle time (for dev only) **//
+    cycleTime.push(Date.now())
+    console.log('query.js query - ' + cycleTime[1] - cycleTime[0], ' ms');
+
     // Finally querying the database
     db.any(finalQuery)  
         .then(data => {
 
-            console.log(data); //** DEBUG: Show response object **//
+            //** DEBUG: Show response object **//
+            console.log(data); 
 
-            res.json(data);
+            //**  Testing request response cycle time (for dev only) **//
+            cycleTime.push(Date.now())
+            console.log('query.js response - ' + cycleTime[2] - cycleTime[0], 'ms');
+            cycleTime = []
+            
+
+            return res.json(data);
+
         }).catch(err => {
+
+            // add internal error code
+            return res.status(500).send('<some error>');
+
             console.log(err)
         });
 };
@@ -188,11 +223,11 @@ let setupQuery = (req, res) => {
 let auditQuery = (filters, path, sql, res) => {
     // do some stuff
 };
-
  
 module.exports = {
     featureQuery,
     auditQuery,
-    setupQuery
+    setupQuery,
+    cycleTime
 };
 
