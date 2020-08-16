@@ -25,18 +25,30 @@ const db = pgp(cn); //db.function is used for pg-promise PostgreSQL queries
 let validateFeatures = Object.keys(validate);
 
 function validation(feature, columnID, filterID, res) {
+    let filterIDKeys = Object.keys(filterID);
     if(!validateFeatures.includes(feature)) {
         return [true, res.status(400).send(`Bad Request: ${feature} is not a valid feature`)];
     };
     for(let column of columnID) {
         if(!validate[feature]['column'].includes(column)) {
-            return [true, res.status(400).send(`Bad Request: ${columnID} is not a valid column for the ${feature} feature`)];
+            return [true, res.status(400).send(`Bad Request: ${column} is not a valid column for the ${feature} feature`)];
         };
     };
-    for(let filter of filterID) {
+    
+    let index = 0;
+    for(let filter of filterIDKeys) {
         if(!validate[feature]['filter'].includes(filter)) { 
-            return [true, res.status(400).send(`Bad Request: ${filterID} is not a valid filter for the ${feature} feature`)];
-        };
+            return [true, res.status(400).send(`Bad Request: ${filter} is not a valid filter for the ${feature} feature`)];
+        } else {
+            // operator validation, which is only done on filterable columns
+            let operator = filterID[filter]['operation']; // find operator associated with filter (id), using filterID (which is now the entire filter object)
+            if(validate[feature]['sqlType'][index] === 'TEXT') { // case where type is text. If numeric, it will always be valid
+                if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
+                    return [true, res.status(400).send(`Bad Request: ${operator} is not a valid operator for the ${filter} filter`)];
+                }
+            }
+        }
+        index++;
     };
     return [false, res.status(500).send()] // false means there is no validation error
 }                                          // it should never send the res.status(500)
@@ -110,7 +122,8 @@ function columnTableFormat(lookup, feature) {
 function featureQuery(req, res) {  
     
     //// Validation
-    let validate = validation(res.locals.parsed.features, res.locals.parsed.columns, Object.keys(res.locals.parsed.filters), res);
+   // let validate = validation(res.locals.parsed.features, res.locals.parsed.columns, Object.keys(res.locals.parsed.filters), res);
+    let validate = validation(res.locals.parsed.features, res.locals.parsed.columns, res.locals.parsed.filters, res); // pass in entire filters object
     if(validate[0]) { // if a validation error exists return it
         return validate[1];
     };

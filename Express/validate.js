@@ -12,7 +12,8 @@ for (let id in idColumnTableLookup) {
     if(!Object.keys(validate).includes(feature)) {
         validate[feature] = {
             column: [],
-            filter: []
+            filter: [],
+            sqlType: []
         };
     }
 
@@ -21,6 +22,7 @@ for (let id in idColumnTableLookup) {
     
     if (idColumnTableLookup[id].filterable) {
         validate[feature]['filter'].push(idToInt);
+        validate[feature]['sqlType'].push(idColumnTableLookup[id].sqlType);
     }
 }
 
