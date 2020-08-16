@@ -14,7 +14,8 @@ let idColumnTableLookup = {
             feature: 'feature name',
             referenceColumn: 'column name', 
             referenceTable: 'table name', //null if type_name == local
-            filterable: true //BOOLEAN
+            filterable: true, //BOOLEAN
+            sqlType: 'NUMERIC'|'TEXT'
         }
         //note that id is a string such as '3'
 }; // if idColumnTableLookup.feature == null, it is a global table
@@ -30,18 +31,28 @@ let tableParents = {
     table_name: 'parent_table_name', //if root feature parent_table_name is NULL
 };
 
-let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]])
+let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]]);
+
+// iterate through subfeatures and create query for each one
+// Javascript template literal syntax
 
 let subfeatureJoin = {
-    subfeature: {
+    subfeatures[0]: {
         query: 'INNER JOIN $(subfeature[1]) ON $(subfeature[1]).table_id = $(subfeature[0]).parent_id',
         dependencies: [subfeature[1]]
     }
-}
+};
 
+// every feature has a feature item, but not every subfeature has a feature item
 let featureItemJoin = {
-
-}
+    feature: {
+        if (subfeatures.map(subfeature => subfeature[0]).includes($(feature))) { // if feature is actually a subfeature
+            query: 'INNER JOIN featureitem_$(feature) ON featureitem_$(feature).featureitem_id = subfeature_$(feature).featureitem_id'
+        } else { // if feature is already top-level feature; every feature has a feature item, so this is the default
+            query: 'INNER JOIN featureitem_$(feature) ON featureitem_$(feature).featureitem_id = feature_$(feature).featureitem_id'
+        }
+    }
+};
 
 
 // get all unique tables and features (if not null) from idColumnTableLookup
