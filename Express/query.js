@@ -30,30 +30,30 @@ let validateFeatures = Object.keys(validate);
 function validation(feature, columnID, filterID, res) {
     let filterIDKeys = Object.keys(filterID);
     if(!validateFeatures.includes(feature)) {
-        return [true, res.status(400).send(`Bad Request: ${feature} is not a valid feature`)];
+        return [true, res.status(400).send(`Bad Request 2201: ${feature} is not a valid feature`)];
     };
     for(let column of columnID) {
         if(!validate[feature]['column'].includes(column)) {
-            return [true, res.status(400).send(`Bad Request: ${column} is not a valid column for the ${feature} feature`)];
+            return [true, res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`)];
         };
     };
     
     let index = 0;
     for(let filter of filterIDKeys) {
         if(!validate[feature]['filter'].includes(filter)) { 
-            return [true, res.status(400).send(`Bad Request: ${filter} is not a valid filter for the ${feature} feature`)];
+            return [true, res.status(400).send(`Bad Request 2203: ${filter} is not a valid filter for the ${feature} feature`)];
         } else {
             // operator validation, which is only done on filterable columns
             let operator = filterID[filter]['operation']; // find operator associated with filter (id), using filterID (which is now the entire filter object)
             if(validate[feature]['sqlType'][index] === 'TEXT') { // case where type is text. If numeric, it will always be valid
                 if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
-                    return [true, res.status(400).send(`Bad Request: ${operator} is not a valid operator for the ${filter} filter`)];
+                    return [true, res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`)];
                 }
             }
         }
         index++;
     };
-    return [false, res.status(500).send()] // false means there is no validation error
+    return [false, res.status(500).send('Internal Server Error 8801: No validation error found but error thrown')] // false means there is no validation error
 }                                          // it should never send the res.status(500)
 
 //// Column to Table Relationships ////

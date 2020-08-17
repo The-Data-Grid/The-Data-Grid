@@ -39,6 +39,9 @@ const queryParse = (req, res, next) => {
     // do some stuff to get filters and path in good format
     let filters = {}
     for (const key in filter) {
+        if(parseInt(key) == "NaN") {
+            return [true, res.status(400).send(`Bad Request 1601: ${key} must be numeric`)];
+        }
         if (typeof(filter[key]) == "object") {
             let content = Object.keys(filter[key])
 
