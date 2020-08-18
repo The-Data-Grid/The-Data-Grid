@@ -157,7 +157,7 @@ INSERT INTO metadata_sql_type
 CREATE TABLE metadata_frontend_type (
     type_id SERIAL PRIMARY KEY,
     type_name TEXT NOT NULL,
-    type_description TEXT NOT NULL,
+    type_description TEXT NOT NULL
 );
 
 INSERT INTO metadata_frontend_type 
@@ -175,8 +175,6 @@ CREATE TABLE metadata_prototype (
     sql_type INTEGER NOT NULL, --fk
     reference_type INTEGER NOT NULL, --fk
     frontend_type INTEGER NOT NULL, --fk
-    is_nullable BOOLEAN NOT NULL,
-    is_default BOOLEAN NOT NULL,
     prototype_name TEXT NOT NULL
 );
 
@@ -192,6 +190,8 @@ CREATE TABLE metadata_column ( -- Add featureitem_location??
     reference_table_name TEXT NOT NULL,
     information TEXT,
     accuracy NUMERIC, 
+    is_nullable BOOLEAN NOT NULL,
+    is_default BOOLEAN NOT NULL,
     is_global BOOLEAN NOT NULL
 );
 
