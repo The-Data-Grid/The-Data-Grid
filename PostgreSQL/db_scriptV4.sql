@@ -108,9 +108,23 @@ CREATE TABLE item_auditor (
 );
 
 -- Metadata
+
+CREATE TABLE metadata_reference_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL
+);
+
+INSERT INTO metadata_reference_type
+    (type_id, type_name)
+    VALUES
+        (DEFAULT, 'local'),
+        (DEFAULT, 'location'),
+        (DEFAULT, 'item'),
+        (DEFAULT, 'list');
+
 CREATE TABLE metadata_selector (
     selector_id SERIAL PRIMARY KEY,
-    selector_name TEXT
+    selector_name TEXT NOT NULL
 );
 
 INSERT INTO metadata_selector 
@@ -123,53 +137,89 @@ INSERT INTO metadata_selector
         (DEFAULT, 'dropdown'),
         (DEFAULT, 'searchableDropdown'),
         (DEFAULT, 'checklistDropdown'),
-        (DEFAULT, 'searchableChecklistDropdown');
+        (DEFAULT, 'searchableChecklistDropdown'),
+        (DEFAULT, 'text'),
+        (DEFAULT, 'bool');
 
-CREATE TABLE metadata_datatype (
-    datatype_id SERIAL PRIMARY KEY,
-    datatype_name TEXT NOT NULL,
-    frontend_name TEXT NOT NULL,
-    datatype_description TEXT NOT NULL
+CREATE TABLE metadata_sql_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL
 );
 
-/*
-INSERT INTO metadata_datatype (
-    (datatype_id, datatype_name, frontend_name, datatype_description)
+INSERT INTO metadata_sql_type 
+    (type_id, type_name)
+    VALUES
+        (DEFAULT, 'TEXT'),
+        (DEFAULT, 'NUMERIC'),
+        (DEFAULT, 'DATE'),
+        (DEFAULT, 'BOOLEAN');
+
+CREATE TABLE metadata_frontend_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL,
+    type_description TEXT NOT NULL,
 );
-*/
+
+INSERT INTO metadata_frontend_type 
+    (type_id, type_name, type_description)
+    VALUES
+        (DEFAULT, 'string', 'String display'),
+        (DEFAULT, 'date', 'Date in form of MM-DD-YYYY'),
+        (DEFAULT, 'hyperlink', 'When clicked open link in new page'),
+        (DEFAULT, 'boolean', 'Display “True” for 1 and “False” for 0');
+
+CREATE TABLE metadata_prototype (
+    prototype_id SERIAL PRIMARY KEY,
+    filter_selector INTEGER NOT NULL, --fk
+    input_selector INTEGER NOT NULL, --fk
+    sql_type INTEGER NOT NULL, --fk
+    reference_type INTEGER NOT NULL, --fk
+    frontend_type INTEGER NOT NULL, --fk
+    is_nullable BOOLEAN NOT NULL,
+    is_default BOOLEAN NOT NULL,
+    prototype_name TEXT NOT NULL
+);
 
 CREATE TABLE metadata_column ( -- Add featureitem_location??
     column_id SERIAL PRIMARY KEY, -- used as the columnBackendID
-    table_id INTEGER NOT NULL, --fk
+    feature_id INTEGER NOT NULL, --fk
+    rootfeature_id INTEGER NOT NULL, --fk
+    prototype_id INTEGER NOT NULL, --fk
     frontend_name TEXT NOT NULL,
-    backend_name TEXT NOT NULL,
-    query_string TEXT, -- query string to get dropdown, null if not dropdown
-    filter_selector INTEGER, --fk
-    input_selector INTEGER, --fk
-    nullable BOOLEAN NOT NULL,
+    column_name TEXT NOT NULL,
+    table_name TEXT NOT NULL,
+    reference_column_name TEXT NOT NULL,
+    reference_table_name TEXT NOT NULL,
     information TEXT,
     accuracy NUMERIC, 
-    datatype_id INTEGER NOT NULL --fk
+    is_global BOOLEAN NOT NULL
 );
 
-CREATE TABLE metadata_table (
-    table_id SERIAL PRIMARY KEY,
-    frontend_name TEXT NOT NULL,
-    backend_name TEXT NOT NULL,
-    parent_id INTEGER, --fk references itself
-    feature TEXT,
-    information TEXT
+CREATE TABLE metadata_feature (
+    feature_id SERIAL PRIMARY KEY,
+    table_name TEXT NOT NULL,
+    parent_id INTEGER NOT NULL, --fk
+    num_feature_range INTEGER NOT NULL,
+    information TEXT,
+    frontend_name TEXT NOT NULL
 );
 
 
 -- FOREIGN KEYS --
 
 -- Metadata
-ALTER TABLE metadata_column ADD FOREIGN KEY (table_id) REFERENCES metadata_table;
-ALTER TABLE metadata_column ADD FOREIGN KEY (filter_selector) REFERENCES metadata_selector;
-ALTER TABLE metadata_column ADD FOREIGN KEY (input_selector) REFERENCES metadata_selector;
-ALTER TABLE metadata_column ADD FOREIGN KEY (datatype_id) REFERENCES metadata_datatype;
-ALTER TABLE metadata_table ADD FOREIGN KEY (parent_id) REFERENCES metadata_table (table_id);
+
+ALTER TABLE metadata_prototype ADD FOREIGN KEY (filter_selector) REFERENCES metadata_selector;
+ALTER TABLE metadata_prototype ADD FOREIGN KEY (input_selector) REFERENCES metadata_selector;
+ALTER TABLE metadata_prototype ADD FOREIGN KEY (sql_type) REFERENCES metadata_sql_type;
+ALTER TABLE metadata_prototype ADD FOREIGN KEY (reference_type) REFERENCES metadata_reference_type;
+ALTER TABLE metadata_prototype ADD FOREIGN KEY (frontend_type) REFERENCES metadata_frontend_type;
+
+ALTER TABLE metadata_column ADD FOREIGN KEY (prototype_id) REFERENCES metadata_prototype;
+ALTER TABLE metadata_column ADD FOREIGN KEY (rootfeature_id) REFERENCES metadata_feature;
+ALTER TABLE metadata_column ADD FOREIGN KEY (feature_id) REFERENCES metadata_feature;
+
+ALTER TABLE metadata_feature ADD FOREIGN KEY (parent_id) REFERENCES metadata_feature (feature_id);
 
 -- Room, Building, Community, geom_region
 ALTER TABLE item_room ADD FOREIGN KEY (item_building_id) REFERENCES item_building;
