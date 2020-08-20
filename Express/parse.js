@@ -31,18 +31,30 @@ const queryParse = (req, res, next) => {
     let filter = req.query;
     let {feature} = req.params; 
     let {include} = req.params;
-    include = include.split("&");
+    include = include.split('&');
+
+    // Validate column IDs are numeric
+    for(let id of include) {
+        if(isNaN(parseInt(id))) {
+            return res.status(400).send(`Bad Request 1601: ${id} must be numeric`);
+        }
+    }
+
     // console.log('feature = ', feature);
     // console.log('includes = ', include);
     // console.log('filters = ', filter);
     
-    // do some stuff to get filters and path in good format
+    // Construct object of parsed filters
     let filters = {}
     for (const key in filter) {
+
+        // Validate filter IDs are numeric
         if(isNaN(parseInt(key))) {
-            return [true, res.status(400).send(`Bad Request 1601: ${key} must be numeric`)];
+            return res.status(400).send(`Bad Request 1602: ${key} must be numeric`);
         }
-        if (typeof(filter[key]) == "object") {
+
+
+        if (typeof(filter[key]) === 'object') {
             let content = Object.keys(filter[key])
 
             if(!isNaN(filter[key][content[0]])) { //if number parseInt
