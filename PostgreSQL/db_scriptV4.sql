@@ -35,7 +35,10 @@ CREATE TABLE item_building (
     location_id INT NOT NULL --fk 
 );
 
+-- 
+
 -- Community, Organization,
+/*
 CREATE TABLE item_community (
     item_id SERIAL PRIMARY KEY, 
     data_community_name TEXT UNIQUE NOT NULL,
@@ -44,11 +47,48 @@ CREATE TABLE item_community (
     data_country TEXT NOT NULL,
     location_id INT NOT NULL --fk
 );
+*/
+
+CREATE TABLE item_univeristy (
+    item_id SERIAL PRIMARY KEY,
+    university_name TEXT NOT NULL,
+    university_address TEXT NOT NULL,
+    item_city_id INTEGER NOT NULL, --
+);
+
+CREATE TABLE item_city (
+    item_id SERIAL PRIMARY KEY,
+    item_county_id INTEGER NOT NULL,
+    data_city_name TEXT NOT NULL,
+    data_population NUMERIC,
+    location_point_id INTEGER NOT NULL
+);
+
+CREATE TABLE item_county (
+    item_id SERIAL NOT NULL,
+    data_fips_code NUMERIC NOT NULL UNIQUE,
+    item_state_id INTEGER NOT NULL,
+    data_county_name TEXT NOT NULL,
+    location_geom_region_id INTEGER NOT NULL
+);
+
+CREATE TABLE item_state (
+    item_id SERIAL NOT NULL,
+    data_state_name TEXT NOT NULL,
+    location_geom_region_id INTEGER NOT NULL,
+    item_country_id INTEGER NOT NULL
+);
+
+CREATE TABLE item_country (
+    item_id SERIAL NOT NULL,
+    data_country_name TEXT NOT NULL,
+    location_geom_region_id INTEGER NOT NULL
+);
 
 CREATE TABLE item_organization (
     item_id SERIAL PRIMARY KEY,  
     data_organization_name TEXT NOT NULL,
-    item_community_id INT NOT NULL --fk
+    item_univeristy_id INTEGER --fk
 );
 
 -- SOP, SOP Many to Many, Template
@@ -107,7 +147,7 @@ CREATE TABLE item_auditor (
     user_id INTEGER --fk
 );
 
--- Metadata
+-- Metadata --
 
 CREATE TABLE metadata_reference_type (
     type_id SERIAL PRIMARY KEY,
