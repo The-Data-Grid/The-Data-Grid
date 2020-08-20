@@ -176,8 +176,8 @@ CREATE TABLE metadata_column ( -- Add featureitem_location??
     frontend_name TEXT NOT NULL,
     column_name TEXT NOT NULL,
     table_name TEXT NOT NULL,
-    reference_column_name TEXT NOT NULL,
-    reference_table_name TEXT NOT NULL,
+    reference_column_name JSON NOT NULL,
+    reference_table_name JSON NOT NULL,
     information TEXT,
 
     filter_selector INTEGER NOT NULL, --fk
@@ -188,7 +188,8 @@ CREATE TABLE metadata_column ( -- Add featureitem_location??
 
     is_nullable BOOLEAN NOT NULL,
     is_default BOOLEAN NOT NULL,
-    is_global BOOLEAN NOT NULL
+    is_global BOOLEAN NOT NULL,  
+    is_ground_truth BOOLEAN --NULL if reference_type is not 'location'
 );
 
 CREATE TABLE metadata_feature (
