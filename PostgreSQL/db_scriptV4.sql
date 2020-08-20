@@ -168,28 +168,24 @@ INSERT INTO metadata_frontend_type
         (DEFAULT, 'hyperlink', 'When clicked open link in new page'),
         (DEFAULT, 'boolean', 'Display “True” for 1 and “False” for 0');
 
-CREATE TABLE metadata_prototype (
-    prototype_id SERIAL PRIMARY KEY,
-    filter_selector INTEGER NOT NULL, --fk
-    input_selector INTEGER NOT NULL, --fk
-    sql_type INTEGER NOT NULL, --fk
-    reference_type INTEGER NOT NULL, --fk
-    frontend_type INTEGER NOT NULL, --fk
-    prototype_name TEXT NOT NULL
-);
 
 CREATE TABLE metadata_column ( -- Add featureitem_location??
     column_id SERIAL PRIMARY KEY, -- used as the columnBackendID
     feature_id INTEGER NOT NULL, --fk
     rootfeature_id INTEGER NOT NULL, --fk
-    prototype_id INTEGER NOT NULL, --fk
     frontend_name TEXT NOT NULL,
     column_name TEXT NOT NULL,
     table_name TEXT NOT NULL,
     reference_column_name TEXT NOT NULL,
     reference_table_name TEXT NOT NULL,
     information TEXT,
-    accuracy NUMERIC, 
+
+    filter_selector INTEGER NOT NULL, --fk
+    input_selector INTEGER NOT NULL, --fk
+    sql_type INTEGER NOT NULL, --fk
+    reference_type INTEGER NOT NULL, --fk
+    frontend_type INTEGER NOT NULL, --fk
+
     is_nullable BOOLEAN NOT NULL,
     is_default BOOLEAN NOT NULL,
     is_global BOOLEAN NOT NULL
@@ -209,13 +205,11 @@ CREATE TABLE metadata_feature (
 
 -- Metadata
 
-ALTER TABLE metadata_prototype ADD FOREIGN KEY (filter_selector) REFERENCES metadata_selector;
-ALTER TABLE metadata_prototype ADD FOREIGN KEY (input_selector) REFERENCES metadata_selector;
-ALTER TABLE metadata_prototype ADD FOREIGN KEY (sql_type) REFERENCES metadata_sql_type;
-ALTER TABLE metadata_prototype ADD FOREIGN KEY (reference_type) REFERENCES metadata_reference_type;
-ALTER TABLE metadata_prototype ADD FOREIGN KEY (frontend_type) REFERENCES metadata_frontend_type;
-
-ALTER TABLE metadata_column ADD FOREIGN KEY (prototype_id) REFERENCES metadata_prototype;
+ALTER TABLE metadata_column ADD FOREIGN KEY (filter_selector) REFERENCES metadata_selector;
+ALTER TABLE metadata_column ADD FOREIGN KEY (sql_type) REFERENCES metadata_sql_type;
+ALTER TABLE metadata_column ADD FOREIGN KEY (reference_type) REFERENCES metadata_reference_type;
+ALTER TABLE metadata_column ADD FOREIGN KEY (frontend_type) REFERENCES metadata_frontend_type;
+ALTER TABLE metadata_column ADD FOREIGN KEY (input_selector) REFERENCES metadata_selector;
 ALTER TABLE metadata_column ADD FOREIGN KEY (rootfeature_id) REFERENCES metadata_feature;
 ALTER TABLE metadata_column ADD FOREIGN KEY (feature_id) REFERENCES metadata_feature;
 
