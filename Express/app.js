@@ -29,7 +29,7 @@ function cycleTimer(req, res, next) {
 }
 
 //** Data Query **//
-app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, query.featureQuery); 
+app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery); 
 
 // Audit Upload
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
