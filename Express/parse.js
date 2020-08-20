@@ -65,7 +65,7 @@ const queryParse = (req, res, next) => {
             
             let operation = operation_map(content[0])
             if(operation === null) {
-                return res.status(400).json({'Bad Request': `${content[0]} is not a valid operation`})
+                return res.status(400).send(`Bad Request 1603: ${content[0]} is not a valid operator`)
             } else {
                 filters[key] = {
                     operation: operation_map(content[0], res),
