@@ -49,19 +49,19 @@
   <h1 class="sign_up_label">Sign Up</h1>
 
   <p>
-    <mat-form-field appearance="outline" style="font-size: 14px; width:160px; font-size:12px;">
+    <mat-form-field appearance="outline" style="font-size: 14px; width:160px; font-size:12px; margin-top: -5px;">
       <mat-label>First Name</mat-label>
       <input id="first_name" matInput placeholder="">
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="font-size: 14px; width:160px; margin-left:20px; font-size:12px">
+    <mat-form-field appearance="outline" style="font-size: 14px; width:160px; margin-left:20px; font-size:12px; margin-top: -5px;">
       <mat-label>Last Name</mat-label>
       <input id="last_name" matInput placeholder="">
     </mat-form-field>
 </p>
 
 <p>
-  <mat-form-field class="sign_up_colors" appearance="outline" style="font-size: 14px; width:340px; font-size:12px; margin-top:-10px;">
+  <mat-form-field class="sign_up_colors" appearance="outline" style="font-size: 14px; width:340px; font-size:12px; margin-top:-25px;">
     <mat-label>Email</mat-label>
     <input id="signup_email" matInput placeholder="">
   </mat-form-field>
@@ -69,12 +69,12 @@
 </p>
 
 <p>
-  <mat-form-field appearance="outline" style="font-size: 14px; width:160px; font-size:12px; margin-top:-10px;">
+  <mat-form-field appearance="outline" style="font-size: 14px; width:160px; font-size:12px; margin-top:-25px;">
     <mat-label>Password</mat-label>
     <input type="password" id="password_1" matInput placeholder="">
   </mat-form-field>
 
-  <mat-form-field appearance="outline" style="font-size: 14px; width:160px; margin-left:20px; font-size:12px; margin-top:-10px;">
+  <mat-form-field appearance="outline" style="font-size: 14px; width:160px; margin-left:20px; font-size:12px; margin-top:-25px;">
     <mat-label>Confirm Password</mat-label>
     <input type="password" id="password_2" matInput placeholder="" [disabled]="isPasswordAttempted()">
   </mat-form-field>
@@ -84,10 +84,10 @@
 </div>
 
 <div>
-  <p style="margin-top: -12px; font-size: 12px; color: #707070">Date of Birth</p>
+  <p style="margin-top: -20px; font-size: 12px; color: #707070">Date of Birth</p>
 </div>
 
-<div>
+<div style="margin-top: -5px;">
 <mat-form-field appearance="fill" style="font-size: 12px; width:110px;background:transparent !important;color: white !important;">
   <mat-label>Month</mat-label>
   <mat-select>
@@ -107,6 +107,16 @@
   <input id="birthday_day" matInput placeholder="">
 </mat-form-field>
 
+<div style="margin-left: 0px; margin-top: 0px;">
+  <div class='wrapper'>
+  <label class="container" id="gpf">Quarterly Updates
+      <input class="checkmarklocation" type="checkbox">
+      <span class="checkmark"></span>
+  </label>
+</div>
+</div>
+
+
 
 </div>
 
@@ -115,7 +125,6 @@
     <mat-label>Gender</mat-label>
     <input id="gender" matInput placeholder="">
   </mat-form-field>
-
 </div> -->
 
 <div>
