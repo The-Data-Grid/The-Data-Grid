@@ -106,10 +106,186 @@ const createList = {
         data_elementname TEXT NOT NULL)'
 };
 
-const reference = {
-    default: 'ALTER TABLE $(fkTable:value) ADD FOREIGN KEY ($(fkCol:value)) REFERENCES $(pkTable:value) ($(pkCol:value))'
-};
+const reference = 'ALTER TABLE $(fkTable:value) \
+                  ADD FOREIGN KEY ($(fkCol:value)) \
+                  REFERENCES $(pkTable:value) ($(pkCol:value))';
 
+const newCreateFeature = 
+        'CREATE TABLE $(feature:value) (\
+            feature_id SMALLINT DEFAULT $(feature_id:value), \
+            observation_id SERIAL PRIMARY KEY,\
+            submission_id INTEGER NOT NULL,\
+            featureitem_id INTEGER NOT NULL,\
+            auditors TEXT)';
+
+const newCreateSubfeature = 
+        'CREATE TABLE subfeature_$(feature:value) (\
+            feature_id SMALLINT DEFAULT $(feature_id:value) \
+            parent_id INTEGER NOT NULL, \
+            observation_id SERIAL PRIMARY KEY,\
+            auditors TEXT) \
+            $(featureitem:value)'; //include comma
+
+const newCreateFeatureItem = 
+        'CREATE TABLE item_$(feature:value) ( \
+            item_id SERIAL PRIMARY KEY, \
+            $(location:value) INTEGER NOT NULL';
+            
+
+function recursiveMakeAuditSchema(features, featureList, createList, refList) {
+
+    // No feature has been added this iteration
+    let change = false
+
+    if(features.length == 0) {
+        return [true, createList, refList]
+    }
+    //For every feature/subfeature
+
+    features.forEach((element, index) => {
+
+        // if root feature
+        if(element.parentTableName === null) {
+
+            // add feature name to stack
+            featureList.push(element.frontendName);
+
+            // add create feature to stack
+            createList.push(pgp.as.format(newCreateFeature, {
+                feature: element.tableName,
+                feature_id: feature_id
+            }));
+            feature_id ++
+
+            // add create feature item to stack
+            createList.push(pgp.as.format(newCreateFeatureItem, {
+                feature: element.tableName.replace('feature_', 'item_'),
+                location: element.location + '_id'  
+            }));
+
+            // add submission reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol : 'submission_id',
+                pkTable: element.tableName,
+                fkCol: 'submission_id',
+                fkTable: 'tdg_submission'
+            }));
+
+            // add feature item reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol : 'featureitem_id',
+                pkTable: element.tableName,
+                fkCol: 'item_id',
+                fkTable: element.tableName.replace('feature_', 'item_')
+            }))
+
+            // add auditor reference to stack
+
+
+            // add sop reference to stack
+
+
+            // remove feature from features
+            features.splice(index, 1)
+
+            change = true
+
+        } else if(!featureList.includes(feature.parentTableName)) {
+            // 
+            continue 
+        } else {
+            // add feature name to stack
+            featureList.push(element.frontendName);
+
+            // add create feature to stack
+            createList.push(pgp.as.format(newCreateSubfeature, {
+                feature: element.tableName,
+                feature_id: feature_id
+            }));
+            feature_id ++
+
+            // add create feature item to stack
+            createList.push(pgp.as.format(newCreateFeatureItem, {
+                feature: element.tableName.replace('feature_', 'item_'),
+                location: element.location + '_id'  
+            }));
+
+            // add submission reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol : 'submission_id',
+                pkTable: element.tableName,
+                fkCol: 'submission_id',
+                fkTable: 'tdg_submission'
+            }));
+
+            // add feature item reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol : 'featureitem_id',
+                pkTable: element.tableName,
+                fkCol: 'item_id',
+                fkTable: element.tableName.replace('feature_', 'item_')
+            }))
+
+            // add auditor reference to stack
+
+
+            // add sop reference to stack
+
+
+            // remove feature from features
+            features.splice(index, 1)
+
+            change = true
+
+        }
+
+    })
+
+    // if no feature has been added this iteration and there are features left
+    // there must be a subfeature referencing a non existent parent
+    if(change === false) {
+        return [false, null, null]
+    };
+
+    recursiveMakeAuditSchema(features, featureList)
+}
+
+
+function makeAuditSchema(schema) {
+
+    var feature_id = 0
+    let featureList = [];
+    let createList = [];
+    let refList = [];
+
+    let parsedSchema = recursiveMakeAuditSchema(schema, featureList, createList, refList);
+
+    if(parsedSchema[0] === false) {
+        console.log('Features specified with parents that do not exist! Table creation aborted.');
+        break;
+    } else {
+        //pg promise
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// OLD! //
 
 /////////////////////////////////////////////////////
 // Recursive function to construct all subfeatures //
