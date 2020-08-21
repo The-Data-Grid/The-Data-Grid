@@ -120,6 +120,71 @@ const waterAudit = {
 
 newWaterAudit = JSON.parse('[{"tableName":"feature_toilet","parentTableName":null,"frontendName":"Toilet","numFeatureRange":null,"information":"A fixed receptacle into which a person may urinate or defecate","location":"room"},{"tableName":"feature_urinal","parentTableName":null,"frontendName":"Urinal","numFeatureRange":null,"information":"A bowl or other receptacle into which men may urinate","location":"room"},{"tableName":"subfeature_urinal_divider","parentTableName":"feature_urinal","frontendName":"Divider","numFeatureRange":1,"information":"Privacy barriers between adjacent urinals","location":null},{"tableName":"feature_sink","parentTableName":null,"frontendName":"Sink","numFeatureRange":null,"information":"A fixed basin with a water supply and a drain","location":"room"},{"tableName":"feature_mirror","parentTableName":null,"frontendName":"Mirror","numFeatureRange":null,"information":"A reflective surface that reflects a clear image","location":"room"},{"tableName":"feature_room","parentTableName":null,"frontendName":"Room","numFeatureRange":null,"information":"A part or division of a building enclosed by walls, floor, and ceiling","location":"room"}]')
 
+// GLOBAL AUDITING COLS //
+[
+    {  // DATE CONDUCTED
+      featureName: null,
+      rootFeatureName: null,
+      columnName: 'data_date_conducted',
+      tableName: null,
+      referenceColumnName: null,
+      referenceTableName: null,
+      inputSelectorName: 'calendarEqual',
+      filterSelectorName: 'calendarRange',
+      sqlDatatype: 'DATE',
+      referenceDatatype: 'local',
+      frontendDatatype: 'date',
+      information: 'Date the feature was audited',
+      nullable: false,
+      default: true,
+      global: true,
+      frontendName: 'Date Conducted',
+      groundTruthLocation: null
+    },
+    {  // SOP NAME **This kind of doesn't matter because all of these are custom**
+        featureName: null,
+        rootFeatureName: null,
+        columnName: 'data_name',
+        tableName: 'tdg_sop',
+        referenceColumnName: ['sop_id', 'sop_id', 'observation_count_id'],
+        referenceTableName: ['tdg_sop', 'tdg_sop_m2m', 'tdg_sop_m2m'],
+        inputSelectorName: 'searchableChecklistDropdown',
+        filterSelectorName: 'searchableChecklistDropdown',
+        sqlDatatype: 'TEXT',
+        referenceDatatype: 'local',
+        frontendDatatype: 'date',
+        information: 'Date the feature was audited',
+        nullable: false,
+        default: true,
+        global: true,
+        frontendName: 'Date Conducted',
+        groundTruthLocation: null
+    }
+  ]
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
     waterAudit,
     newWaterAudit

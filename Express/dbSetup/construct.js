@@ -118,19 +118,36 @@ const newCreateFeature =
             featureitem_id INTEGER NOT NULL,\
             auditors TEXT)';
 
-const newCreateSubfeature = 
-        'CREATE TABLE subfeature_$(feature:value) (\
-            feature_id SMALLINT DEFAULT $(feature_id:value) \
-            parent_id INTEGER NOT NULL, \
-            observation_id SERIAL PRIMARY KEY,\
-            auditors TEXT) \
-            $(featureitem:value)'; //include comma
+const newCreateSubfeature = {
+    withFeatureItem: 'CREATE TABLE subfeature_$(feature:value) (\
+        feature_id SMALLINT DEFAULT $(feature_id:value) \
+        parent_id INTEGER NOT NULL, \
+        observation_id SERIAL PRIMARY KEY,\
+        auditors TEXT, \
+        featureitem_id INTEGER NOT NULL)',
+    withoutFeatureItem: 'CREATE TABLE subfeature_$(feature:value) (\
+        feature_id SMALLINT DEFAULT $(feature_id:value) \
+        parent_id INTEGER NOT NULL, \
+        observation_id SERIAL PRIMARY KEY,\
+        auditors TEXT)'
+};
+
 
 const newCreateFeatureItem = 
         'CREATE TABLE item_$(feature:value) ( \
             item_id SERIAL PRIMARY KEY, \
             $(location:value) INTEGER NOT NULL';
             
+/*
+for each element
+    if root
+            make root
+            make submission ref
+            make audit id ref
+            make featureitem
+            
+            
+*/
 
 function recursiveMakeAuditSchema(features, featureList, createList, refList) {
 
@@ -163,7 +180,7 @@ function recursiveMakeAuditSchema(features, featureList, createList, refList) {
                 location: element.location + '_id'  
             }));
 
-            // add submission reference to stack
+            // add feature to submission reference to stack
             refList.push(pgp.as.format(reference, {
                 pkCol : 'submission_id',
                 pkTable: element.tableName,
@@ -171,12 +188,20 @@ function recursiveMakeAuditSchema(features, featureList, createList, refList) {
                 fkTable: 'tdg_submission'
             }));
 
-            // add feature item reference to stack
+            // add feature to feature item reference to stack
             refList.push(pgp.as.format(reference, {
                 pkCol : 'featureitem_id',
                 pkTable: element.tableName,
                 fkCol: 'item_id',
                 fkTable: element.tableName.replace('feature_', 'item_')
+            }))
+
+            // add feature item to location reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol : element.location + '_id' ,
+                pkTable: element.tableName.replace('feature_', 'item_'),
+                fkCol: 'location_id',
+                fkTable: element.location
             }))
 
             // add auditor reference to stack
@@ -194,37 +219,58 @@ function recursiveMakeAuditSchema(features, featureList, createList, refList) {
             // 
             continue 
         } else {
-            // add feature name to stack
+            // add feature name to stack **may not need ? **
             featureList.push(element.frontendName);
 
-            // add create feature to stack
-            createList.push(pgp.as.format(newCreateSubfeature, {
-                feature: element.tableName,
-                feature_id: feature_id
-            }));
-            feature_id ++
+            // if no feature item
+            if(element.location === null) {
 
-            // add create feature item to stack
-            createList.push(pgp.as.format(newCreateFeatureItem, {
-                feature: element.tableName.replace('feature_', 'item_'),
-                location: element.location + '_id'  
-            }));
+                // add create subfeature to stack
+                createList.push(pgp.as.format(newCreateSubfeature.withoutFeatureItem, {
+                    feature: element.tableName,
+                    feature_id: feature_id
+                }));
+                feature_id ++
 
-            // add submission reference to stack
-            refList.push(pgp.as.format(reference, {
-                pkCol : 'submission_id',
-                pkTable: element.tableName,
-                fkCol: 'submission_id',
-                fkTable: 'tdg_submission'
-            }));
+            } else {
+                
+                // add create subfeature to stack
+                createList.push(pgp.as.format(newCreateSubfeature.withFeatureItem, {
+                    feature: element.tableName,
+                    feature_id: feature_id,
 
-            // add feature item reference to stack
-            refList.push(pgp.as.format(reference, {
-                pkCol : 'featureitem_id',
-                pkTable: element.tableName,
-                fkCol: 'item_id',
-                fkTable: element.tableName.replace('feature_', 'item_')
-            }))
+                }));
+
+                // add create feature item to stack
+                createList.push(pgp.as.format(newCreateFeatureItem, {
+                    feature: element.tableName.replace('subfeature_', 'item_'),
+                    location: element.location + '_id'  
+                }));
+
+                // add subfeature to feature item reference to stack
+                refList.push(pgp.as.format(reference, {
+                    pkCol : 'featureitem_id',
+                    pkTable: element.tableName,
+                    fkCol: 'item_id',
+                    fkTable: element.tableName.replace('subfeature_', 'item_')
+                }))
+
+                // add feature item to location reference to stack
+                refList.push(pgp.as.format(reference, {
+                    pkCol : element.location + '_id' ,
+                    pkTable: element.tableName.replace('subfeature_', 'item_'),
+                    fkCol: 'location_id',
+                    fkTable: element.location
+                }))
+
+                feature_id ++
+            }
+            
+
+
+            
+
+            
 
             // add auditor reference to stack
 

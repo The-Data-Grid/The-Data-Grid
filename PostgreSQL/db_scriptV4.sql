@@ -94,7 +94,7 @@ CREATE TABLE item_organization (
 -- SOP, SOP Many to Many, Template
 CREATE TABLE list_sop (
     item_id SERIAL PRIMARY KEY, 
-    data_sop_filepath TEXT NOT NULL,
+    tdg_sop_filepath TEXT NOT NULL,
     data_sop_date_uploaded DATE NOT NULL,
     item_organization_id INT NOT NULL, --fk **I think this isn't a returnable row rn because list refs item**
     data_sop_name TEXT NOT NULL
