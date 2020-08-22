@@ -118,10 +118,11 @@ const waterAudit = {
     }
 }
 
-newWaterAudit = JSON.parse('[{"tableName":"feature_toilet","parentTableName":null,"frontendName":"Toilet","numFeatureRange":null,"information":"A fixed receptacle into which a person may urinate or defecate","location":"room"},{"tableName":"feature_urinal","parentTableName":null,"frontendName":"Urinal","numFeatureRange":null,"information":"A bowl or other receptacle into which men may urinate","location":"room"},{"tableName":"subfeature_urinal_divider","parentTableName":"feature_urinal","frontendName":"Divider","numFeatureRange":1,"information":"Privacy barriers between adjacent urinals","location":null},{"tableName":"feature_sink","parentTableName":null,"frontendName":"Sink","numFeatureRange":null,"information":"A fixed basin with a water supply and a drain","location":"room"},{"tableName":"feature_mirror","parentTableName":null,"frontendName":"Mirror","numFeatureRange":null,"information":"A reflective surface that reflects a clear image","location":"room"},{"tableName":"feature_room","parentTableName":null,"frontendName":"Room","numFeatureRange":null,"information":"A part or division of a building enclosed by walls, floor, and ceiling","location":"room"}]')
+newWaterAudit = JSON.parse('[{"tableName":"feature_toilet","parentTableName":null,"frontendName":"Toilet","numFeatureRange":null,"information":"A fixed receptacle into which a person may urinate or defecate","location":"item_room"},{"tableName":"feature_urinal","parentTableName":null,"frontendName":"Urinal","numFeatureRange":null,"information":"A bowl or other receptacle into which men may urinate","location":"item_room"},{"tableName":"subfeature_urinal_divider","parentTableName":"feature_urinal","frontendName":"Divider","numFeatureRange":1,"information":"Privacy barriers between adjacent urinals","location":null},{"tableName":"feature_sink","parentTableName":null,"frontendName":"Sink","numFeatureRange":null,"information":"A fixed basin with a water supply and a drain","location":"item_room"},{"tableName":"feature_mirror","parentTableName":null,"frontendName":"Mirror","numFeatureRange":null,"information":"A reflective surface that reflects a clear image","location":"item_room"},{"tableName":"feature_room","parentTableName":null,"frontendName":"Room","numFeatureRange":null,"information":"A part or division of a building enclosed by walls, floor, and ceiling","location":"item_room"}]')
+
 
 // GLOBAL AUDITING COLS //
-[
+let globalAudit = [
     {  // DATE CONDUCTED
       featureName: null,
       rootFeatureName: null,
@@ -160,7 +161,7 @@ newWaterAudit = JSON.parse('[{"tableName":"feature_toilet","parentTableName":nul
         frontendName: 'Date Conducted',
         groundTruthLocation: null
     }
-  ]
+]
   
 
 

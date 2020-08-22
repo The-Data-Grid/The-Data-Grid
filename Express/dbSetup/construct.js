@@ -10,7 +10,7 @@ const pgp = require("pg-promise")();
 const cn = { //connection info
     host: 'localhost',
     port: 5432,
-    database: 'tdg_db_new',
+    database: 'meta',
     user: 'postgres',
     password: null,
     max: 5 // use up to 5 connections
@@ -24,11 +24,45 @@ const schema = require('./schema.js');
 
 // END OF SETUP //
 
+async function asyncConstructAuditingTables(schema, makeAuditSchema) {
+
+    console.log("Generating SQL...")
+
+    let {createList, refList} = makeAuditSchema(schema);
+
+    console.log("Creating auditing tables...")
+
+    // Array of create table queries
+    let createQueries = [];
+    for(let create of createList) {
+        createQueries.push(db.none(create))
+    }
+
+    Promise.all(createQueries).then( () => {
+        console.log("Setting up Foreign Key Constraints...")
+
+        // Array of foreign key constrant queries
+        let refQueries = [];
+        for(let ref of refList) {
+            refQueries.push(db.none(ref))
+        }
+
+        Promise.all(refQueries).then( () => {
+            console.log("Done!")
+
+            // Closing the database connection
+            db.$pool.end();
+        })
+        
+    });
+};
+
+/*
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
   
-async function asyncConstructRelations(ms) {
+async function asyncConstructDataCols(ms) {
     console.log("Setting up foreign key constraints...")
     await timeout(ms); //we wait for the CREATE TABLE promises to resolve
 
@@ -45,6 +79,7 @@ async function asyncConstructRelations(ms) {
         db.$pool.end();
     })
 }
+*/
 
 ////////////////////////////////////////
 // table creation prepared statements //
@@ -106,37 +141,39 @@ const createList = {
         data_elementname TEXT NOT NULL)'
 };
 
+// NEW !! //
+
 const reference = 'ALTER TABLE $(fkTable:value) \
                   ADD FOREIGN KEY ($(fkCol:value)) \
                   REFERENCES $(pkTable:value) ($(pkCol:value))';
 
 const newCreateFeature = 
         'CREATE TABLE $(feature:value) (\
-            feature_id SMALLINT DEFAULT $(feature_id:value), \
             observation_id SERIAL PRIMARY KEY,\
+            observation_count_id INTEGER NOT NULL, \
             submission_id INTEGER NOT NULL,\
             featureitem_id INTEGER NOT NULL,\
-            auditors TEXT)';
+            data_auditor TEXT)';
 
 const newCreateSubfeature = {
-    withFeatureItem: 'CREATE TABLE subfeature_$(feature:value) (\
-        feature_id SMALLINT DEFAULT $(feature_id:value) \
+    withFeatureItem: 'CREATE TABLE $(feature:value) (\
         parent_id INTEGER NOT NULL, \
         observation_id SERIAL PRIMARY KEY,\
-        auditors TEXT, \
+        observation_count_id INTEGER NOT NULL, \
+        data_auditor TEXT, \
         featureitem_id INTEGER NOT NULL)',
-    withoutFeatureItem: 'CREATE TABLE subfeature_$(feature:value) (\
-        feature_id SMALLINT DEFAULT $(feature_id:value) \
+    withoutFeatureItem: 'CREATE TABLE $(feature:value) (\
         parent_id INTEGER NOT NULL, \
         observation_id SERIAL PRIMARY KEY,\
-        auditors TEXT)'
+        observation_count_id INTEGER NOT NULL, \
+        data_auditor TEXT)'
 };
 
 
 const newCreateFeatureItem = 
-        'CREATE TABLE item_$(feature:value) ( \
+        'CREATE TABLE $(feature:value) ( \
             item_id SERIAL PRIMARY KEY, \
-            $(location:value) INTEGER NOT NULL';
+            $(location:value) INTEGER NOT NULL)';
             
 /*
 for each element
@@ -149,96 +186,101 @@ for each element
             
 */
 
-function recursiveMakeAuditSchema(features, featureList, createList, refList) {
+function makeAuditSchema(features) {
 
-    // No feature has been added this iteration
-    let change = false
+    let createList = [];
+    let refList = [];
 
-    if(features.length == 0) {
-        return [true, createList, refList]
-    }
+    /* TODO: add validation so subfeature with nonexistent parent cannot be created */
+
     //For every feature/subfeature
-
     features.forEach((element, index) => {
 
         // if root feature
         if(element.parentTableName === null) {
 
-            // add feature name to stack
-            featureList.push(element.frontendName);
-
             // add create feature to stack
             createList.push(pgp.as.format(newCreateFeature, {
-                feature: element.tableName,
-                feature_id: feature_id
-            }));
-            feature_id ++
-
-            // add create feature item to stack
-            createList.push(pgp.as.format(newCreateFeatureItem, {
-                feature: element.tableName.replace('feature_', 'item_'),
-                location: element.location + '_id'  
+                feature: element.tableName
             }));
 
             // add feature to submission reference to stack
-            refList.push(pgp.as.format(reference, {
-                pkCol : 'submission_id',
-                pkTable: element.tableName,
+             refList.push(pgp.as.format(reference, {
+                pkCol: 'submission_id',
+                pkTable: 'tdg_submission',
                 fkCol: 'submission_id',
-                fkTable: 'tdg_submission'
+                fkTable: element.tableName
+            }));
+            
+            // add feature to observation count reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol: 'observation_count_id' ,
+                pkTable: 'tdg_observation_count',
+                fkCol: 'observation_count_id',
+                fkTable: element.tableName
             }));
 
-            // add feature to feature item reference to stack
-            refList.push(pgp.as.format(reference, {
-                pkCol : 'featureitem_id',
-                pkTable: element.tableName,
-                fkCol: 'item_id',
-                fkTable: element.tableName.replace('feature_', 'item_')
-            }))
+            // If room or building we need to do something else because these items already exist
+            if(['item_room', 'item_building'].includes(element.tableName.replace('feature_', 'item_'))) {
 
-            // add feature item to location reference to stack
-            refList.push(pgp.as.format(reference, {
-                pkCol : element.location + '_id' ,
-                pkTable: element.tableName.replace('feature_', 'item_'),
-                fkCol: 'location_id',
-                fkTable: element.location
-            }))
+                // add feature to feature item reference to stack
+                refList.push(pgp.as.format(reference, {
+                    pkCol: 'item_id',
+                    pkTable: element.tableName.replace('feature_', 'item_'),
+                    fkCol: 'featureitem_id',
+                    fkTable: element.tableName
+                }));
 
-            // add auditor reference to stack
+            } else {
 
+                // add create feature item to stack
+                createList.push(pgp.as.format(newCreateFeatureItem, {
+                    feature: element.tableName.replace('feature_', 'item_'),
+                    location: element.location + '_id'  
+                }));
 
-            // add sop reference to stack
+                // add feature to feature item reference to stack
+                refList.push(pgp.as.format(reference, {
+                    pkCol: 'item_id',
+                    pkTable: element.tableName.replace('feature_', 'item_'),
+                    fkCol: 'featureitem_id',
+                    fkTable: element.tableName
+                }));
 
+                // add feature item to location reference to stack
+                if(['item_room', 'item_building'].includes(element.location)) {
+                    refList.push(pgp.as.format(reference, {
+                        pkCol: 'item_id',
+                        pkTable: element.location,
+                        fkCol: element.location + '_id' ,
+                        fkTable: element.tableName.replace('feature_', 'item_')
+                    }));
+                } else {
+                    refList.push(pgp.as.format(reference, {
+                        pkCol: 'location_id',
+                        pkTable: element.location,
+                        fkCol: element.location + '_id' ,
+                        fkTable: element.tableName.replace('feature_', 'item_')
+                    }));
+                }
+                
+            }
 
-            // remove feature from features
-            features.splice(index, 1)
-
-            change = true
-
-        } else if(!featureList.includes(feature.parentTableName)) {
-            // 
-            continue 
-        } else {
-            // add feature name to stack **may not need ? **
-            featureList.push(element.frontendName);
+        } else { // then a subfeature
 
             // if no feature item
             if(element.location === null) {
 
                 // add create subfeature to stack
                 createList.push(pgp.as.format(newCreateSubfeature.withoutFeatureItem, {
-                    feature: element.tableName,
-                    feature_id: feature_id
+                    feature: element.tableName
                 }));
-                feature_id ++
 
-            } else {
+            } else { // then featureitem
                 
                 // add create subfeature to stack
                 createList.push(pgp.as.format(newCreateSubfeature.withFeatureItem, {
-                    feature: element.tableName,
-                    feature_id: feature_id,
-
+                    feature: element.tableName
                 }));
 
                 // add create feature item to stack
@@ -256,53 +298,42 @@ function recursiveMakeAuditSchema(features, featureList, createList, refList) {
                 }))
 
                 // add feature item to location reference to stack
-                refList.push(pgp.as.format(reference, {
-                    pkCol : element.location + '_id' ,
-                    pkTable: element.tableName.replace('subfeature_', 'item_'),
-                    fkCol: 'location_id',
-                    fkTable: element.location
-                }))
+                if(['item_room', 'item_building'].includes(element.location)) {
+                    refList.push(pgp.as.format(reference, {
+                        pkCol: 'item_id',
+                        pkTable: element.location,
+                        fkCol: element.location + '_id' ,
+                        fkTable: element.tableName.replace('feature_', 'item_')
+                    }));
+                } else {
+                    refList.push(pgp.as.format(reference, {
+                        pkCol: 'location_id',
+                        pkTable: element.location,
+                        fkCol: element.location + '_id' ,
+                        fkTable: element.tableName.replace('feature_', 'item_')
+                    }));
+                }
 
-                feature_id ++
             }
-            
 
+            // add subfeature to observation count reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol: 'observation_count_id' ,
+                pkTable: 'tdg_observation_count',
+                fkCol: 'observation_count_id',
+                fkTable: element.tableName
 
-            
-
-            
-
-            // add auditor reference to stack
-
-
-            // add sop reference to stack
-
-
-            // remove feature from features
-            features.splice(index, 1)
-
-            change = true
-
+            }));
         }
-
     })
 
-    // if no feature has been added this iteration and there are features left
-    // there must be a subfeature referencing a non existent parent
-    if(change === false) {
-        return [false, null, null]
-    };
-
-    recursiveMakeAuditSchema(features, featureList)
+    return {createList: createList, refList: refList}
 }
 
+/*
+function makeAud3itSchema(schema) {
 
-function makeAuditSchema(schema) {
-
-    var feature_id = 0
-    let featureList = [];
-    let createList = [];
-    let refList = [];
+    
 
     let parsedSchema = recursiveMakeAuditSchema(schema, featureList, createList, refList);
 
@@ -313,6 +344,11 @@ function makeAuditSchema(schema) {
         //pg promise
     }
 }
+*/
+
+// CALLING //
+
+asyncConstructAuditingTables(schema.newWaterAudit, makeAuditSchema)
 
 
 
@@ -329,9 +365,9 @@ function makeAuditSchema(schema) {
 
 
 
+//!! OLD !!//
 
-
-// OLD! //
+/*
 
 /////////////////////////////////////////////////////
 // Recursive function to construct all subfeatures //
@@ -568,9 +604,4 @@ function constructDB(data) {
     };
 }
 
-// CALLING //
-
-constructDB(schema.waterAudit);
-asyncConstructRelations(1000); // The wait time is somewhat arbitrary, it is just allowing enough time for the CREATE TABLE queries to resolve
-                               // With transactions this can change
-
+*/
