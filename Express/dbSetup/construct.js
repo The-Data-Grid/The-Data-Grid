@@ -6,6 +6,7 @@
 //       for item referencing 
 
 // SETUP //
+
 const pgp = require("pg-promise")();
 const cn = { //connection info
     host: 'localhost',
@@ -24,13 +25,19 @@ const schema = require('./schema.js');
 
 // END OF SETUP //
 
-async function asyncConstructAuditingTables(schema, makeAuditSchema) {
+
+/////////////
+/// QUERY ///
+/////////////
+
+async function asyncConstructAuditingTables(featureSchema, columnSchema) {
 
     console.log("Generating SQL...")
 
-    let {createList, refList} = makeAuditSchema(schema);
+    createList = [...makeAuditSchema(featureSchema).createList, ...addDataColumns(columnSchema).createList];
+    refList = [...makeAuditSchema(featureSchema).refList, ...addDataColumns(columnSchema).refList];
 
-    console.log("Creating auditing tables...")
+    console.log("Creating tables...")
 
     // Array of create table queries
     let createQueries = [];
@@ -57,91 +64,22 @@ async function asyncConstructAuditingTables(schema, makeAuditSchema) {
     });
 };
 
-/*
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-  
-async function asyncConstructDataCols(ms) {
-    console.log("Setting up foreign key constraints...")
-    await timeout(ms); //we wait for the CREATE TABLE promises to resolve
 
-    // Array of foreign key constrant queries
-    let fkQueries = [];
-    for(let index = 0; index < fkTable.length; index++) {
-        fkQueries.push(db.none(pgp.as.format(reference.default, {fkTable: fkTable[index], fkCol: fkCol[index], pkTable: pkTable[index], pkCol: pkCol[index]})))
-    }
+///////////
+/// SQL ///
+///////////
 
-    // Wait for all the queries to resolve and then close the connection
-    Promise.all(fkQueries).then( () => {
-        console.log("Done!")
-        // closing the connection
-        db.$pool.end();
-    })
-}
-*/
+const newCreateListm2m = 'CREATE TABLE $(tableName:value) (\
+    observation_id INTEGER NOT NULL,\
+    list_id INTEGER NOT NULL)'
 
-////////////////////////////////////////
-// table creation prepared statements //
-////////////////////////////////////////
 
-const createFeature = {
-    default: 'CREATE TABLE feature_$(feature:value) (\
-        observation_id SERIAL PRIMARY KEY,\
-        submission_id INTEGER NOT NULL,\
-        featureitem_id INTEGER NOT NULL,\
-        auditor_id INTEGER,\
-        data_date_conducted DATE NOT NULL)',
-    additional: 'CREATE TABLE feature_$(feature:value) (\
-        observation_id SERIAL PRIMARY KEY,\
-        submission_id INTEGER NOT NULL,\
-        featureitem_id INTEGER NOT NULL,\
-        auditor_id INTEGER,\
-        data_date_conducted DATE NOT NULL,\
-        $(additionalCols:value))'    
-};
+const newCreateList = 'CREATE TABLE $(tableName:value) (\
+    list_id SERIAL PRIMARY KEY,\
+    $(columnName:value) $(sqlDatatype:value) NOT NULL)'
 
-const createSubfeature = {
-    default: 'CREATE TABLE subfeature_$(parent:value)_$(subfeature:value) (\
-        observation_id SERIAL PRIMARY KEY,\
-        parent_id INTEGER NOT NULL,\
-        featureitem_id INTEGER NOT NULL,\
-        auditor_id INTEGER,\
-        data_date_conducted DATE NOT NULL)',
-    additional: 'CREATE TABLE subfeature_$(parent:value)_$(subfeature:value) (\
-        observation_id SERIAL PRIMARY KEY,\
-        parent_id INTEGER NOT NULL,\
-        featureitem_id INTEGER NOT NULL,\
-        auditor_id INTEGER,\
-        data_date_conducted DATE NOT NULL, \
-        $(additionalCols:value))'
-};
 
-const createFeatureitem = {
-    default: 'CREATE TABLE featureitem_$(featureitem:value) (\
-        featureitem_id SERIAL PRIMARY KEY,\
-        data_colloquial_name TEXT NOT NULL,\
-        location_id INTEGER NOT NULL)',
-    additional: 'CREATE TABLE featureitem_$(featureitem:value) (\
-        featureitem_id SERIAL PRIMARY KEY,\
-        data_colloquial_name TEXT NOT NULL,\
-        location_id INTEGER NOT NULL,\
-        $(additionalCols:value))'
-};
- 
-const createListM2M = {
-    default: 'CREATE TABLE list_m2m_$(parent:value)_$(list:value) (\
-        observation_id INTEGER NOT NULL,\
-        list_id INTEGER NOT NULL)'
-};
-
-const createList = {
-    default: 'CREATE TABLE list_$(parent:value)_$(list:value) (\
-        list_id SERIAL PRIMARY KEY,\
-        data_elementname TEXT NOT NULL)'
-};
-
-// NEW !! //
+const newAddColumn = 'ALTER TABLE $(tableName:value) ADD COLUMN $(columnName:value) (sqlDatatype:value) (nullable:value)'
 
 const reference = 'ALTER TABLE $(fkTable:value) \
                   ADD FOREIGN KEY ($(fkCol:value)) \
@@ -153,6 +91,8 @@ const newCreateFeature =
             observation_count_id INTEGER NOT NULL, \
             submission_id INTEGER NOT NULL,\
             featureitem_id INTEGER NOT NULL,\
+            data_date_conducted TEXT NOT NULL, \
+            data_commentary TEXT, \
             data_auditor TEXT)';
 
 const newCreateSubfeature = {
@@ -161,30 +101,28 @@ const newCreateSubfeature = {
         observation_id SERIAL PRIMARY KEY,\
         observation_count_id INTEGER NOT NULL, \
         data_auditor TEXT, \
+        data_commentary TEXT, \
+        data_date_conducted TEXT NOT NULL, \
         featureitem_id INTEGER NOT NULL)',
     withoutFeatureItem: 'CREATE TABLE $(feature:value) (\
         parent_id INTEGER NOT NULL, \
         observation_id SERIAL PRIMARY KEY,\
         observation_count_id INTEGER NOT NULL, \
+        data_date_conducted TEXT NOT NULL, \
+        data_commentary TEXT, \
         data_auditor TEXT)'
 };
-
 
 const newCreateFeatureItem = 
         'CREATE TABLE $(feature:value) ( \
             item_id SERIAL PRIMARY KEY, \
             $(location:value) INTEGER NOT NULL)';
+      
             
-/*
-for each element
-    if root
-            make root
-            make submission ref
-            make audit id ref
-            make featureitem
-            
-            
-*/
+
+/////////////////////////
+/// CREATION FUNCTION ///
+/////////////////////////
 
 function makeAuditSchema(features) {
 
@@ -322,7 +260,6 @@ function makeAuditSchema(features) {
                 pkTable: 'tdg_observation_count',
                 fkCol: 'observation_count_id',
                 fkTable: element.tableName
-
             }));
         }
     })
@@ -330,25 +267,86 @@ function makeAuditSchema(features) {
     return {createList: createList, refList: refList}
 }
 
-/*
-function makeAud3itSchema(schema) {
+function addDataColumns(columns) {
 
+    let createList = [];
+    let refList = [];
+
+    columns.forEach( column => {
+        if(column.referenceDatatype == 'list') {
+
+            // Create List table
+            createList.push(pgp.as.format(newCreateList, {
+                tableName: column.tableName,
+                columnName: column.columnName,
+                sqlDatatype: column.sqlDatatype
+            }))
+
+            // Create List Many to Many
+            createList.push(pgp.as.format(newCreateListm2m, {
+                tableName: column.tableName.replace('list_', 'list_m2m_')
+            }))
+
+            // Create m2m to List reference
+            refList.push(pgp.as.format(reference, {
+                pkCol: column.columnName,
+                pkTable: 'list_id',
+                fkCol: 'list_id',
+                fkTable: column.tableName.replace('list_', 'list_m2m_')
+            }))
+
+            // if root feature
+            if(column.featureName == column.rootFeatureName) {
+
+                // Create m2m to feature reference
+                refList.push(pgp.as.format(reference, {
+                    pkCol: 'feature' + column.featureName,
+                    pkTable: 'observation_id',
+                    fkCol: 'observation_id',
+                    fkTable: column.tableName.replace('list_', 'list_m2m_')
+                }))
+
+            } else { // then subfeature
+
+                // Create m2m to subfeature reference
+                refList.push(pgp.as.format(reference, {
+                    pkCol: 'subfeature' + column.featureName,
+                    pkTable: 'observation_id',
+                    fkCol: 'observation_id',
+                    fkTable: column.tableName.replace('list_', 'list_m2m_')
+                }))
+
+            }
+            
+        } else if(column.referenceDatatype == 'local') {
+
+            if(column.nullable) {
+                let nullable = ''
+            } else {
+                let nullable = 'NOT NULL'
+            }
+
+            refList.push(pgp.as.format(newAddColumn, {
+                tableName: column.tableName,
+                columnName: column.columnName,
+                sqlDatatype: column.sqlDatatype,
+                nullable: nullable
+            }))
+
+        } else if(column.referenceDatatype == 'item' || 'location' ) {
+            // THIS ISN'T DONE YET BUT ITS OK FOR WATER AUDIT SCHEMA
+        } else {
+            
+        }
+    })
     
+    return {createList: createList, refList: refList};
+};
 
-    let parsedSchema = recursiveMakeAuditSchema(schema, featureList, createList, refList);
-
-    if(parsedSchema[0] === false) {
-        console.log('Features specified with parents that do not exist! Table creation aborted.');
-        break;
-    } else {
-        //pg promise
-    }
-}
-*/
 
 // CALLING //
 
-asyncConstructAuditingTables(schema.newWaterAudit, makeAuditSchema)
+asyncConstructAuditingTables(schema.newWaterAudit, schema.dynamicAudit)
 
 
 
@@ -366,6 +364,30 @@ asyncConstructAuditingTables(schema.newWaterAudit, makeAuditSchema)
 
 
 //!! OLD !!//
+
+/*
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+  
+async function asyncConstructDataCols(ms) {
+    console.log("Setting up foreign key constraints...")
+    await timeout(ms); //we wait for the CREATE TABLE promises to resolve
+
+    // Array of foreign key constrant queries
+    let fkQueries = [];
+    for(let index = 0; index < fkTable.length; index++) {
+        fkQueries.push(db.none(pgp.as.format(reference.default, {fkTable: fkTable[index], fkCol: fkCol[index], pkTable: pkTable[index], pkCol: pkCol[index]})))
+    }
+
+    // Wait for all the queries to resolve and then close the connection
+    Promise.all(fkQueries).then( () => {
+        console.log("Done!")
+        // closing the connection
+        db.$pool.end();
+    })
+}
+*/
 
 /*
 

@@ -53,8 +53,8 @@ CREATE TABLE item_community (
 
 CREATE TABLE item_university (
     item_id SERIAL PRIMARY KEY,
-    university_name TEXT NOT NULL,
-    university_address TEXT NOT NULL,
+    data_university_name TEXT NOT NULL,
+    data_university_address TEXT NOT NULL,
     item_city_id INTEGER NOT NULL --fk **
 );
 
@@ -93,8 +93,6 @@ CREATE TABLE item_organization (
     item_university_id INTEGER --fk **
 );
 
-
-
 -- Observation supertable, SOP and User which reference it
 
 CREATE TABLE tdg_observation_count (
@@ -103,9 +101,9 @@ CREATE TABLE tdg_observation_count (
 
 CREATE TABLE tdg_sop (
     sop_id SERIAL PRIMARY KEY, 
-    tdg_sop_filepath TEXT NOT NULL,
-    data_sop_name TEXT NOT NULL,
-    data_sop_date_uploaded DATE NOT NULL,
+    tdg_filepath TEXT NOT NULL,
+    data_name TEXT NOT NULL,
+    data_date_uploaded DATE NOT NULL,
     item_organization_id INT NOT NULL --fk **
 );
 
@@ -133,9 +131,9 @@ CREATE TABLE tdg_users (
     item_organization_id INT NOT NULL, --fk **
     data_first_name TEXT NOT NULL,
     data_last_name TEXT NOT NULL,
-    data_email TEXT NOT NULL,
-    data_p_hash TEXT NOT NULL,
-    data_p_salt TEXT NOT NULL
+    tdg_email TEXT NOT NULL,
+    tdg_p_hash TEXT NOT NULL,
+    tdg_p_salt TEXT NOT NULL
 );
 
 CREATE TABLE tdg_privilege (
@@ -166,7 +164,9 @@ INSERT INTO metadata_reference_type
         (DEFAULT, 'local'),
         (DEFAULT, 'location'),
         (DEFAULT, 'item'),
-        (DEFAULT, 'list');
+        (DEFAULT, 'list'),
+        (DEFAULT, 'special'),
+        (DEFAULT, 'submission');
 
 CREATE TABLE metadata_selector (
     selector_id SERIAL PRIMARY KEY,
