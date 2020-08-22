@@ -63,7 +63,8 @@ CREATE TABLE item_city (
     item_county_id INTEGER NOT NULL, --fk **
     data_city_name TEXT NOT NULL,
     data_population NUMERIC,
-    location_point_id INTEGER --fk **
+    location_point_id INTEGER, --fk **
+    location_geom_region_id INTEGER --fk **
 );
 
 CREATE TABLE item_county (
@@ -273,6 +274,7 @@ ALTER TABLE item_university ADD FOREIGN KEY (item_city_id) REFERENCES item_city;
 
 ALTER TABLE item_city ADD FOREIGN KEY (item_county_id) REFERENCES item_county;
 ALTER TABLE item_city ADD FOREIGN KEY (location_point_id) REFERENCES location_point;
+ALTER TABLE item_city ADD FOREIGN KEY (location_geom_region_id) REFERENCES location_geom_region;
 
 ALTER TABLE item_county ADD FOREIGN KEY (item_state_id) REFERENCES item_state;
 ALTER TABLE item_county ADD FOREIGN KEY (location_geom_region_id) REFERENCES location_geom_region;

@@ -300,7 +300,7 @@ function addDataColumns(columns) {
 
                 // Create m2m to feature reference
                 refList.push(pgp.as.format(reference, {
-                    pkCol: 'feature' + column.featureName,
+                    pkCol: column.featureName,
                     pkTable: 'observation_id',
                     fkCol: 'observation_id',
                     fkTable: column.tableName.replace('list_', 'list_m2m_')
@@ -310,7 +310,7 @@ function addDataColumns(columns) {
 
                 // Create m2m to subfeature reference
                 refList.push(pgp.as.format(reference, {
-                    pkCol: 'subfeature' + column.featureName,
+                    pkCol: column.featureName,
                     pkTable: 'observation_id',
                     fkCol: 'observation_id',
                     fkTable: column.tableName.replace('list_', 'list_m2m_')
