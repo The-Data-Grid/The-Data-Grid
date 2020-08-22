@@ -129,7 +129,11 @@ let tableNameSQLLookup = {
 
 
 
+// Submission
 
+let submission = {
+    query: 'INNER JOIN tdg_submission ON $(feature:raw).submission_id = tdg_submission.submission_id',
+}
 
 
 // Select and Where clauses //
@@ -176,11 +180,7 @@ item_community : {
 
 // date_submitted -- unsure
 
-tdg_submission : {
-    query: 'INNER JOIN tdg_submission ON audit_submission.submission_id = tdg_submission.submission_id',
-    //Since tdg_submission can only be referenced by tdg_organization and tdg_template
-    dependencies: []
-},
+
 
 // sop_name
 item_sop : {

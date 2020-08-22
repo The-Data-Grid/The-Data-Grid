@@ -107,3 +107,89 @@ module.exports = {
     tableParents
 };
 */
+
+/*
+
+
+*/
+
+async function metadataQuery() {
+
+    let returnableIDArray = []
+    let idColumnTableLookup = {};
+
+
+    // Query all metadata
+    let rawQuery = await db.any('SELECT f.table_name, f.num_feature_range, f.information, \
+                                        f.frontend_name, rf.table_name, c.column_id, c.frontend_name, c.column_name \
+                                        c.table_name, c.reference_column_name, c.reference_table_name \
+                                        c.information, c.is_nullable, c.is_default, c.is_global, \
+                                        c.is_ground_truth, fs.selector_name, is.selector_name, \
+                                        sql.type_name, rt.type_name, ft.type_name, ft.type_description \
+                                        FROM metadata_column as c \
+                                        INNER JOIN metadata_feature AS f ON c.feature_id = f.feature_id \
+                                        INNER JOIN metadata_feature AS rf ON c.rootfeature_id = rf.feature_id \
+                                        LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
+                                        LEFT JOIN metadata_selector AS is ON c.input_selector = is.selector_id \
+                                        LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
+                                        LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
+                                        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
+
+    // Construct idColumnTableLookup                                  
+    for(let row in rawQuery) {
+
+        let id = row['c.column_id'].toString();
+        if(row['fs.selector_name'] === null) {
+            let filterable = false
+        } else {
+            let filterable = true
+        }
+
+        idColumnTableLookup[id] = {
+            column: row['c.column_name'],
+            table: row['c.table_name'],
+            rootfeature: row['rf.table_name'],
+            feature: row['f.table_name'],
+            referenceColumn: row['c.reference_column_name'],
+            referenceTable: row['c.reference_table_name'],
+            filterable: filterable,
+            sqlType: row['sql.type_name'],
+            groundTruthLocation: row['c.is_ground_truth']
+        }
+    }
+
+
+    // for record in metadata
+        //if special type
+            //custom sql
+
+
+    returnableIDArray.push(new returnableID())
+}
+
+
+
+class returnableID {
+    constructor(columnTree, tableTree, returnType, customSQL) {
+        this.columnTree = columnTree,
+        this.tableTree = tableTree,
+        this.returnType = returnType,
+        this.customSQL = customSQL,
+
+        this.joinList = this.makeJoinList(this.columnTree, this.tableTree)
+    }
+
+    makeJoinList(columnTree, tableTree) {
+        let joinList = [];
+        for(let n = 0; n < tableTree.length - 1; n++) {
+            joinList.push({
+                joinTable: tableTree[n+1],
+                joinColumn: columnTree[n+1],
+                originalTable: tableTree[n],
+                originalColumn: columnTree[n]
+            });
+        }
+
+        return joinList
+    }
+}

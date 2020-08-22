@@ -91,6 +91,7 @@ function columnTableFormat(lookup, feature) {
 
 function featureQuery(req, res) {  
 
+    /*
     //// Formatting the data
     let data = {};    // values object for SELECT and JOINS
     let query = [];    // array of clauses that make up the query
@@ -111,7 +112,7 @@ function featureQuery(req, res) {
     };
     tables = [...new Set(tables)]; // removing duplicates again
 
-    //**** Sorting table order by number of dependencies length ****/
+    // Sorting table order by number of dependencies length 
     // Note: By getting the tables we could calculate the hiearchy and get order from that
     sortTables = {}
     for(let table of tables) {
@@ -119,7 +120,7 @@ function featureQuery(req, res) {
     };
     let tableEntries = Object.keys(sortTables).sort((a,b) => sortTables[a] - sortTables[b])
 
-    //**** Pushing each join to the query in order ****/
+    // Pushing each join to the query in order 
     for(let table of tableEntries) {  
         query.push(pgp.as.format(joinClauseTables[res.locals.parsed.features][table].query, data))  
     }; 
@@ -139,6 +140,23 @@ function featureQuery(req, res) {
         out.operation = res.locals.parsed.filters[filter].operation
         query.push(pgp.as.format(where.query, out));
     }
+    */
+
+    let data = {};    // values object for SELECT and JOINS
+    let query = [];    // array of clauses that make up the query
+    data.feature = 'feature_' + res.locals.parsed.features;
+    let IDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)))]; //array of unique columns from returned columns and filters
+
+    /*
+    for IDs where type = submission
+        id42, id31, id7 -> abc, abd, ace
+            -> a[b[cd]ce]
+                -> joined to submission
+    
+    for IDs where type = special (obs count)
+        id12, id4-> a, b
+            -> joined to 
+    */
 
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' ') + ';'; 
