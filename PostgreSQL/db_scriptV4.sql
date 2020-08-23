@@ -30,8 +30,8 @@ CREATE TABLE item_room (
 
 CREATE TABLE item_building (
     item_id SERIAL PRIMARY KEY, 
-    item_university_id INTEGER, --fk **
-    data_building_name TEXT NOT NULL,
+		data_building_name TEXT NOT NULL,
+    item_university_id INTEGER, --fk **    
     location_geom_region_id INTEGER NOT NULL --fk **
 );
 
@@ -59,27 +59,26 @@ CREATE TABLE item_university (
 );
 
 CREATE TABLE item_city (
-    item_id SERIAL PRIMARY KEY,
-    item_county_id INTEGER NOT NULL, --fk **
+    item_id SERIAL PRIMARY KEY,    
     data_city_name TEXT NOT NULL,
     data_population NUMERIC,
-    location_point_id INTEGER, --fk **
+		item_county_id INTEGER NOT NULL, --fk **
     location_geom_region_id INTEGER --fk **
 );
 
 CREATE TABLE item_county (
     item_id SERIAL PRIMARY KEY,
-    data_fips_code NUMERIC NOT NULL UNIQUE,
-    item_state_id INTEGER NOT NULL, --fk **
-    data_county_name TEXT NOT NULL,
+		data_county_name TEXT NOT NULL,
+    data_fips_code NUMERIC NOT NULL UNIQUE,    
+		item_state_id INTEGER NOT NULL, --fk **
     location_geom_region_id INTEGER NOT NULL --fk **
 );
 
 CREATE TABLE item_state (
     item_id SERIAL PRIMARY KEY,
-    data_state_name TEXT NOT NULL, 
-    location_geom_region_id INTEGER NOT NULL, --fk **
-    item_country_id INTEGER NOT NULL --fk **
+    data_state_name TEXT NOT NULL,    
+    item_country_id INTEGER NOT NULL, --fk **
+		location_geom_region_id INTEGER NOT NULL --fk **
 );
 
 CREATE TABLE item_country (
@@ -213,7 +212,10 @@ INSERT INTO metadata_frontend_type
         (DEFAULT, 'string', 'String display'),
         (DEFAULT, 'date', 'Date in form of MM-DD-YYYY'),
         (DEFAULT, 'hyperlink', 'When clicked open link in new page'),
-        (DEFAULT, 'boolean', 'Display “True” for 1 and “False” for 0');
+        (DEFAULT, 'boolean', 'Display "True" for 1 and "False" for 0'),
+				(DEFAULT, 'location', 'JSONB object representing geographic location (point, path or geom region)'),
+				(DEFAULT, 'integer', 'Integer'),
+				(DEFAULT, 'float', 'Floating point numeric value');
 
 
 CREATE TABLE metadata_column ( -- Add featureitem_location??
@@ -273,7 +275,6 @@ ALTER TABLE item_organization ADD FOREIGN KEY (item_university_id) REFERENCES it
 ALTER TABLE item_university ADD FOREIGN KEY (item_city_id) REFERENCES item_city;
 
 ALTER TABLE item_city ADD FOREIGN KEY (item_county_id) REFERENCES item_county;
-ALTER TABLE item_city ADD FOREIGN KEY (location_point_id) REFERENCES location_point;
 ALTER TABLE item_city ADD FOREIGN KEY (location_geom_region_id) REFERENCES location_geom_region;
 
 ALTER TABLE item_county ADD FOREIGN KEY (item_state_id) REFERENCES item_state;
