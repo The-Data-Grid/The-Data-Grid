@@ -24,47 +24,31 @@ export class ApiService {
     return array.join('&');
   }
 
-  // table
   public getSetupTableObject(): Observable<SetupTableObject> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
     // return this.http.get<FilterConfig>(API_URL + '/setup');
-    // this.http.get<SetupTableObject>(temp_url + '/setup')
+    var url = temp_url + '/setup';
 
-
-    // commented code below gives the correct server status but doesn't load the table
-
-
-    return this.http.get<SetupTableObject>(temp_url + '/setup', { observe: 'response', responseType: 'json' }).pipe(map((response: any) => {
-      console.log("Server Status: " + response.status + ":::::" + response.statusText);
-      return response.body;
-    }));
-    // gives an undefined status but loads the table correctly
-    // return this.http.get<SetupTableObject>(temp_url + '/setup').pipe(map((response: any) => {
-    //   console.log("Server Status: " + response.status + ":::::" + response.statusText);
-    //   return response
-  // }));
-}
-
-//   public getSetupTableObject(): Observable < SetupTableObject > {
-//   // gives an undefined status but loads the table correctly
-//   return this.http.get<SetupTableObject>(temp_url + '/setup').pipe(map((response: any) => {
-//     console.log("Server Status: " + response.status + ":::::" + response.statusText);
-//     return response;
-//   }));
-// }
-  
+    return this.http.get<SetupTableObject>(url, { observe: 'response', responseType: 'json' })
+      .pipe(map((response: any) => {
+        console.log("Server Status: " + response.status + ":::::" + response.statusText);
+        return response.body;
+      }));
+  }
 
   public getTableObject(feature: string, columns: any, qsparams: any): any {
-  // this.columnsString = this.makeColumnsString(columns);
-  // this.temp = API_URL + "/a/" + feature;
-  // if (this.columnsString) {
-  //   this.temp = this.temp + "/" + this.columnsString;
-  // }
-  // return this.http.get<TableObject>(this.temp, { params: qsparams });
+    // this.columnsString = this.makeColumnsString(columns);
+    // this.temp = API_URL + "/a/" + feature;
+    // if (this.columnsString) {
+    //   this.temp = this.temp + "/" + this.columnsString;
+    // }
+    // return this.http.get<TableObject>(this.temp, { params: qsparams });
 
-  // for test server only:
-  return this.http.get<TableObject>(temp_url + '/table');
-}
+    var url = temp_url + '/table';
+
+    // for test server only:
+    return this.http.get<TableObject>(url);
+  }
 
 
 }

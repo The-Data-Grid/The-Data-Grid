@@ -12,7 +12,6 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 export class AuditsComponent implements OnInit {
   // variables for table 
   dataTableColumns = [];
-  hyperlinkColumns = [];
   rows = [];
   tableObject;
   editing = {};
@@ -117,7 +116,7 @@ export class AuditsComponent implements OnInit {
         }
       }
       if (column.default) {
-        this.defaultColumns.push(column.queryValue);
+        this.defaultColumns.push(column.columnBackendID);
       }
     });
     return selectors;
@@ -126,7 +125,6 @@ export class AuditsComponent implements OnInit {
   getTableObject() {
     // clear the column headers
     this.dataTableColumns = [];
-    this.hyperlinkColumns = [];
     this.rows = [];
     var i;
 
