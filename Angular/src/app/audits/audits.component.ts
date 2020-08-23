@@ -149,7 +149,6 @@ export class AuditsComponent implements OnInit {
         else {
           var idx1 = this.tableObject.columnIndex[i][0];
           var idx2 = this.tableObject.columnIndex[i][1];
-          console.log(this.tableObject.columnIndex[i][0] + " " + this.tableObject.columnIndex[i][1]);
           var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
 
           this.dataTableColumns.push({
