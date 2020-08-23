@@ -220,17 +220,17 @@ INSERT INTO metadata_frontend_type
 
 CREATE TABLE metadata_column ( -- Add featureitem_location??
     column_id SERIAL PRIMARY KEY, -- used as the columnBackendID
-    feature_id INTEGER NOT NULL, --fk
-    rootfeature_id INTEGER NOT NULL, --fk
+    feature_id INTEGER, --fk
+    rootfeature_id INTEGER, --fk
     frontend_name TEXT NOT NULL,
-    column_name TEXT NOT NULL,
-    table_name TEXT NOT NULL,
-    reference_column_name JSON NOT NULL,
-    reference_table_name JSON NOT NULL,
+    column_name TEXT,
+    table_name TEXT,
+    reference_column_name JSON,
+    reference_table_name JSON,
     information TEXT,
 
-    filter_selector INTEGER NOT NULL, --fk
-    input_selector INTEGER NOT NULL, --fk
+    filter_selector INTEGER, --fk
+    input_selector INTEGER, --fk
     sql_type INTEGER NOT NULL, --fk
     reference_type INTEGER NOT NULL, --fk
     frontend_type INTEGER NOT NULL, --fk
@@ -244,8 +244,8 @@ CREATE TABLE metadata_column ( -- Add featureitem_location??
 CREATE TABLE metadata_feature (
     feature_id SERIAL PRIMARY KEY,
     table_name TEXT NOT NULL,
-    parent_id INTEGER NOT NULL, --fk
-    num_feature_range INTEGER NOT NULL,
+    parent_id INTEGER, --fk
+    num_feature_range INTEGER,
     information TEXT,
     frontend_name TEXT NOT NULL
 );

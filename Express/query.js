@@ -164,7 +164,7 @@ function featureQuery(req, res) {
 
     let refSelection = [];
     submissionIDs.forEach((submission, index) => {
-        refSelection.push(submission.)
+        refSelection.push(submission)
     })
 
 

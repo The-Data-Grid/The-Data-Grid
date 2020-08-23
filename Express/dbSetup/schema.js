@@ -209,9 +209,10 @@ let staticGlobalAudit = [
     },
 ];
 
-let dynamicAudit = [
-    
-]
+
+
+
+let anotherTry = JSON.parse(newString)
 
 
 module.exports = {
