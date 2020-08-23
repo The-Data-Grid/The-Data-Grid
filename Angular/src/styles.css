@@ -166,6 +166,8 @@ html, body {
   border-right: 5px solid transparent !important;
 }
 
+
+/* radio button */
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
   border-color: rgb(95, 167, 132);
 }

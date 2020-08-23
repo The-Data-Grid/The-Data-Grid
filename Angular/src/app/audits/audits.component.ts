@@ -9,20 +9,6 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
   styleUrls: ['./audits.component.css']
 })
 
-// export interface SelectorTypeObject {
-//   numericChoice: [];
-//   numericEqual: [];
-//   calendarRange: [];
-//   calendarEqual: [];
-//   dropdown: [];
-//   searchableDropdown: [];
-//   checklistDropdown: [];
-//   searchableChecklistDropdown: [];
-//   text: [];
-//   bool: [];
-// }
-
-
 export class AuditsComponent implements OnInit {
   // variables for table 
   dataTableColumns = [];
@@ -39,6 +25,7 @@ export class AuditsComponent implements OnInit {
   featureDropdownValues = new Map(); //map name to direct children
   selectedFeature;
   appliedFilterSelections = {};
+  options: string[] = ['One', 'Two', 'Three'];
   // the following are for multiselect dropdowns
   dropdownList = [
     { item_id: 1, item_text: 'Mumbai' },
@@ -71,6 +58,7 @@ export class AuditsComponent implements OnInit {
   getSetupTableObject() {
     this.apiService.getSetupTableObject().subscribe((res) => {
       this.setupObject = res;
+      console.log(res);
 
       // parse global columns
       this.globalSelectors = this.parseColumn(this.setupObject.globalColumns);
@@ -94,7 +82,7 @@ export class AuditsComponent implements OnInit {
       // get datatypes array
       this.datatypes = this.setupObject.datatypes;
       // console.log(this.globalSelectors);
-      console.log(this.featureSelectors);
+      // console.log(this.featureSelectors);
       this.applyFilters();
     });
   }
@@ -132,7 +120,6 @@ export class AuditsComponent implements OnInit {
         this.defaultColumns.push(column.queryValue);
       }
     });
-
     return selectors;
   }
 
@@ -145,6 +132,7 @@ export class AuditsComponent implements OnInit {
 
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       this.tableObject = res;
+      // console.log(res);
       // construct the column header arrays
       for (i = 0; i < this.tableObject.columnIndex.length; i++) {
         // globals
@@ -161,6 +149,7 @@ export class AuditsComponent implements OnInit {
         else {
           var idx1 = this.tableObject.columnIndex[i][0];
           var idx2 = this.tableObject.columnIndex[i][1];
+          console.log(this.tableObject.columnIndex[i][0] + " " + this.tableObject.columnIndex[i][1]);
           var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
 
           this.dataTableColumns.push({
