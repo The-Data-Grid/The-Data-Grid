@@ -85,17 +85,37 @@ let makeLocation = (locationTableName, referenceTableName, referenceColumnName) 
 >List
     list_... -> list_m2m_... -> feature_...
 */
-let listJoin = {
-    feature: {
-        listName_referenceTableName_referenceColumnName : { //Join m2m to audit table then join 
-            query: 'INNER JOIN $(listName:value)_m2m \
-                    ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
-                    INNER JOIN $(listName:value) \
-                    ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
-            dependencies: ['referenceTableName']
+
+let listName= "listName_" + referenceTable + referenceColumn;
+
+if (table.includes("list_"))
+{
+    let listJoin = {
+        feature: {
+            listName : { //Join m2m to audit table then join 
+                query: 'INNER JOIN $(listName:value)_m2m \
+                        ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+                        INNER JOIN $(listName:value) \
+                        ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+                dependencies: ['referenceTable']
+            }
         }
     }
+    
 }
+
+
+// let listJoin = {
+//     feature: {
+//         listName_referenceTableName_referenceColumnName : { //Join m2m to audit table then join 
+//             query: 'INNER JOIN $(listName:value)_m2m \
+//                     ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
+//                     INNER JOIN $(listName:value) \
+//                     ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+//             dependencies: ['referenceTableName']
+//         }
+//     }
+// }
 
 /*
 >Item
