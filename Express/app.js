@@ -31,6 +31,9 @@ function cycleTimer(req, res, next) {
 //** Data Query **//
 app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery); 
 
+//** Setup Query **//
+app.get('/api/setup', parse.setupParse, setup.sendSetup);
+
 // Audit Upload
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
 
