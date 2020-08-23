@@ -5,3 +5,5 @@ PostgreSQL/data/*
 !PostgreSQL/data/.gitkeep
 
 .env
+
+.DS_Store

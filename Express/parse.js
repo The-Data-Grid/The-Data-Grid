@@ -31,15 +31,30 @@ const queryParse = (req, res, next) => {
     let filter = req.query;
     let {feature} = req.params; 
     let {include} = req.params;
-    include = include.split("&");
+    include = include.split('&');
+
+    // Validate column IDs are numeric
+    for(let id of include) {
+        if(isNaN(parseInt(id))) {
+            return res.status(400).send(`Bad Request 1601: ${id} must be numeric`);
+        }
+    }
+
     // console.log('feature = ', feature);
     // console.log('includes = ', include);
     // console.log('filters = ', filter);
     
-    // do some stuff to get filters and path in good format
+    // Construct object of parsed filters
     let filters = {}
     for (const key in filter) {
-        if (typeof(filter[key]) == "object") {
+
+        // Validate filter IDs are numeric
+        if(isNaN(parseInt(key))) {
+            return res.status(400).send(`Bad Request 1602: ${key} must be numeric`);
+        }
+
+
+        if (typeof(filter[key]) === 'object') {
             let content = Object.keys(filter[key])
 
             if(!isNaN(filter[key][content[0]])) { //if number parseInt
@@ -50,7 +65,7 @@ const queryParse = (req, res, next) => {
             
             let operation = operation_map(content[0])
             if(operation === null) {
-                return res.status(400).json({'Bad Request': `${content[0]} is not a valid operation`})
+                return res.status(400).send(`Bad Request 1603: ${content[0]} is not a valid operator`)
             } else {
                 filters[key] = {
                     operation: operation_map(content[0], res),
@@ -69,6 +84,7 @@ const queryParse = (req, res, next) => {
 
 ////// END OF QUERY PARSING //////
 
+
 ////// UPLOAD PARSING ////// 
 
 function uploadParse(req, res, next) {
@@ -77,6 +93,7 @@ function uploadParse(req, res, next) {
 }
 
 ////// END OF UPLOAD PARSING //////
+
 
 ////// TEMPLATE PARSING //////
 
@@ -88,8 +105,19 @@ function templateParse(req, res, next) {
 ////// END OF TEMPLATE PARSING //////
 
 
+////// SETUP PARSING //////
+
+function setupParse(req, res, next) {
+    res.locals.parsed = JSON.parse(JSON.stringify(req.body));
+    next();
+}
+
+////// END OF SETUP PARSING //////
+
+
 module.exports = {
     queryParse,
     uploadParse,
-    templateParse
+    templateParse,
+    setupParse
 }
