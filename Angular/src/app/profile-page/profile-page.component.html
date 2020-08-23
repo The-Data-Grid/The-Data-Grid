@@ -12,12 +12,17 @@ max-width: 1600px;
 margin: 0 auto;
 
 ">
+<div>
 <div class="profile_info">
     <div style="width: 20px;" (mouseenter)="hoverOnAvatar()" (mouseleave)="hoverOnAvatar()">
     <img class="avatar" [class.profile_hover]="isAvatarHover" src="assets/default-user.png" alt="Avatar">
     <div *ngIf="isAvatarHover" (mouseenter)="hoverOnEditButton()">
         <img style="cursor: pointer; position: absolute; width: 20px; margin-left: -160px; margin-top:-35px" src="assets/edit_icon.png">
     </div>
+</div>
+<div>
+      <!-- will eventually dynamically allocate position of name based on length -->
+      <h1 style="position: absolute; font-size: 22px; margin-left: -195px; margin-top: 3px;">Jane Doe</h1>
 </div>
     <h1 class="myInfoLabel">My Information</h1>
     
