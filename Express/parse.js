@@ -84,6 +84,7 @@ const queryParse = (req, res, next) => {
 
 ////// END OF QUERY PARSING //////
 
+
 ////// UPLOAD PARSING ////// 
 
 function uploadParse(req, res, next) {
@@ -92,6 +93,7 @@ function uploadParse(req, res, next) {
 }
 
 ////// END OF UPLOAD PARSING //////
+
 
 ////// TEMPLATE PARSING //////
 
@@ -103,8 +105,19 @@ function templateParse(req, res, next) {
 ////// END OF TEMPLATE PARSING //////
 
 
+////// SETUP PARSING //////
+
+function setupParse(req, res, next) {
+    res.locals.parsed = JSON.parse(JSON.stringify(req.body));
+    next();
+}
+
+////// END OF SETUP PARSING //////
+
+
 module.exports = {
     queryParse,
     uploadParse,
-    templateParse
+    templateParse,
+    setupParse
 }

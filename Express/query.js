@@ -147,6 +147,27 @@ function featureQuery(req, res) {
     data.feature = 'feature_' + res.locals.parsed.features;
     let IDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)))]; //array of unique columns from returned columns and filters
 
+    // Getting returnableID class from ID
+    IDs = IDs.map((id) => setup.returnableIDLookup[id.toString()])
+
+    let submissionIDs = IDs.filter((id) => id.returnType == 'submission');
+
+    let standardIDs = IDs.filter((id) => id.returnType == 'local' || 'item' || 'location');
+
+    let listIDs = IDs.filter((id) => id.returnType == 'list');
+
+    if(submissionIDs.length + standardIDs.length + listIDs.length != IDs.length) {
+        // res.status(500).send('AAAAAA fuck')
+    }
+
+    // Submission JOINs
+
+    let refSelection = [];
+    submissionIDs.forEach((submission, index) => {
+        refSelection.push(submission.)
+    })
+
+
     /*
     for IDs where type = submission
         id42, id31, id7 -> abc, abd, ace
