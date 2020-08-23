@@ -29,14 +29,15 @@ export class AuditsComponent implements OnInit {
   hyperlinkColumns = [];
   rows = [];
   tableObject;
+  editing = {};
 
   // variables for filtering sidebar
   filterBy = "Submission";
   setupObject;
   datatypes;
   defaultColumns = [];
-  featureDropdownValues = [];
-  selectedFeature = 'Toilet';
+  featureDropdownValues = new Map(); //map name to direct children
+  selectedFeature;
   appliedFilterSelections = {};
   // the following are for multiselect dropdowns
   dropdownList = [
@@ -75,15 +76,25 @@ export class AuditsComponent implements OnInit {
       this.globalSelectors = this.parseColumn(this.setupObject.globalColumns);
 
       // parse feature columns
+      var i = 0;
       this.setupObject.featureColumns.forEach(featureColumn => {
-        this.featureDropdownValues.push(featureColumn.frontendName);
+        if (i < this.setupObject.subfeatureStartIndex) {
+          var childFeatures = [];
+          // use indicies from directChildren arr to find the corresponsing object
+          featureColumn.directChildren.forEach(index => {
+            childFeatures.push(this.setupObject.featureColumns[index]);
+          });
+          // map parent child's name to array of children
+          this.featureDropdownValues.set(featureColumn.frontendName, childFeatures);
+          i++;
+        }
         this.featureSelectors[featureColumn.frontendName] = this.parseColumn(featureColumn.dataColumns);
       });
 
       // get datatypes array
       this.datatypes = this.setupObject.datatypes;
       // console.log(this.globalSelectors);
-      // console.log(this.featureSelectors);
+      console.log(this.featureSelectors);
       this.applyFilters();
     });
   }
@@ -168,7 +179,6 @@ export class AuditsComponent implements OnInit {
         for (i = 0; i < this.tableObject.columnIndex.length; i++) {
           // global
           if (this.tableObject.columnIndex[i][0] === null) {
-            // console.log(i + " global");
             var idx = this.tableObject.columnIndex[i][1];
             var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
 
@@ -193,7 +203,6 @@ export class AuditsComponent implements OnInit {
           }
           // feature
           else {
-            // console.log(i + " feature");
             var idx1 = this.tableObject.columnIndex[i][0];
             var idx2 = this.tableObject.columnIndex[i][1];
             var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
@@ -222,6 +231,14 @@ export class AuditsComponent implements OnInit {
         this.rows.push(row);
       });
     });
+  }
+
+  updateValue(event, cell, rowIndex) {
+    console.log('inline editing rowIndex', rowIndex);
+    this.editing[rowIndex + '-' + cell] = false;
+    this.rows[rowIndex][cell] = event.target.value;
+    this.rows = [...this.rows];
+    console.log('UPDATED!', this.rows[rowIndex][cell]);
   }
 
   // filterDatatable(event) {

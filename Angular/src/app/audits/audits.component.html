@@ -33,16 +33,12 @@
                     <mat-form-field>
                         <mat-label>{{column.columnFrontendName}} Range</mat-label>
                         <input #datepicker matInput [matDatepicker]="picker1"
-                            (dateInput)="applyDateFilter($event.target.value)"
-                            style="width: 75px; text-align: center;">
+                            (dateInput)="applyDateFilter($event.target.value)" style="width: 75px; text-align: center;">
                         <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                         <mat-datepicker #picker1></mat-datepicker>
-
                         -
-
                         <input #datepicker matInput [matDatepicker]="picker2"
-                            (dateInput)="applyDateFilter($event.target.value)"
-                            style="width: 75px; text-align: center;" >
+                            (dateInput)="applyDateFilter($event.target.value)" style="width: 75px; text-align: center;">
                         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                         <mat-datepicker #picker2></mat-datepicker>
                     </mat-form-field>
@@ -53,68 +49,46 @@
                 </mat-form-field> -->
             </div>
 
+
             <div class="features-filters" *ngIf="filterBy!='Submission'">
                 <h3>Feature Filters</h3>
                 <mat-form-field>
                     <mat-label>Features</mat-label>
                     <mat-select [(ngModel)]="selectedFeature">
-                        <mat-option *ngFor="let val of featureDropdownValues" [value]=val>
-                            {{val}}
+                        <mat-option *ngFor="let feature of featureDropdownValues | keyvalue" [value]=feature.key>
+                            {{feature.key}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
 
+                <!-- <div *ngIf="featureSelectors[selectedFeature]"> hello</div> -->
 
-<!-- <mat-accordion>
-  <mat-expansion-panel hideToggle>
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        This is the expansion title
-      </mat-panel-title>
-      <mat-panel-description>
-        This is a summary of the content
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    <p>This is the primary content of the panel.</p>
-  </mat-expansion-panel>
-  <mat-expansion-panel (opened)="panelOpenState = true"
-                       (closed)="panelOpenState = false">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        Self aware panel
-      </mat-panel-title>
-      <mat-panel-description>
-        Currently I am {{panelOpenState ? 'open' : 'closed'}}
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    <p>I'm visible because I am open</p>
-  </mat-expansion-panel>
-</mat-accordion> -->
-                
-                
-                <div *ngIf="featureSelectors[selectedFeature]">
-                    <!-- feature dropdowns -->
-                    <mat-form-field *ngFor="let column of featureSelectors[selectedFeature].dropdown">
-                        <mat-label>{{column.columnFrontendName}}</mat-label>
-                        <mat-select [(ngModel)]="column.filterSelector.selectorValue">
-                            <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
-                            {{val}}
-                        </mat-option> -->
-                        </mat-select>
-                    </mat-form-field>
+                <mat-accordion *ngIf="selectedFeature">
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{selectedFeature}}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <ng-template *ngTemplateOutlet="featureFilters; context: {$implicit: selectedFeature}">
+                        </ng-template>
+                    </mat-expansion-panel>
+                    <mat-expansion-panel *ngFor="let child of featureDropdownValues.get(selectedFeature)">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{selectedFeature}}/{{child.frontendName}}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <ng-template *ngTemplateOutlet="featureFilters; context: {$implicit: child.frontendName}">
+                        </ng-template>
+                    </mat-expansion-panel>
+                </mat-accordion>
 
-                    <!-- feature numeric choice -->
-                    <mat-form-field *ngFor="let column of featureSelectors[selectedFeature].numericChoice">
-                        <mat-label>{{column.columnFrontendName}}</mat-label>
-                        <input matInput placeholder="ex: 4.5" [(ngModel)]='column.filterSelector.selectorValue'>
-                    </mat-form-field>
-
-                    <!-- DON'T DELETE BELOW SECTION: MULTISELECT DROPDOWN EXAMPLE-->
-                    <!-- <ng-multiselect-dropdown class="multi" [placeholder]="'City'" [(ngModel)]="selectedItems"
+                <!-- DON'T DELETE BELOW SECTION: MULTISELECT DROPDOWN EXAMPLE-->
+                <!-- <ng-multiselect-dropdown class="multi" [placeholder]="'City'" [(ngModel)]="selectedItems"
                     [settings]="dropdownSettings" [data]="dropdownList" (onSelect)="onItemSelect($event)"
                     (onSelectAll)="onSelectAll($event)">
                      </ng-multiselect-dropdown> -->
-                </div>
             </div>
             <button id="apply-button" mat-button (click)="applyFilters()">APPLY</button>
         </mat-sidenav>
@@ -126,9 +100,25 @@
                 <ngx-datatable *ngIf="tableObject" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
                     <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
-                        <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
-                            <a *ngIf="col.type==='hyperlink'" [href]="row['hyperlinks'][col.prop]">{{value}}</a>
-                            <p *ngIf="col.type==='string' || col.type==='bool'">{{value}}</p>
+                        <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row"
+                            let-value="value">
+                            <span [ngSwitch]="col.type">
+                                <a *ngSwitchCase="'hyperlink'" [href]="row['hyperlinks'][col.prop]">{{value}}</a>
+                                <p *ngSwitchCase="'string'">{{value}}</p>
+                                <div *ngSwitchCase="'bool'">
+                                    <span title="Double click to edit"
+                                        (dblclick)="editing[rowIndex + '-' + col.prop] = true"
+                                        *ngIf="!editing[rowIndex + '-' + col.prop]">
+                                        {{ value }}
+                                    </span>
+                                    <select *ngIf="editing[rowIndex + '-' + col.prop]"
+                                        (blur)="editing[rowIndex + '-' + col.prop] = false"
+                                        (change)="updateValue($event, col.prop, rowIndex)" [value]="value">
+                                        <option value="True">True</option>
+                                        <option value="False">False</option>
+                                    </select>
+                                </div>
+                            </span>
                         </ng-template>
                     </ngx-datatable-column>
                 </ngx-datatable>
@@ -136,6 +126,26 @@
 
         </mat-sidenav-content>
     </mat-sidenav-container>
+
+
+    <ng-template #featureFilters let-featureName>
+        <!-- feature dropdowns -->
+        <mat-form-field *ngFor="let column of featureSelectors[featureName].dropdown">
+            <mat-label>{{column.columnFrontendName}}</mat-label>
+            <mat-select [(ngModel)]="column.filterSelector.selectorValue">
+                <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
+                    {{val}}
+                </mat-option> -->
+            </mat-select>
+        </mat-form-field>
+
+        <!-- feature numeric choice -->
+        <mat-form-field *ngFor="let column of featureSelectors[featureName].numericChoice">
+            <mat-label>{{column.columnFrontendName}}</mat-label>
+            <input matInput placeholder="ex: 4.5" [(ngModel)]='column.filterSelector.selectorValue'>
+        </mat-form-field>
+    </ng-template>
+
 </body>
 
 </html>

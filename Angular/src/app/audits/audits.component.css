@@ -8,16 +8,17 @@
     bottom: 50px;
 }
 
-::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {
+::ng-deep .sidenav .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .sidenav .mat-select-arrow, ::ng-deep .sidenav .mat-select-value {
     /*change color of label*/
     color: rgb(228, 228, 228) !important;
 }
 
-::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple {
+::ng-deep .sidenav .mat-form-field-underline, ::ng-deep .sidenav .mat-form-field-ripple {
     background-color: rgba(228, 228, 228, 0.5) !important;
 }
 
 /* main content */
+
 #audit-table-container {
     margin-left: auto;
     margin-right: auto;
@@ -27,9 +28,9 @@
 }
 
 /* actual sidebar */
+
 .sidenav {
     width: 25%;
-    /* height: 100%; */
     text-align: center;
     color: rgb(228, 228, 228);
     background-color: rgba(73, 73, 73, .8) !important;
@@ -38,20 +39,30 @@
 }
 
 /* form fields within sidenav bar */
+
 .mat-form-field {
-    margin: 1rem, 1rem, 1rem, 1rem;
+    margin-left: auto;
+    margin-right: auto;
     font-size: small;
     width: 80%;
 }
 
-.mat-radio-button {
-    margin: 5px;
-
+.mat-expansion-panel {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: small;
+    width: 80%;
+    background-color: transparent;
 }
 
+.mat-expansion-panel-header-title {
+    font-size: small;
+    color: rgb(228, 228, 228) !important;
+}
 
-
-
+.mat-radio-button {
+    margin: 5px;
+}
 
 .sidenav .mat-button {
     background-color: rgb(95, 167, 132);

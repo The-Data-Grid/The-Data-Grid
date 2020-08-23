@@ -179,3 +179,8 @@ html, body {
   background-color: rgb(95, 167, 132);
 }
 
+
+/* expansion panel indicator */
+.mat-expansion-panel-header .mat-expansion-indicator::after {
+  color: rgb(228, 228, 228) !important;
+}
