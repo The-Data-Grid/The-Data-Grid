@@ -22,40 +22,6 @@ const cn = { //connection info
  //db.function is used for pg-promise queries
 const db = pgp(cn);
 
-// Making metadata JS objects
-async function metadataSetup(sendSetup) {
-    // Select all column ids, column names and their respective table names
-    var idColumnTableLookup = await db.any('SELECT col.column_id, col.backend_name, tab.backend_name, tab.feature \
-                                        FROM metadata_column AS col \
-                                        INNER JOIN metadata_table AS tab ON col.table_id = tab.table_id');
-
-    // Select all tables and their parents. If no parent then return NULL for parent.
-    var tableParents = await db.any('SELECT child.backend_name, parent.backend_name FROM metadata_table AS child \
-                                     LEFT JOIN metadata_table AS parent ON child.parent_id = parent.parent_id');
-
-    // Closing the connection !Important!
-    db.$pool.end();
-
-    module.exports = {
-        idColumnTableLookup,
-        tableParents,
-        sendSetup
-    };
-
-    
-    /*
-    to get table names from ids: (this will throw error if the id is not validated)
-    idInput = [1,4,23,9] //example
-    idInput.map(number => idColumnTableLookup[String(number)].table) 
-
-    construct table.column SQL syntax from ids:
-    idInput = [1,4,23,9] //example
-    idInput.map(number => idColumnTableLookup[String(number)]).map(object => `${object.table}.${object.column}`)
-     */
-};
-
-// Calling the metadata setup function
-metadataSetup(sendSetup);
 
 ////////////////////////////////////////////////////////////
 // Query column to database table lookup table generation //
@@ -109,10 +75,31 @@ module.exports = {
 };
 */
 
-/*
+class returnableID {
+    constructor(columnTree, tableTree, returnType, joinSQL, selectSQL) {
+        this.columnTree = columnTree,
+        this.tableTree = tableTree,
+        this.returnType = returnType,
+        this.joinSQL = joinSQL,
+        this.selectSQL = selectSQL
 
+        this.joinList = this.makeJoinList(this.columnTree, this.tableTree)
+    }
 
-*/
+    makeJoinList(columnTree, tableTree) {
+        let joinList = [];
+        for(let n = 0; n < tableTree.length - 1; n++) {
+            joinList.push({
+                joinTable: tableTree[n+1],
+                joinColumn: columnTree[n+1],
+                originalTable: tableTree[n],
+                originalColumn: columnTree[n]
+            });
+        }
+
+        return joinList
+    }
+}
 
 async function metadataQuery() {
 
@@ -123,16 +110,16 @@ async function metadataQuery() {
 
     // Query all metadata
     let rawQuery = await db.any('SELECT f.table_name, f.num_feature_range, f.information, \
-                                        f.frontend_name, rf.table_name, c.column_id, c.frontend_name, c.column_name \
-                                        c.table_name, c.reference_column_name, c.reference_table_name \
+                                        f.frontend_name, rf.table_name, c.column_id, c.frontend_name, c.column_name, \
+                                        c.table_name, c.reference_column_name, c.reference_table_name, \
                                         c.information, c.is_nullable, c.is_default, c.is_global, \
-                                        c.is_ground_truth, fs.selector_name, is.selector_name, \
+                                        c.is_ground_truth, fs.selector_name, ins.selector_name, \
                                         sql.type_name, rt.type_name, ft.type_name, ft.type_description \
                                         FROM metadata_column as c \
-                                        INNER JOIN metadata_feature AS f ON c.feature_id = f.feature_id \
-                                        INNER JOIN metadata_feature AS rf ON c.rootfeature_id = rf.feature_id \
+                                        LEFT JOIN metadata_feature AS f ON c.feature_id = f.feature_id \
+                                        LEFT JOIN metadata_feature AS rf ON c.rootfeature_id = rf.feature_id \
                                         LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
-                                        LEFT JOIN metadata_selector AS is ON c.input_selector = is.selector_id \
+                                        LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
                                         LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
                                         LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
                                         LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
@@ -146,28 +133,25 @@ async function metadataQuery() {
                                     FROM metadata_feature AS f \
                                     LEFT JOIN metadata_feature as ff ON f.parent_id = ff.feature_id');
 
+    // Order so features come before subfeatures
+    allFeatures = [...allFeatures.filter((feature) => feature['ff.table_name'] === null), ...allFeatures((feature) => feature['ff.table_name'] !== null)]
+                           
     // Construct tableParents
     allFeatures.map((el) => [el['f.table_name'], el['ff.table_name']]).forEach((el) => {
         tableParents[el[0]] = el[1]
     });
 
-    // Construct setup object
+    // Construct setup object //
+    // ============================================================
+
     setupObject = {};
 
     //construct columnObjects
     let columnObjects = rawQuery.map((row) => {
 
-        if(row['fs.selector_name'] === null) {
-            let fSelector = null
-        } else {
-            let fSelector = {selectorKey: row['fs.selector_name'], selectorValue: 'SQL HERE!'}
-        }
-
-        if(row['is.selector_name'] === null) {
-            let iSelector = null
-        } else {
-            let iSelector = {selectorKey: row['is.selector_name'], selectorValue: 'SQL HERE!'}
-        }
+        let fSelector = (row['fs.selector_name'] === null ? null : {selectorKey: row['fs.selector_name'], selectorValue: 'SQL HERE!'})
+        
+        let iSelector = (row['ins.selector_name'] === null ? null : {selectorKey: row['ins.selector_name'], selectorValue: 'SQL HERE!'})
 
         try {
             let datatype = frontendTypes.indexOf(row['ft.type_name'])
@@ -187,25 +171,61 @@ async function metadataQuery() {
                 datatype: datatype,
                 nullable: row['c.is_nullable'],
                 information: row['c.information']
-            }]
+            }, row['f.table_name']]
         );
     });
 
+    // Construct featureTreeObject
+    let rootFeatures = allFeatures.map((el) => [el['f.table_name'], el['ff.table_name']]).filter((el) => el['ff.table_name'] !== null).map((el) => el[1])
+
+    let featureTreeHelper = {};
+
+    let featureOrder = allFeatures.map((feature) => feature['f.table_name'])
+
+    rootFeatures.forEach((el) => {
+        featureTreeHelper.el = [];
+    })
+
+    featureOrder.forEach((el) => {
+        featureTreeHelper[el[1]].push(el[0])
+    })
+
+    let featureColumns = allFeatures.map((el) => {
+        let frontendName = el['f.frontend_name']
+        let information = el['f.information']
+        let numFeatureRange = el['f.num_feature_range'] 
+
+        let dataColumns = columnObjects.filter((row) => row[2] == el['f.table_name']).map((row) => row[1]);
+
+        // get array of children
+        let directChildren = featureTreeHelper[el['f.table_name']]
+        // get indicies
+        directChildren = children.map((child) => {
+            featureOrder.indexOf(child)
+        })
+
+        return({
+            frontendName: frontendName,
+            information: information,
+            numFeatureRange: numFeatureRange,
+            dataColumns: dataColumns,
+            directChildren: directChildren
+        })
+    })
+
+    setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff.table_name'] === null ? false : true)).indexOf(false);
     setupObject.globalColumns = columnObjects.filter((row) => row[0] === true).map((row) => row[1]);
     setupObject.datatypes = frontendTypes;
+    setupObject.featureColumns = featureColumns;
 
-    let featureOrder = allFeatures.map((el) => [el['f.table_name'], el['ff.table_name']])
+    // ============================================================
 
     // Construct idColumnTableLookup                                  
     for(let row of rawQuery) {
 
         let id = row['c.column_id'].toString();
 
-        if(row['fs.selector_name'] === null) {
-            let filterable = false
-        } else {
-            let filterable = true
-        }
+        let filterable = (row['fs.selector_name'] === null ? false : true)
 
         idColumnTableLookup[id] = {
             column: row['c.column_name'],
@@ -261,37 +281,12 @@ async function metadataQuery() {
     return({
         returnableIDLookup: returnableIDLookup,
         idColumnTableLookup: idColumnTableLookup,
-        setupObject: setupObject
+        setupObject: setupObject,
+        tableParents: tableParents
     })
 }
 
-var {returnableIDLookup, idColumnTableLookup, setupObject} = metadataQuery();
-
-class returnableID {
-    constructor(columnTree, tableTree, returnType, joinSQL, selectSQL) {
-        this.columnTree = columnTree,
-        this.tableTree = tableTree,
-        this.returnType = returnType,
-        this.joinSQL = joinSQL,
-        this.selectSQL = selectSQL
-
-        this.joinList = this.makeJoinList(this.columnTree, this.tableTree)
-    }
-
-    makeJoinList(columnTree, tableTree) {
-        let joinList = [];
-        for(let n = 0; n < tableTree.length - 1; n++) {
-            joinList.push({
-                joinTable: tableTree[n+1],
-                joinColumn: columnTree[n+1],
-                originalTable: tableTree[n],
-                originalColumn: columnTree[n]
-            });
-        }
-
-        return joinList
-    }
-}
+var {returnableIDLookup, idColumnTableLookup, setupObject, tableParents} = metadataQuery();
 
 function sendSetup(req, res) {
 

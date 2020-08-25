@@ -34,6 +34,8 @@ let tableParents = {
 
 let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]]);
 
+/*
+
 // iterate through subfeatures and create query for each one
 // Javascript template literal syntax
 
@@ -55,6 +57,7 @@ let featureItemJoin = {
     }
 };
 
+*/
 
 // get all unique tables and features (if not null) from idColumnTableLookup
 // not sure if the syntax for this is correct, particularly due to the part inside the brackets
