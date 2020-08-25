@@ -62,8 +62,9 @@ CREATE TABLE item_city (
     item_id SERIAL PRIMARY KEY,    
     data_city_name TEXT NOT NULL,
     data_population NUMERIC,
-		item_county_id INTEGER NOT NULL, --fk **
-    location_geom_region_id INTEGER --fk **
+	item_county_id INTEGER NOT NULL, --fk **
+    location_geom_region_id INTEGER, --fk **
+    location_point_id INTEGER
 );
 
 CREATE TABLE item_county (
@@ -162,6 +163,7 @@ INSERT INTO metadata_reference_type
     (type_id, type_name)
     VALUES
         (DEFAULT, 'local'),
+        (DEFAULT, 'local-global'),
         (DEFAULT, 'location'),
         (DEFAULT, 'item'),
         (DEFAULT, 'list'),
@@ -212,7 +214,7 @@ INSERT INTO metadata_frontend_type
         (DEFAULT, 'string', 'String display'),
         (DEFAULT, 'date', 'Date in form of MM-DD-YYYY'),
         (DEFAULT, 'hyperlink', 'When clicked open link in new page'),
-        (DEFAULT, 'boolean', 'Display "True" for 1 and "False" for 0'),
+        (DEFAULT, 'bool', 'Display "True" for 1 and "False" for 0'),
 				(DEFAULT, 'location', 'JSONB object representing geographic location (point, path or geom region)'),
 				(DEFAULT, 'integer', 'Integer'),
 				(DEFAULT, 'float', 'Floating point numeric value');

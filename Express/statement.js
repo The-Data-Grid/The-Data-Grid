@@ -15,7 +15,8 @@ let idColumnTableLookup = {
             referenceColumn: 'column name', 
             referenceTable: 'table name', //null if type_name == local
             filterable: true, //BOOLEAN
-            sqlType: 'NUMERIC'|'TEXT'
+            sqlType: 'NUMERIC'|'TEXT',
+            refType: 'list'
         }
         //note that id is a string such as '3'
 }; // if idColumnTableLookup.feature == null, it is a global table
@@ -86,6 +87,11 @@ let makeLocation = (locationTableName, referenceTableName, referenceColumnName) 
     list_... -> list_m2m_... -> feature_...
 */
 
+pgp.as.format('INNER JOIN $(listName:value)_m2m \
+ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+INNER JOIN $(listName:value) \
+ON $(listName:value).list_id = $(listName:value)_m2m.list_id', {myTable: 'feature_toilet', myTable2: 'sldkfjds'})
+
 let listName= "listName_" + referenceTable + referenceColumn;
 
 if (table.includes("list_"))
@@ -100,8 +106,8 @@ if (table.includes("list_"))
                 dependencies: ['referenceTable']
             }
         }
+
     }
-    
 }
 
 
