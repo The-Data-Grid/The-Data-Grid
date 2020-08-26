@@ -24,6 +24,9 @@ export class AuditsComponent implements OnInit {
   featureDropdownValues = new Map(); //map name to direct children
   selectedFeature;
   appliedFilterSelections = {};
+
+// TODO: for each selector displayed, puy it in an object that holds selections and options.
+
   options: string[] = ['One', 'Two', 'Three'];
   // the following are for multiselect dropdowns
   dropdownList = [
@@ -80,8 +83,8 @@ export class AuditsComponent implements OnInit {
 
       // get datatypes array
       this.datatypes = this.setupObject.datatypes;
-      // console.log(this.globalSelectors);
-      // console.log(this.featureSelectors);
+      console.log(this.globalSelectors);
+      console.log(this.featureSelectors);
       this.applyFilters();
     });
   }
