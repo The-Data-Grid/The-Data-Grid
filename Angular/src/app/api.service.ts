@@ -24,12 +24,18 @@ export class ApiService {
     return array.join('&');
   }
 
-  public getSetupTableObject(): Observable<SetupTableObject> {
+  public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-    // return this.http.get<FilterConfig>(API_URL + '/setup');
-    var url = temp_url + '/setup';
+    var url = API_URL + '/setup';
+    // var url = temp_url + '/setup';
+    var lastModifiedObject = {
+      lastModified: lastModified
+    }
 
-    return this.http.get<SetupTableObject>(url, { observe: 'response', responseType: 'json' })
+    return this.http.get<SetupTableObject>(url, {
+      observe: 'response',
+      params: lastModifiedObject
+    })
       .pipe(map((response: any) => {
         console.log("Server Status: " + response.status + ":::::" + response.statusText);
         return response.body;

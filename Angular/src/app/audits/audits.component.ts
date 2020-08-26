@@ -55,7 +55,7 @@ export class AuditsComponent implements OnInit {
   }
 
   getSetupTableObject() {
-    this.apiService.getSetupTableObject().subscribe((res) => {
+    this.apiService.getSetupTableObject(null).subscribe((res) => {
       this.setupObject = res;
       console.log(res);
 
