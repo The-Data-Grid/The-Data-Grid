@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const validate = require('./validate.js')
 const parse = require('./parse.js');
 const query = require('./query.js');
 const insert = require('./insert.js');
@@ -32,7 +33,10 @@ function cycleTimer(req, res, next) {
 app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery); 
 
 //** Setup Query **//
-app.get('/api/setup', parse.setupParse, setup.sendSetup);
+// Note: This is weird because setup.js requires async database calls
+require('./setup.js').then(setup => {
+    app.get('/api/setup', parse.setupParse, setup.sendSetup);
+})
 
 // Audit Upload
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
@@ -45,4 +49,4 @@ app.get('/api/template/', parse.templateParse, template.makeTemplate);
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
 ////// LISTEN //////
-app.listen(port, () => console.log(`Express server running on port ${port}`));
+app.listen(port, () => console.log(`Node.js server running on port ${port}`));

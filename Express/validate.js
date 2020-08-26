@@ -1,4 +1,4 @@
-const idColumnTableLookup = require('/setup.js');
+const {idColumnTableLookup} = require('./setup.js');
 
 // Dynamically generating the validate object by
 // looping through all ids in idColumnTableLookup

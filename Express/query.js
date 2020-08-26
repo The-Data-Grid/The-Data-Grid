@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin} = require('./statement.js');
+//const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin} = require('./statement.js');
 const validate = require('./validate.js');
 
 // Database info
@@ -22,6 +22,8 @@ const db = pgp(cn); //db.function is used for pg-promise PostgreSQL queries
 
 //** Testing request response cycle time (for dev only) **//
 var cycleTime = [];
+
+/*
 
 //// Column to Table Relationships ////
 
@@ -142,6 +144,8 @@ function featureQuery(req, res) {
     }
     */
 
+    /*
+
     let data = {};    // values object for SELECT and JOINS
     let query = [];    // array of clauses that make up the query
     data.feature = 'feature_' + res.locals.parsed.features;
@@ -167,6 +171,7 @@ function featureQuery(req, res) {
         refSelection.push(submission)
     })
 
+    */
 
     /*
     for IDs where type = submission
@@ -177,15 +182,15 @@ function featureQuery(req, res) {
     for IDs where type = special (obs count)
         id12, id4-> a, b
             -> joined to 
-    */
+    
 
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' ') + ';'; 
 
-     //** DEBUG: Show SQL Query **//
+     // DEBUG: Show SQL Query //
      console.log(finalQuery); 
     
-    //**  Testing request response cycle time (for dev only) **//
+    // Testing request response cycle time (for dev only) //
     cycleTime.push(Date.now())
     console.log('query.js query - ' + cycleTime[1] - cycleTime[0], ' ms');
 
@@ -193,10 +198,10 @@ function featureQuery(req, res) {
     db.any(finalQuery)  
         .then(data => {
 
-            //** DEBUG: Show response object **//
+            // DEBUG: Show response object //
             console.log(data); 
 
-            //**  Testing request response cycle time (for dev only) **//
+            //  Testing request response cycle time (for dev only) //
             cycleTime.push(Date.now())
             console.log('query.js response - ' + cycleTime[2] - cycleTime[0], 'ms');
             cycleTime = []
@@ -213,7 +218,7 @@ function featureQuery(req, res) {
         });
 };
 
-
+*/
 
 let setupQuery = (req, res) => {
     res.json(app.locals.setup);
@@ -223,6 +228,7 @@ let auditQuery = (filters, path, sql, res) => {
     // do some stuff
 };
  
+let featureQuery = () => {}
 module.exports = {
     featureQuery,
     auditQuery,
