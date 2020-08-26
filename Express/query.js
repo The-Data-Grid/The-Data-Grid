@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin} = require('./statement.js');
+//const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin} = require('./statement.js');
 const validate = require('./validate.js');
 
 // Database info
@@ -11,35 +11,19 @@ pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a
 const cn = { //connection info
     host: 'localhost',
     port: 5432,
-    database: 'tdg_db',
+    database: 'tdg_db_new',
     user: 'postgres',
     password: null,
     max: 30 // use up to 30 connections
 };
-const db = pgp(cn); //db.function is used for pg-promise queries
+const db = pgp(cn); //db.function is used for pg-promise PostgreSQL queries
 
 ////// SETUP //////
 
-//// Validate request feature, columns, and filters ////
+//** Testing request response cycle time (for dev only) **//
+var cycleTime = [];
 
-let validateFeatures = Object.keys(validate);
-
-function validation(feature, columns, filters, res) {
-    if(!validateFeatures.includes(feature)) {
-        return res.status(400).json({'Bad Request': `${feature} is not a valid feature`});
-    };
-    for(let column of columns) {
-        if(!validate[feature]['column'].includes(column)) {
-            return res.status(400).json({'Bad Request': `${column} is not a valid column for the ${feature} feature`});
-        };
-    };
-    for(let filter of filters) {
-        if(!validate[feature]['filter'].includes(filter)) {
-            return res.status(400).json({'Bad Request': `${filter} is not a valid filter for the ${feature} feature`});
-        };
-    };
-    return false // false means there is no validation error
-}
+/*
 
 //// Column to Table Relationships ////
 
@@ -64,7 +48,7 @@ const joinClauseTableNames = {
 // Getting all Column to Table Relations for each feature request
 async function tableLookupSetup() {
     const setup = await db.many("select c.column_name, t.table_name from information_schema.tables as t inner join information_schema.columns as c on t.table_name = c.table_name where t.table_schema = 'public' and t.table_type = 'BASE TABLE'");
-    validLookup = {};
+    var validLookup = {};
     for(feature of validateFeatures) {
         validLookup[feature] = setup.filter(pair => joinClauseTableNames[feature].includes(pair.table_name)) //this is crazy
     }
@@ -108,12 +92,8 @@ function columnTableFormat(lookup, feature) {
 ////// QUERY ENGINE //////
 
 function featureQuery(req, res) {  
-    
-    //// Validation
-    let validate = validation(res.locals.parsed.features, res.locals.parsed.columns, Object.keys(res.locals.parsed.filters), res);
-    if(validate) { // if a validation error exists return it
-        return validate;
-    };
+
+    /*
     //// Formatting the data
     let data = {};    // values object for SELECT and JOINS
     let query = [];    // array of clauses that make up the query
@@ -134,14 +114,15 @@ function featureQuery(req, res) {
     };
     tables = [...new Set(tables)]; // removing duplicates again
 
-    //**** Sorting table order by number of dependencies length ****/
+    // Sorting table order by number of dependencies length 
+    // Note: By getting the tables we could calculate the hiearchy and get order from that
     sortTables = {}
     for(let table of tables) {
         sortTables[table] = joinClauseTables[res.locals.parsed.features][table].dependencies.length;
     };
     let tableEntries = Object.keys(sortTables).sort((a,b) => sortTables[a] - sortTables[b])
 
-    //**** Pushing each join to the query in order ****/
+    // Pushing each join to the query in order 
     for(let table of tableEntries) {  
         query.push(pgp.as.format(joinClauseTables[res.locals.parsed.features][table].query, data))  
     }; 
@@ -161,25 +142,83 @@ function featureQuery(req, res) {
         out.operation = res.locals.parsed.filters[filter].operation
         query.push(pgp.as.format(where.query, out));
     }
+    */
+
+    /*
+
+    let data = {};    // values object for SELECT and JOINS
+    let query = [];    // array of clauses that make up the query
+    data.feature = 'feature_' + res.locals.parsed.features;
+    let IDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)))]; //array of unique columns from returned columns and filters
+
+    // Getting returnableID class from ID
+    IDs = IDs.map((id) => setup.returnableIDLookup[id.toString()])
+
+    let submissionIDs = IDs.filter((id) => id.returnType == 'submission');
+
+    let standardIDs = IDs.filter((id) => id.returnType == 'local' || 'item' || 'location');
+
+    let listIDs = IDs.filter((id) => id.returnType == 'list');
+
+    if(submissionIDs.length + standardIDs.length + listIDs.length != IDs.length) {
+        // res.status(500).send('AAAAAA fuck')
+    }
+
+    // Submission JOINs
+
+    let refSelection = [];
+    submissionIDs.forEach((submission, index) => {
+        refSelection.push(submission)
+    })
+
+    */
+
+    /*
+    for IDs where type = submission
+        id42, id31, id7 -> abc, abd, ace
+            -> a[b[cd]ce]
+                -> joined to submission
+    
+    for IDs where type = special (obs count)
+        id12, id4-> a, b
+            -> joined to 
+    
 
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' ') + ';'; 
 
-    console.log(finalQuery);  //** DEBUG: Show SQL Query **//
+     // DEBUG: Show SQL Query //
+     console.log(finalQuery); 
     
+    // Testing request response cycle time (for dev only) //
+    cycleTime.push(Date.now())
+    console.log('query.js query - ' + cycleTime[1] - cycleTime[0], ' ms');
+
     // Finally querying the database
     db.any(finalQuery)  
         .then(data => {
 
-            console.log(data); //** DEBUG: Show response object **//
+            // DEBUG: Show response object //
+            console.log(data); 
 
-            res.json(data);
+            //  Testing request response cycle time (for dev only) //
+            cycleTime.push(Date.now())
+            console.log('query.js response - ' + cycleTime[2] - cycleTime[0], 'ms');
+            cycleTime = []
+            
+
+            return res.json(data);
+
         }).catch(err => {
+
+            // add internal error code
+            return res.status(500).send('<some error>');
+
             console.log(err)
         });
 };
 
-
+*/
 
 let setupQuery = (req, res) => {
     res.json(app.locals.setup);
@@ -188,11 +227,12 @@ let setupQuery = (req, res) => {
 let auditQuery = (filters, path, sql, res) => {
     // do some stuff
 };
-
  
+let featureQuery = () => {}
 module.exports = {
     featureQuery,
     auditQuery,
     setupQuery,
+    cycleTime
 };
 

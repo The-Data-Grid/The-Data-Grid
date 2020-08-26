@@ -1,5 +1,4 @@
-//const q = require('./query')
-const sql = require('./statement.js');
+////// QUERY PARSING //////
 
 function operation_map(operation) {
     op = operation;
@@ -28,19 +27,34 @@ function operation_map(operation) {
     return op
 }
 
-const featureParse = (req, res, next) => {
+const queryParse = (req, res, next) => {
     let filter = req.query;
     let {feature} = req.params; 
     let {include} = req.params;
-    include = include.split("&");
+    include = include.split('&');
+
+    // Validate column IDs are numeric
+    for(let id of include) {
+        if(isNaN(parseInt(id))) {
+            return res.status(400).send(`Bad Request 1601: ${id} must be numeric`);
+        }
+    }
+
     // console.log('feature = ', feature);
     // console.log('includes = ', include);
     // console.log('filters = ', filter);
     
-    // do some stuff to get filters and path in good format
-    filters = {}
+    // Construct object of parsed filters
+    let filters = {}
     for (const key in filter) {
-        if (typeof(filter[key]) == "object") {
+
+        // Validate filter IDs are numeric
+        if(isNaN(parseInt(key))) {
+            return res.status(400).send(`Bad Request 1602: ${key} must be numeric`);
+        }
+
+
+        if (typeof(filter[key]) === 'object') {
             let content = Object.keys(filter[key])
 
             if(!isNaN(filter[key][content[0]])) { //if number parseInt
@@ -51,11 +65,11 @@ const featureParse = (req, res, next) => {
             
             let operation = operation_map(content[0])
             if(operation === null) {
-                return res.status(400).json({'Bad Request': `${content[0]} is not a valid operation`})
+                return res.status(400).send(`Bad Request 1603: ${content[0]} is not a valid operator`)
             } else {
                 filters[key] = {
-                    "operation": operation_map(content[0], res),
-                    "value": value
+                    operation: operation_map(content[0], res),
+                    value: value
                 }
             }
         }
@@ -64,10 +78,46 @@ const featureParse = (req, res, next) => {
         }
     }
     
-    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters};
+    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters}; // attaching parsed object
     next(); // passing to query.js 
 };
 
+////// END OF QUERY PARSING //////
+
+
+////// UPLOAD PARSING ////// 
+
+function uploadParse(req, res, next) {
+    res.locals.parsed = {}; // attaching parsed object
+    next(); // passing to insert.js
+}
+
+////// END OF UPLOAD PARSING //////
+
+
+////// TEMPLATE PARSING //////
+
+function templateParse(req, res, next) {
+    res.locals.parsed = JSON.parse(JSON.stringify(req.body));
+    next(); // passing to template.js
+}
+
+////// END OF TEMPLATE PARSING //////
+
+
+////// SETUP PARSING //////
+
+function setupParse(req, res, next) {
+    res.locals.parsed = JSON.parse(JSON.stringify(req.body));
+    next();
+}
+
+////// END OF SETUP PARSING //////
+
+
 module.exports = {
-    featureParse,
+    queryParse,
+    uploadParse,
+    templateParse,
+    setupParse
 }
