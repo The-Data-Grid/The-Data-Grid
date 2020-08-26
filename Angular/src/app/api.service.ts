@@ -34,7 +34,7 @@ export class ApiService {
 
     return this.http.get<SetupTableObject>(url, {
       observe: 'response',
-      params: lastModifiedObject
+      // params: lastModifiedObject
     })
       .pipe(map((response: any) => {
         console.log("Server Status: " + response.status + ":::::" + response.statusText);
