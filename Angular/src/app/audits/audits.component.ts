@@ -64,6 +64,9 @@ export class AuditsComponent implements OnInit {
 
       // parse global columns
       this.globalSelectors = this.parseColumn(this.setupObject.globalColumns);
+      // this.globalSelectors.forEach(selector => {
+        
+      // });
 
       // parse feature columns
       var i = 0;
@@ -79,6 +82,7 @@ export class AuditsComponent implements OnInit {
           i++;
         }
         this.featureSelectors[featureColumn.frontendName] = this.parseColumn(featureColumn.dataColumns);
+        this.featureSelectors[featureColumn['userSelection']] = null;
       });
 
       // get datatypes array
