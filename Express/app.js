@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const validate = require('./validate.js')
 const parse = require('./parse.js');
+const setup = require('./setup.js');
 const query = require('./query.js');
 const insert = require('./insert.js');
 const template = require('./template.js');
@@ -24,8 +25,9 @@ app.set('x-powered-by', false);
 
 //** Testing request response cycle time (for dev only) **//
 function cycleTimer(req, res, next) {
-    query.cycleTime.push(Date.now())
-    console.log('app.js entry - 0 ms')
+    res.locals.cycleTime = []
+    res.locals.cycleTime.push(Date.now())
+    //console.log('app.js entry - 0 ms')
     next()
 }
 
@@ -33,10 +35,7 @@ function cycleTimer(req, res, next) {
 app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery); 
 
 //** Setup Query **//
-// Note: This is weird because setup.js requires async database calls
-require('./setup.js').then(setup => {
-    app.get('/api/setup', parse.setupParse, setup.sendSetup);
-})
+app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
 
 // Audit Upload
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);

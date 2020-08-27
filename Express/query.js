@@ -228,7 +228,43 @@ let auditQuery = (filters, path, sql, res) => {
     // do some stuff
 };
  
-let featureQuery = () => {}
+let featureQuery = (req, res) => {
+    // get all ids
+    //array of unique IDs from returned columns and filters
+    let allIDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)))];
+    /* join them and record aliases 
+    submission
+        in: joinList
+        out: BOOL
+    list
+        in: joinSQL, selectSQL
+        out: auditing dependency
+    special
+        in: joinSQL, selectSQL
+        out: auditing dependency
+    local, item, location
+        in: joinList, data column
+        out: auditing dependency
+    feature tree
+        in: auditing dependencies
+        out: auditing joins and aliases
+    */
+    // use aliases to input SELECTs
+    // use aliases to input WHEREs
+    // concat SQL and query db
+    // construct tableObject from results 
+}
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
     featureQuery,
     auditQuery,

@@ -26,7 +26,7 @@ const cn = { //connection info
 const db = pgp(cn);
 
 // Import Schema //
-// ====================================================
+// ==================================================
 
 var fs = require('fs'); // Import Node.js File System
 
@@ -164,7 +164,7 @@ $(information), \
 $(nullable), $(default), $(global), $(groundTruthLocation))'
 
 // Water //
-// ============================================
+// ==================================================
 
 var auditSchemaWaterDynamic = readSchema('/auditSchema/water/waterDynamic.json')
 var auditSchemaWaterFeature = readSchema('/auditSchema/water/waterFeature.json')
