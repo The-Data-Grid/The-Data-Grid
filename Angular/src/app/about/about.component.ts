@@ -47,6 +47,11 @@ export class AboutComponent implements OnInit {
   "title": "Apocolypse Now",
 "description": "All major sports league suspend their seasons indefinitely in the wake of the COVID-19 pandemic, sending shockwaves to many about the gravity of the situation"},
 
+{"date": "April 27",
+  "title": "Arrival?",
+"description": "The Pentagon officially releases footage from US Navy Fighter Jets of Unidentified Flying Objects (UFOs). As per the video and eyewitness accounts, the objects were capable of high acceleration, deceleration and maneuverability. The clips were taken from the summer of 2014, and had been first reported by The New York Times in May of 2019."},
+
+
 {"date": "May 25",
   "title": "The World Awakens",
 "description": "George Floyd is murdered by Minnepolis police officer Derek Chauvin during a routine arrest, sparking worldwide uprisings"},
