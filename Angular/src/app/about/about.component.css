@@ -1,16 +1,27 @@
 .about-container {
-    width: 70%;
-    margin-left: auto;
-    margin-right: auto;
-  }
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-  .about-container mat-card {
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 3rem;
-    margin-bottom: 3rem;
-    text-align: left;
-    width: 24rem;
-    border-radius: 4px;
-    background-color: white;
-  }
+.about-container mat-card {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  text-align: left;
+  width: 24rem;
+  border-radius: 4px;
+  background-color: white;
+}
+
+
+::ng-deep .mat-step-header .mat-step-icon-selected {
+  background-color: #5FA784 !important;
+}
+
+::ng-deep .mat-step-header .mat-step-icon {
+  background-color: rgb(86, 156, 215);
+}
+
+
