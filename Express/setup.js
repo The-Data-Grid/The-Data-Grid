@@ -31,7 +31,7 @@ let rawQuery = client.querySync('SELECT f.table_name as f__table_name, f.num_fea
                                  LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
                                  LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
 
-var frontendTypes = client.querySync('SELECT type_name FROM metadata_frontend_type');
+let frontendTypes = client.querySync('SELECT type_name FROM metadata_frontend_type');
 
 let allFeatures = client.querySync('SELECT f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information,  \
                                     f.frontend_name as f__frontend_name, ff.table_name as ff__table_name\
@@ -44,7 +44,8 @@ let allFeatures = client.querySync('SELECT f.table_name as f__table_name, f.num_
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(columnTree, tableTree, returnType, joinSQL, selectSQL) {
+    constructor(ID, columnTree, tableTree, returnType, joinSQL, selectSQL) {
+        this.ID = ID
         this.columnTree = columnTree,
         this.tableTree = tableTree,
         this.returnType = returnType,
@@ -55,16 +56,20 @@ class ReturnableID {
     }
 
     makeJoinList(columnTree, tableTree) {
-        if(columnTree || tableTree === null) {
+        if(columnTree === null || tableTree === null) {
             return null
         } else {
+            // references must come in sets of 2
+            if(tableTree.length % 2 != 0 || columnTree.length % 2 != 0) {
+                throw 'Setup Error 1901: References must come in sets of 2'
+            }
             let joinList = [];
-            for(let n = 0; n < tableTree.length - 1; n++) {
+            for(let n = tableTree.length; n > 1; n = n - 2) {
                 joinList.push({
-                    joinTable: tableTree[n+1],
-                    joinColumn: columnTree[n+1],
-                    originalTable: tableTree[n],
-                    originalColumn: columnTree[n]
+                    joinTable: tableTree[n-2],
+                    joinColumn: columnTree[n-2],
+                    originalTable: tableTree[n-1],
+                    originalColumn: columnTree[n-1]
                 });
             }
 
@@ -80,7 +85,117 @@ class ReturnableID {
 // CALLING SETUP FUNCTION AND EXPORTING
 // ============================================================
 const {returnableIDLookup,idColumnTableLookup, tableParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
-console.log(idColumnTableLookup)
+//console.log(returnableIDLookup[0])
+// console.log(idColumnTableLookup)
+
+function referenceSelection(idArray) {
+    // out: 
+
+    let joinListLookup = []
+    let joinListIDLookup = idArray.map(returnable => [returnable.ID, returnable.joinList])
+
+    joinListIDLookup.forEach((joinID) => {
+        if(joinID[1] === null) {
+            joinListLookup.push([joinID[0], null])
+        } else {
+            let joinListArray = [];
+            // create unique string for join
+            joinID[1].forEach(join => {
+                joinListArray.push(`${join.originalTable}.${join.originalColumn}>${join.joinTable}.${join.joinColumn}`)
+            })
+            // add id and unique string to array
+            joinListLookup.push([joinID[0], joinListArray])
+        }
+    })
+    
+    
+    while(true) { // this will change, ok? stop looking at me like that !
+        // get all returnables with references
+        let lookup = joinListLookup.filter(el => el[1] !== null)
+        let joinArray = lookup.map(el => [el[0],el[1]])
+        console.log(joinArray)
+        /*
+            We must get the unique reference paths as to not duplicate joins
+            ex:
+            builtArray = [ [ [1, ['a','b','d']], [2, ['a','b','f']], [3, ['a','c','e']] ] ]
+                       = [ [{a: 1, r:'a'}], [ [1, ['b','d']], [2, ['b','f']], [3, ['c', 'e']] ]  ]
+                       = [ ['a'], ['b','c'], [ [1, ['d']], [2, ']] ]
+
+            recursiveReferenceSelection(builtArray)
+        */
+
+        var aliasNumber = 0
+        function recursiveReferenceSelection(builtArray) {
+            // get depth
+            let depth = builtArray.length
+            // for each set of references
+            let compare = []
+            builtArray[depth - 1].forEach(refSet => {
+                // if no more refs
+                if(refSet[1].length == 0) {
+                    continue
+                }   
+                // next reference
+                let ref = refSet[1][0]
+                let id = refSet[0]
+                compare.push({ref: ref, ID: id})
+            })
+            // get array of unique references that will be appended to builtArray
+            let uniqueRefs = [...new Set(compare.map(ref => ref.ref))]
+            // creating alias-reference object
+            let aliasRefObjectArray = []
+            // create aliases for refs
+            uniqueRefs.forEach(ref => {
+                // add 1 to aliasNumber and get result
+                let alias = aliasNumber ++
+                aliasRefObjectArray.push({a: alias, r:ref})
+            })
+            // make new ref sets
+            let newRefs = {}
+            builtArray[depth - 1].forEach(refSet => {
+                // if no more refs
+                if(refSet[1].length == 0) {
+                    continue
+                }
+                // remove last ref
+                newRefs[refSet[0]] = [refSet[0], refSet[1].splice(0, 1)]
+            })
+            // get index of each ref set
+            let idIndexLookup = {}
+            compare.forEach(idRef => {
+                idIndexLookup[idRef.ID] = uniqueRefs.indexOf(idRef.ref)
+            })
+            // get refs in order for next iteration
+            let returnedRefs = Array(compare.length)
+            for(let id in idIndexLookup) {
+                returnedRefs[idIndexLookup[id]] = newRefs[id]
+            }
+
+            // replace id-ref element with array of refs
+            let out = builtArray.splice(depth - 1, 1, aliasRefObjectArray)
+            // add new id-ref element
+            out.push(returnedRefs)
+            // call recursive function
+            return recursiveReferenceSelection(out)
+        }
+
+        for(let pair in joinArray) {
+            // create new array with all other pairs
+            let newArray = Object.assign({}, joinArray)
+            delete newArray.pair
+            // if there is a shared reference
+            let sharedRef = []
+            if(newArray.map(el => el[1][0]).includes(pair[0])) {
+                sharedRef.push()
+                join 
+            }
+        }
+
+        break
+    }
+}
+
+referenceSelection(returnableIDLookup.filter(returnable => ['local','item','location','local-global'].includes(returnable.returnType)))
 module.exports = {
     returnableIDLookup: returnableIDLookup,
     idColumnTableLookup: idColumnTableLookup,
@@ -97,7 +212,7 @@ module.exports = {
 
 function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
-    let returnableIDLookup = {};
+    let returnableIDLookup = [];
     let idColumnTableLookup = {};
     let tableParents = {};
     let setupObject = {};
@@ -180,7 +295,6 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     setupObject.datatypes = frontendTypes;
     setupObject.featureColumns = featureColumns;
 
-    console.log()
 
     // Construct idColumnTableLookup
     // ============================================================                                  
@@ -214,51 +328,44 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     for(let row of rawQuery) {
 
         // Get column id as string
-        const id = row['c__column_id'].toString();
+        const ID = row['c__column_id'];
 
         // Get column tree
         const columnTree = row['c__reference_column_name']
-        console.log(columnTree) 
+        //console.log(columnTree) 
 
         // Get table tree
         const tableTree = row['c__reference_table_name']
-        console.log(tableTree)
+        //console.log(tableTree)
         // Get return type
         const returnType = row['rt__type_name']
 
         // Writing custom SQL for custom queries
-        if(row['rt__type_name'] == 'special') {
-            // Auditor Name coalesce
-            if(row['c__frontend_name'] == 'Auditor Name') {
+        // Auditor Name coalesce
+        if(row['c__frontend_name'] == 'Auditor Name' && row['rt__type_name'] == 'special') {
 
-                var joinSQL = 'LEFT JOIN tdg_auditor_m2m ON \
-                                tdg_observation_count.observation_count_id = tdg_auditor_m2m.observation_count_id \
-                                INNER JOIN tdg_users ON tdg_auditor_m2m.user_id = tdg_users.user_id';
+            var joinSQL = 'LEFT JOIN tdg_auditor_m2m ON \
+                            tdg_observation_count.observation_count_id = tdg_auditor_m2m.observation_count_id \
+                            INNER JOIN tdg_users ON tdg_auditor_m2m.user_id = tdg_users.user_id';
 
-                var selectSQL = "COALESCE($(feature.raw).data_auditor, concat_ws(' ', tdg_users.data_first_name, tdg_users.data_last_name)";
+            var selectSQL = "COALESCE($(feature:value).data_auditor, concat_ws(' ', tdg_users.data_first_name, tdg_users.data_last_name)";
 
-            // Standard Operating Procedure
-            } else if(row['c__frontend_name'] == 'Standard Operating Procedure') { 
+        // Standard Operating Procedure
+        } else if(row['c__frontend_name'] == 'Standard Operating Procedure' && row['rt__type_name'] == 'local-global') { 
 
-                var joinSQL = 'LEFT JOIN tdg_sop_m2m ON\
-                                tdg_observation_count.observation_count_id = tdg_sop_m2m.observation_count_id \
-                                INNER JOIN tdg_sop ON tdg_sop_m2m.sop_id = tdg_sop.sop_id'
+            var joinSQL = 'LEFT JOIN tdg_sop_m2m ON\
+                            tdg_observation_count.observation_count_id = tdg_sop_m2m.observation_count_id \
+                            INNER JOIN tdg_sop ON tdg_sop_m2m.sop_id = tdg_sop.sop_id'
 
-                var selectSQL = 'tdg_sop.data_name'
+            var selectSQL = '$(tdg_sop:value).data_name'
 
-            } else {
-                console.log('Construction Error 3001: Unknown special global returnable ID specified in schema')
-                console.log('Construction aborted!')
-                return
-            }
-
-        } else {
-            var joinSQL = null
-            var selectSQL = null
+        }  else {
+        var joinSQL = null
+        var selectSQL = `$(table:value).${row['c__column_name']}`
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup[id] = new ReturnableID(columnTree, tableTree, returnType, joinSQL, selectSQL)
+        returnableIDLookup.push(new ReturnableID(ID, columnTree, tableTree, returnType, joinSQL, selectSQL))
 
     }
 

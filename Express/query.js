@@ -3,6 +3,7 @@ dotenv.config();
 
 //const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin} = require('./statement.js');
 const validate = require('./validate.js');
+const {returnableIDLookup} = require('./setup.js')
 
 // Database info
 const pgp = require('pg-promise')();
@@ -227,24 +228,59 @@ let setupQuery = (req, res) => {
 let auditQuery = (filters, path, sql, res) => {
     // do some stuff
 };
+
+
  
 let featureQuery = (req, res) => {
     // get all ids
-    //array of unique IDs from returned columns and filters
+    // array of unique IDs from returned columns and filters
     let allIDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)))];
+    // array of returnableID objects from IDs
+    let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID))
     /* join them and record aliases 
     submission
+    */
+    let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'submission')
+    if(submissionReturnableIDs.length >= 1) {
+        // referenceSelection
+    }
+    /*
         in: joinList
         out: BOOL
     list
+    */
+    let listReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'list')
+    if(listReturnableIDs.length >= 1) {
+
+    }
+    /*
         in: joinSQL, selectSQL
         out: auditing dependency
     special
+    */
+    let specialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'special')
+    if(specialReturnableIDs.length >= 1) {
+        
+    }
+    /*
         in: joinSQL, selectSQL
         out: auditing dependency
     local, item, location
+    */
+    let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'local' || 'location' || 'item' || 'local-global')
+    if(dynamicReturnableIDs.length >= 1) {
+
+    }
+    /*
+
         in: joinList, data column
         out: auditing dependency
+    */
+    // Throw error if the length of the ID set is not equal to the sum of its partitions
+    if(submissionReturnableIDs.length + listReturnableIDs.length + specialReturnableIDs.length + dynamicReturnableIDs.length != allIDs.length) {
+        return res.status(500).send('Internal Server Error 7701: Number of columns found different than number of columns requested')
+    }
+    /*
     feature tree
         in: auditing dependencies
         out: auditing joins and aliases
@@ -256,8 +292,9 @@ let featureQuery = (req, res) => {
 }
 
 
-
-
+let allIDs = [1,2,32,8];
+let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID))
+console.log(allReturnableIDs)
 
 
 
