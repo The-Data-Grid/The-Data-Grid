@@ -23,6 +23,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatStepperModule } from '@angular/material/stepper';
+import { NgxHorizontalTimelineModule } from 'ngx-horizontal-timeline';
+import { MatStepper } from '@angular/material/stepper';
 
 
 
@@ -50,7 +53,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
         MatMenuModule,
         MatSortModule,
         MatDividerModule,
-        MatExpansionModule
+        MatExpansionModule,
+        MatStepperModule,
+        NgxHorizontalTimelineModule
+        
     ],
     exports: [
         MatAutocompleteModule,
@@ -75,7 +81,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
         MatMenuModule,
         MatSortModule,
         MatDividerModule,
-        MatExpansionModule
+        MatExpansionModule,
+        MatStepperModule,
+        NgxHorizontalTimelineModule
     ],
 })
 export class MaterialModule { }

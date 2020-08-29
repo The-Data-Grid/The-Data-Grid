@@ -17,15 +17,14 @@
 
 		<header>
 			<nav>
-				<mat-toolbar style="height: 50px; ">
-					<button mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}"
-						routerLinkActive="activeButton"
-						style="height: 100%; padding: 7px; font-family: 'IBM Plex Mono'; font-weight: 500;">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<mat-toolbar style="height: 50px;">
+
+					<a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}"
+						routerLinkActive="activeButton" id="logo-button"
+						style="height: 100%; padding: 7px; ">
 						<img src="../../favicon.png" alt="tdg logo" style=" height: 20px; width: 20px;">
-						the data grid
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					</button>
+						the data grid 
+						</a>
 					<a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton"
 						style="height: 100%; padding: 7px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Raw
 						Data &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a>
@@ -59,7 +58,7 @@
 		<router-outlet></router-outlet>
 		<footer id="footer">
 			<nav>
-				<mat-toolbar style="height: 52px">
+				<mat-toolbar style="height: 32px; position: absolute; overflow: hidden; bottom:-25px">
 					<div class="ig">
 						<a href="https://www.instagram.com">
 							<img src="assets/instagram.png" alt="Instagram"
@@ -107,26 +106,24 @@
 	</div>
 
 
-	<!-- <div *ngIf="currentWindowWidth < 700" id="wrapper">             
- 
-        <header>
-                <nav>
-                        <mat-toolbar style="height: 30px;">
-                                <h1 style="margin-left: 35%;">THE DATA GRID</h1>
-                </mat-toolbar>
-                </nav>
-        </header>
-        <router-outlet></router-outlet>
-        <footer id="footer">
-                <nav>                           
-                        <mat-toolbar style="height: 52px">
-                                <p style="margin-left: 47%;">2020</p>
-                        </mat-toolbar>
-                </nav>       
-                     
-        </footer>            
-        
-  
+	<!-- <div *ngIf="currentWindowWidth < 700" id="wrapper">            
+       <header>
+               <nav>
+                       <mat-toolbar style="height: 30px;">
+                               <h1 style="margin-left: 35%;">THE DATA GRID</h1>
+               </mat-toolbar>
+               </nav>
+       </header>
+       <router-outlet></router-outlet>
+       <footer id="footer">
+               <nav>                          
+                       <mat-toolbar style="height: 52px">
+                               <p style="margin-left: 47%;">2020</p>
+                       </mat-toolbar>
+               </nav>      
+                   
+       </footer>           
+      
  </div> -->
 
 
