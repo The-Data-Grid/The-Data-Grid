@@ -109,7 +109,7 @@ html, body {
 
 .multi .multiselect-dropdown .dropdown-btn {
   display: inline-block;
-  width: 80% !important;
+  width: 85% !important;
   text-align: left !important;
   font-size: small !important;
   border-radius: 0px !important;
@@ -131,6 +131,8 @@ html, body {
   padding: 0 !important;
   font-size: small !important;
   border-radius: 0 !important;
+  z-index: 9999 !important;
+
 }
 
 .multi .filter-textbox {

@@ -12,9 +12,11 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 export class AuditsComponent implements OnInit {
   // variables for table 
   dataTableColumns = [];
+  rowsCopy = [];
   rows = [];
   tableObject;
-  editing = {};
+  currentlyEditingCell = {};
+  editingMode: boolean = false;
 
   // variables for filtering sidebar
   filterBy = "Submission";
@@ -25,9 +27,6 @@ export class AuditsComponent implements OnInit {
   selectedFeature;
   appliedFilterSelections = {};
 
-// TODO: for each selector displayed, puy it in an object that holds selections and options.
-
-  options: string[] = ['One', 'Two', 'Three'];
   // the following are for multiselect dropdowns
   dropdownList = [
     { item_id: 1, item_text: 'Mumbai' },
@@ -36,15 +35,23 @@ export class AuditsComponent implements OnInit {
     { item_id: 4, item_text: 'Navsari' },
     { item_id: 5, item_text: 'New Delhi' }
   ];
-  selectedItems = [];
-  dropdownSettings: IDropdownSettings = {
-    singleSelection: false,
+  searchableDropdownSettings: IDropdownSettings = {
+    singleSelection: true,
     idField: 'item_id',
     textField: 'item_text',
-    enableCheckAll: false,
-    // selectAllText: 'Select All',
-    // unSelectAllText: 'UnSelect All',
-    itemsShowLimit: 3,
+    closeDropDownOnSelection: true,
+    allowSearchFilter: true
+  };
+  checklistDropdownSettings: IDropdownSettings = {
+    enableCheckAll: true,
+    idField: 'item_id',
+    textField: 'item_text',
+    allowSearchFilter: true
+  };
+  searchableChecklistDropdownSettings: IDropdownSettings = {
+    enableCheckAll: true,
+    idField: 'item_id',
+    textField: 'item_text',
     allowSearchFilter: true
   };
 
@@ -60,13 +67,9 @@ export class AuditsComponent implements OnInit {
   getSetupTableObject() {
     this.apiService.getSetupTableObject(null).subscribe((res) => {
       this.setupObject = res;
-      console.log(res);
 
       // parse global columns
       this.globalSelectors = this.parseColumn(this.setupObject.globalColumns);
-      // this.globalSelectors.forEach(selector => {
-        
-      // });
 
       // parse feature columns
       var i = 0;
@@ -82,7 +85,7 @@ export class AuditsComponent implements OnInit {
           i++;
         }
         this.featureSelectors[featureColumn.frontendName] = this.parseColumn(featureColumn.dataColumns);
-        this.featureSelectors[featureColumn['userSelection']] = null;
+        this.featureSelectors[featureColumn['_userSelection']] = null;
       });
 
       // get datatypes array
@@ -166,7 +169,7 @@ export class AuditsComponent implements OnInit {
       //add rows to the table one by one
       this.tableObject.rowData.forEach(element => {
         var row = {};
-        row["hyperlinks"] = {};
+        row["_hyperlinks"] = {};
 
         // fill out the row object
         for (i = 0; i < this.tableObject.columnIndex.length; i++) {
@@ -181,11 +184,10 @@ export class AuditsComponent implements OnInit {
               }
               case "hyperlink": {
                 row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i].displayString;
-                row["hyperlinks"][this.setupObject.globalColumns[idx].columnFrontendName] = element[i].URL; break;
+                row["_hyperlinks"][this.setupObject.globalColumns[idx].columnFrontendName] = element[i].URL; break;
               }
               case "bool": {
                 if (element[i]) {
-                  console.log(element[i])
                   row[this.setupObject.globalColumns[idx].columnFrontendName] = "True";
                 }
                 else {
@@ -206,11 +208,10 @@ export class AuditsComponent implements OnInit {
               }
               case "hyperlink": {
                 row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].displayString;
-                row["hyperlinks"][this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].URL; break;
+                row["_hyperlinks"][this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].URL; break;
               }
               case "bool": {
                 if (element[i]) {
-                  console.log(element[i])
                   row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "True";
                 }
                 else {
@@ -220,18 +221,48 @@ export class AuditsComponent implements OnInit {
             }
           }
         }
-        console.log(row);
+        // console.log(row);
         this.rows.push(row);
       });
     });
   }
 
-  updateValue(event, cell, rowIndex) {
+  updateValue(event, columnName, rowIndex) {
     console.log('inline editing rowIndex', rowIndex);
-    this.editing[rowIndex + '-' + cell] = false;
-    this.rows[rowIndex][cell] = event.target.value;
+    this.toggleEditingCell(rowIndex, columnName); //stop editing
+    this.rows[rowIndex][columnName] = event.target.value;
     this.rows = [...this.rows];
-    console.log('UPDATED!', this.rows[rowIndex][cell]);
+    console.log('UPDATED!', this.rows[rowIndex][columnName]);
+  }
+
+  toggleEditingCell(rowIndex, columnName) {
+    if (!this.editingMode) { return; }
+    if (!this.currentlyEditingCell[rowIndex + columnName]) {
+      this.currentlyEditingCell[rowIndex + columnName] = true;
+    }
+    else {
+      this.currentlyEditingCell[rowIndex + columnName] = false;
+    }
+  }
+
+  toggleEditingMode() {
+    this.editingMode = !this.editingMode;
+    // if in editing mode, make a copy of rows. if not in editing mode, clear editing object
+    if (this.editingMode) {
+      this.rowsCopy = this.rows.slice(0);
+      console.log(this.rowsCopy);
+    }
+    else {
+      this.currentlyEditingCell = {};
+    }
+  }
+
+  cancelEditing() {
+    this.toggleEditingMode();
+    this.rows = this.rowsCopy.slice(0);
+    // console.log(this.rows);
+    console.log(this.rowsCopy);
+    // this.rows = [...this.rows];
   }
 
   // filterDatatable(event) {
@@ -259,28 +290,7 @@ export class AuditsComponent implements OnInit {
     if (!this.selectedFeature) {
       return;
     }
-    // check if any selections were made
-    // this.globalColumnsDropdown.forEach(element => {
-    //   if (element.selection) {
-    //     this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
-    //   }
-    // })
-    // this.featureColumnsDropdown.forEach(element => {
-    //   if (element.selection) {
-    //     this.appliedFilterSelections[element.columnObject.queryValue] = element.selection;
-    //   }
-    // })
-    // this.featureColumnsNumericChoice.forEach(element => {
-    //   if (element.selection) {
-    //     // console.log(element.selection);
-    //     this.appliedFilterSelections[element.columnObject.queryValue + '[gte]'] = element.selection;
-    //   }
-    //   // if input was deleted, remove that property from the appliedFilterSelections object
-    //   else if (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']) {
-    //     delete (this.appliedFilterSelections[element.columnObject.queryValue + '[gte]']);
-    //   }
-    // })
-
+    console.log(this.appliedFilterSelections);
     this.getTableObject();
   }
 

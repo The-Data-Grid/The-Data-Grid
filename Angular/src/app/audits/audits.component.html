@@ -8,6 +8,7 @@
 </head>
 
 <body>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
             <h3>Filter By</h3>
@@ -175,32 +176,43 @@
                         </div>
                     </mat-expansion-panel>
                 </mat-accordion>
-
-
             </div>
             <button id="apply-button" mat-button (click)="applyFilters()">APPLY</button>
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">
-
             <!-- table -->
-            <div id="audit-table-container">
-                <ngx-datatable *ngIf="tableObject" #table class="material" [headerHeight]="50" [footerHeight]="50"
+            <div id="audit-table-container" *ngIf="tableObject">
+                <div fxLayoutAlign="end center" style="border-radius: 0%;">
+                    <button *ngIf="!editingMode" mat-icon-button (click)="toggleEditingMode()">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button *ngIf="!editingMode" mat-icon-button>
+                        <mat-icon>save_alt</mat-icon>
+                    </button>
+                    <button *ngIf="editingMode" mat-icon-button (click)="cancelEditing()">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                    <button *ngIf="editingMode" mat-icon-button (click)="toggleEditingMode()">
+                        <mat-icon>save</mat-icon>
+                    </button>
+                </div>
+
+                <ngx-datatable id="table" #table class="material" [headerHeight]="50" [footerHeight]="50"
                     rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
                     <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
                         <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row"
                             let-value="value">
                             <span [ngSwitch]="col.type">
-                                <a *ngSwitchCase="'hyperlink'" [href]="row['hyperlinks'][col.prop]">{{value}}</a>
+                                <a *ngSwitchCase="'hyperlink'" [href]="row['_hyperlinks'][col.prop]">{{value}}</a>
                                 <p *ngSwitchCase="'string'">{{value}}</p>
                                 <div *ngSwitchCase="'bool'">
-                                    <span title="Double click to edit"
-                                        (dblclick)="editing[rowIndex + '-' + col.prop] = true"
-                                        *ngIf="!editing[rowIndex + '-' + col.prop]">
+                                    <span title="Double click to edit" (click)="toggleEditingCell(rowIndex, col.prop)"
+                                        *ngIf="!currentlyEditingCell[rowIndex + col.prop]">
                                         {{ value }}
                                     </span>
-                                    <select *ngIf="editing[rowIndex + '-' + col.prop]"
-                                        (blur)="editing[rowIndex + '-' + col.prop] = false"
+                                    <select *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
+                                        (blur)="toggleEditingCell(rowIndex, col.prop)"
                                         (change)="updateValue($event, col.prop, rowIndex)" [value]="value">
                                         <option value="True">True</option>
                                         <option value="False">False</option>
@@ -219,21 +231,21 @@
     <ng-template #numericChoiceTemplate let-column>
         <mat-form-field>
             <mat-label>{{column.columnFrontendName}}</mat-label>
-            <input matInput placeholder="ex: 4.5" [(ngModel)]='column.filterSelector.selectorValue'>
+            <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[column.columnBackendID]'>
         </mat-form-field>
     </ng-template>
 
     <ng-template #numericEqualTemplate let-column>
         <mat-form-field>
             <mat-label>{{column.columnFrontendName}}</mat-label>
-            <input matInput placeholder="ex: 4.5" [(ngModel)]='column.filterSelector.selectorValue'>
+            <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[column.columnBackendID]'>
         </mat-form-field>
     </ng-template>
 
     <ng-template #dropdownTemplate let-column>
         <mat-form-field>
             <mat-label>{{column.columnFrontendName}}</mat-label>
-            <mat-select [(ngModel)]="column.filterSelector.selectorValue">
+            <mat-select [(ngModel)]="appliedFilterSelections[column.columnBackendID]">
                 <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
                 {{val}}
             </mat-option> -->
@@ -266,27 +278,23 @@
     </ng-template>
 
     <ng-template #searchableDropdownTemplate let-column>
-        <mat-form-field class="example-full-width">
-            <mat-label>{{column.columnFrontendName}}</mat-label>
-            <input type="text" matInput [matAutocomplete]="auto">
-            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-              <mat-option *ngFor="let option of options" [value]="option">
-                {{option}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
+        <ng-multiselect-dropdown class="multi" [placeholder]="column.columnFrontendName"
+            [(ngModel)]="appliedFilterSelections[column.columnBackendID]" [settings]="searchableDropdownSettings"
+            [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
+        </ng-multiselect-dropdown>
     </ng-template>
 
     <ng-template #checklistDropdownTemplate let-column>
-        <ng-multiselect-dropdown class="multi" [placeholder]="column.columnFrontendName" [(ngModel)]="selectedItems"
-            [settings]="dropdownSettings" [data]="dropdownList" (onSelect)="onItemSelect($event)"
-            (onSelectAll)="onSelectAll($event)">
+        <ng-multiselect-dropdown class="multi" [placeholder]="column.columnFrontendName"
+            [(ngModel)]="appliedFilterSelections[column.columnBackendID]" [settings]="checklistDropdownSettings"
+            [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
         </ng-multiselect-dropdown>
     </ng-template>
 
     <ng-template #searchableChecklistDropdownTemplate let-column>
-        <ng-multiselect-dropdown class="multi" [placeholder]="column.columnFrontendName" [(ngModel)]="selectedItems"
-            [settings]="dropdownSettings" [data]="dropdownList" (onSelect)="onItemSelect($event)"
+        <ng-multiselect-dropdown class="multi" [placeholder]="column.columnFrontendName"
+            [(ngModel)]="appliedFilterSelections[column.columnBackendID]"
+            [settings]="searchableChecklistDropdownSettings" [data]="dropdownList" (onSelect)="onItemSelect($event)"
             (onSelectAll)="onSelectAll($event)">
         </ng-multiselect-dropdown>
     </ng-template>
@@ -294,14 +302,14 @@
     <ng-template #textTemplate let-column>
         <mat-form-field>
             <mat-label>{{column.columnFrontendName}}</mat-label>
-            <input matInput placeholder="ex: 4.5" [(ngModel)]='column.filterSelector.selectorValue'>
+            <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[column.columnBackendID]'>
         </mat-form-field>
     </ng-template>
 
     <ng-template #boolTemplate let-column>
         <mat-form-field>
             <mat-label>{{column.columnFrontendName}}</mat-label>
-            <mat-select [(ngModel)]="column.filterSelector.selectorValue">
+            <mat-select [(ngModel)]="appliedFilterSelections[column.columnBackendID]">
                 <mat-option [value]=true>True</mat-option>
                 <mat-option [value]=false>False</mat-option>
             </mat-select>
