@@ -182,48 +182,44 @@
 
         <mat-sidenav-content class="sidenav-content">
             <!-- table -->
-            <div id="audit-table-container" *ngIf="tableObject">
-                <div fxLayoutAlign="end center" style="border-radius: 0%;">
-                    <button *ngIf="!editingMode" mat-icon-button (click)="toggleEditingMode()">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                    <button *ngIf="!editingMode" mat-icon-button>
-                        <mat-icon>save_alt</mat-icon>
-                    </button>
-                    <button *ngIf="editingMode" mat-icon-button (click)="cancelEditing()">
-                        <mat-icon>cancel</mat-icon>
-                    </button>
-                    <button *ngIf="editingMode" mat-icon-button (click)="toggleEditingMode()">
-                        <mat-icon>save</mat-icon>
-                    </button>
-                </div>
-
-                <ngx-datatable id="table" #table class="material" [headerHeight]="50" [footerHeight]="50"
-                    rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
-                    <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
-                        <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row"
-                            let-value="value">
-                            <span [ngSwitch]="col.type">
-                                <a *ngSwitchCase="'hyperlink'" [href]="row['_hyperlinks'][col.prop]">{{value}}</a>
-                                <p *ngSwitchCase="'string'">{{value}}</p>
-                                <div *ngSwitchCase="'bool'">
-                                    <span title="Double click to edit" (click)="toggleEditingCell(rowIndex, col.prop)"
-                                        *ngIf="!currentlyEditingCell[rowIndex + col.prop]">
-                                        {{ value }}
-                                    </span>
-                                    <select *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
-                                        (blur)="toggleEditingCell(rowIndex, col.prop)"
-                                        (change)="updateValue($event, col.prop, rowIndex)" [value]="value">
-                                        <option value="True">True</option>
-                                        <option value="False">False</option>
-                                    </select>
-                                </div>
-                            </span>
-                        </ng-template>
-                    </ngx-datatable-column>
-                </ngx-datatable>
+            <div *ngIf="tableObject" id="table-buttons" fxLayoutAlign="end center">
+                <button *ngIf="!editingMode" mat-icon-button (click)="toggleEditingMode()">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button *ngIf="!editingMode" mat-icon-button>
+                    <mat-icon>save_alt</mat-icon>
+                </button>
+                <button *ngIf="editingMode" mat-icon-button (click)="cancelEditing()">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+                <button *ngIf="editingMode" mat-icon-button (click)="toggleEditingMode()">
+                    <mat-icon>save</mat-icon>
+                </button>
             </div>
 
+            <ngx-datatable *ngIf="tableObject" id="table" #table class="material" [headerHeight]="50"
+                [footerHeight]="50" rowHeight="auto" [limit]="5" [rows]="rows" [scrollbarH]="true">
+                <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
+                    <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row" let-value="value">
+                        <span [ngSwitch]="col.type">
+                            <a *ngSwitchCase="'hyperlink'" [href]="row['_hyperlinks'][col.prop]">{{value}}</a>
+                            <p *ngSwitchCase="'string'">{{value}}</p>
+                            <div *ngSwitchCase="'bool'">
+                                <span title="Double click to edit" (click)="toggleEditingCell(rowIndex, col.prop)"
+                                    *ngIf="!currentlyEditingCell[rowIndex + col.prop]">
+                                    {{ value }}
+                                </span>
+                                <select *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
+                                    (blur)="toggleEditingCell(rowIndex, col.prop)"
+                                    (change)="updateValue($event, col.prop, rowIndex)" [value]="value">
+                                    <option value="True">True</option>
+                                    <option value="False">False</option>
+                                </select>
+                            </div>
+                        </span>
+                    </ng-template>
+                </ngx-datatable-column>
+            </ngx-datatable>
         </mat-sidenav-content>
     </mat-sidenav-container>
 

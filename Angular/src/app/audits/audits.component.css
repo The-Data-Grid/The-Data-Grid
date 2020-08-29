@@ -20,16 +20,20 @@
 
 /* main content */
 
-#audit-table-container {
+#table-buttons {
+    margin-top: 5px;
+    border-radius: 0%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 5px;
-    text-align: left;
     width: 90%;
 }
 
 #table {
     margin-bottom: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    width: 90%;
 }
 
 .mat-icon {

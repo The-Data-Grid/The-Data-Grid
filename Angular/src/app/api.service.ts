@@ -26,8 +26,8 @@ export class ApiService {
 
   public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-    var url = API_URL + '/setup';
-    // var url = temp_url + '/setup';
+    // var url = API_URL + '/setup';
+    var url = temp_url + '/setup';
     var lastModifiedObject = {
       lastModified: lastModified
     }
