@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-//const {select, where, commonJoin, urinalJoin, toiletJoin, sinkJoin, mirrorJoin} = require('./statement.js');
+const {select, where, referenceSelectionJoin, submission} = require('./statement.js');
 const validate = require('./validate.js');
 const {returnableIDLookup} = require('./setup.js')
 
@@ -89,12 +89,12 @@ function columnTableFormat(lookup, feature) {
 
 ////// END OF SETUP //////
 
-
+*/
 ////// QUERY ENGINE //////
 
 function featureQuery(req, res) {  
 
-    /*
+    
     //// Formatting the data
     let data = {};    // values object for SELECT and JOINS
     let query = [];    // array of clauses that make up the query
@@ -143,7 +143,7 @@ function featureQuery(req, res) {
         out.operation = res.locals.parsed.filters[filter].operation
         query.push(pgp.as.format(where.query, out));
     }
-    */
+    
 
     /*
 
@@ -229,26 +229,179 @@ let auditQuery = (filters, path, sql, res) => {
     // do some stuff
 };
 
+/*
+for set of joinObjects with the same parent
+    compare 1st element of refs
+    create a new set of unique refs and generate aliases
+    create the subset of the next refArray for that parent with parent, aliases, and refs
+    create the subset of the next joinObject for that parent with parent=alias, id=id, and ref=ref[-1]
+    if (refs.length == 0)
+        append to idAliasLookup id=id, alias=alias and don't append to joinObject
+replace the last element of builtArray with the union of nextRefArray
+if (nextJoinObject.length == 0)
+    return
+else 
+    append the union of nextJoinObject subsets to builtArray
 
+*/
+
+function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
+    // get depth
+    let depth = builtArray.length
+    // get joinObject
+    let joinObjectArray = builtArray[depth - 1]
+    // partition joinObject based on parent
+        // get parents
+        let joinObjectArrayParents = joinObjectArray.map(element => element.parentAlias)
+        // get unqiue parents
+        let uniqueJoinObjectArrayParents = [...new Set(joinObjectArrayParents)]
+        // create object of unique parents
+        let joinObjectArrayPartition = {}
+        uniqueJoinObjectArrayParents.forEach(parent => {
+            joinObjectArrayPartition[parent] = []
+        })
+        // add joinObjects to respective parents in unique parents object
+        for(let obj of joinObjectArray) {
+            joinObjectArrayPartition[obj.parentAlias].push(obj)
+        }
+    // create nextRefArray and nextJoinObjectArray
+    let nextRefArray = []
+    let nextJoinObjectArray = []
+    // for parent partition of joinObjects
+    //console.log(joinObjectArrayPartition)
+    for(let parent in joinObjectArrayPartition) {
+        //console.log(parent)
+        // get unqiue references
+        let uniqueRefs = [...new Set(joinObjectArrayPartition[parent].map(joinObject => joinObject.refs[0]))]
+        // generate aliases for refs
+        let uniqueAliases = uniqueRefs.map(() => aliasNumber++)
+        // create nextRefArray for partion and add to nextRefArray
+        let partitionNextRefArray = uniqueRefs.map((ref, i) => [parseInt(parent), uniqueAliases[i], ref])
+        //console.log(partitionNextRefArray)
+        partitionNextRefArray.forEach(refArray => {
+            nextRefArray.push(refArray)
+        })
+        // create next joinObject or add to idAliasLookup if done
+        joinObjectArrayPartition[parent].forEach(joinObject => {
+            // remove last ref
+            let parentAlias = joinObject.refs.splice(0, 1)[0]
+            //console.log(parentAlias)
+            //console.log(uniqueRefs.indexOf(parentAlias))
+            // get alias for last ref
+            //console.log(uniqueAliases)
+            parentAlias = uniqueAliases[uniqueRefs.indexOf(parentAlias)]
+            //console.log(parentAlias)
+            // if no more refs
+            if(joinObject.refs.length == 0) {
+                idAliasLookup[joinObject.ID] = parentAlias
+            } else { // more refs
+                nextJoinObjectArray.push({
+                    parentAlias: parentAlias,
+                    ID: joinObject.ID,
+                    refs: joinObject.refs
+                })
+            }
+        }) 
+    }
+    // replace the last element of builtArray with the union of refArray partitions
+    builtArray[depth - 1] = nextRefArray
+    // if the selection is complete
+    if (nextJoinObjectArray.length == 0) {
+        // flatten builtArray
+        let output = [];
+        builtArray.forEach(arr => {
+            arr.forEach(arr => {
+                output.push(arr)
+            })
+        })
+        // return and finish
+        return({
+            builtArray: output,
+            idAliasLookup: idAliasLookup
+        })
+    } else { // then there are more joins
+        console.log('====================iter')
+        // append the next joinObjectArray to builtArray
+        builtArray.push(nextJoinObjectArray)
+        // recursively call the function
+        return recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber)
+    }
+}
+
+function makeJoinStrings(idArray) {
+    let joinListLookup = [];
+    let joinListIDLookup = idArray.map(returnable => [returnable.ID, returnable.joinList])
+
+    joinListIDLookup.forEach((joinID) => {
+        let ID = joinID[0]
+        let parentAlias = 0
+        let refs = null
+        if(joinID[1] !== null) {
+            let joinListArray = [];
+            // create unique string for join
+            joinID[1].forEach(join => {
+                joinListArray.push(`${join.originalTable}.${join.originalColumn}>${join.joinTable}.${join.joinColumn}`)
+            })
+            // add id and unique string to array
+            refs = joinListArray.reverse()
+        }
+        joinListLookup.push({parentAlias: parentAlias, ID: ID, refs: refs})
+    })
+
+    return joinListLookup
+}
+
+function string2Join(string, prefix) {
+    // 0: originalTable, 1: originalColumn, 2: joinTable, 3: joinColumn
+    let clauseArray = [];
+    strings[2].split('>').forEach(el => {
+        clauseArray.push(el.split('.')[0])
+        clauseArray.push(el.split('.')[1])
+    })
+    let originalAlias = prefix + string[0]
+    let joinAlias = prefix + string[1]
+    return(pgp.as.format(referenceSelectionJoin, {
+        joinTable: clauseArray[2],
+        joinAlias: joinAlias,
+        joinColumn: clauseArray[3],
+        originalAlias: originalAlias,
+        originalColumn: clauseArray[1]
+    }))
+}
  
 let featureQuery = (req, res) => {
+    // array of clauses that make up the query
+    let query = [];    
+    // get feature
+    const feature = 'tdg_' + res.locals.parsed.features;
+    // set alias number
+    let aliasNumber = 1
     // get all ids
     // array of unique IDs from returned columns and filters
     let allIDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)))];
     // array of returnableID objects from IDs
     let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID))
-    /* join them and record aliases 
-    submission
-    */
+    // SUBMISSION
+    // ==================================================
     let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'submission')
+    let submissionClauseArray = []
+    // if submission returnables exist
     if(submissionReturnableIDs.length >= 1) {
-        // referenceSelection
+        // first push the tdg_submission reference
+        submissionClauseArray.push(pgp.as.format(submission, {
+            feature: feature
+        }))
+        // make unique join strings
+        let joins = makeJoinStrings(submissionReturnableIDs)
+        // perform reference selection to trim join tree
+        let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
+        // make joins and add to clauseArray
+        for(let join of joinArray.builtArray) {
+            submissionClauseArray.push(string2Join(join, 's'))
+        }
     }
-    /*
-        in: joinList
-        out: BOOL
-    list
-    */
+    // LISTS
+    // ==================================================
     let listReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'list')
     if(listReturnableIDs.length >= 1) {
 
