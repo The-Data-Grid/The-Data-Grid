@@ -34,12 +34,12 @@ function validateAudit(req, res, next) {
 
     let feature = res.locals.parsed.features;
 
-    // Validate feature
     if(!validateFeatures.includes(feature)) {
         return res.status(400).send(`Bad Request 2201: ${feature} is not a valid feature`);
     };
 
     // Validate columns for feature
+
     for(let column of res.locals.parsed.columns) {
         if(!validate[feature]['column'].includes(column)) {
             return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
@@ -55,13 +55,31 @@ function validateAudit(req, res, next) {
         if(!validate[feature]['filter'].includes(filter)) { 
             return res.status(400).send(`Bad Request 2203: ${filter} is not a valid filter for the ${feature} feature`);
         } else {
+            let operator = res.locals.parsed.filters[filter]['operation'];
+            let field = res.locals.parsed.filters[filter]['value'];
 
-            // operator validation, which is only done on filterable columns
-            let operator = res.locals.parsed.filters[filter]['operation']; // find operator associated with filter (id), using res.locals.parsed.filters (which is now the entire filter object)
-            if(validate[feature]['sqlType'][index] === 'TEXT') { // case where type is text. If numeric, it will always be valid
+            if(validate[feature]['sqlType'][index] === 'TEXT') {
+
                 if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
                     return res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`);
                 }
+
+                if(!isText(field)) {
+                    return res.status(400).send(`Bad Request 1604: Field for id: ${filter} must be text`);
+                }
+
+            } else if(validate[feature]['sqlType'][index] === 'NUMERIC') {
+
+                if(!isNumber(field)) {
+                    return res.status(400).send(`Bad Request 1605: Field for id: ${filter} must be numeric`);
+                }
+
+            } else if(validate[feature]['sqlType'[index] === 'DATE']) {
+
+                if(!isValidDate(field)) {
+                    return res.status(400).send(`Bad Request 1606: Field for id: ${filter} must be date`);
+                }
+
             }
         }
         index++;
@@ -69,8 +87,34 @@ function validateAudit(req, res, next) {
 
     // Passing to query.js
     next();
-}                                          
+}
 
+function isText(field) {
+    if(!/^[a-zA-Z]+$/.test(field)) {
+        return false;
+    }
+    return true;
+}
+
+function isNumber(field) {
+    if(!/^[1-9]+$/.test(field)) {
+        return false;
+    }
+    return true;
+}
+
+function isValidDate(field)
+{
+    var matches = /^(\d{1,2})[-](\d{1,2})[-](\d{4})$/.exec(field);
+    if (matches == null) return false;
+    var d = matches[2];
+    var m = matches[1] - 1;
+    var y = matches[3];
+    var composedDate = new Date(y, m, d);
+    return composedDate.getDate() == d &&
+            composedDate.getMonth() == m &&
+            composedDate.getFullYear() == y;
+}
 
 module.exports = {
     validateAudit
