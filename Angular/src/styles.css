@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=Rubik:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500;600&display=swap');
 @import '~@swimlane/ngx-datatable/index.css';
 @import '~@swimlane/ngx-datatable/themes/material.css';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
@@ -14,6 +14,15 @@ html * {
 html, body {
   height: 100%;
   margin: 0;
+}
+
+#logo-button .mat-button-wrapper{
+  font-family: 'IBM Plex Mono' !important; 
+  font-weight: 500 !important;
+  font-size: x-large;
+  padding: 20px;
+  color: black;
+  background-color: white;
 }
 
 #logo {

@@ -8,7 +8,7 @@ import { error } from '@angular/compiler/src/util';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 const API_URL = environment.apiUrl;
-const temp_url = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server";
+const fakeServerURL = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server";
 const PORT = environment.port;
 
 @Injectable({
@@ -26,8 +26,8 @@ export class ApiService {
 
   public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-    // var url = API_URL + '/setup';
-    var url = temp_url + '/setup';
+    var url = API_URL + '/setup';
+    // var url = fakeServerURL + '/setup';
     var lastModifiedObject = {
       lastModified: lastModified
     }
@@ -50,7 +50,7 @@ export class ApiService {
     // }
     // return this.http.get<TableObject>(this.temp, { params: qsparams });
 
-    var url = temp_url + '/table';
+    var url = fakeServerURL + '/table';
 
     // for test server only:
     return this.http.get<TableObject>(url);
