@@ -551,9 +551,21 @@ function addDataColumns(columns, features) {
             }))
 
         } else if (column.referenceDatatype == 'item' || 'location' ) {
-            // THIS ISN'T DONE YET BUT ITS OK FOR WATER AUDIT SCHEMA
+
+            // For now new columns cannot be created with metadata_column entries!
+
         } else if (column.referenceDatatype == 'local-global') { //LOCAL GLOBALS ARE SPECIFIED FOR EVERY FEATURE
 
+            for(feature in features) { // Data column is added for every feature
+                createList.push(pgp.as.format(newAddColumn, {
+                    tableName: feature.tableName,
+                    columnName: column.columnName,
+                    sqlDatatype: column.sqlDatatype,
+                    nullable: (column.nullable ? '' : 'NOT NULL')
+                }))
+            } //for every feature
+        } else if (column.referenceDatatype == 'special' && column.frontendName == 'Auditor Name') {
+            // special case for auditor name
             for(feature in features) { // Data column is added for every feature
                 createList.push(pgp.as.format(newAddColumn, {
                     tableName: feature.tableName,

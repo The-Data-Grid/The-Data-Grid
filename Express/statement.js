@@ -101,14 +101,14 @@ let tableParents = {
 
 let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]]);
 
-/*
 
+/*
 // iterate through subfeatures and create query for each one
 // Javascript template literal syntax
 
 let subfeatureJoin = {
     subfeatures[0]: {
-        query: 'INNER JOIN $(subfeature[1]) ON $(subfeature[1]).table_id = $(subfeature[0]).parent_id',
+        query: 'INNER JOIN $(subfeature[1]:value) ON $(subfeature[1]:value).table_id = $(subfeature[0]:value).parent_id',
         dependencies: [subfeature[1]]
     }
 };
@@ -123,12 +123,12 @@ let featureItemJoin = {
         }
     }
 };
-
 */
+
 
 // get all unique tables and features (if not null) from idColumnTableLookup
 // not sure if the syntax for this is correct, particularly due to the part inside the brackets
-var tablesAndFeatures = new Set(idColumnTableLookup[id]);
+//var tablesAndFeatures = new Set(idColumnTableLookup[id]);
 
 // Feature //
 /*

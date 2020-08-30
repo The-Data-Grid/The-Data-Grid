@@ -372,6 +372,8 @@ function string2Join(string, prefix) {
 let featureQuery = (req, res) => {
     // array of clauses that make up the query
     let query = [];    
+    // array of select clauses
+    let selectClauses = [];
     // get feature
     const feature = 'tdg_' + res.locals.parsed.features;
     // set alias number
@@ -399,21 +401,38 @@ let featureQuery = (req, res) => {
         for(let join of joinArray.builtArray) {
             submissionClauseArray.push(string2Join(join, 's'))
         }
+        // add selections to selectClauses
+        for(let id in joinArray.idAliasLookup) {
+            selectClauses.push(pgp.as.format(submissionReturnableIDs.filter(returnable => returnable.ID == id).selectSQL, {
+                table: 's' + joinArray.idAliasLookup[id]
+            }))
+        }
     }
     // LISTS
     // ==================================================
     let listReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'list')
+    let listClauseArray = []
     if(listReturnableIDs.length >= 1) {
-
+        for(let returnable of listReturnableIDs) {
+            listClauseArray.push(returnable.joinSQL)
+            selectClauses.push(returnable.selectSQL)
+        }
     }
     /*
         in: joinSQL, selectSQL
         out: auditing dependency
     special
     */
+    // SPECIAL
+    // ==================================================
     let specialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'special')
     if(specialReturnableIDs.length >= 1) {
-        
+        for(let returnable of listReturnableIDs) {
+            listClauseArray.push(returnable.joinSQL)
+            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+                feature: feature
+            }))
+        }
     }
     /*
         in: joinSQL, selectSQL
@@ -461,4 +480,4 @@ module.exports = {
     setupQuery,
     cycleTime
 };
-
+}

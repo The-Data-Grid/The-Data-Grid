@@ -44,7 +44,8 @@ let allFeatures = client.querySync('SELECT f.table_name as f__table_name, f.num_
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(ID, columnTree, tableTree, returnType, joinSQL, selectSQL) {
+    constructor(feature, ID, columnTree, tableTree, returnType, joinSQL, selectSQL) {
+        this.feature = feature
         this.ID = ID
         this.columnTree = columnTree,
         this.tableTree = tableTree,
@@ -85,6 +86,7 @@ class ReturnableID {
 // CALLING SETUP FUNCTION AND EXPORTING
 // ============================================================
 const {returnableIDLookup,idColumnTableLookup, tableParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
+console.log(returnableIDLookup)
 
     
 module.exports = {
@@ -218,6 +220,9 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     // ============================================================
     for(let row of rawQuery) {
 
+        // Get feature table as string
+        const feature = row['f__table_name']
+
         // Get column id as string
         const ID = row['c__column_id'];
 
@@ -242,21 +247,23 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
             var selectSQL = "COALESCE($(feature:value).data_auditor, concat_ws(' ', tdg_users.data_first_name, tdg_users.data_last_name)";
 
         // Standard Operating Procedure
-        } else if(row['c__frontend_name'] == 'Standard Operating Procedure' && row['rt__type_name'] == 'local-global') { 
+        } else if(row['c__frontend_name'] == 'Standard Operating Procedure' && row['rt__type_name'] == 'special') { 
 
             var joinSQL = 'LEFT JOIN tdg_sop_m2m ON\
                             tdg_observation_count.observation_count_id = tdg_sop_m2m.observation_count_id \
                             INNER JOIN tdg_sop ON tdg_sop_m2m.sop_id = tdg_sop.sop_id'
 
-            var selectSQL = '$(tdg_sop:value).data_name'
+            var selectSQL = 'tdg_sop.data_name'
 
-        }  else {
+        } else if(row['rt__type_name'] == 'list') {
+
+        } else {
         var joinSQL = null
         var selectSQL = `$(table:value).${row['c__column_name']}`
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup.push(new ReturnableID(ID, columnTree, tableTree, returnType, joinSQL, selectSQL))
+        returnableIDLookup.push(new ReturnableID(feature, ID, columnTree, tableTree, returnType, joinSQL, selectSQL))
 
     }
 
