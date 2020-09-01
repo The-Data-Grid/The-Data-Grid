@@ -16,6 +16,7 @@ export class AuditsComponent implements OnInit {
   rows = [];
   tableObject;
   currentlyEditingCell = {};
+  cellEdited = {};
   editingMode: boolean = false;
 
   // variables for filtering sidebar
@@ -231,6 +232,7 @@ export class AuditsComponent implements OnInit {
     console.log('inline editing rowIndex', rowIndex);
     this.toggleEditingCell(rowIndex, columnName); //stop editing
     this.rows[rowIndex][columnName] = event.target.value;
+    this.cellEdited[rowIndex + columnName] = true;
     this.rows = [...this.rows];
     console.log('UPDATED!', this.rows[rowIndex][columnName]);
   }

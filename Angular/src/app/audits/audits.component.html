@@ -202,7 +202,8 @@
                 <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.prop" [name]="col.prop">
                     <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row" let-value="value">
                         <span [ngSwitch]="col.type">
-                            <div *ngSwitchCase="'hyperlink'">
+                            <div *ngSwitchCase="'hyperlink'"
+                                [ngStyle]="cellEdited[rowIndex + col.prop] && { 'background-color': 'pink' }">
                                 <a [href]="row['_hyperlinks'][col.prop]" (click)="toggleEditingCell(rowIndex, col.prop)"
                                     *ngIf="!editingMode">{{value}}
                                 </a>
@@ -212,20 +213,22 @@
                                 </span>
                                 <input autofocus *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
                                     (blur)="toggleEditingCell(rowIndex, col.prop)"
-                                    (change)="updateValue($event, col.prop, rowIndex)" [value]="value" 
-                                    style="width: 90%;"/>
+                                    (change)="updateValue($event, col.prop, rowIndex)" [value]="value"
+                                    style="width: 90%;" />
                             </div>
-                            <div *ngSwitchCase="'string'">
+                            <div *ngSwitchCase="'string'"
+                                [ngStyle]="cellEdited[rowIndex + col.prop] && { 'background-color': 'pink' }">
                                 <span (click)="toggleEditingCell(rowIndex, col.prop)"
                                     *ngIf="!currentlyEditingCell[rowIndex + col.prop]">
                                     {{ value }}
                                 </span>
                                 <input autofocus *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
                                     (blur)="toggleEditingCell(rowIndex, col.prop)"
-                                    (change)="updateValue($event, col.prop, rowIndex)" [value]="value" 
-                                    style="width: 90%;"/>
+                                    (change)="updateValue($event, col.prop, rowIndex)" [value]="value"
+                                    style="width: 90%;" />
                             </div>
-                            <div *ngSwitchCase="'bool'">
+                            <div *ngSwitchCase="'bool'"
+                                [ngStyle]="cellEdited[rowIndex + col.prop] && { 'background-color': 'pink' }">
                                 <span (click)="toggleEditingCell(rowIndex, col.prop)"
                                     *ngIf="!currentlyEditingCell[rowIndex + col.prop]">
                                     {{ value }}
