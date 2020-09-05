@@ -182,6 +182,7 @@
 
         <mat-sidenav-content class="sidenav-content">
             <!-- table -->
+            {{testval}}
             <div *ngIf="tableObject" id="table-buttons" fxLayoutAlign="end center">
                 <button *ngIf="!editingMode" mat-icon-button (click)="toggleEditingMode()">
                     <mat-icon>edit</mat-icon>
@@ -211,7 +212,7 @@
                                     *ngIf="!currentlyEditingCell[rowIndex + col.prop] && editingMode">
                                     {{ value }}
                                 </span>
-                                <input autofocus *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
+                                <input *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
                                     (blur)="toggleEditingCell(rowIndex, col.prop)"
                                     (change)="updateValue($event, col.prop, rowIndex)" [value]="value"
                                     style="width: 90%;" />
@@ -222,7 +223,7 @@
                                     *ngIf="!currentlyEditingCell[rowIndex + col.prop]">
                                     {{ value }}
                                 </span>
-                                <input autofocus *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
+                                <input *ngIf="currentlyEditingCell[rowIndex + col.prop] && editingMode"
                                     (blur)="toggleEditingCell(rowIndex, col.prop)"
                                     (change)="updateValue($event, col.prop, rowIndex)" [value]="value"
                                     style="width: 90%;" />

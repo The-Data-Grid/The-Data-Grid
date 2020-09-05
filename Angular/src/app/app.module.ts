@@ -22,7 +22,9 @@ import { AboutComponent } from './about/about.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { PasswordAuthenticationComponent } from './password-authentication/password-authentication.component';
+import { ClickOutsideModule } from 'ng-click-outside'
 import { MaterialModule } from './material.module';
+
 
 @NgModule({
   declarations: [
@@ -50,6 +52,7 @@ import { MaterialModule } from './material.module';
     FlexLayoutModule,
     NgxDatatableModule,
     NgMultiSelectDropDownModule.forRoot(),
+    ClickOutsideModule,
     MaterialModule
   ],
   providers: [ApiService, DatePipe],

@@ -12,13 +12,13 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 export class AuditsComponent implements OnInit {
   // variables for table 
   dataTableColumns = [];
-  rowsCopy = [];
   rows = [];
   tableObject;
   currentlyEditingCell = {};
   cellEdited = {};
   editingMode: boolean = false;
-
+  oldRowInfo = [];
+  // oldRows = [];
   // variables for filtering sidebar
   filterBy = "Submission";
   setupObject;
@@ -27,6 +27,7 @@ export class AuditsComponent implements OnInit {
   featureDropdownValues = new Map(); //map name to direct children
   selectedFeature;
   appliedFilterSelections = {};
+  testval;
 
   // the following are for multiselect dropdowns
   dropdownList = [
@@ -151,7 +152,8 @@ export class AuditsComponent implements OnInit {
 
           this.dataTableColumns.push({
             prop: this.setupObject.globalColumns[idx].columnFrontendName,
-            type: this.datatypes[datatypeIdx]
+            type: this.datatypes[datatypeIdx],
+            id: this.setupObject.globalColumns[idx].columnID
           });
         }
         // features
@@ -162,8 +164,9 @@ export class AuditsComponent implements OnInit {
 
           this.dataTableColumns.push({
             prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName,
-            type: this.datatypes[datatypeIdx]
-          });;
+            type: this.datatypes[datatypeIdx],
+            id: this.setupObject.globalColumns[idx].columnID
+          });
         }
       }
 
@@ -231,9 +234,14 @@ export class AuditsComponent implements OnInit {
   updateValue(event, columnName, rowIndex) {
     console.log('inline editing rowIndex', rowIndex);
     this.toggleEditingCell(rowIndex, columnName); //stop editing
-    this.rows[rowIndex][columnName] = event.target.value;
+    // save the old value
+    this.oldRowInfo.push({
+      rowIndex: rowIndex,
+      columnName: columnName,
+      previousValue: this.rows[rowIndex][columnName]
+    });
     this.cellEdited[rowIndex + columnName] = true;
-    this.rows = [...this.rows];
+    this.rows[rowIndex][columnName] = event.target.value;
     console.log('UPDATED!', this.rows[rowIndex][columnName]);
   }
 
@@ -241,9 +249,11 @@ export class AuditsComponent implements OnInit {
     if (!this.editingMode) { return; }
     if (!this.currentlyEditingCell[rowIndex + columnName]) {
       this.currentlyEditingCell[rowIndex + columnName] = true;
+      console.log("now editing cell");
     }
     else {
       this.currentlyEditingCell[rowIndex + columnName] = false;
+      console.log("now not editing cell");
     }
   }
 
@@ -251,8 +261,8 @@ export class AuditsComponent implements OnInit {
     this.editingMode = !this.editingMode;
     // if in editing mode, make a copy of rows. if not in editing mode, clear editing object
     if (this.editingMode) {
-      this.rowsCopy = this.rows.slice(0);
-      console.log(this.rowsCopy);
+      console.log("clearing old row info");
+      this.oldRowInfo = [];
     }
     else {
       this.currentlyEditingCell = {};
@@ -261,10 +271,11 @@ export class AuditsComponent implements OnInit {
 
   cancelEditing() {
     this.toggleEditingMode();
-    this.rows = this.rowsCopy.slice(0);
-    // console.log(this.rows);
-    console.log(this.rowsCopy);
-    // this.rows = [...this.rows];
+    this.oldRowInfo.forEach(obj => {
+      // console.log(obj);
+      this.rows[obj.rowIndex][obj.columnName] = obj.previousValue;
+      this.rows = [...this.rows];
+    });
   }
 
   // filterDatatable(event) {
