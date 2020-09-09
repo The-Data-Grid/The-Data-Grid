@@ -506,10 +506,18 @@ let featureQuery = (req, res) => {
         } else {
             out.clause = 'AND'
         }
+
         // Getting the clause components
-        out.select = whereLookup[String(ID)]
-        out.filterValue = res.locals.parsed.filters[ID].value
-        out.operation = res.locals.parsed.filters[ID].operation
+        // if multiple values passed then implement logical OR
+        if(Array.isArray(res.locals.parsed.filters[ID].value)) {
+            let condition = [];
+            res.locals.parsed.filters[ID].value.forEach(value => {
+                condition.push(`${whereLookup[String(ID)]} ${res.locals.parsed.filters[ID].operation} ${value}`)
+            })
+            out.condition = condition.join(' OR ')
+        } else {
+            out.condition = `${whereLookup[String(ID)]} ${res.locals.parsed.filters[ID].operation} ${res.locals.parsed.filters[ID].value}`
+        }
         whereClauseArray.push(pgp.as.format(where.query, out));
     }
 
@@ -527,7 +535,7 @@ let featureQuery = (req, res) => {
     // Finally querying the database
     db.any(finalQuery)  
         .then(data => {
-            
+
             // Constructing the tableObject and sending response
             return res.json(makeTableObject(data));
 

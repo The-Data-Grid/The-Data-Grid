@@ -23,8 +23,8 @@ const select = {
     query: 'SELECT $(returnColumns:raw) FROM $(feature:name)'
 };
 
-const where = { // ex: {clause: 'AND', select: "item_sop.sop_name", operation: "=", value: "Example SOP #1"}
-    query: '$(clause:value) $(select:value) $(operation:value) $(filterValue)' 
+const where = { // ex: {clause: 'AND', select: "item_sop.sop_name", operation: "=", filterValue: "Example SOP #1"}
+    query: '$(clause:value) ($(condition:value))' 
 };
 
 let submission = {
@@ -102,7 +102,7 @@ let tableParents = {
 let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]]);
 
 
-/*
+
 // iterate through subfeatures and create query for each one
 // Javascript template literal syntax
 
@@ -123,7 +123,7 @@ let featureItemJoin = {
         }
     }
 };
-*/
+
 
 
 // get all unique tables and features (if not null) from idColumnTableLookup
