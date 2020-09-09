@@ -44,19 +44,18 @@ let allFeatures = client.querySync('SELECT f.table_name as f__table_name, f.num_
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, ID, columnTree, tableTree, returnType, joinSQL, selectSQL) {
-        this.feature = feature
+    constructor(feature, ID, columnTree, tableTree, returnType, joinSQL, selectSQL, dataColumn) {
         this.ID = ID
-        this.columnTree = columnTree,
-        this.tableTree = tableTree,
-        this.returnType = returnType,
-        this.joinSQL = joinSQL,
+        this.feature = feature
+        this.dataColumn = dataColumn
+        this.returnType = returnType
+        this.joinSQL = joinSQL
         this.selectSQL = selectSQL
 
-        this.joinList = this.makeJoinList(this.columnTree, this.tableTree)
+        this.joinObjects = this.makeJoinObjects(columnTree, tableTree, ID)
     }
 
-    makeJoinList(columnTree, tableTree) {
+    makeJoinObjects(columnTree, tableTree, ID) {
         if(columnTree === null || tableTree === null) {
             return null
         } else {
@@ -74,7 +73,12 @@ class ReturnableID {
                 });
             }
 
-            return joinList
+            let joinListArray = [];
+            joinList.forEach(join => {
+                joinListArray.push(`${join.originalTable}.${join.originalColumn}>${join.joinTable}.${join.joinColumn}`)
+            })
+
+            return {parentAlias: 0, ID: ID, refs: joinListArray}
         }
     }
 }
@@ -232,9 +236,12 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
         // Get table tree
         const tableTree = row['c__reference_table_name']
-        //console.log(tableTree)
+        
         // Get return type
         const returnType = row['rt__type_name']
+
+        // Get data column
+        const dataColumn = row['c__column_name']
 
         // Writing custom SQL for custom queries
         // Auditor Name coalesce
@@ -242,9 +249,9 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
             var joinSQL = 'LEFT JOIN tdg_auditor_m2m ON \
                             tdg_observation_count.observation_count_id = tdg_auditor_m2m.observation_count_id \
-                            INNER JOIN tdg_users ON tdg_auditor_m2m.user_id = tdg_users.user_id';
+                            INNER JOIN tdg_users AS tdg_users_auditor_name ON tdg_auditor_m2m.user_id = tdg_users_auditor_nameuser_id';
 
-            var selectSQL = "COALESCE($(feature:value).data_auditor, concat_ws(' ', tdg_users.data_first_name, tdg_users.data_last_name)";
+            var selectSQL = "COALESCE($(feature:value).data_auditor, concat_ws(' ', tdg_users_auditor_name.data_first_name, tdg_users_auditor_name.data_last_name))";
 
         // Standard Operating Procedure
         } else if(row['c__frontend_name'] == 'Standard Operating Procedure' && row['rt__type_name'] == 'special') { 
@@ -263,7 +270,7 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup.push(new ReturnableID(feature, ID, columnTree, tableTree, returnType, joinSQL, selectSQL))
+        returnableIDLookup.push(new ReturnableID(feature, ID, columnTree, tableTree, returnType, joinSQL, selectSQL, dataColumn))
 
     }
 

@@ -328,6 +328,7 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
     }
 }
 
+/*
 function makeJoinStrings(idArray) {
     let joinListLookup = [];
     let joinListIDLookup = idArray.map(returnable => [returnable.ID, returnable.joinList])
@@ -350,6 +351,7 @@ function makeJoinStrings(idArray) {
 
     return joinListLookup
 }
+*/
 
 function string2Join(string, prefix) {
     // 0: originalTable, 1: originalColumn, 2: joinTable, 3: joinColumn
@@ -369,107 +371,175 @@ function string2Join(string, prefix) {
     }))
 }
  
-let featureQuery = (req, res) => {
-    // array of clauses that make up the query
-    let query = [];    
+let featureQuery = (req, res) => {   
+    // array of IDs with table name and column name for WHERE clauses
+    let whereLookup = {};
     // array of select clauses
     let selectClauses = [];
-    // get feature
-    const feature = 'tdg_' + res.locals.parsed.features;
+    // array of all features in feature tree (features and subfeatures)
+    let featureTree = [];
+    // get feature and add to feature tree
+    const feature = 'feature_' + res.locals.parsed.features;
+    featureTree.push(feature);
     // set alias number
-    let aliasNumber = 1
+    let aliasNumber = 1;
     // get all ids
     // array of unique IDs from returned columns and filters
     let allIDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)))];
     // array of returnableID objects from IDs
-    let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID))
+    let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID));
+
     // SUBMISSION
     // ==================================================
-    let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'submission')
-    let submissionClauseArray = []
+    let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'submission');
+    let submissionClauseArray = [];
     // if submission returnables exist
     if(submissionReturnableIDs.length >= 1) {
         // first push the tdg_submission reference
         submissionClauseArray.push(pgp.as.format(submission, {
             feature: feature
         }))
-        // make unique join strings
-        let joins = makeJoinStrings(submissionReturnableIDs)
-        // perform reference selection to trim join tree
+        // get all join objects in request
+        let joins = submissionReturnableIDs.map(returnable => returnable.joinObject)
+        // perform reference selection to trim join tree and assign aliases
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
         // make joins and add to clauseArray
         for(let join of joinArray.builtArray) {
             submissionClauseArray.push(string2Join(join, 's'))
         }
         // add selections to selectClauses
-        for(let id in joinArray.idAliasLookup) {
-            selectClauses.push(pgp.as.format(submissionReturnableIDs.filter(returnable => returnable.ID == id).selectSQL, {
-                table: 's' + joinArray.idAliasLookup[id]
-            }))
-        }
-    }
-    // LISTS
-    // ==================================================
-    let listReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'list')
-    let listClauseArray = []
-    if(listReturnableIDs.length >= 1) {
-        for(let returnable of listReturnableIDs) {
-            listClauseArray.push(returnable.joinSQL)
-            selectClauses.push(returnable.selectSQL)
-        }
-    }
-    /*
-        in: joinSQL, selectSQL
-        out: auditing dependency
-    special
-    */
-    // SPECIAL
-    // ==================================================
-    let specialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'special')
-    if(specialReturnableIDs.length >= 1) {
-        for(let returnable of listReturnableIDs) {
-            listClauseArray.push(returnable.joinSQL)
+        for(let returnable of submissionReturnableIDs) {
+            // get alias and interpolate into select
+            let alias = 's' + joinArray.idAliasLookup[String(returnable.ID)]
             selectClauses.push(pgp.as.format(returnable.selectSQL, {
-                feature: feature
+                table: alias
             }))
+            // add feature to featureTree
+            featureTree.push(returnable.feature)
+            // add table and column to whereLookup
+            whereLookup[returnable.ID] = alias + '.' + returnable.dataColumn
         }
     }
-    /*
-        in: joinSQL, selectSQL
-        out: auditing dependency
-    local, item, location
-    */
-    let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'local' || 'location' || 'item' || 'local-global')
-    if(dynamicReturnableIDs.length >= 1) {
 
+    // LISTS AND SPECIAL
+    // ==================================================
+    let listAndSpecialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'list' || returnable.returnType == 'special')
+    let listAndSpecialClauseArray = []
+    if(listAndSpecialReturnableIDs.length >= 1) {
+        for(let returnable of listAndSpecialReturnableIDs) {
+            // Adding the custom join clause
+            listAndSpecialClauseArray.push(returnable.joinSQL)
+            // Adding the select clause
+            selectClauses.push(returnable.selectSQL)
+            // Adding the feature dependency
+            featureTree.push(returnable.feature)
+            // add table and column to whereLookup
+            whereLookup[returnable.ID] = returnable.selectSQL
+        }
     }
-    /*
 
-        in: joinList, data column
-        out: auditing dependency
-    */
+    // ITEM AND LOCATION
+    // ==================================================
+    let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'location' || returnable.returnType == 'item')
+    let dynamicClauseArray = [];
+    if(dynamicReturnableIDs.length >= 1) {
+        // get all join objects in request
+        let joins = submissionReturnableIDs.map(returnable => returnable.joinObject)
+        // perform reference selection to trim join tree and assign aliases
+        let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
+        // make joins and add to clauseArray
+        for(let join of joinArray.builtArray) {
+            dynamicClauseArray.push(string2Join(join, 'd'))
+        }
+        // add selections to selectClauses
+        for(let returnable of dynamicReturnableIDs) {
+            // get alias and interpolate into select
+            let alias = 'd' + joinArray.idAliasLookup[String(returnable.ID)]
+            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+                table: alias
+            }))
+            // add feature to featureTree
+            featureTree.push(returnable.feature)
+            // add table and column to whereLookup
+            whereLookup[returnable.ID] = alias + '.' + returnable.dataColumn
+        }
+    }
+
+    // LOCAL AND LOCAL-GLOBAL
+    // ==================================================
+    let localReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'local' || returnable.returnType == 'local-global')
+    if(localReturnableIDs.length >= 1) {
+        for(let returnable of localReturnableIDs) {
+            // Adding the select clause
+            selectClauses.push(returnable.selectSQL)
+            // Adding the feature dependency
+            featureTree.push(returnable.feature)
+            // add table and column to whereLookup
+            whereLookup[returnable.ID] = returnable.feature + '.' + returnable.dataColumn
+        }
+    }
+
     // Throw error if the length of the ID set is not equal to the sum of its partitions
-    if(submissionReturnableIDs.length + listReturnableIDs.length + specialReturnableIDs.length + dynamicReturnableIDs.length != allIDs.length) {
+    if(submissionReturnableIDs.length + listAndSpecialReturnableIDs.length + dynamicReturnableIDs.length + localReturnableIDs.length != allIDs.length) {
         return res.status(500).send('Internal Server Error 7701: Number of columns found different than number of columns requested')
     }
-    /*
-    feature tree
-        in: auditing dependencies
-        out: auditing joins and aliases
-    */
+    
     // use aliases to input SELECTs
     // use aliases to input WHEREs
     // concat SQL and query db
     // construct tableObject from results 
+
+    // FEATURE CLAUSES
+    // ==================================================
+    let featureClauseArray = [];
+
+    // WHERE CLAUSES
+    // ==================================================
+    let whereClauseArray = [];
+    let initialWHERE = true;
+    for(let ID in res.locals.parsed.filters) {
+        let out = {}
+        // The first clause must be WHERE and the following clauses must be AND
+        if(initialWHERE == true) {     
+            out.clause = 'WHERE';
+            initialWHERE = false;
+        } else {
+            out.clause = 'AND'
+        }
+        // Getting the clause components
+        out.select = whereLookup[String(ID)]
+        out.filterValue = res.locals.parsed.filters[ID].value
+        out.operation = res.locals.parsed.filters[ID].operation
+        whereClauseArray.push(pgp.as.format(where.query, out));
+    }
+
+    // EXECUTING QUERY
+    // ==================================================
+    // Adding clauses to query in order
+    let query = [...selectClauses, ...featureClauseArray, ...submissionClauseArray, ...listAndSpecialClauseArray, ...dynamicClauseArray, ...whereClauseArray]; 
+
+    // Concatenating clauses to make final SQL query
+    let finalQuery = query.join(' ') + ';'; 
+
+     // DEBUG: Show SQL Query //
+     console.log(finalQuery); 
+
+    // Finally querying the database
+    db.any(finalQuery)  
+        .then(data => {
+            
+            // Constructing the tableObject and sending response
+            return res.json(makeTableObject(data));
+
+        }).catch(err => {
+
+            console.log(err)
+            // Error
+            return res.status(500).send('Internal Server Error 1702: Query constructed properly but error thrown in database');
+            
+        });
+    
 }
-
-
-let allIDs = [1,2,32,8];
-let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID))
-console.log(allReturnableIDs)
-
-
-
 
 
 

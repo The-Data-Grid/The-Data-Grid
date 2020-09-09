@@ -23,8 +23,8 @@ const select = {
     query: 'SELECT $(returnColumns:raw) FROM $(feature:name)'
 };
 
-const where = { // ex: {clause: 'AND', filter: "item_sop.sop_name", operation: "=", value: "Example SOP #1"}
-    query: '$(clause:value) $(filterColumns:value) $(operation:value) $(value)' 
+const where = { // ex: {clause: 'AND', select: "item_sop.sop_name", operation: "=", value: "Example SOP #1"}
+    query: '$(clause:value) $(select:value) $(operation:value) $(filterValue)' 
 };
 
 let submission = {
@@ -157,6 +157,7 @@ let makeLocation = (locationTableName, referenceTableName, referenceColumnName) 
     list_... -> list_m2m_... -> feature_...
 */
 
+/*
 pgp.as.format('INNER JOIN $(listName:value)_m2m \
 ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
 INNER JOIN $(listName:value) \
@@ -179,7 +180,7 @@ if (table.includes("list_"))
 
     }
 }
-
+*/
 
 // let listJoin = {
 //     feature: {
