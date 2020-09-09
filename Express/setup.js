@@ -246,12 +246,8 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
             var selectSQL = "COALESCE($(feature:value).data_auditor, concat_ws(' ', tdg_users.data_first_name, tdg_users.data_last_name)";
 
-<<<<<<< Updated upstream
         // Standard Operating Procedure
         } else if(row['c__frontend_name'] == 'Standard Operating Procedure' && row['rt__type_name'] == 'special') { 
-=======
-                //returnableIDLookup[id] = (new returnableID())
->>>>>>> Stashed changes
 
             var joinSQL = 'LEFT JOIN tdg_sop_m2m ON\
                             tdg_observation_count.observation_count_id = tdg_sop_m2m.observation_count_id \

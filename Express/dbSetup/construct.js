@@ -66,10 +66,7 @@ var newCreateFeature =
             observation_id SERIAL PRIMARY KEY,\
             observation_count_id INTEGER NOT NULL, \
             submission_id INTEGER NOT NULL,\
-            featureitem_id INTEGER NOT NULL,\
-            data_date_conducted TEXT NOT NULL, \
-            data_commentary TEXT, \
-            data_auditor TEXT)';
+            featureitem_id INTEGER NOT NULL)'
 
 // newCreateSubfeature: SQL for creating new subfeature table
 
@@ -78,17 +75,11 @@ var newCreateSubfeature = {
         parent_id INTEGER NOT NULL, \
         observation_id SERIAL PRIMARY KEY,\
         observation_count_id INTEGER NOT NULL, \
-        data_auditor TEXT, \
-        data_commentary TEXT, \
-        data_date_conducted TEXT NOT NULL, \
         featureitem_id INTEGER NOT NULL)',
     withoutFeatureItem: 'CREATE TABLE $(feature:value) (\
         parent_id INTEGER NOT NULL, \
         observation_id SERIAL PRIMARY KEY,\
-        observation_count_id INTEGER NOT NULL, \
-        data_date_conducted TEXT NOT NULL, \
-        data_commentary TEXT, \
-        data_auditor TEXT)'
+        observation_count_id INTEGER NOT NULL)'
 };
 
 // newCreateFeatureItem: SQL for creating new feature item table
@@ -162,6 +153,9 @@ $(information), \
 (SELECT type_id from metadata_reference_type WHERE type_name = $(referenceDatatype)), \
 (SELECT type_id from metadata_frontend_type WHERE type_name = $(frontendDatatype)), \
 $(nullable), $(default), $(global), $(groundTruthLocation))'
+
+const checkAuditorNameTrigger = "CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:value) \
+FOR EACH ROW EXECUTE FUNCTION check_auditor_name();"
 
 // Water //
 // ==================================================
@@ -489,6 +483,7 @@ function addDataColumns(columns, features) {
 	let metadataList = [];
 
     columns.forEach( column => {
+        console.log(column.frontendName + ' -> ' + column.referenceDatatype)
                 
 				// Regardless of column type, insert metadata_column entry
 				metadataList.push(pgp.as.format(newMetadataColumn, {
@@ -550,13 +545,14 @@ function addDataColumns(columns, features) {
                 nullable: (column.nullable ? '' : 'NOT NULL')
             }))
 
-        } else if (column.referenceDatatype == 'item' || 'location' ) {
+        } else if (column.referenceDatatype == 'item' || column.referenceDatatype == 'location' ) {
 
             // For now new columns cannot be created with metadata_column entries!
 
         } else if (column.referenceDatatype == 'local-global') { //LOCAL GLOBALS ARE SPECIFIED FOR EVERY FEATURE
 
-            for(feature in features) { // Data column is added for every feature
+            for(feature of features) { // Data column is added for every feature
+                console.log(feature.tableName, column.columnName, column.sqlDatatype, column.nullable)
                 createList.push(pgp.as.format(newAddColumn, {
                     tableName: feature.tableName,
                     columnName: column.columnName,
@@ -566,15 +562,26 @@ function addDataColumns(columns, features) {
             } //for every feature
         } else if (column.referenceDatatype == 'special' && column.frontendName == 'Auditor Name') {
             // special case for auditor name
-            for(feature in features) { // Data column is added for every feature
+            for(feature of features) { // for every feature
+                // Data column is added for every feature
                 createList.push(pgp.as.format(newAddColumn, {
                     tableName: feature.tableName,
                     columnName: column.columnName,
                     sqlDatatype: column.sqlDatatype,
                     nullable: (column.nullable ? '' : 'NOT NULL')
                 }))
-            } //for every feature
+
+                // Auditor Name trigger is added for every feature
+                refList.push(pgp.as.format(checkAuditorNameTrigger, {
+                    tableName: feature.tableName
+                }))
+
+                console.log(pgp.as.format(checkAuditorNameTrigger, {
+                    tableName: feature.tableName
+                }))
+            } 
         }
+        
     })
     
     return {cCreateList: createList, cRefList: refList, cMetadataList: metadataList};
