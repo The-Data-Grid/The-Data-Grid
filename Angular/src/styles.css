@@ -16,14 +16,14 @@ html, body {
   margin: 0;
 }
 
-#logo-button .mat-button-wrapper{
+/* .logo-button .mat-button-wrapper{
   font-family: 'IBM Plex Mono' !important; 
   font-weight: 500 !important;
   font-size: x-large;
   padding: 20px;
   color: black;
   background-color: white;
-}
+} */
 
 #logo {
   width: 40%;
