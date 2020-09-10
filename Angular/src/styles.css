@@ -25,6 +25,7 @@ html, body {
   background-color: white;
 } */
 
+
 #logo {
   width: 40%;
   margin: 4rem;
@@ -36,6 +37,11 @@ html, body {
   width: 100%;
   z-index: 9999;
 }
+
+
+/* .mat-tab-link {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+} */
 
 .dropdown {
   z-index: 9999;
@@ -199,4 +205,13 @@ html, body {
 /* expansion panel indicator */
 .mat-expansion-panel-header .mat-expansion-indicator::after {
   color: rgb(228, 228, 228) !important;
+}
+
+
+/* the bar at the bottom of a tab on the nav bar */
+.mat-ink-bar {
+  color: rgb(86, 156, 215) !important;
+  background-color: rgb(86, 156, 215) !important;
+  visibility: visible !important;
+  z-index: 10 !important;
 }
