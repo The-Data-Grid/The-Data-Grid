@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {select, where, referenceSelectionJoin, submission} = require('./statement.js');
+const {select, where, whereCondition, referenceSelectionJoin, submission} = require('./statement.js');
 const validate = require('./validate.js');
 const {returnableIDLookup} = require('./setup.js')
 
@@ -512,11 +512,19 @@ let featureQuery = (req, res) => {
         if(Array.isArray(res.locals.parsed.filters[ID].value)) {
             let condition = [];
             res.locals.parsed.filters[ID].value.forEach(value => {
-                condition.push(`${whereLookup[String(ID)]} ${res.locals.parsed.filters[ID].operation} ${value}`)
+                condition.push(pgp.as.format(whereCondition, {
+                    select: whereLookup[String(ID)],
+                    operation: res.locals.parsed.filters[ID].operation,
+                    filterValue: value
+                }))
             })
             out.condition = condition.join(' OR ')
         } else {
-            out.condition = `${whereLookup[String(ID)]} ${res.locals.parsed.filters[ID].operation} ${res.locals.parsed.filters[ID].value}`
+            out.condition = pgp.as.format(whereCondition, {
+                select: whereLookup[String(ID)],
+                operation: res.locals.parsed.filters[ID].operation,
+                filterValue: res.locals.parsed.filters[ID].value
+            })}
         }
         whereClauseArray.push(pgp.as.format(where.query, out));
     }
@@ -558,4 +566,4 @@ module.exports = {
     setupQuery,
     cycleTime
 };
-}
+

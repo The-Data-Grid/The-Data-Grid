@@ -27,6 +27,10 @@ const where = { // ex: {clause: 'AND', select: "item_sop.sop_name", operation: "
     query: '$(clause:value) ($(condition:value))' 
 };
 
+const whereCondition = {
+    query: '$(select:value) $(operation:value) $(filterValue)'
+}
+
 let submission = {
     query: 'INNER JOIN tdg_submission AS s0 ON $(feature:value).submission_id = tdg_submission.submission_id',
 }
@@ -232,6 +236,7 @@ let tableNameSQLLookup = {
 module.exports = {
     select,
     where,
+    whereCondition,
     referenceSelectionJoin,
     submission
 }; //this will export everything to the query engine 

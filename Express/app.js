@@ -9,6 +9,8 @@ const query = require('./query.js');
 const insert = require('./insert.js');
 const template = require('./template.js');
 const cors = require('cors');
+const https = require('https');
+const fs = require('fs');
 const port = process.env.PORT || 4001;
 
 app.use(cors());
@@ -20,6 +22,12 @@ app.use(express.urlencoded({ extended: false}));
 
 // remove "X-Powered-By: Express" from header
 app.set('x-powered-by', false);
+
+// Setting up SSL options
+const options = {
+    key: fs.readFileSync('path-to-key'),
+    cert: fs.readFileSync('path-to-cert')
+};
 
 ////// ROUTES //////
 
@@ -47,5 +55,5 @@ app.get('/api/template/', parse.templateParse, template.makeTemplate);
 //app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
-////// LISTEN //////
-app.listen(port, () => console.log(`Node.js server running on port ${port}`));
+////// LISTEN WITH SSL //////
+https.createServer(options, app).listen(port, () => console.log(`Node.js server is running on port ${port}`));
