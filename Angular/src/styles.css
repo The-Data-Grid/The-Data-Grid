@@ -16,15 +16,10 @@ html, body {
   margin: 0;
 }
 
-/* .logo-button .mat-button-wrapper{
+#logo-button span {
   font-family: 'IBM Plex Mono' !important; 
   font-weight: 500 !important;
-  font-size: x-large;
-  padding: 20px;
-  color: black;
-  background-color: white;
-} */
-
+}
 
 #logo {
   width: 40%;
@@ -38,14 +33,9 @@ html, body {
   z-index: 9999;
 }
 
-
-/* .mat-tab-link {
-  font-family: 'IBM Plex Sans', sans-serif !important;
-} */
-
-.dropdown {
+/* .dropdown {
   z-index: 9999;
-}
+} */
 
 .mat-button {
   color: white;
@@ -213,5 +203,5 @@ html, body {
   color: rgb(86, 156, 215) !important;
   background-color: rgb(86, 156, 215) !important;
   visibility: visible !important;
-  z-index: 10 !important;
+  display: block;
 }

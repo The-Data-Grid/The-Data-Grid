@@ -16,30 +16,32 @@
 <body style="background-color: #FBFBFB;">
     <div id="wrapper">
         <header>
-            <nav mat-tab-nav-bar>
-                <a mat-tab-link [routerLink]="'/'">
-                    <img src="../../favicon.png" alt="tdg logo" style=" padding: 10px; height: 20px; width: 20px;">
+            <nav mat-tab-nav-bar style="z-index: 1000; background-color: #FBFBFB;" [color]="'pink'">
+                <a mat-tab-link [routerLink]="'/'" id="logo-button">
+                    <img src="../../favicon.png" alt="tdg logo" style="padding: 10px; height: 20px; width: 20px;">
                     <span *ngIf="currentWindowWidth >= 700"> the data grid </span>
                 </a>
                 <a mat-tab-link [routerLink]="'/audits'">
                     <span *ngIf="currentWindowWidth >= 700"> Raw Data </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
                 </a>
-                <a mat-tab-link [routerLink]="'/upload'" (mouseenter)="changeHover()" (mouseleave)="changeHover()">
-                    <span *ngIf="currentWindowWidth >= 700"> Upload </span>
-                    <i *ngIf="currentWindowWidth < 700" class="fa fa-cloud-upload" style="font-size: 20px;"></i>
-                    <div *ngIf="isHover==true;" style="margin-top:0; position: absolute;">
-                        <a mat-button [routerLink]="'/upload-files'"> Upload Template </a>
-                        <a mat-button [routerLink]="'/download'"> Download Template </a>
-                        <a mat-button> Online Audit </a>
+                <div (mouseenter)="changeHover()" (mouseleave)="changeHover()">
+                    <a mat-tab-link [routerLink]="'/upload'">
+                        <span *ngIf="currentWindowWidth >= 700"> Upload </span>
+                        <i *ngIf="currentWindowWidth < 700" class="fa fa-cloud-upload" style="font-size: 20px;"></i>
+                    </a>
+                    <div *ngIf="isHover==true;" >
+                        <a mat-button class="nav-dropdown-option" [routerLink]="'/upload-files'"> Upload Template </a>
+                        <a mat-button class="nav-dropdown-option" [routerLink]="'/download'"> Download Template </a>
+                        <a mat-button class="nav-dropdown-option"> Online Audit </a>
                     </div>
-                </a>
+                </div>
                 <a mat-tab-link [routerLink]="'/about'">
-                    <span *ngIf="currentWindowWidth >= 700"> About Us </span> 
+                    <span *ngIf="currentWindowWidth >= 700"> About Us </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
                 </a>
                 <a mat-tab-link [routerLink]="'/profile-page'">
-                    <span *ngIf="currentWindowWidth >= 700"> My Profile </span> 
+                    <span *ngIf="currentWindowWidth >= 700"> My Profile </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-address-card" style="font-size: 20px;"></i>
                 </a>
                 <span class="example-spacer"></span>

@@ -8,7 +8,6 @@ body {
    height: 100%;
    margin: 0;
    padding: 0;
- 
 }
  
 #wrapper {
@@ -24,19 +23,17 @@ body {
 }
 
       
-.dropdown-content {
-   display: none;
-   position: absolute;
-   margin-bottom: calc(0%);
-   background-color: rgb(86, 156, 215);
-   border-radius: 4px;
-   z-index: -1;
+.nav-dropdown-option {
+   display: block;
+   width: 100%;
+   color:gray;
+   border-radius: 0;
 }
  
-.dropdown:hover .dropdown-content {
+/* .dropdown:hover .dropdown-content {
    display: block;
 }
- 
+  */
 .bottomBar {
     position: fixed;
     bottom: 0;
@@ -63,7 +60,7 @@ body {
    position: absolute;
    margin-left: 80%;
 }
-
+/* 
 .activeButton {
    background-color: #5FA784;
-} 
+}  */
