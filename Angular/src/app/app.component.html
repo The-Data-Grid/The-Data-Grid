@@ -17,16 +17,16 @@
     <div id="wrapper">
         <header>
             <nav mat-tab-nav-bar style="z-index: 1000; background-color: #FBFBFB;" [color]="'pink'">
-                <a mat-tab-link [routerLink]="'/'" id="logo-button">
+                <a mat-tab-link [routerLink]="'/'" id="logo-button" routerLinkActive="activeButton">
                     <img src="../../favicon.png" alt="tdg logo" style="padding: 10px; height: 20px; width: 20px;">
                     <span *ngIf="currentWindowWidth >= 700"> the data grid </span>
                 </a>
-                <a mat-tab-link [routerLink]="'/audits'">
+                <a mat-tab-link [routerLink]="'/audits'" routerLinkActive="activeButton">
                     <span *ngIf="currentWindowWidth >= 700"> Raw Data </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
                 </a>
                 <div (mouseenter)="changeHover()" (mouseleave)="changeHover()">
-                    <a mat-tab-link [routerLink]="'/upload'">
+                    <a mat-tab-link [routerLink]="'/upload'" routerLinkActive="activeButton">
                         <span *ngIf="currentWindowWidth >= 700"> Upload </span>
                         <i *ngIf="currentWindowWidth < 700" class="fa fa-cloud-upload" style="font-size: 20px;"></i>
                     </a>
@@ -36,16 +36,16 @@
                         <a mat-button class="nav-dropdown-option"> Online Audit </a>
                     </div>
                 </div>
-                <a mat-tab-link [routerLink]="'/about'">
+                <a mat-tab-link [routerLink]="'/about'" routerLinkActive="activeButton">
                     <span *ngIf="currentWindowWidth >= 700"> About Us </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
                 </a>
-                <a mat-tab-link [routerLink]="'/profile-page'">
+                <a mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton">
                     <span *ngIf="currentWindowWidth >= 700"> My Profile </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-address-card" style="font-size: 20px;"></i>
                 </a>
                 <span class="example-spacer"></span>
-                <a mat-tab-link (click)="openDialog()">
+                <a mat-tab-link (click)="openDialog()" >
                     <span *ngIf="currentWindowWidth >= 700"> Log In </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
                 </a>
