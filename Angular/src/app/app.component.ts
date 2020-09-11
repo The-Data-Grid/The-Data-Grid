@@ -5,6 +5,7 @@ import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { DialogComponent } from './login-dialog/login-dialog.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import {MatMenuTrigger} from '@angular/material/menu'
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
@@ -19,9 +20,9 @@ export class AppComponent implements OnInit {
 
   title = 'THE DATA GRID';
   currentWindowWidth;
+  activeLink = "";
 
-
-  constructor(private apiService: ApiService, private dialog: MatDialog) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router,) { }
 
   check() {
     console.log("lala");

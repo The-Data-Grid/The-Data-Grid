@@ -17,16 +17,23 @@
     <div id="wrapper">
         <header>
             <nav mat-tab-nav-bar style="z-index: 1000; background-color: #FBFBFB;" [color]="'pink'">
-                <a mat-tab-link [routerLink]="'/'" id="logo-button" routerLinkActive="activeButton">
+                <a mat-tab-link [routerLink]="'/'" id="logo-button" [active]="activeLink == '/'" 
+                (click)="activeLink = '/'"
+                [routerLinkActiveOptions]="{exact: true}" routerLinkActive="activeButton'">
                     <img src="../../favicon.png" alt="tdg logo" style="padding: 10px; height: 20px; width: 20px;">
                     <span *ngIf="currentWindowWidth >= 700"> the data grid </span>
                 </a>
-                <a mat-tab-link [routerLink]="'/audits'" routerLinkActive="activeButton">
+                <a mat-tab-link [routerLink]="'/audits'" 
+                [active]="activeLink == '/audits'" 
+                (click)="activeLink = '/audits'"
+                routerLinkActive="activeButton'">
                     <span *ngIf="currentWindowWidth >= 700"> Raw Data </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
                 </a>
                 <div (mouseenter)="changeHover()" (mouseleave)="changeHover()">
-                    <a mat-tab-link [routerLink]="'/upload'" routerLinkActive="activeButton">
+                    <a mat-tab-link [routerLink]="'/upload'" routerLinkActive="activeButton"
+                    [active]="activeLink == '/upload'" 
+                (click)="activeLink = '/upload'">
                         <span *ngIf="currentWindowWidth >= 700"> Upload </span>
                         <i *ngIf="currentWindowWidth < 700" class="fa fa-cloud-upload" style="font-size: 20px;"></i>
                     </a>
@@ -36,11 +43,15 @@
                         <a mat-button class="nav-dropdown-option"> Online Audit </a>
                     </div>
                 </div>
-                <a mat-tab-link [routerLink]="'/about'" routerLinkActive="activeButton">
+                <a mat-tab-link [routerLink]="'/about'" routerLinkActive="activeButton"
+                [active]="activeLink == '/about'" 
+                (click)="activeLink = '/about'">
                     <span *ngIf="currentWindowWidth >= 700"> About Us </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
                 </a>
-                <a mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton">
+                <a mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton"
+                [active]="activeLink == '/profile-page'" 
+                (click)="activeLink = '/profile-page'">
                     <span *ngIf="currentWindowWidth >= 700"> My Profile </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-address-card" style="font-size: 20px;"></i>
                 </a>
