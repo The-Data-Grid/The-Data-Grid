@@ -199,7 +199,7 @@ INSERT INTO metadata_sql_type
     VALUES
         (DEFAULT, 'TEXT'),
         (DEFAULT, 'NUMERIC'),
-        (DEFAULT, 'TIMEZONETZ'),
+        (DEFAULT, 'TIMESTAMPTZ'),
         (DEFAULT, 'BOOLEAN');
 
 CREATE TABLE metadata_frontend_type (
