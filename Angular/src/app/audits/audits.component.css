@@ -47,7 +47,7 @@
     text-align: center;
     color: rgb(228, 228, 228);
     background-color: rgba(73, 73, 73, .8) !important;
-    box-shadow: 5px 0 3px -2px #888;
+    /* box-shadow: 5px 0 3px -2px #888; */
     font-size: small;
 }
 

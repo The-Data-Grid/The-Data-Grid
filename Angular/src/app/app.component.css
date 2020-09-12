@@ -61,7 +61,6 @@ body {
    margin-left: 80%;
 }
 
-.activeButton span{
-   color: black;
-   background-color: pink;
-} 
+.activeButton {
+   opacity: 1;
+}

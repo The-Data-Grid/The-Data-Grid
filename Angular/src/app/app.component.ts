@@ -20,7 +20,8 @@ export class AppComponent implements OnInit {
 
   title = 'THE DATA GRID';
   currentWindowWidth;
-  activeLink = "";
+  isHover:boolean = false;
+
 
   constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router,) { }
 
@@ -28,7 +29,6 @@ export class AppComponent implements OnInit {
     console.log("lala");
   }
 
-  isHover = false;
 
   changeHover() {
     this.isHover = !this.isHover;

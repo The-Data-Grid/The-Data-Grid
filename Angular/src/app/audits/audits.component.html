@@ -275,6 +275,14 @@
     </ng-template>
 
     <ng-template #calendarRangeTemplate let-column>
+        <!-- <mat-form-field>
+            <input matInput type="datetime-local"
+              [placeholder]="column.columnFrontendName" >
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput type="datetime-local"
+              [placeholder]="column.columnFrontendName" >
+          </mat-form-field> -->
         <mat-form-field>
             <mat-label>{{column.columnFrontendName}} Range</mat-label>
             <input #datepicker matInput [matDatepicker]="picker1" (dateInput)="applyDateFilter($event.target.value)"
@@ -291,11 +299,15 @@
 
     <ng-template #calendarEqualTemplate let-column>
         <mat-form-field>
+            <input matInput type="datetime-local"
+              placeholder="column.columnFrontendName" >
+          </mat-form-field>
+        <!-- <mat-form-field>
             <mat-label>{{column.columnFrontendName}}</mat-label>
             <input #datepicker matInput [matDatepicker]="picker1" (dateInput)="applyDateFilter($event.target.value)">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
             <mat-datepicker #picker1></mat-datepicker>
-        </mat-form-field>
+        </mat-form-field> -->
     </ng-template>
 
     <ng-template #searchableDropdownTemplate let-column>
