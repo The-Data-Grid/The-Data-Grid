@@ -161,46 +161,6 @@ that inputs only the names of backend tables
 */
 let makeLocation = (locationTableName, referenceTableName, referenceColumnName) => `INNER JOIN ${locationTableName} ON ${referenceTableName}.${referenceColumnName} = ${locationTableName}.location_id`
 /*
->List
-    list_... -> list_m2m_... -> feature_...
-*/
-
-/*
-pgp.as.format('INNER JOIN $(listName:value)_m2m \
-ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
-INNER JOIN $(listName:value) \
-ON $(listName:value).list_id = $(listName:value)_m2m.list_id', {myTable: 'feature_toilet', myTable2: 'sldkfjds'})
-
-let listName= "listName_" + referenceTable + referenceColumn;
-
-if (table.includes("list_"))
-{
-    let listJoin = {
-        feature: {
-            listName : { //Join m2m to audit table then join 
-                query: 'INNER JOIN $(listName:value)_m2m \
-                        ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
-                        INNER JOIN $(listName:value) \
-                        ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
-                dependencies: ['referenceTable']
-            }
-        }
-
-    }
-}
-*/
-
-// let listJoin = {
-//     feature: {
-//         listName_referenceTableName_referenceColumnName : { //Join m2m to audit table then join 
-//             query: 'INNER JOIN $(listName:value)_m2m \
-//                     ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
-//                     INNER JOIN $(listName:value) \
-//                     ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
-//             dependencies: ['referenceTableName']
-//         }
-//     }
-// }
 
 /*
 >Item

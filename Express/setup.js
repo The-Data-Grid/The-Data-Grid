@@ -89,14 +89,14 @@ class ReturnableID {
 
 // CALLING SETUP FUNCTION AND EXPORTING
 // ============================================================
-const {returnableIDLookup,idColumnTableLookup, tableParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
-console.log(tableParents)
+const {returnableIDLookup,idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
+console.log(featureParents)
 
     
 module.exports = {
     returnableIDLookup: returnableIDLookup,
     idColumnTableLookup: idColumnTableLookup,
-    tableParents: tableParents,
+    featureParents: featureParents,
     sendSetup: sendSetup
 }
 
@@ -111,7 +111,7 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
     let returnableIDLookup = [];
     let idColumnTableLookup = {};
-    let tableParents = {};
+    let featureParents = {};
     let setupObject = {};
 
     // Format frontendTypes                         
@@ -214,15 +214,17 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
         }
     }
 
-    // Construct tableParents
+    // Construct featureParents
     // ============================================================
     allFeatures.map((el) => [el['f__table_name'], el['ff__table_name']]).forEach((el) => {
-        tableParents[el[0]] = el[1]
+        featureParents[el[0]] = el[1]
     });
 
     // Construct returnableIDs
     // ============================================================
     for(let row of rawQuery) {
+        
+        //  console.log(row)  //
 
         // Get feature table as string
         const feature = row['f__table_name']
@@ -264,6 +266,47 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
         } else if(row['rt__type_name'] == 'list') {
 
+            //// List ////
+
+            // list_... -> list_m2m_... -> feature_...
+
+            /*
+            pgp.as.format('INNER JOIN $(listName:value)_m2m \
+            ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+            INNER JOIN $(listName:value) \
+            ON $(listName:value).list_id = $(listName:value)_m2m.list_id', {myTable: 'feature_toilet', myTable2: 'sldkfjds'})
+
+            let listName= "listName_" + referenceTable + referenceColumn;
+
+            if (table.includes("list_"))
+            {
+                let listJoin = {
+                    feature: {
+                        listName : { //Join m2m to audit table then join 
+                            query: 'INNER JOIN $(listName:value)_m2m \
+                                    ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+                                    INNER JOIN $(listName:value) \
+                                    ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+                            dependencies: ['referenceTable']
+                        }
+                    }
+
+                }
+            }
+            */
+
+            let listJoin = {
+                feature: {
+                    listName_referenceTableName_referenceColumnName : { //Join m2m to audit table then join 
+                        query: 'INNER JOIN $(listName:value)_m2m \
+                                ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
+                                INNER JOIN $(listName:value) \
+                                ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+                        dependencies: ['referenceTableName']
+                    }
+                }
+            }
+
         } else {
         var joinSQL = null
         var selectSQL = `$(table:value).${row['c__column_name']}`
@@ -282,7 +325,7 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     return({
         setupObject: setupObject,
         idColumnTableLookup: idColumnTableLookup,
-        tableParents: tableParents,
+        featureParents: featureParents,
         returnableIDLookup: returnableIDLookup
     })
 }
