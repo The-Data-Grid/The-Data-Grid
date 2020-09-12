@@ -90,7 +90,7 @@ class ReturnableID {
 // CALLING SETUP FUNCTION AND EXPORTING
 // ============================================================
 const {returnableIDLookup,idColumnTableLookup, tableParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
-console.log(returnableIDLookup)
+console.log(tableParents)
 
     
 module.exports = {

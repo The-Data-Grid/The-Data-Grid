@@ -1,7 +1,19 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {select, where, whereCondition, referenceSelectionJoin, submission} = require('./statement.js');
+const {
+        select, 
+        where, 
+        whereCondition, 
+        referenceSelectionJoin, 
+        submission, 
+        statsMostRecent, 
+        statsObservations,
+        statsQuery,
+        rootFeatureJoin,
+        subfeatureJoin
+    } = require('./statement.js');
+
 const validate = require('./validate.js');
 const {returnableIDLookup} = require('./setup.js')
 
@@ -492,6 +504,52 @@ let featureQuery = (req, res) => {
     // FEATURE CLAUSES
     // ==================================================
     let featureClauseArray = [];
+    //let subfeatures = Object.keys(featureParents).filter(key => featureParents[key] !== null).map(key => [key, featureParents[key]]);
+    let rootFeature = feature
+
+    // Add root feature join
+    featureClauseArray.push(pgp.as.format(rootFeatureJoin, {
+        rootFeature: rootFeature
+    }))
+
+    // remove root feature from feature tree after join
+    featureTree.splice(featureTree.indexOf(rootFeature), 1)
+
+    let currentFeature = [rootFeature]
+
+    // while still features to join, join them
+    while(featureTree.length > 0) {
+
+        let nextCurrentFeature = [];
+
+        // for all of the curent features
+        currentFeature.forEach(parent => {
+            // get the features that depend on 
+            featureTree.forEach(child => {
+                // if feature in tree is dependent on currentFeature
+                if(featureParents[child] == parent) {
+
+                    // add it to be a next current feature
+                    nextCurrentFeature.push(child)
+
+                    // join the feature
+                    featureClauseArray.push(pgp.as.format(subfeatureJoin, {
+                        feature: parent,
+                        subfeature: child
+                    }))
+                }
+            })
+
+            // remove added features from featureTree
+            nextCurrentFeature.forEach(addition => {
+                featureTree.splice(featureTree.indexOf(addition), 1)
+            })
+            
+        })
+
+        // update current feature
+        currentFeature = Array.from(nextCurrentFeature)
+    }
 
     // WHERE CLAUSES
     // ==================================================
@@ -557,11 +615,36 @@ let featureQuery = (req, res) => {
     
 }
 
+async function statsQuery(req, res, next) {
+
+    try { 
+        
+        let observations = await db.one(statsObservations);
+        let submitted = await db.one(statsSubmitted);
+        let mostRecent = await db.one(statsMostRecent);
+
+        let statsResponse = {
+            observations,
+            submitted,
+            mostRecent
+        };
+
+        return res.json(statsResponse);
+
+    } catch(err) {
+
+        res.status(500).send('Internal Server Error: 1703: Stats Query Error')
+
+    }
+    
+}
+
 
 
 
 module.exports = {
     featureQuery,
+    statsQuery,
     auditQuery,
     setupQuery,
     cycleTime

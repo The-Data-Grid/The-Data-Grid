@@ -49,11 +49,14 @@ app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
 app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
 
 // Template Query
-app.get('/api/template/', parse.templateParse, template.makeTemplate);
+app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTemplate should be in query.js
+
+// Front Page Stats
+app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
 // Incomplete Routes
 //app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
 ////// LISTEN WITH SSL //////
-https.createServer(options, app).listen(port, () => console.log(`Node.js server is running on port ${port}`));
+https.createServer(options, app).listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`));

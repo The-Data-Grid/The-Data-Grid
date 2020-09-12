@@ -114,8 +114,18 @@ function setupParse(req, res, next) {
 
 ////// END OF SETUP PARSING //////
 
+////// STATS PARSING //////
+// ==================================================
+// No parsing needed for stats query
+// ==================================================
+function statsParse(req, res, next) {
+    next();
+}
+// ==================================================
+////// END OF STATS PARSING //////
 
 module.exports = {
+    statsParse,
     queryParse,
     uploadParse,
     templateParse,

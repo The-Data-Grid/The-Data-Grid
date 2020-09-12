@@ -36,6 +36,7 @@ let submission = {
 }
 
 
+// STATS //
 
 /*************
 * Approach 1 *
@@ -106,9 +107,12 @@ let tableParents = {
 let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]]);
 
 
+const subfeatureJoin = 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id';
+const rootFeatureJoin = 'FROM $(rootFeature:value)';
 
 // iterate through subfeatures and create query for each one
 // Javascript template literal syntax
+/*
 
 let subfeatureJoin = {
     subfeatures[0]: {
@@ -128,7 +132,7 @@ let featureItemJoin = {
     }
 };
 
-
+*/
 
 // get all unique tables and features (if not null) from idColumnTableLookup
 // not sure if the syntax for this is correct, particularly due to the part inside the brackets
@@ -234,6 +238,8 @@ let tableNameSQLLookup = {
 
 
 module.exports = {
+    subfeatureJoin,
+    rootFeatureJoin,
     select,
     where,
     whereCondition,
