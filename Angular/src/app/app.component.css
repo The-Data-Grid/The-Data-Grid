@@ -22,18 +22,19 @@ body {
    bottom: 25px;
 }
 
-      
+.mat-tab-nav-bar {
+   z-index: 1000; 
+   overflow: visible !important; 
+   background-color: #FBFBFB; 
+}      
+
 .nav-dropdown-option {
    display: block;
-   width: 100%;
-   color:gray;
-   border-radius: 0;
+   height: 35px;
+   padding-right: 0;
+   padding-left: 0; 
 }
  
-/* .dropdown:hover .dropdown-content {
-   display: block;
-}
-  */
 .bottomBar {
     position: fixed;
     bottom: 0;
