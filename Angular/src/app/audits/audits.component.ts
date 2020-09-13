@@ -18,6 +18,7 @@ export class AuditsComponent implements OnInit {
   cellEdited = {};
   editingMode: boolean = false;
   oldRowInfo = [];
+  oldCellEdited = {};
 
   // variables for filtering sidebar
   filterBy = "Submission";
@@ -263,6 +264,7 @@ export class AuditsComponent implements OnInit {
     if (this.editingMode) {
       console.log("clearing old row info");
       this.oldRowInfo = [];
+      this.oldCellEdited = Object.assign({}, this.cellEdited);
     }
     else {
       this.currentlyEditingCell = {};
@@ -271,11 +273,13 @@ export class AuditsComponent implements OnInit {
 
   cancelEditing() {
     this.toggleEditingMode();
+    // restore cellEdited object and row info to previous state
     this.oldRowInfo.forEach(obj => {
-      // console.log(obj);
       this.rows[obj.rowIndex][obj.columnName] = obj.previousValue;
       this.rows = [...this.rows];
     });
+    this.cellEdited = Object.assign({}, this.oldCellEdited);
+    console.log(this.oldCellEdited);
   }
 
   // filterDatatable(event) {
