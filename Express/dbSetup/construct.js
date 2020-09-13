@@ -525,6 +525,26 @@ function addDataColumns(columns, features) {
             for(feature of features) {
 
                 metadataList.push(pgp.as.format(newMetadataColumn, {
+                    featureName: feature.tableName,
+                    rootFeatureName: null,
+                    frontendName: column.frontendName,
+                    columnName: column.columnName,
+                    tableName: feature.tableName,
+                    referenceColumnName: column.referenceColumnName,
+                    referenceTableName: column.referenceTableName,
+                    information: column.information,
+                    filterSelectorName: column.filterSelectorName,
+                    inputSelectorName: column.inputSelectorName,
+                    sqlDatatype: column.sqlDatatype,
+                    referenceDatatype: column.referenceDatatype,
+                    frontendDatatype: column.frontendDatatype,
+                    nullable: column.nullable,
+                    default: column.default,
+                    global: column.global,
+                    groundTruthLocation: column.groundTruthLocation
+                }))
+
+                console.log(pgp.as.format(newMetadataColumn, {
                     featureName: feature,
                     rootFeatureName: null,
                     frontendName: column.frontendName,

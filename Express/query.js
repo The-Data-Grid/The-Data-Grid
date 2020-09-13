@@ -28,7 +28,7 @@ pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a
 const cn = { //connection info
     host: 'localhost',
     port: 5432,
-    database: 'tdg_db_new',
+    database: 'meta',
     user: 'postgres',
     password: null,
     max: 30 // use up to 30 connections
@@ -159,7 +159,7 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
 function string2Join(string, prefix) {
     // 0: originalTable, 1: originalColumn, 2: joinTable, 3: joinColumn
     let clauseArray = [];
-    strings[2].split('>').forEach(el => {
+    string[2].split('>').forEach(el => {
         clauseArray.push(el.split('.')[0])
         clauseArray.push(el.split('.')[1])
     })
@@ -215,7 +215,7 @@ function featureQuery(req, res) {
     // if submission returnables exist
     if(submissionReturnableIDs.length >= 1) {
         // get all join objects in request
-        let joins = submissionReturnableIDs.map(returnable => returnable.joinObject)
+        let joins = submissionReturnableIDs.map(returnable => returnable.joinObjects)
         // perform reference selection to trim join tree and assign aliases
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
         // make joins and add to clauseArray
@@ -258,9 +258,11 @@ function featureQuery(req, res) {
     let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'location' || returnable.returnType == 'item')
     let dynamicClauseArray = [];
     if(dynamicReturnableIDs.length >= 1) {
+        console.log(dynamicReturnableIDs)
         // get all join objects in request
-        let joins = submissionReturnableIDs.map(returnable => returnable.joinObject)
+        let joins = dynamicReturnableIDs.map(returnable => returnable.joinObjects)
         // perform reference selection to trim join tree and assign aliases
+        console.log(joins)
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
         // make joins and add to clauseArray
         for(let join of joinArray.builtArray) {
@@ -286,8 +288,9 @@ function featureQuery(req, res) {
     if(localReturnableIDs.length >= 1) {
         for(let returnable of localReturnableIDs) {
             // Adding the select clause
+            console.log(returnable)
             selectClauses.push(pgp.as.format(returnable.selectSQL, {
-                
+                table: feature
             }))
             // Adding the feature dependency
             featureTree.push(returnable.feature)
@@ -459,6 +462,7 @@ function featureQuery(req, res) {
         .then(data => {
 
             // Constructing the tableObject and sending response
+            return res.json(data)
             return res.json(makeTableObject(data));
 
         }).catch(err => {

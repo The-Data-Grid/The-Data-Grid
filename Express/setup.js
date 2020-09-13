@@ -90,7 +90,7 @@ class ReturnableID {
 // CALLING SETUP FUNCTION AND EXPORTING
 // ============================================================
 const {returnableIDLookup,idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
-console.log(featureParents)
+console.log(returnableIDLookup)
 
     
 module.exports = {
@@ -225,6 +225,8 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     for(let row of rawQuery) {
         
         //  console.log(row)  //
+        let selectSQL = null;
+        let joinSQL = null;
 
         // Get feature table as string
         const feature = row['f__table_name']
@@ -249,20 +251,20 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
         // Auditor Name coalesce
         if(row['c__frontend_name'] == 'Auditor Name' && row['rt__type_name'] == 'special') {
 
-            var joinSQL = 'LEFT JOIN tdg_auditor_m2m ON \
+            joinSQL = 'LEFT JOIN tdg_auditor_m2m ON \
                             tdg_observation_count.observation_count_id = tdg_auditor_m2m.observation_count_id \
                             INNER JOIN tdg_users AS tdg_users_auditor_name ON tdg_auditor_m2m.user_id = tdg_users_auditor_nameuser_id';
 
-            var selectSQL = "COALESCE($(feature:value).data_auditor, concat_ws(' ', tdg_users_auditor_name.data_first_name, tdg_users_auditor_name.data_last_name))";
+            selectSQL = "COALESCE($(feature:value).data_auditor, concat_ws(' ', tdg_users_auditor_name.data_first_name, tdg_users_auditor_name.data_last_name))";
 
         // Standard Operating Procedure
         } else if(row['c__frontend_name'] == 'Standard Operating Procedure' && row['rt__type_name'] == 'special') { 
 
-            var joinSQL = 'LEFT JOIN tdg_sop_m2m ON\
+            joinSQL = 'LEFT JOIN tdg_sop_m2m ON\
                             tdg_observation_count.observation_count_id = tdg_sop_m2m.observation_count_id \
                             INNER JOIN tdg_sop ON tdg_sop_m2m.sop_id = tdg_sop.sop_id'
 
-            var selectSQL = 'tdg_sop.data_name'
+            selectSQL = 'tdg_sop.data_name'
 
         } else if(row['rt__type_name'] == 'list') {
 
@@ -308,8 +310,7 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
             }
 
         } else {
-        var joinSQL = null
-        var selectSQL = `$(table:value).${row['c__column_name']}`
+            selectSQL = `$(table:value).${row['c__column_name']}`
         }
 
         // Add returnableID to the lookup with key = id

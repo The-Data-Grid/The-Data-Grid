@@ -1,16 +1,16 @@
 const pgp = require("pg-promise");
 const PS = pgp.PreparedStatement;
 
-const referenceSelectionJoin = 'LEFT JOIN $(joinTable) AS $(joinAlias) ON $(originalAlias).$(originalColumn) = $(joinAlias).$(joinColumn)'
+const referenceSelectionJoin = 'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(originalAlias:value).$(originalColumn:value) = $(joinAlias:value).$(joinColumn:value)'
 // joinTable
 // joinAlias
 // joinColumn
 // originalAlias
 // originalColumn
 
-const sorta = 'ORDER BY $(columnName) ASC'
+const sorta = 'ORDER BY $(columnName:value) ASC'
 
-const sortd = 'ORDER BY $(columnName) DESC'
+const sortd = 'ORDER BY $(columnName:value) DESC'
 
 const limit = 'LIMIT $(limit)'
 
@@ -39,9 +39,7 @@ const whereCondition = {
     query: '$(select:value) $(operation:value) $(filterValue)'
 }
 
-let submission = {
-    query: 'INNER JOIN tdg_submission ON $(feature:value).submission_id = tdg_submission.submission_id',
-}
+let submission = 'INNER JOIN tdg_submission ON d0.submission_id = tdg_submission.submission_id';
 
 
 // STATS //
@@ -116,7 +114,7 @@ let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== 
 
 
 const subfeatureJoin = 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id';
-const rootFeatureJoin = 'FROM $(rootFeature:value)';
+const rootFeatureJoin = 'FROM $(rootFeature:value) AS d0';
 
 // iterate through subfeatures and create query for each one
 // Javascript template literal syntax
