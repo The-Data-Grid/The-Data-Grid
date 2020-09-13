@@ -8,6 +8,14 @@ const referenceSelectionJoin = 'LEFT JOIN $(joinTable) AS $(joinAlias) ON $(orig
 // originalAlias
 // originalColumn
 
+const sorta = 'ORDER BY $(columnName) ASC'
+
+const sortd = 'ORDER BY $(columnName) DESC'
+
+const limit = 'LIMIT $(limit)'
+
+const offset = 'OFFSET $(offset)'
+
 
  // NEW CODE
 //const {idColumnTableLookup, tableParents} = require('./setup.js');
@@ -32,7 +40,7 @@ const whereCondition = {
 }
 
 let submission = {
-    query: 'INNER JOIN tdg_submission AS s0 ON $(feature:value).submission_id = tdg_submission.submission_id',
+    query: 'INNER JOIN tdg_submission ON $(feature:value).submission_id = tdg_submission.submission_id',
 }
 
 
@@ -204,5 +212,9 @@ module.exports = {
     where,
     whereCondition,
     referenceSelectionJoin,
-    submission
+    submission,
+    sorta,
+    sortd,
+    limit,
+    offset
 }; //this will export everything to the query engine 

@@ -25,8 +25,8 @@ app.set('x-powered-by', false);
 
 // Setting up SSL options
 const options = {
-    key: fs.readFileSync('path-to-key'),
-    cert: fs.readFileSync('path-to-cert')
+    //key: fs.readFileSync('path-to-key'),
+    //cert: fs.readFileSync('path-to-cert')
 };
 
 ////// ROUTES //////
@@ -58,5 +58,7 @@ app.get('/api/stats/', parse.statsParse, query.statsQuery);
 //app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
+app.listen(port)
+
 ////// LISTEN WITH SSL //////
-https.createServer(options, app).listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`));
+//https.createServer(options, app).listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`));

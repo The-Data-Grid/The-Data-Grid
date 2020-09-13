@@ -26,13 +26,15 @@ for (let id in idColumnTableLookup) {
     }
 }
 
+console.log(validate)
+
 let validateFeatures = Object.keys(validate);
 
 //// Validate request feature, columns, and filters ////
 
 function validateAudit(req, res, next) {
 
-    let feature = res.locals.parsed.features;
+    let feature = 'feature_' + res.locals.parsed.features;
 
     if(!validateFeatures.includes(feature)) {
         return res.status(400).send(`Bad Request 2201: ${feature} is not a valid feature`);
@@ -41,7 +43,7 @@ function validateAudit(req, res, next) {
     // Validate columns for feature
 
     for(let column of res.locals.parsed.columns) {
-        if(!validate[feature]['column'].includes(column)) {
+        if(!validate[feature]['column'].includes(parseInt(column))) {
             return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
         };
     };
