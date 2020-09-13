@@ -27,19 +27,14 @@ const offset = 'OFFSET $(offset)'
 // Serves the functionality of tableLookup and setupTableLookup
 
 // Select and Where clauses //
-const select = {
-    query: 'SELECT $(returnColumns:raw) FROM $(feature:name)'
-};
+const select = 'SELECT $(returnColumns:raw) FROM $(feature:name)'
 
-const where = { // ex: {clause: 'AND', select: "item_sop.sop_name", operation: "=", filterValue: "Example SOP #1"}
-    query: '$(clause:value) ($(condition:value))' 
-};
+// ex: {clause: 'AND', select: "item_sop.sop_name", operation: "=", filterValue: "Example SOP #1"}
+const where = '$(clause:value) ($(condition:raw))'
 
-const whereCondition = {
-    query: '$(select:value) $(operation:value) $(filterValue)'
-}
+const whereCondition = '$(select:value) $(operation:value) $(filterValue)';
 
-let submission = 'INNER JOIN tdg_submission ON d0.submission_id = tdg_submission.submission_id';
+const submission = 'INNER JOIN tdg_submission ON d0.submission_id = tdg_submission.submission_id';
 
 
 // STATS //

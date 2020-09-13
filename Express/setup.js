@@ -53,6 +53,8 @@ class ReturnableID {
         this.selectSQL = selectSQL
 
         this.joinObjects = this.makeJoinObjects(columnTree, tableTree, ID)
+
+        Object.freeze(this)
     }
 
     makeJoinObjects(columnTree, tableTree, ID) {

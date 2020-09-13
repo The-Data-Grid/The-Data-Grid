@@ -66,7 +66,6 @@ for set of joinObjects with the same parent
 replace the last element of builtArray with the union of nextRefArray
 if (nextJoinObject.length == 0)
     return
-else 
     append the union of nextJoinObject subsets to builtArray
 
 */
@@ -179,7 +178,6 @@ function featureQuery(req, res) {
     let whereLookup = {};
     // array of select clauses
     let selectClauses = [];
-    selectClauses.push('SELECT')
     // array of all features in feature tree (features and subfeatures)
     let featureTree = [];
     // get feature and add to feature tree
@@ -206,7 +204,6 @@ function featureQuery(req, res) {
     // ==================================================
     let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'submission');
     let submissionClauseArray = [];
-    console.log(feature)
     // first push the tdg_submission reference
     submissionClauseArray.push(pgp.as.format(submission, {
         feature: feature
@@ -258,14 +255,21 @@ function featureQuery(req, res) {
     let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'location' || returnable.returnType == 'item')
     let dynamicClauseArray = [];
     if(dynamicReturnableIDs.length >= 1) {
-        console.log(dynamicReturnableIDs)
         // get all join objects in request
-        let joins = dynamicReturnableIDs.map(returnable => returnable.joinObjects)
+        let joins = [];
+        dynamicReturnableIDs.forEach(returnable => {
+            let join = {}
+            Object.assign(join, returnable.joinObjects)
+            joins.push(join)
+        })
         // perform reference selection to trim join tree and assign aliases
+        console.log('JOINS')
         console.log(joins)
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
         // make joins and add to clauseArray
+        console.log(joinArray)
         for(let join of joinArray.builtArray) {
+            console.log(join)
             dynamicClauseArray.push(string2Join(join, 'd'))
         }
         // add selections to selectClauses
@@ -288,7 +292,6 @@ function featureQuery(req, res) {
     if(localReturnableIDs.length >= 1) {
         for(let returnable of localReturnableIDs) {
             // Adding the select clause
-            console.log(returnable)
             selectClauses.push(pgp.as.format(returnable.selectSQL, {
                 table: feature
             }))
@@ -298,7 +301,7 @@ function featureQuery(req, res) {
             whereLookup[returnable.ID] = returnable.feature + '.' + returnable.dataColumn
         }
     }
-    console.log(listAndSpecialReturnableIDs)
+
     //console.log(allReturnableIDs)
     // Throw error if the length of the ID set is not equal to the sum of its partitions
     if(submissionReturnableIDs.length + listAndSpecialReturnableIDs.length + dynamicReturnableIDs.length + localReturnableIDs.length != allIDs.length) {
@@ -327,8 +330,6 @@ function featureQuery(req, res) {
     featureTree.splice(featureTree.indexOf(rootFeature), 1)
 
     let currentFeature = [rootFeature]
-
-    console.log(featureTree)
 
     // while still features to join, join them
     while(featureTree.length > 0) {
@@ -399,7 +400,7 @@ function featureQuery(req, res) {
                 filterValue: res.locals.parsed.filters[ID].value
             })
         }
-        whereClauseArray.push(pgp.as.format(where.query, out));
+        whereClauseArray.push(pgp.as.format(where, out));
     }
 
     // UNIVERSAL FILTERS
@@ -448,6 +449,9 @@ function featureQuery(req, res) {
 
     // EXECUTING QUERY
     // ==================================================
+    // Adding commas to select clauses
+    selectClauses = ['SELECT ', selectClauses.join(' , ')]
+
     // Adding clauses to query in order
     let query = [...selectClauses, ...featureClauseArray, ...submissionClauseArray, ...listAndSpecialClauseArray, ...dynamicClauseArray, ...whereClauseArray, ...universalFilterArray]; 
     console.log(query)

@@ -43,6 +43,8 @@ function validateAudit(req, res, next) {
     // Validate columns for feature
 
     for(let column of res.locals.parsed.columns) {
+        console.log(validate[feature]['column'])
+        console.log(parseInt(column))
         if(!validate[feature]['column'].includes(parseInt(column))) {
             return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
         };
@@ -54,7 +56,7 @@ function validateAudit(req, res, next) {
     let filterIDKeys = Object.keys(res.locals.parsed.filters);
 
     for(let filter of filterIDKeys) {
-        if(!validate[feature]['filter'].includes(filter)) { 
+        if(!validate[feature]['filter'].includes(parseInt(filter))) { 
             return res.status(400).send(`Bad Request 2203: ${filter} is not a valid filter for the ${feature} feature`);
         } else {
             let operator = res.locals.parsed.filters[filter]['operation'];
