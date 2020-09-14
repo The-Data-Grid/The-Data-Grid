@@ -63,27 +63,26 @@ function validateAudit(req, res, next) {
             let field = res.locals.parsed.filters[filter]['value'];
 
             if(validate[feature]['sqlType'][index] === 'TEXT') {
-
                 if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
                     return res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`);
                 }
-
-                if(!isText(field)) {
-                    return res.status(400).send(`Bad Request 1604: Field for id: ${filter} must be text`);
-                }
-
+                field.forEach(function(item) {
+                    if(!isText(item)) {
+                        return res.status(400).send(`Bad Request 1604: Field for id: ${filter} must be text`);
+                    }
+                });
             } else if(validate[feature]['sqlType'][index] === 'NUMERIC') {
-
-                if(!isNumber(field)) {
-                    return res.status(400).send(`Bad Request 1605: Field for id: ${filter} must be numeric`);
-                }
-
+                field.forEach(function(item) {
+                    if(!isNumber(item)) {
+                        return res.status(400).send(`Bad Request 1605: Field for id: ${filter} must be numeric`);
+                    }
+                });
             } else if(validate[feature]['sqlType'[index] === 'DATE']) {
-
-                if(!isValidDate(field)) {
-                    return res.status(400).send(`Bad Request 1606: Field for id: ${filter} must be date`);
-                }
-
+                field.forEach(function(item) {
+                    if(!isValidDate(item)) {
+                        return res.status(400).send(`Bad Request 1606: Field for id: ${filter} must be date`);
+                    }
+                });
             }
         }
         index++;
