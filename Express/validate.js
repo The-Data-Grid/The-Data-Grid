@@ -26,8 +26,6 @@ for (let id in idColumnTableLookup) {
     }
 }
 
-console.log(validate)
-
 let validateFeatures = Object.keys(validate);
 
 //// Validate request feature, columns, and filters ////
@@ -35,6 +33,7 @@ let validateFeatures = Object.keys(validate);
 function validateAudit(req, res, next) {
 
     let feature = 'feature_' + res.locals.parsed.features;
+    let universalFilters = res.locals.parsed.universalFilters;
 
     if(!validateFeatures.includes(feature)) {
         return res.status(400).send(`Bad Request 2201: ${feature} is not a valid feature`);
@@ -88,8 +87,28 @@ function validateAudit(req, res, next) {
         index++;
     };
 
+    // Validate universal filters
+    validateUniversalFilter(universalFilters);
+
     // Passing to query.js
     next();
+}
+
+function validateUniversalFilter(universalFilters) {
+    var filters = Object.keys(universalFilters);
+    if (hasDuplicates(filters)) {
+        return res.status(400).send(`Bad Request: Cannot have duplicate filters.`);
+    } else if(filters.includes('sorta') && filters.includes('sortd')) {
+        return res.status(400).send(`Bad Request: Cannot use both sorta and sortd.`);
+    } else if(filters.includes('offset') && (!filters.includes('sorta') && !filters.includes('sortd'))) {
+        return res.status(400).send(`Bad Request: Offset requires either sorta or sortd.`);
+    } else if(filters.includes('limit') && !filters.includes('offset')) {
+        return res.status(400).send(`Bad Request: Limit requires offset.`);
+    }
+}
+
+function hasDuplicates(array) {
+    return (new Set(array)).size !== array.length;
 }
 
 function isText(field) {
