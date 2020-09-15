@@ -20,9 +20,12 @@ const {
 
 const {returnableIDLookup, featureParents} = require('./setup.js')
 
+const {timestamptzParse} = require('./parse')
+
 // Database info
 const pgp = require('pg-promise')();
 pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
+pgp.pg.types.setTypeParser(1184, timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
 
 const cn = { //connection info
     host: 'localhost',

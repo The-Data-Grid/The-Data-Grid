@@ -133,10 +133,20 @@ function statsParse(req, res, next) {
 // ==================================================
 ////// END OF STATS PARSING //////
 
+////// TIMESTAMPTZ PARSING //////
+function timestamptzParse(s) {
+    let b = s.split(/\D/);
+    --b[1];                  // Adjust month number
+    b[6] = b[6].substr(0,3); // Microseconds to milliseconds
+    return new Date(Date.UTC(...b));
+}
+////// END OF TIMESTAMPTZ PARSING  //////
+
 module.exports = {
     statsParse,
     queryParse,
     uploadParse,
     templateParse,
-    setupParse
+    setupParse,
+    timestamptzParse
 }
