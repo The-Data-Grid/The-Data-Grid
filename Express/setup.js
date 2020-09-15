@@ -10,7 +10,7 @@ const pgp = require("pg-promise")();
 
 // pg-native for native libpq C library bindings which we need for sync queries
 const Client = require('pg-native')
-var client = new Client()
+const client = new Client()
 // sync connecting to the database
 client.connectSync('host=localhost port=5432 dbname=meta connect_timeout=5')
 
@@ -92,7 +92,6 @@ class ReturnableID {
 // CALLING SETUP FUNCTION AND EXPORTING
 // ============================================================
 const {returnableIDLookup,idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
-console.log(returnableIDLookup)
 
     
 module.exports = {

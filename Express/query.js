@@ -18,7 +18,6 @@ const {
         offset
     } = require('./statement.js');
 
-const validate = require('./validate.js');
 const {returnableIDLookup, featureParents} = require('./setup.js')
 
 // Database info
@@ -71,10 +70,27 @@ if (nextJoinObject.length == 0)
 */
 
 function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
+    'use strict';
+    //console.log('join object:', builtArray)
+
     // get depth
     let depth = builtArray.length
-    // get joinObject
-    let joinObjectArray = builtArray[depth - 1]
+
+    // get joinObject - Need to deep copy all the ref arrays to prevent mutation
+    // Finally!
+    let joinObjectArray = [];
+    builtArray[depth - 1].forEach(obj => {
+        joinObjectArray.push(new Object())
+        Object.entries(obj).forEach(pair => {
+            if(pair[0] === 'refs') {
+                // The Crucial Array.from() needed to not mutate returnableIDLookup
+                joinObjectArray[0][pair[0]] = Array.from(pair[1])
+            } else {
+                joinObjectArray[0][pair[0]] = pair[1]
+            }
+        })
+    })
+
     // partition joinObject based on parent
         // get parents
         let joinObjectArrayParents = joinObjectArray.map(element => element.parentAlias)
@@ -174,6 +190,7 @@ function string2Join(string, prefix) {
 }
  
 function featureQuery(req, res) {   
+    
     // array of IDs with table name and column name for WHERE clauses
     let whereLookup = {};
     // array of select clauses
@@ -197,7 +214,7 @@ function featureQuery(req, res) {
 
     // array of unique IDs from returned columns and filters
     let allIDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)).concat(sortID))];
-    // array of returnableID objects from IDs
+    // array of returnableID objects from IDs 
     let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID)[0]);
 
     // SUBMISSION
@@ -256,18 +273,12 @@ function featureQuery(req, res) {
     let dynamicClauseArray = [];
     if(dynamicReturnableIDs.length >= 1) {
         // get all join objects in request
-        let joins = [];
-        dynamicReturnableIDs.forEach(returnable => {
-            let join = {}
-            Object.assign(join, returnable.joinObjects)
-            joins.push(join)
-        })
+        let joins = dynamicReturnableIDs.map(returnable => returnable.joinObjects)
+        
         // perform reference selection to trim join tree and assign aliases
-        console.log('JOINS')
-        console.log(joins)
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
+
         // make joins and add to clauseArray
-        console.log(joinArray)
         for(let join of joinArray.builtArray) {
             console.log(join)
             dynamicClauseArray.push(string2Join(join, 'd'))
