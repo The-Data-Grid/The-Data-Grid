@@ -1,0 +1,22 @@
+#body {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    bottom: 30px;
+}
+
+#table-buttons {
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
+
+#table {
+    margin-bottom: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    width: 70%;
+}

@@ -8,7 +8,6 @@
 </head>
 
 <body>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
             <h3>Filter By</h3>
@@ -182,7 +181,6 @@
 
         <mat-sidenav-content class="sidenav-content">
             <!-- table -->
-            {{testval}}
             <div *ngIf="tableObject" id="table-buttons" fxLayoutAlign="end center">
                 <button *ngIf="!editingMode" mat-icon-button (click)="toggleEditingMode()">
                     <mat-icon>edit</mat-icon>

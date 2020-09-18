@@ -14,6 +14,8 @@
 </head>
 
 <body style="background-color: #FBFBFB;">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <div id="wrapper">
         <header>
             <!-- green bar that oliver likes: -->
@@ -47,7 +49,8 @@
                             fxLayoutAlign="center center">
                             <span>Download Template</span>
                         </a>
-                        <a mat-tab-link class="nav-dropdown-option" fxLayout="column" fxLayoutAlign="center center">
+                        <a mat-tab-link  routerLinkActive #rla8="routerLinkActive" [active]="rla8.isActive"
+                        class="nav-dropdown-option" [routerLink]="'/upload-audit'" fxLayout="column" fxLayoutAlign="center center">
                             <span>Online Audit</span>
                         </a>
                     </div>
