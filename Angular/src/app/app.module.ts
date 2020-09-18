@@ -10,10 +10,10 @@ import { AuditsComponent } from './audits/audits.component';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-// import { ProfileComponent } from './profile/profile.component';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { DownloadComponent } from './download/download.component';
 import { UploadDialogComponent } from './upload-dialog/upload-dialog.component';
+import { UploadAuditComponent } from './upload-audit/upload-audit.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { DialogComponent } from './login-dialog/login-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -34,13 +34,13 @@ import { MaterialModule } from './material.module';
     DialogComponent,
     UploadComponent,
     AboutComponent,
-    // ProfileComponent,
     UploadFilesComponent,
     DownloadComponent,
     UploadDialogComponent,
     LockDialogComponent,
     ProfilePageComponent,
     PasswordAuthenticationComponent,
+    UploadAuditComponent
   ],
   imports: [
     BrowserModule,
