@@ -45,15 +45,22 @@ const queryParse = (req, res, next) => {
     // console.log('filters = ', filter);
     
     // Construct object of parsed filters
-    let filters = {}
+    let filters = {};
+    let universalFilters = {};
     for (const key in filter) {
+
+        // check for universal filters
+        if(['sorta','sortd','limit','offset'].includes(key)) {
+            universalFilters[key] = filter[key]
+            continue
+        }
 
         // Validate filter IDs are numeric
         if(isNaN(parseInt(key))) {
-            return res.status(400).send(`Bad Request 1602: ${key} must be numeric`);
+            return res.status(400).send(`Bad Request 1602: filters must be numeric IDs or universals`);
         }
 
-
+        // setting up custom operator
         if (typeof(filter[key]) === 'object') {
             let content = Object.keys(filter[key])
 
@@ -72,14 +79,16 @@ const queryParse = (req, res, next) => {
                     value: value
                 }
             }
-        }
-        else {
-            filters[key] = {operation: '=', value: filter[key]} // if no operator is given use = operator
+        } else { // if no operator is given use = operator
+            filters[key] = {
+                operation: '=', 
+                value: filter[key]} 
         }
     }
-    
-    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters}; // attaching parsed object
-    next(); // passing to query.js 
+
+    // attaching parsed object
+    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters, universalFilters: universalFilters};
+    next(); // passing to validate.js 
 };
 
 ////// END OF QUERY PARSING //////
@@ -114,10 +123,30 @@ function setupParse(req, res, next) {
 
 ////// END OF SETUP PARSING //////
 
+////// STATS PARSING //////
+// ==================================================
+// No parsing needed for stats query
+// ==================================================
+function statsParse(req, res, next) {
+    next();
+}
+// ==================================================
+////// END OF STATS PARSING //////
+
+////// TIMESTAMPTZ PARSING //////
+function timestamptzParse(s) {
+    let b = s.split(/\D/);
+    --b[1];                  // Adjust month number
+    b[6] = b[6].substr(0,3); // Microseconds to milliseconds
+    return new Date(Date.UTC(...b));
+}
+////// END OF TIMESTAMPTZ PARSING  //////
 
 module.exports = {
+    statsParse,
     queryParse,
     uploadParse,
     templateParse,
-    setupParse
+    setupParse,
+    timestamptzParse
 }

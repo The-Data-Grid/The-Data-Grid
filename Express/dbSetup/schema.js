@@ -49,6 +49,13 @@ newWaterAudit = JSON.parse(
 // GLOBAL AUDITING COLS
 // ============================
 
+/* NON SUBMISSION GLOBALS:
+SOP Name -> m2m through obs_count
+Auditor Name -> COALESCE(data_auditor_name, m2m through obs_count)
+Commentary -> data_commentary
+Time Conducted -> data_time_conducted
+*/
+
 let dynamicGlobalAudit = [
 
     {  // DATE CONDUCTED
@@ -155,8 +162,8 @@ let staticGlobalAudit = [
         rootFeatureName: null,
         columnName: 'data_submission_name',
         tableName: 'tdg_submission',
-        referenceColumnName: null,
-        referenceTableName: null,
+        referenceColumnName: [],
+        referenceTableName: [],
         inputSelectorName: 'text',
         filterSelectorName: 'searchableDropdown',
         sqlDatatype: 'TEXT',

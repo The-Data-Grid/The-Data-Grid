@@ -62,8 +62,9 @@ CREATE TABLE item_city (
     item_id SERIAL PRIMARY KEY,    
     data_city_name TEXT NOT NULL,
     data_population NUMERIC,
-		item_county_id INTEGER NOT NULL, --fk **
-    location_geom_region_id INTEGER --fk **
+	item_county_id INTEGER NOT NULL, --fk **
+    location_geom_region_id INTEGER, --fk **
+    location_point_id INTEGER
 );
 
 CREATE TABLE item_county (
@@ -103,7 +104,7 @@ CREATE TABLE tdg_sop (
     sop_id SERIAL PRIMARY KEY, 
     tdg_filepath TEXT NOT NULL,
     data_name TEXT NOT NULL,
-    data_date_uploaded DATE NOT NULL,
+    data_time_uploaded TIMESTAMPTZ NOT NULL,
     item_organization_id INT NOT NULL --fk **
 );
 
@@ -147,7 +148,7 @@ CREATE TABLE tdg_submission (
     item_organization_id INTEGER NOT NULL, --fk **
     tdg_user_id INTEGER NOT NULL, --fk **
     item_template_id INTEGER, --fk **
-    date_submitted DATE NOT NULL,
+    data_time_submitted TIMESTAMPTZ NOT NULL,
     data_submission_name TEXT NOT NULL
 );
 
@@ -162,6 +163,7 @@ INSERT INTO metadata_reference_type
     (type_id, type_name)
     VALUES
         (DEFAULT, 'local'),
+        (DEFAULT, 'local-global'),
         (DEFAULT, 'location'),
         (DEFAULT, 'item'),
         (DEFAULT, 'list'),
@@ -197,7 +199,7 @@ INSERT INTO metadata_sql_type
     VALUES
         (DEFAULT, 'TEXT'),
         (DEFAULT, 'NUMERIC'),
-        (DEFAULT, 'DATE'),
+        (DEFAULT, 'TIMESTAMPTZ'),
         (DEFAULT, 'BOOLEAN');
 
 CREATE TABLE metadata_frontend_type (
@@ -212,7 +214,7 @@ INSERT INTO metadata_frontend_type
         (DEFAULT, 'string', 'String display'),
         (DEFAULT, 'date', 'Date in form of MM-DD-YYYY'),
         (DEFAULT, 'hyperlink', 'When clicked open link in new page'),
-        (DEFAULT, 'boolean', 'Display "True" for 1 and "False" for 0'),
+        (DEFAULT, 'bool', 'Display "True" for 1 and "False" for 0'),
 				(DEFAULT, 'location', 'JSONB object representing geographic location (point, path or geom region)'),
 				(DEFAULT, 'integer', 'Integer'),
 				(DEFAULT, 'float', 'Floating point numeric value');
@@ -238,7 +240,9 @@ CREATE TABLE metadata_column ( -- Add featureitem_location??
     is_nullable BOOLEAN NOT NULL,
     is_default BOOLEAN NOT NULL,
     is_global BOOLEAN NOT NULL,  
-    is_ground_truth BOOLEAN --NULL if reference_type is not 'location'
+    is_ground_truth BOOLEAN, --NULL if reference_type is not 'location'
+
+    unique_identifier JSON --NULL if reference_type is not 'item'
 );
 
 CREATE TABLE metadata_feature (
@@ -307,3 +311,25 @@ ALTER TABLE tdg_auditor_m2m ADD FOREIGN KEY (observation_count_id) REFERENCES td
 ALTER TABLE tdg_users ADD FOREIGN KEY (tdg_privilege_id) REFERENCES tdg_privilege;
 ALTER TABLE tdg_users ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
+-- FUNCTIONS --
+
+-- Auditor Name trigger function
+CREATE FUNCTION check_auditor_name() RETURNS TRIGGER AS $check_auditor_name$
+    BEGIN
+        -- Both can't be NULL \
+        IF (NEW.data_auditor IS NULL AND (SELECT (SELECT COUNT(*) FROM tdg_auditor_m2m WHERE observation_count_id = NEW.observation_count_id) = 0) ) THEN
+            RAISE EXCEPTION '%.data_auditor and tdg_auditor_m2m.user_id cannot both be NULL', TG_TABLE_NAME;
+            END IF;
+        -- One must be NULL \
+        IF (NEW.data_auditor IS NOT NULL AND (SELECT (SELECT COUNT(*) FROM tdg_auditor_m2m WHERE observation_count_id = NEW.observation_count_id) != 0) ) THEN
+            RAISE EXCEPTION 'Either %.data_auditor or tdg_auditor_m2m.user_id must be NULL', TG_TABLE_NAME;
+            END IF;
+        -- Since no exceptions return the row \
+        RETURN NEW;
+    END;
+    $check_auditor_name$ LANGUAGE plpgsql;
+
+-- SET DEFAULTS --
+
+-- Setting server timezone to LA time
+SET timezone = 'America/Los_Angeles';

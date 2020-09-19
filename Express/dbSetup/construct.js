@@ -26,7 +26,7 @@ const cn = { //connection info
 const db = pgp(cn);
 
 // Import Schema //
-// ====================================================
+// ==================================================
 
 var fs = require('fs'); // Import Node.js File System
 
@@ -51,7 +51,7 @@ const newCreateList = 'CREATE TABLE $(tableName:value) (\
 
 // newAddColumn: SQL for adding a column to an existing table
 
-const newAddColumn = 'ALTER TABLE $(tableName:value) ADD COLUMN $(columnName:value) (sqlDatatype) (nullable)'
+const newAddColumn = 'ALTER TABLE $(tableName:value) ADD COLUMN $(columnName:value) $(sqlDatatype:value) $(nullable:value)'
 
 // reference: SQL for making one column reference another
 
@@ -66,10 +66,7 @@ var newCreateFeature =
             observation_id SERIAL PRIMARY KEY,\
             observation_count_id INTEGER NOT NULL, \
             submission_id INTEGER NOT NULL,\
-            featureitem_id INTEGER NOT NULL,\
-            data_date_conducted TEXT NOT NULL, \
-            data_commentary TEXT, \
-            data_auditor TEXT)';
+            featureitem_id INTEGER NOT NULL)'
 
 // newCreateSubfeature: SQL for creating new subfeature table
 
@@ -78,17 +75,11 @@ var newCreateSubfeature = {
         parent_id INTEGER NOT NULL, \
         observation_id SERIAL PRIMARY KEY,\
         observation_count_id INTEGER NOT NULL, \
-        data_auditor TEXT, \
-        data_commentary TEXT, \
-        data_date_conducted TEXT NOT NULL, \
         featureitem_id INTEGER NOT NULL)',
     withoutFeatureItem: 'CREATE TABLE $(feature:value) (\
         parent_id INTEGER NOT NULL, \
         observation_id SERIAL PRIMARY KEY,\
-        observation_count_id INTEGER NOT NULL, \
-        data_date_conducted TEXT NOT NULL, \
-        data_commentary TEXT, \
-        data_auditor TEXT)'
+        observation_count_id INTEGER NOT NULL)'
 };
 
 // newCreateFeatureItem: SQL for creating new feature item table
@@ -105,11 +96,11 @@ var newMetadataFeature =
 				'INSERT INTO metadata_feature \
 					(feature_id, table_name, parent_id, num_feature_range, information, frontend_name) \
 					VALUES \
-					(DEFAULT, $(tableName:value), \
+					(DEFAULT, $(tableName), \
 					null, \
-					$(numFeatureRange:value), \
-					$(information:value), \
-					$(frontendName:value));'
+					$(numFeatureRange), \
+					$(information), \
+					$(frontendName));'
 
 // newMetadataSubfeature: SQL for inserting one row to
 // the metadata_feature table, representing a subfeature (which has a parent)
@@ -118,11 +109,11 @@ var newMetadataSubfeature =
 				'INSERT INTO metadata_feature \
 					(feature_id, table_name, parent_id, num_feature_range, information, frontend_name) \
 					VALUES \
-					(DEFAULT, $(tableName:value), \
-					(SELECT feature_id FROM metadata_feature WHERE table_name = $(parentTableName:value)), \
-					$(numFeatureRange:value), \
-					$(information:value), \
-					$(frontendName:value));'
+					(DEFAULT, $(tableName), \
+					(SELECT feature_id FROM metadata_feature WHERE table_name = $(parentTableName)), \
+					$(numFeatureRange), \
+					$(information), \
+					$(frontendName));'
 
 // select[X]ID: SQL to get ID corresponding to non-null name
 
@@ -148,34 +139,46 @@ var newMetadataColumn =
 (column_id, feature_id, rootfeature_id, frontend_name, column_name, table_name, reference_column_name, reference_table_name, information, filter_selector, input_selector, sql_type, reference_type, frontend_type, is_nullable, is_default, is_global, is_ground_truth) \
 VALUES \
 (DEFAULT, \
-$(featureID:value), \
-$(rootFeatureID:value), \
-$(frontendName:value), \
-$(columnName:value), \
-$(tableName:value), \
-$(referenceColumnName:value), \
-$(referenceTableName:value), \
-$(information:value), \
-$(filterSelectorID:value), \
-$(inputSelectorID:value), \
-$(sqlTypeID:value), \
-$(refTypeID:value), \
-$(frontendTypeID:value), \
-$(nullable:value), $(default:value), $(global:value), $(groundTruthLocation:value))'
+(SELECT feature_id from metadata_feature WHERE table_name = $(featureName)), \
+(SELECT feature_id from metadata_feature WHERE table_name = $(rootFeatureName)), \
+$(frontendName), \
+$(columnName), \
+$(tableName), \
+$(referenceColumnName:json), \
+$(referenceTableName:json), \
+$(information), \
+(SELECT selector_id from metadata_selector WHERE selector_name = $(filterSelectorName)), \
+(SELECT selector_id from metadata_selector WHERE selector_name = $(inputSelectorName)), \
+(SELECT type_id from metadata_sql_type WHERE type_name = $(sqlDatatype)), \
+(SELECT type_id from metadata_reference_type WHERE type_name = $(referenceDatatype)), \
+(SELECT type_id from metadata_frontend_type WHERE type_name = $(frontendDatatype)), \
+$(nullable), $(default), $(global), $(groundTruthLocation))'
+
+const checkAuditorNameTrigger = "CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:value) \
+FOR EACH ROW EXECUTE FUNCTION check_auditor_name();"
 
 // Water //
-// ============================================
+// ==================================================
 
-var auditSchemaWaterDynamic = readSchema('/auditSchema/water/waterDynamic.json')
-var auditSchemaWaterFeature = readSchema('/auditSchema/water/waterFeature.json')
-var auditSchemaWaterGlobal = readSchema('/auditSchema/water/waterGlobal.json')
+var auditSchemaWaterDynamic = readSchema('/auditSchema/water/waterDynamic.json');
+var auditSchemaWaterFeature = readSchema('/auditSchema/water/waterFeature.json');
+var auditSchemaGlobal = readSchema('/auditSchema/global/globalColumns.json');
 
 
 // CALLING //
 // ============================================================
+/*
+1. Insert features into metadata_feature,
+    create feature_..., subfeature_..., and item_... tables (auditing tables)
+2. Add foreign key constraints for auditing tables
+3. Insert columns into metadata_column and add data_... columns
+4. Add foreign key constraints for data_... columns
+5. Add local-global and special columns into metadata_column for every feature
+*/
+// ============================================================
 
 //                                    (featureSchema, columnSchema)
-asyncConstructAuditingTables(auditSchemaWaterFeature, [...auditSchemaWaterDynamic, ...auditSchemaWaterGlobal])
+asyncConstructAuditingTables(auditSchemaWaterFeature, [...auditSchemaWaterDynamic, ...auditSchemaGlobal])
 
 // FUNCTIONS //
 
@@ -189,37 +192,67 @@ asyncConstructAuditingTables(auditSchemaWaterFeature, [...auditSchemaWaterDynami
 
 async function asyncConstructAuditingTables(featureSchema, columnSchema) {
 
-   console.log('')
-
-
     console.log("Generating SQL...")
 
-    // Insert initial features so they can be selected
-    let {createList, metadataList} = makeAuditSchema(featureSchema);
-    let initialCreateList = makeAuditSchema(featureSchema).createList;
-    let initialCreateQueries = [...createList, ...metadataList].map((initial) => db.none(initial));
+    // Step 1.
+    // Insert features into metadata_feature,
+    //     create feature_..., subfeature_..., and item_... tables (auditing tables)
+    let {fCreateList, fRefList, fMetadataList} = constructFeatures(featureSchema);
+    let featureCreateInsert = [...fCreateList, ...fMetadataList].map((sql) => db.none(sql));
     
-    Promise.all(initialCreateQueries).then( async function() {
-        console.log("Initial Insert Done!") 
+    await Promise.all(featureCreateInsert)
+    
+    console.log("Feature Insert and Create Done...") 
+    console.log("Generating SQL...")
 
-        // Select features to create lookups
+    // Step 2.
+    // Add foreign key constraints for auditing tables
+    let featureRelation = fRefList.map((sql) => db.none(sql))
 
-        for(let statement in initialSelectStatment) {
-            console.log(initialSelectStatment[statement])
-            let trying = await db.any(initialSelectStatment[statement])
-            console.log(trying)
-        }
+    await Promise.all(featureRelation)
 
+    console.log("Feature Foreign Key Constraints Done...")
+    console.log("Generating SQL...")
 
+    // Step 3.
+    // Insert columns into metadata_column and add data_... columns
+    let {cCreateList, cRefList, cMetadataList} = addDataColumns(columnSchema, featureSchema);
+    console.log(cMetadataList)
+    let columnCreateInsert = [...cCreateList, ...cMetadataList].map((sql) => db.none(sql));
 
+    await Promise.all(columnCreateInsert)
+
+    console.log("Column Insert and Create Done...")
+    console.log("Generating SQL...")
+
+    // Step 4.
+    // Add foreign key constraints for data_... columns
+    let columnRelation = cRefList.map((sql) => db.none(sql))
+    
+    await Promise.all(columnRelation)
+
+    console.log("Column Foreign Key Constraints Done...")
+
+    // Closing the database connection
+    db.$pool.end();
+
+    // Done!
+    
+    console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+    console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '                             ');
+    console.log('\x1b[47m\x1b[1m\x1b[32m%s\x1b[0m', '   Successful Construction   ');
+    console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '                             ');
+    console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+    console.log('\x1b[47m\x1b[2m\x1b[30m%s\x1b[0m', ' Long live the power source! ');
+    /*
         let createList = addDataColumns(columnSchema).createList;
                                         
         console.log('aa')
                                             
-        let refList = [...makeAuditSchema(featureSchema).refList,
+        let refList = [...constructFeatures(featureSchema).refList,
                                             ...addDataColumns(columnSchema).refList];
                                             
-        let metadataList = [...makeAuditSchema(featureSchema).metadataList, 
+        let metadataList = [...constructFeatures(featureSchema).metadataList, 
                                             ...addDataColumns(columnSchema).metadataList];
 
         
@@ -262,11 +295,11 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema) {
     })
 
 
-    
+    */
 };
 
 // ============================================================
-// makeAuditSchema (features)
+// constructFeatures (features)
 // ============================================================
 // Takes a list of metadataFeatureInput objects
 // and returns an object of the form
@@ -275,7 +308,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema) {
 //   metadataList: [list of SQL metadata insert statements]}
 // ============================================================
 
-function makeAuditSchema(features) {
+function constructFeatures(features) {
 		
 	let metadataList = [];
     let createList = [];
@@ -286,26 +319,17 @@ function makeAuditSchema(features) {
     //For every feature/subfeature
     features.forEach((element, index) => {
         
-        console.log(element.tableName)
         // if root feature
         if (element.parentTableName === null) {
             
 						// add metadata_feature entry
 						metadataList.push(pgp.as.format(newMetadataFeature, {
                                 tableName: element.tableName,
-								numFeatureRange: (element.numFeatureRange == null ?
-																	'sqlNull' : element.numFeatureRange),
+								numFeatureRange: (element.numFeatureRange === null ?
+																	null : element.numFeatureRange),
 								information: element.information,
 								frontendName: element.frontendName
             }));
-
-            console.log(pgp.as.format(newMetadataFeature, {
-                tableName: element.tableName,
-                numFeatureRange: (element.numFeatureRange == null ?
-                                                    'sqlNull' : element.numFeatureRange),
-                information: element.information,
-                frontendName: element.frontendName
-}))
 
 
             // add create feature table to stack
@@ -379,10 +403,10 @@ function makeAuditSchema(features) {
 						
 						// add metadata_feature entry
 						metadataList.push(pgp.as.format(newMetadataSubfeature, {
-                tableName: element.tableName,
+                                tableName: element.tableName,
 								parentTableName: element.parentTableName,
-								numFeatureRange: (element.numFeatureRange == null ?
-																	'sqlNull' : element.numFeatureRange),
+								numFeatureRange: (element.numFeatureRange === null ?
+																	null : element.numFeatureRange),
 								information: element.information,
 								frontendName: element.frontendName
             }));
@@ -445,7 +469,7 @@ function makeAuditSchema(features) {
         }
     })
 
-    return {createList: createList, refList: refList, metadataList: metadataList}
+    return {fCreateList: createList, fRefList: refList, fMetadataList: metadataList}
 }
 
 // ============================================================
@@ -458,46 +482,92 @@ function makeAuditSchema(features) {
 //   metadataList: [list of SQL metadata insert statements]}
 // ============================================================
 
-function addDataColumns(columns) {
+function addDataColumns(columns, features) {
 
     let createList = [];
     let refList = [];
-		let metadataList = [];
+	let metadataList = [];
 
     columns.forEach( column => {
 
-                // Query first
-                
+        // INSERTING INTO METADATA_COLUMN //
+
+        if (column.referenceDatatype != 'local-global' && column.referenceDatatype != 'special') {
+
+            // Insert metadata_column entry for all non-globals (except submission)
+            metadataList.push(pgp.as.format(newMetadataColumn, {
+                featureName: column.featureName,
+                rootFeatureName: column.rootFeatureName,
+                frontendName: column.frontendName,
+                columnName: column.columnName,
+                tableName: column.tableName,
+                referenceColumnName: column.referenceColumnName,
+                referenceTableName: column.referenceTableName,
+                information: column.information,
+                filterSelectorName: column.filterSelectorName,
+                inputSelectorName: column.inputSelectorName,
+                sqlDatatype: column.sqlDatatype,
+                referenceDatatype: column.referenceDatatype,
+                frontendDatatype: column.frontendDatatype,
+                nullable: column.nullable,
+                default: column.default,
+                global: column.global,
+                groundTruthLocation: column.groundTruthLocation
+            }))
+
+        } else {
+
+            // Insert metadata_column entry for local-global and special FOR EVERY FEATURE
+            // Note: It's done this way because these are the same for every feature, and thus
+            //       are in globalColumns.json once, but must be included in metadata_column
+            //       for every feature
+
+            for(feature of features) {
+
+                metadataList.push(pgp.as.format(newMetadataColumn, {
+                    featureName: feature.tableName,
+                    rootFeatureName: null,
+                    frontendName: column.frontendName,
+                    columnName: column.columnName,
+                    tableName: feature.tableName,
+                    referenceColumnName: column.referenceColumnName,
+                    referenceTableName: column.referenceTableName,
+                    information: column.information,
+                    filterSelectorName: column.filterSelectorName,
+                    inputSelectorName: column.inputSelectorName,
+                    sqlDatatype: column.sqlDatatype,
+                    referenceDatatype: column.referenceDatatype,
+                    frontendDatatype: column.frontendDatatype,
+                    nullable: column.nullable,
+                    default: column.default,
+                    global: column.global,
+                    groundTruthLocation: column.groundTruthLocation
+                }))
+
+                console.log(pgp.as.format(newMetadataColumn, {
+                    featureName: feature,
+                    rootFeatureName: null,
+                    frontendName: column.frontendName,
+                    columnName: column.columnName,
+                    tableName: feature.tableName,
+                    referenceColumnName: column.referenceColumnName,
+                    referenceTableName: column.referenceTableName,
+                    information: column.information,
+                    filterSelectorName: column.filterSelectorName,
+                    inputSelectorName: column.inputSelectorName,
+                    sqlDatatype: column.sqlDatatype,
+                    referenceDatatype: column.referenceDatatype,
+                    frontendDatatype: column.frontendDatatype,
+                    nullable: column.nullable,
+                    default: column.default,
+                    global: column.global,
+                    groundTruthLocation: column.groundTruthLocation
+                }))
+            }
             
-				
-				// Regardless of column type, insert metadata_column entry
-				metadataList.push(pgp.as.format(newMetadataColumn, {
-					featureID: (column.featureName == null ?
-						'sqlNull' : pgp.as.format(selectFeatureID, {featureName: column.featureName})),
-					rootFeatureID: (column.rootFeatureName == null ?
-						'sqlNull' : pgp.as.format(selectFeatureID, {featureName: column.rootFeatureName})),
-					frontendName: column.frontendName,
-					columnName: column.columnName,
-					tableName: column.tableName,
-					referenceColumnName: column.referenceColumnName,
-					referenceTableName: column.referenceTableName,
-					information: column.information,
-					filterSelectorID: (column.filterSelectorName == null ?
-						'sqlNull' : pgp.as.format(selectSelectorID, {selectorName: column.filterSelectorName})),
-					inputSelectorID: (column.inputSelectorName == null ?
-						'sqlNull' : pgp.as.format(selectSelectorID, {selectorName: column.inputSelectorName})),
-					sqlTypeID: (column.sqlDatatype == null ?
-						'sqlNull' : pgp.as.format(selectSqlTypeID, {sqlDatatype: column.sqlDatatype})),
-					refTypeID: (column.referenceDatatype == null ?
-						'sqlNull' : pgp.as.format(selectRefTypeID, {referenceDatatype: column.referenceDatatype})),
-					frontendTypeID: (column.frontendDatatype == null ?
-						'sqlNull' : pgp.as.format(selectFrontendTypeID, {frontendDatatype: column.frontendDatatype})),
-					nullable: column.nullable,
-					default: column.default,
-					global: column.global,
-					groundTruthLocation: (column.groundTruthLocation == null ?
-						'sqlNull' : column.groundTruthLocation)
-				}))
+        }
+
+        // CREATING LISTS, DATA_... COLUMNS, AND REFERENCES //
 				
         if (column.referenceDatatype == 'list') {
 
@@ -515,52 +585,74 @@ function addDataColumns(columns) {
 
             // Create m2m to List reference
             refList.push(pgp.as.format(reference, {
-                pkCol: column.columnName,
-                pkTable: 'list_id',
+                pkCol: 'list_id',
+                pkTable: column.tableName,
                 fkCol: 'list_id',
                 fkTable: column.tableName.replace('list_', 'list_m2m_')
             }))
 
-            // if root feature
-            if (column.featureName == column.rootFeatureName) {
-
-                // Create m2m to feature reference
-                refList.push(pgp.as.format(reference, {
-                    pkCol: column.featureName,
-                    pkTable: 'observation_id',
-                    fkCol: 'observation_id',
-                    fkTable: column.tableName.replace('list_', 'list_m2m_')
-                }))
-
-            } else { // then subfeature
-
-                // Create m2m to subfeature reference
-                refList.push(pgp.as.format(reference, {
-                    pkCol: column.featureName,
-                    pkTable: 'observation_id',
-                    fkCol: 'observation_id',
-                    fkTable: column.tableName.replace('list_', 'list_m2m_')
-                }))
-
-            }
+            // Create m2m to feature reference
+            refList.push(pgp.as.format(reference, {
+                pkCol: 'observation_id',
+                pkTable: column.featureName,
+                fkCol: 'observation_id',
+                fkTable: column.tableName.replace('list_', 'list_m2m_')
+            }))
             
         } else if (column.referenceDatatype == 'local') {
 
-            refList.push(pgp.as.format(newAddColumn, {
+            createList.push(pgp.as.format(newAddColumn, {
                 tableName: column.tableName,
                 columnName: column.columnName,
                 sqlDatatype: column.sqlDatatype,
                 nullable: (column.nullable ? '' : 'NOT NULL')
             }))
 
-        } else if (column.referenceDatatype == 'item' || 'location' ) {
-            // THIS ISN'T DONE YET BUT ITS OK FOR WATER AUDIT SCHEMA
-        } else {
-            
+        } else if (column.referenceDatatype == 'item' || column.referenceDatatype == 'location' ) {
+            // For now new columns cannot be created with metadata_column entries!
+
+                /* DEFINING LOCAL-GLOBAL AND SPECIAL FOR EVERY FEATURE
+                1. Adding local-global and special entries to metdata_column for every feature
+                2. Adding local-global columns to every feature
+                3. Adding the data_auditor_name column to every feature
+                4. Adding the Auditor Name trigger for every feature
+                */
+
+        } else if (column.referenceDatatype == 'local-global') { //LOCAL GLOBALS ARE SPECIFIED FOR EVERY FEATURE
+
+            for(feature of features) { // Data column is added for every feature
+                
+                // 2.
+                createList.push(pgp.as.format(newAddColumn, {
+                    tableName: feature.tableName,
+                    columnName: column.columnName,
+                    sqlDatatype: column.sqlDatatype,
+                    nullable: (column.nullable ? '' : 'NOT NULL')
+                }))
+
+            } //for every feature
+        } else if (column.referenceDatatype == 'special' && column.frontendName == 'Auditor Name') {
+            // special case for auditor name
+            for(feature of features) { // for every feature
+                // Data column is added for every feature
+                createList.push(pgp.as.format(newAddColumn, {
+                    tableName: feature.tableName,
+                    columnName: column.columnName,
+                    sqlDatatype: column.sqlDatatype,
+                    nullable: (column.nullable ? '' : 'NOT NULL')
+                }))
+
+                // Auditor Name trigger is added for every feature
+                refList.push(pgp.as.format(checkAuditorNameTrigger, {
+                    tableName: feature.tableName
+                }))
+
+            } 
         }
+        
     })
     
-    return {createList: createList, refList: refList, metadataList: metadataList};
+    return {cCreateList: createList, cRefList: refList, cMetadataList: metadataList};
 };
 
 //!! OLD !!//
