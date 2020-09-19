@@ -86,23 +86,32 @@ let makeLocation = (locationTableName, referenceTableName, referenceColumnName) 
     list_... -> list_m2m_... -> feature_...
 */
 
-let listName= "listName_" + referenceTable + referenceColumn;
+// pgp.as.format('SELECT + FROM $(referenceTable:value)', {myTable: 'referenceColumn'});
 
-if (table.includes("list_"))
-{
+//pgp.as.format() , two parameter, takes a statement like 'select + from $(myTable:value)', (myTable:'feature_toliet')
+
+
     let listJoin = {
-        feature: {
+        //change feature 
+        featureName: {
             listName : { //Join m2m to audit table then join 
-                query: 'INNER JOIN $(listName:value)_m2m \
-                        ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
-                        INNER JOIN $(listName:value) \
-                        ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+                //use id column lookup to construct array of queries
+                //given 9 tables, generate 9 statements
+                query: pgp.as.format('SELECT + FROM $(referenceTable:value)', 
+                {referenceTable: idColumnTableLookup.referenceTable, referenceColumn: idColumnTableLookup.referenceColumn}),
+
+                //many to many to the list and  many to many to the feature table
+                // query: 'INNER JOIN $(listName:value)_m2m \
+                //         ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+                //         INNER JOIN $(listName:value) \
+                //         ON $(listName:value).list_id = $(listName:value)_m2m.list_id'
+                
                 dependencies: ['referenceTable']
             }
         }
     }
     
-}
+
 
 
 // let listJoin = {
