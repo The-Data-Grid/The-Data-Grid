@@ -18,6 +18,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { DialogComponent } from './login-dialog/login-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UploadComponent } from './upload/upload.component';
+import { ViewAuditComponent } from './upload-audit/view-audit/view-audit.component';
 import { AboutComponent } from './about/about.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
@@ -40,7 +41,8 @@ import { MaterialModule } from './material.module';
     LockDialogComponent,
     ProfilePageComponent,
     PasswordAuthenticationComponent,
-    UploadAuditComponent
+    UploadAuditComponent,
+    ViewAuditComponent
   ],
   imports: [
     BrowserModule,

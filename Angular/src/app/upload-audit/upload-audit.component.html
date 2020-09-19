@@ -1,6 +1,6 @@
-
+<!-- outside div body wrapper to make sure tab bar doesnt push down content -->
 <div id="body">
-    <div  id="table-buttons" fxLayoutAlign="end center">
+    <div id="table-buttons" fxLayoutAlign="end center">
         <button mat-icon-button>
             <mat-icon>add</mat-icon>
         </button>
@@ -10,13 +10,13 @@
         <ng-container matColumnDef="auditName">
             <mat-cell *matCellDef="let audit">{{audit.auditName}}</mat-cell>
         </ng-container>
-        <ng-container matColumnDef="uploadStatus" >
+        <ng-container matColumnDef="uploadStatus">
             <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">
                 <button mat-icon-button>
                     <mat-icon>arrow_circle_up</mat-icon>
                 </button>
             </mat-cell>
         </ng-container>
-        <mat-row *matRowDef="let row; columns: displayedColumns" ></mat-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
     </mat-table>
 </div>
