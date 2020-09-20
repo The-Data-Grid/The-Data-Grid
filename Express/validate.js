@@ -1,4 +1,13 @@
-const {idColumnTableLookup} = require('./setup.js');
+const {idColumnTableLookup, returnableIDLookup} = require('./setup.js');
+
+// Generate array of ids that are global
+var globals = [];
+
+for (let id in returnableIDLookup) {
+    if (returnableIDLookup[id].returnType == "global") {
+        globals.push(id);
+    }
+}
 
 // Dynamically generating the validate object by
 // looping through all ids in idColumnTableLookup
@@ -42,7 +51,7 @@ function validateAudit(req, res, next) {
     // Validate columns for feature
 
     for(let column of res.locals.parsed.columns) {
-        if(!validate[feature]['column'].includes(parseInt(column))) {
+        if(!validate[feature]['column'].includes(parseInt(column)) && !globals.includes(parseInt(column))) {
             return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
         };
     };
@@ -104,8 +113,10 @@ function validateAudit(req, res, next) {
             return res.status(400).send(`Bad Request: Field for ${filter} must be zero or a postiive integer.`);
         } else if (filter == 'offset' && !isPositiveInteger(universalFilters[filter])) {
             return res.status(400).send(`Bad Request: Field for ${filter} must be a postiive integer.`);
-        } else if ((filter == 'sorta' || filter == 'sortd') && !validate[feature]['column'].includes(parseInt((universalFilters[filter])))) {
-            return res.status(400).send(`Bad Request: Field for ${filter} must be a positive integer.`);
+        } else if (filter == 'sorta' || filter == 'sortd') {
+            if (!validate[feature]['column'].includes(parseInt(universalFilters[filter])) && !globals.includes(parseInt(universalFilters[filter]))) {
+                return res.status(400).send(`Bad Request: Field for ${filter} must be a positive integer.`);
+            }
         }
     }
 
