@@ -8,7 +8,7 @@
     <!-- table -->
     <mat-table [dataSource]="dataSource" id="table" class="mat-elevation-z4">
         <ng-container matColumnDef="auditName">
-            <mat-cell *matCellDef="let audit">{{audit.auditName}}</mat-cell>
+            <mat-cell *matCellDef="let audit" [routerLink]="['/view-audit', audit._id]">{{audit.auditName}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="uploadStatus">
             <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">

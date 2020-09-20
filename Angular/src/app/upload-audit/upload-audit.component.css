@@ -20,3 +20,12 @@
     text-align: left;
     width: 70%;
 }
+
+.mat-column-uploadStatus {
+    flex: 0 0 10%;
+}
+
+.mat-column-auditName {
+    cursor: pointer;
+    outline: none;
+}

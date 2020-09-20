@@ -1,1 +1,25 @@
-<p>view-audit works!</p>
+<!-- outside div body wrapper to make sure tab bar doesnt push down content -->
+<div id="body">
+    <mat-card>
+        <div id="top-buttons" fxLayoutAlign="end center">
+            <button mat-button [routerLink]="'/upload-audit'">
+                Cancel
+            </button>
+            <button mat-button id="save-button" [routerLink]="'/upload-audit'">
+                Save
+            </button>
+        </div>
+        <mat-card-header>
+            {{audit.auditName}}
+        </mat-card-header>
+        <mat-card-subtitle>
+            <button mat-button>
+                Global Presets
+            </button>
+            <button mat-button>
+                Add Root Features
+            </button>
+        </mat-card-subtitle>
+  
+    </mat-card>
+</div>

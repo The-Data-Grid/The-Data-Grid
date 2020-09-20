@@ -9,6 +9,8 @@ export class ViewAuditComponent implements OnInit {
 
   constructor() { }
 
+  audit = { auditName: "Bathroom Audit 1", uploadStatus: "uploaded", _id: "1234567890" };
+  
   ngOnInit(): void {
   }
 
