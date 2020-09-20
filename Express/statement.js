@@ -162,6 +162,49 @@ that inputs only the names of backend tables
 */
 let makeLocation = (locationTableName, referenceTableName, referenceColumnName) => `INNER JOIN ${locationTableName} ON ${referenceTableName}.${referenceColumnName} = ${locationTableName}.location_id`
 /*
+>List
+    list_... -> list_m2m_... -> feature_...
+*/
+
+// pgp.as.format('SELECT + FROM $(referenceTable:value)', {myTable: 'referenceColumn'});
+
+//pgp.as.format() , two parameter, takes a statement like 'select + from $(myTable:value)', (myTable:'feature_toliet')
+
+
+    let listJoin = {
+        //change feature 
+        featureName: {
+            listName : { //Join m2m to audit table then join 
+                //use id column lookup to construct array of queries
+                //given 9 tables, generate 9 statements
+                query: pgp.as.format('SELECT + FROM $(referenceTable:value)', 
+                {referenceTable: idColumnTableLookup.referenceTable, referenceColumn: idColumnTableLookup.referenceColumn}),
+
+                //many to many to the list and  many to many to the feature table
+                // query: 'INNER JOIN $(listName:value)_m2m \
+                //         ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+                //         INNER JOIN $(listName:value) \
+                //         ON $(listName:value).list_id = $(listName:value)_m2m.list_id'
+                
+                dependencies: ['referenceTable']
+            }
+        }
+    }
+    
+
+
+
+// let listJoin = {
+//     feature: {
+//         listName_referenceTableName_referenceColumnName : { //Join m2m to audit table then join 
+//             query: 'INNER JOIN $(listName:value)_m2m \
+//                     ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
+//                     INNER JOIN $(listName:value) \
+//                     ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+//             dependencies: ['referenceTableName']
+//         }
+//     }
+// }
 
 /*
 >Item
