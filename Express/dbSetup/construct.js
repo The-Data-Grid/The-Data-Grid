@@ -83,6 +83,7 @@ var newCreateSubfeature = {
 };
 
 // newCreateFeatureItem: SQL for creating new feature item table
+// TODO: add unique constraint to group of ID columns
 
 var newCreateFeatureItem = 
         'CREATE TABLE $(feature:value) ( \
@@ -154,6 +155,7 @@ $(information), \
 (SELECT type_id from metadata_frontend_type WHERE type_name = $(frontendDatatype)), \
 $(nullable), $(default), $(global), $(groundTruthLocation))'
 
+// use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
 const checkAuditorNameTrigger = "CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:value) \
 FOR EACH ROW EXECUTE FUNCTION check_auditor_name();"
 
@@ -217,7 +219,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema) {
     // Step 3.
     // Insert columns into metadata_column and add data_... columns
     let {cCreateList, cRefList, cMetadataList} = addDataColumns(columnSchema, featureSchema);
-    console.log(cMetadataList)
+    // console.log(cMetadataList)
     let columnCreateInsert = [...cCreateList, ...cMetadataList].map((sql) => db.none(sql));
 
     await Promise.all(columnCreateInsert)
@@ -544,7 +546,7 @@ function addDataColumns(columns, features) {
                     groundTruthLocation: column.groundTruthLocation
                 }))
 
-                console.log(pgp.as.format(newMetadataColumn, {
+                // console.log(pgp.as.format(newMetadataColumn, {
                     featureName: feature,
                     rootFeatureName: null,
                     frontendName: column.frontendName,
