@@ -42,8 +42,6 @@ function validateAudit(req, res, next) {
     // Validate columns for feature
 
     for(let column of res.locals.parsed.columns) {
-        console.log(validate[feature]['column'])
-        console.log(parseInt(column))
         if(!validate[feature]['column'].includes(parseInt(column))) {
             return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
         };
@@ -87,15 +85,8 @@ function validateAudit(req, res, next) {
         index++;
     };
 
-    // Validate universal filters
-    validateUniversalFilter(universalFilters);
-
-    // Passing to query.js
-    next();
-}
-
-function validateUniversalFilter(universalFilters) {
     var filters = Object.keys(universalFilters);
+    // Validate universalFilters query
     if (hasDuplicates(filters)) {
         return res.status(400).send(`Bad Request: Cannot have duplicate filters.`);
     } else if(filters.includes('sorta') && filters.includes('sortd')) {
@@ -105,7 +96,24 @@ function validateUniversalFilter(universalFilters) {
     } else if(filters.includes('limit') && !filters.includes('offset')) {
         return res.status(400).send(`Bad Request: Limit requires offset.`);
     }
+
+    // Validate universalFilters input fields
+    for(let filter of filters) {
+        // Validate field
+        if (filter == 'limit' && !isPositiveIntegerOrZero(universalFilters[filter])) {
+            return res.status(400).send(`Bad Request: Field for ${filter} must be zero or a postiive integer.`);
+        } else if (filter == 'offset' && !isPositiveInteger(universalFilters[filter])) {
+            return res.status(400).send(`Bad Request: Field for ${filter} must be a postiive integer.`);
+        } else if ((filter == 'sorta' || filter == 'sortd') && !validate[feature]['column'].includes(parseInt((universalFilters[filter])))) {
+            return res.status(400).send(`Bad Request: Field for ${filter} must be a positive integer.`);
+        }
+    }
+
+    // Passing to query.js
+    next();
 }
+
+//// Helper validation functions ////
 
 function hasDuplicates(array) {
     return (new Set(array)).size !== array.length;
@@ -136,6 +144,16 @@ function isValidDate(field)
     return composedDate.getDate() == d &&
             composedDate.getMonth() == m &&
             composedDate.getFullYear() == y;
+}
+
+function isPositiveIntegerOrZero(field) {
+    var n = Math.floor(Number(field));
+    return n !== Infinity && String(n) === field && n >= 0;
+}
+
+function isPositiveInteger(field) {
+    var n = Math.floor(Number(field));
+    return n !== Infinity && String(n) === field && n > 0;
 }
 
 module.exports = {
