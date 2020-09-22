@@ -46,7 +46,7 @@ app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.v
 app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
 
 // Audit Upload
-app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
+//app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
 
 // Template Query
 app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTemplate should be in query.js

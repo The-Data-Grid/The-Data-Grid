@@ -170,7 +170,7 @@ let makeLocation = (locationTableName, referenceTableName, referenceColumnName) 
 
 //pgp.as.format() , two parameter, takes a statement like 'select + from $(myTable:value)', (myTable:'feature_toliet')
 
-
+/*
     let listJoin = {
         //change feature 
         featureName: {
@@ -191,7 +191,7 @@ let makeLocation = (locationTableName, referenceTableName, referenceColumnName) 
         }
     }
     
-
+*/
 
 
 // let listJoin = {
