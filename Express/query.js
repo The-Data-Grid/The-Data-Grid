@@ -481,13 +481,14 @@ function featureQuery(req, res) {
 
             // Constructing the tableObject and sending response
             return res.json(data)
+            // will write this soon!
             return res.json(makeTableObject(data));
 
         }).catch(err => {
 
             console.log(err)
             // Error
-            return res.status(500).send('Internal Server Error 1702: Query constructed properly but error thrown in database');
+            return res.status(500).send(`<center><h3>Internal Server Error 1702: Malformed Query</h3></center><hr><center>&copy The Data Grid ${new Date().getFullYear()}<center>`);
             
         });
 }
