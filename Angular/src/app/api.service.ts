@@ -43,17 +43,17 @@ export class ApiService {
   }
 
   public getTableObject(feature: string, columns: any, qsparams: any): any {
-    // this.columnsString = this.makeColumnsString(columns);
-    // this.temp = API_URL + "/a/" + feature;
-    // if (this.columnsString) {
-    //   this.temp = this.temp + "/" + this.columnsString;
-    // }
-    // return this.http.get<TableObject>(this.temp, { params: qsparams });
+    var url = API_URL + "/audit/" + feature;
+    this.columnsString = this.makeColumnsString(columns);
+    if (this.columnsString) {
+      url = url + "/" + this.columnsString;
+    }
+    return this.http.get<TableObject>(url, { params: qsparams });
+    //  console.log(url);
 
-    var url = fakeServerURL + '/table';
-
-    // for test server only:
-    return this.http.get<TableObject>(url);
+    
+    // var url = fakeServerURL + '/table';
+    // return this.http.get<TableObject>(url);
   }
 
 

@@ -306,7 +306,7 @@ export class AuditsComponent implements OnInit {
     /* get api response */
     if (!this.selectedFeature) {
       return;
-    }
+    } 
     console.log(this.appliedFilterSelections);
     this.getTableObject();
   }

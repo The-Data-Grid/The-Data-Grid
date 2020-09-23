@@ -1,4 +1,11 @@
-body, html { 
-    overflow-x: hidden; 
+body, html {
+    overflow-x: hidden;
     overflow-y: auto;
+    text-align: center;
+}
+
+.divider {
+    height: 2px; 
+    width: 100%; 
+    background-color: rgba(228, 228, 228);
 }
