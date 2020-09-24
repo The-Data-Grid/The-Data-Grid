@@ -66,3 +66,8 @@ body {
 .activeButton {
    opacity: 1;
 }
+
+hr.bottom_separator {
+   margin-top: 15px;
+   border-top: 1px solid #569CD7;
+}
