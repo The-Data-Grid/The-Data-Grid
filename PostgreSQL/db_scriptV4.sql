@@ -30,14 +30,14 @@ CREATE TABLE item_room (
 
 CREATE TABLE item_building (
     item_id SERIAL PRIMARY KEY, 
-		data_building_name TEXT NOT NULL,
-    item_university_id INTEGER, --fk **    
+	data_building_name TEXT NOT NULL,
+    item_entity_id INTEGER, --fk **    
     location_geom_region_id INTEGER NOT NULL --fk **
 );
 
 -- 
 
--- Community (deprecated)
+-- Community (deprecated for entity)
 /*
 CREATE TABLE item_community (
     item_id SERIAL PRIMARY KEY, 
@@ -49,13 +49,14 @@ CREATE TABLE item_community (
 );
 */
 
--- Organization, University, City, County, State, Country
+-- Organization, Entity, City, County, State, Country
 
-CREATE TABLE item_university (
+CREATE TABLE item_entity (
     item_id SERIAL PRIMARY KEY,
-    data_university_name TEXT NOT NULL,
-    data_university_address TEXT NOT NULL,
-    item_city_id INTEGER NOT NULL --fk **
+    data_entity_name TEXT NOT NULL,
+    data_entity_address TEXT NOT NULL,
+    item_city_id INTEGER NOT NULL, --fk **
+    UNIQUE (data_entity_address, data_entity_name)
 );
 
 CREATE TABLE item_city (
@@ -91,7 +92,7 @@ CREATE TABLE item_country (
 CREATE TABLE item_organization (
     item_id SERIAL PRIMARY KEY,  
     data_organization_name TEXT NOT NULL,
-    item_university_id INTEGER --fk **
+    item_entity_id INTEGER --fk **
 );
 
 -- Observation supertable, SOP and User which reference it
@@ -145,11 +146,33 @@ CREATE TABLE tdg_privilege (
 -- Submission
 CREATE TABLE tdg_submission (
     submission_id SERIAL PRIMARY KEY,
-    item_organization_id INTEGER NOT NULL, --fk **
+    audit_id INTEGER NOT NULL, --fk **
+    item_organization_id INTEGER NOT NULL, --fk ** ???
     tdg_user_id INTEGER NOT NULL, --fk **
-    item_template_id INTEGER, --fk **
+    item_template_id INTEGER, --fk ** ???
     data_time_submitted TIMESTAMPTZ NOT NULL,
-    data_submission_name TEXT NOT NULL
+    data_submission_name TEXT
+);
+
+CREATE TABLE tdg_assigned_auditor_m2m (
+    audit_id SERIAL PRIMARY KEY, --fk **
+    user_id INTEGER NOT NULL, --fk **
+    user_instructions TEXT
+);
+
+CREATE TABLE tdg_catalog (
+    catalog_id SERIAL PRIMARY KEY,
+    data_title TEXT NOT NULL,
+    data_description TEXT,
+    is_discoverable BOOLEAN NOT NULL
+);
+
+CREATE TABLE tdg_audit (
+    audit_id SERIAL PRIMARY KEY,
+    catalog_id INTEGER, --fk
+    data_audit_name TEXT,
+    user_id INTEGER NOT NULL, --fk
+    data_time_created TIMESTAMPTZ NOT NULL
 );
 
 -- Metadata --
@@ -272,11 +295,11 @@ ALTER TABLE metadata_feature ADD FOREIGN KEY (parent_id) REFERENCES metadata_fea
 -- Room, Building, Community, geom_region
 ALTER TABLE item_room ADD FOREIGN KEY (item_building_id) REFERENCES item_building;
 ALTER TABLE item_building ADD FOREIGN KEY (location_geom_region_id) REFERENCES location_geom_region;
-ALTER TABLE item_building ADD FOREIGN KEY (item_university_id) REFERENCES item_university;
-ALTER TABLE item_organization ADD FOREIGN KEY (item_university_id) REFERENCES item_university;
+ALTER TABLE item_building ADD FOREIGN KEY (item_entity_id) REFERENCES item_entity;
+ALTER TABLE item_organization ADD FOREIGN KEY (item_entity_id) REFERENCES item_entity;
 
 -- Uni, City, State, County, Country
-ALTER TABLE item_university ADD FOREIGN KEY (item_city_id) REFERENCES item_city;
+ALTER TABLE item_entity ADD FOREIGN KEY (item_city_id) REFERENCES item_city;
 
 ALTER TABLE item_city ADD FOREIGN KEY (item_county_id) REFERENCES item_county;
 ALTER TABLE item_city ADD FOREIGN KEY (location_geom_region_id) REFERENCES location_geom_region;
@@ -293,6 +316,7 @@ ALTER TABLE item_country ADD FOREIGN KEY (location_geom_region_id) REFERENCES lo
 ALTER TABLE tdg_submission ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 ALTER TABLE tdg_submission ADD FOREIGN KEY (item_template_id) REFERENCES item_template;
 ALTER TABLE tdg_submission ADD FOREIGN KEY (tdg_user_id) REFERENCES tdg_users;
+ALTER TABLE tdg_submission ADD FOREIGN KEY (audit_id) REFERENCES tdg_audit;
 
 -- SOP
 ALTER TABLE tdg_sop_m2m ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
@@ -311,9 +335,15 @@ ALTER TABLE tdg_auditor_m2m ADD FOREIGN KEY (observation_count_id) REFERENCES td
 ALTER TABLE tdg_users ADD FOREIGN KEY (tdg_privilege_id) REFERENCES tdg_privilege;
 ALTER TABLE tdg_users ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
+-- Audit
+ALTER TABLE tdg_assigned_auditor_m2m ADD FOREIGN KEY (user_id) REFERENCES tdg_users;
+ALTER TABLE tdg_assigned_auditor_m2m ADD FOREIGN KEY (audit_id) REFERENCES tdg_audit;
+
 -- FUNCTIONS --
 
 -- Auditor Name trigger function
+--     Note that this is the function that the trigger calls, the trigger 
+--     itself is dynamically generated in construct.js
 CREATE FUNCTION check_auditor_name() RETURNS TRIGGER AS $check_auditor_name$
     BEGIN
         -- Both can't be NULL \
@@ -328,6 +358,7 @@ CREATE FUNCTION check_auditor_name() RETURNS TRIGGER AS $check_auditor_name$
         RETURN NEW;
     END;
     $check_auditor_name$ LANGUAGE plpgsql;
+
 
 -- SET DEFAULTS --
 
