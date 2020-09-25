@@ -546,6 +546,7 @@ function addDataColumns(columns, features) {
                     groundTruthLocation: column.groundTruthLocation
                 }))
 
+                /*
                 // console.log(pgp.as.format(newMetadataColumn, {
                     featureName: feature,
                     rootFeatureName: null,
@@ -565,6 +566,7 @@ function addDataColumns(columns, features) {
                     global: column.global,
                     groundTruthLocation: column.groundTruthLocation
                 }))
+                */
             }
             
         }
