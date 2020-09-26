@@ -1,0 +1,230 @@
+#body {
+    overflow-y: scroll;
+    overflow-x: scroll;
+    overflow: scroll;
+}
+
+.top_decoration {
+    height: 30px;
+    width: 401px;
+    margin-left: -25px;
+    margin-top: -25px;
+    background-color: #569CD7;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.cancel {
+    cursor: pointer;
+    width: 50px
+}
+
+.arrow_position {
+    margin-top: 10px;
+    margin-left: -12px;
+}
+
+.cancel_text {
+    margin-top: -26px;
+    margin-left: 13px;
+    font-weight: 600;
+}
+
+.add_text {
+    cursor: pointer;
+    margin-top: -36px;
+    margin-left: 330px;
+    font-weight: 600;
+}
+
+.mat-button-toggle {
+    background-color: #F5F5F5;
+    padding: -10px;
+    line-height: 1px;
+    font-size: 14px;
+    padding: 0px 20px !important;
+    /* height: 2em; */
+}
+
+.mat-button-toggle-label-content {
+    line-height: 300px !important;
+}
+
+
+.mat-button-toggle-checked {
+    background-color: #D3D3D3;
+}  
+
+.first_separator {
+    margin-top: 30px;
+    background-color: black;
+    height: 1px;
+    width: 430px;
+    margin-left: -54px
+}
+
+.cdk-global-overlay-wrapper {
+    display: flex;
+    position: absolute;
+    z-index: 1000;
+    overflow: auto;
+    pointer-events: auto;  
+  }
+
+.audit_names {
+    font-size: 17px;
+    font-weight: 600;
+    margin-left: 0px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+.dynamic_separators {
+    background-color: black;
+    height: 1px;
+    width: 430px;
+    margin-left: -54px;
+    /* box-shadow: 20px 0px 10px 5px black; */
+
+}
+
+.separators_highlight { 
+    box-shadow: 0px 2px 2px 1px #B0B0B0
+}
+
+.container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  
+  .checkmark {
+    position: absolute;
+    top: -45px;
+    left: 280px;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    border: 2px solid gray
+  }
+
+  .checkmark_small {
+    position: absolute;
+    top: -45px;
+    left: 268px;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    border: 2px solid gray
+  }
+
+  .checkmark_small:after {
+      content: "";
+      position: absolute;
+      display: none;
+  }
+
+  .container input:checked ~ .checkmark_small:after {
+    display: block;
+  }
+  
+  .container .checkmark_small:after {
+    left: 6px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    /* border: solid white; */
+    border: solid gray;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+
+  
+  .container:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
+  
+  .container input:checked ~ .checkmark {
+    background-color: #eee;
+    /* background-color: #B8B8B8; */
+  }
+  
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  .container input:checked ~ .checkmark:after {
+    display: block;
+    /* border: 2px solid black */
+  }
+  
+  .container .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid gray;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    
+  }
+
+  .arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    cursor: pointer;
+    margin-left: 340px;
+    margin-top: -35px;
+  }
+  
+  .right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+  }
+
+  .down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+  }
+
+  .subFeatures {
+      font-size: 14px;
+      margin-left: 15px;
+      font-weight: 600;
+      margin-top: 20px;
+      margin-bottom: 20px;
+  }  
+
+  .subfeature_separators {
+    background-color: black;
+    height: 1px;
+    width: 415px;
+    margin-left: -54px
+
+  }
+  
+  
+  

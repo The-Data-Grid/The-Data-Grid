@@ -69,5 +69,6 @@ body {
 
 hr.bottom_separator {
    margin-top: 15px;
-   border-top: 1px solid #569CD7;
+   /* border-top: 1px solid #569CD7; */
+   border-top: 1px solid #C8C8C8;
 }
