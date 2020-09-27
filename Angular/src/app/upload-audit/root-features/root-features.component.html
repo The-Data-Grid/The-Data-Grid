@@ -1,0 +1,45 @@
+<body>
+    <div class="top_decoration"></div>
+    <div class="cancel" (click)="close()">
+        <span class="material-icons arrow_position">arrow_back</span>
+        <p class="cancel_text">Cancel</p>
+    </div>
+    <div>
+        <p class="add_text">Add</p>
+    </div>
+    <div id="toggle">
+        <mat-button-toggle-group name="featureToggle" id="featureToggle" value="template">
+            <mat-button-toggle (click)="changeStatus('roots')" value="all_features"> <span style="margin-top: 200px;">All Root Features</span></mat-button-toggle>
+            <mat-button-toggle (click)="changeStatus('template')" value="template">From Template</mat-button-toggle>
+          </mat-button-toggle-group>
+    </div>
+    <div *ngIf="status=='template'">
+
+
+    <div class="first_separator"></div>
+
+    <div *ngFor="let audit of data">
+        <h1 class="audit_names">{{ audit.name }}</h1>
+        <label class="container">
+            <input type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label>
+          <div style="position: relative;">
+            <i style="position: absolute;" class="arrow right" [id]="audit.name + ' caret'" (click)="hideOrShow(audit.name)"></i> 
+          </div>
+        <div [id]="audit.name + ' separator'" class="dynamic_separators"></div>
+        <div [id]="audit.name" style="display: none;" class="subFeatures">
+            <div *ngFor="let feature of audit.features">
+                <h1 class="subFeatures">{{ feature }}</h1>
+                <label class="container">
+                    <input type="checkbox" checked="checked">
+                    <span style="top:-40px; height: 20px; width: 20px" class="checkmark_small"></span>
+                  </label>
+            <div class="subfeature_separators"></div>
+
+            </div>
+        </div>
+    </div>
+
+    </div>
+</body>

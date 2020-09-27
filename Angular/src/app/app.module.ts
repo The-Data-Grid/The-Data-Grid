@@ -25,6 +25,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { PasswordAuthenticationComponent } from './password-authentication/password-authentication.component';
 import { ClickOutsideModule } from 'ng-click-outside'
 import { MaterialModule } from './material.module';
+import { RootFeaturesComponent } from './upload-audit/root-features/root-features.component';
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import { MaterialModule } from './material.module';
     ProfilePageComponent,
     PasswordAuthenticationComponent,
     UploadAuditComponent,
-    ViewAuditComponent
+    ViewAuditComponent,
+    RootFeaturesComponent
   ],
   imports: [
     BrowserModule,
