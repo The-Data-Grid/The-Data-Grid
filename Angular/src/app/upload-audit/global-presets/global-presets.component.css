@@ -1,0 +1,64 @@
+#body {
+  overflow-y: scroll;
+  overflow-x: scroll;
+  overflow: scroll;
+}
+
+.top_decoration {
+  height: 30px;
+  width: 401px;
+  margin-left: -25px;
+  margin-top: -25px;
+  background-color: #569CD7;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.cancel {
+  cursor: pointer;
+  width: 50px
+}
+
+.arrow_position {
+  margin-top: 10px;
+  margin-left: -12px;
+}
+
+.cancel_text {
+  margin-top: -26px;
+  margin-left: 13px;
+  font-weight: 600;
+}
+
+.save_text {
+  cursor: pointer;
+  margin-top: -36px;
+  margin-left: 330px;
+  font-weight: 600;
+}
+
+.primary_separator {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: black;
+  height: 1px;
+  width: 430px;
+  margin-left: -54px
+}
+
+.secondary_separator {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: lightgray;
+  height: 1px;
+  width: 430px;
+  margin-left: -54px
+}
+
+/* .cdk-global-overlay-wrapper {
+    display: flex;
+    position: absolute;
+    z-index: 1000;
+    overflow: auto;
+    pointer-events: auto;  
+  } */

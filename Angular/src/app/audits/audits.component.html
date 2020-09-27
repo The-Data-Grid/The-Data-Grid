@@ -32,7 +32,7 @@
                     </div>
                     <div *ngFor="let column of globalSelectors.calendarEqual">
                         <ng-template *ngTemplateOutlet="calendarEqualTemplate; context: {$implicit: column}">
-                        </ng-template> 
+                        </ng-template>
                     </div>
                     <div *ngFor="let column of globalSelectors.dropdown">
                         <ng-template *ngTemplateOutlet="dropdownTemplate; context: {$implicit: column}">
@@ -273,14 +273,6 @@
     </ng-template>
 
     <ng-template #calendarRangeTemplate let-column>
-        <!-- <mat-form-field>
-            <input matInput type="datetime-local"
-              [placeholder]="column.columnFrontendName" >
-          </mat-form-field>
-          <mat-form-field>
-            <input matInput type="datetime-local"
-              [placeholder]="column.columnFrontendName" >
-          </mat-form-field> -->
         <mat-form-field>
             <mat-label>{{column.columnFrontendName}} Range</mat-label>
             <input #datepicker matInput [matDatepicker]="picker1" (dateInput)="applyDateFilter($event.target.value)"
@@ -293,13 +285,15 @@
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
             <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
+        <!-- <ngx-datetime-range-picker name="date" [options]="datePickerOptions" [settings]="datePickerSettings"
+            [(dateRangeModel)]="selectedDate" (dateRangeChanged)="onFilterChange($event)" required>
+        </ngx-datetime-range-picker> -->
     </ng-template>
 
     <ng-template #calendarEqualTemplate let-column>
         <mat-form-field>
-            <input matInput type="datetime-local"
-              placeholder="column.columnFrontendName" >
-          </mat-form-field>
+            <input matInput type="datetime-local" placeholder="column.columnFrontendName">
+        </mat-form-field>
         <!-- <mat-form-field>
             <mat-label>{{column.columnFrontendName}}</mat-label>
             <input #datepicker matInput [matDatepicker]="picker1" (dateInput)="applyDateFilter($event.target.value)">

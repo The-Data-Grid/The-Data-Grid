@@ -1,0 +1,18 @@
+<body>
+    <div class="top_decoration"></div>
+    <div class="cancel" (click)="close()">
+        <span class="material-icons arrow_position">arrow_back</span>
+        <p class="cancel_text">Cancel</p>
+    </div>
+    <div>
+        <p class="save_text">Save</p>
+    </div>
+
+    <p style="font-weight: 600;">Global Presets</p>
+    <div class="primary_separator"></div>
+    <div *ngFor="let selector of globalSelectors">
+        {{selector.columnFrontendName}}:
+        <div class="secondary_separator"></div>
+    </div>
+
+</body>

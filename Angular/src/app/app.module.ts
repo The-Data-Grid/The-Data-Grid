@@ -26,7 +26,8 @@ import { PasswordAuthenticationComponent } from './password-authentication/passw
 import { ClickOutsideModule } from 'ng-click-outside'
 import { MaterialModule } from './material.module';
 import { RootFeaturesComponent } from './upload-audit/root-features/root-features.component';
-
+import { GlobalPresetsComponent} from './upload-audit/global-presets/global-presets.component';
+import { NgxDatetimeRangePickerModule } from 'ngx-datetime-range-picker';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,9 @@ import { RootFeaturesComponent } from './upload-audit/root-features/root-feature
     PasswordAuthenticationComponent,
     UploadAuditComponent,
     ViewAuditComponent,
-    RootFeaturesComponent
+    RootFeaturesComponent,
+    GlobalPresetsComponent,
+    NgxDatetimeRangePickerModule
   ],
   imports: [
     BrowserModule,

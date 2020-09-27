@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { RootFeaturesComponent } from '../root-features/root-features.component';
+import { GlobalPresetsComponent} from '../global-presets/global-presets.component';
 
 @Component({
   selector: 'app-view-audit',
@@ -23,6 +24,14 @@ export class ViewAuditComponent implements OnInit {
 
   openRootFeatures(): void {
     const dialogRef = this.dialog.open(RootFeaturesComponent, {
+      width: '400px',
+      height: '600px',
+      data: this.audits
+    })
+  }
+
+  openGlobalPresets(): void {
+    const dialogRef = this.dialog.open(GlobalPresetsComponent, {
       width: '400px',
       height: '600px',
       data: this.audits
