@@ -91,7 +91,8 @@ CREATE TABLE item_country (
 
 CREATE TABLE item_organization (
     item_id SERIAL PRIMARY KEY,  
-    data_organization_name TEXT NOT NULL,
+    data_organization_name_text TEXT NOT NULL,
+    data_organization_name_link TEXT,
     item_entity_id INTEGER --fk **
 );
 
@@ -118,7 +119,7 @@ CREATE TABLE item_template (
     item_id SERIAL PRIMARY KEY,
     item_organization_id INTEGER, --fk **
     tdg_user_id INTEGER, --fk **
-    data_template_name TEXT NOT NULL,
+    data_template_name TEXT,
     data_template_json JSONB NOT NULL
 );
 
@@ -147,11 +148,18 @@ CREATE TABLE tdg_privilege (
 CREATE TABLE tdg_submission (
     submission_id SERIAL PRIMARY KEY,
     audit_id INTEGER NOT NULL, --fk **
-    item_organization_id INTEGER NOT NULL, --fk ** ???
-    tdg_user_id INTEGER NOT NULL, --fk **
+    item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
+    user_id INTEGER NOT NULL, --fk **
     item_template_id INTEGER, --fk ** ???
     data_time_submitted TIMESTAMPTZ NOT NULL,
     data_submission_name TEXT
+);
+
+CREATE TABLE tdg_submission_edit (
+    submission_edit_id SERIAL PRIMARY KEY,
+    submission_id INTEGER NOT NULL, --fk
+    tdg_user_id INTEGER NOT NULL, --fk
+    data_time_edited TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE tdg_assigned_auditor_m2m (
@@ -169,9 +177,9 @@ CREATE TABLE tdg_catalog (
 
 CREATE TABLE tdg_audit (
     audit_id SERIAL PRIMARY KEY,
-    catalog_id INTEGER, --fk
+    catalog_id INTEGER, --fk **
     data_audit_name TEXT,
-    user_id INTEGER NOT NULL, --fk
+    user_id INTEGER NOT NULL, --fk **
     data_time_created TIMESTAMPTZ NOT NULL
 );
 
@@ -242,23 +250,39 @@ INSERT INTO metadata_frontend_type
 				(DEFAULT, 'integer', 'Integer'),
 				(DEFAULT, 'float', 'Floating point numeric value');
 
+CREATE TABLE metadata_item (
+    metadata_item_id SERIAL PRIMARY KEY,
+    item_table_name TEXT NOT NULL,
+    required_item_id INTEGER, --fk *self reference*
+    creation_privilege TEXT NOT NULL
+);
+
+CREATE TABLE metadata_item_column (
+    item_column_id SERIAL PRIMARY KEY,
+    is_id BOOLEAN NOT NULL,
+    is_attribute BOOLEAN NOT NULL,
+    column_name TEXT,
+    filter_selector INTEGER, --fk
+    input_selector INTEGER, --fk
+    sql_type INTEGER NOT NULL, --fk
+    reference_type INTEGER NOT NULL, --fk
+    frontend_type INTEGER NOT NULL, --fk
+);
+
 
 CREATE TABLE metadata_column ( -- Add featureitem_location??
     column_id SERIAL PRIMARY KEY, -- used as the columnBackendID
     feature_id INTEGER, --fk
     rootfeature_id INTEGER, --fk
     frontend_name TEXT NOT NULL,
-    column_name TEXT,
-    table_name TEXT,
     reference_column_name JSON,
     reference_table_name JSON,
     information TEXT,
+    -- metadata_item_column
+    item_column_id
 
-    filter_selector INTEGER, --fk
-    input_selector INTEGER, --fk
-    sql_type INTEGER NOT NULL, --fk
-    reference_type INTEGER NOT NULL, --fk
-    frontend_type INTEGER NOT NULL, --fk
+
+
 
     is_nullable BOOLEAN NOT NULL,
     is_default BOOLEAN NOT NULL,
@@ -274,7 +298,9 @@ CREATE TABLE metadata_feature (
     parent_id INTEGER, --fk
     num_feature_range INTEGER,
     information TEXT,
-    frontend_name TEXT NOT NULL
+    frontend_name TEXT NOT NULL,
+
+    --real_geo_returnable_id INTEGER not need because in metadata_column
 );
 
 
@@ -315,7 +341,7 @@ ALTER TABLE item_country ADD FOREIGN KEY (location_geom_region_id) REFERENCES lo
 -- Submission
 ALTER TABLE tdg_submission ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 ALTER TABLE tdg_submission ADD FOREIGN KEY (item_template_id) REFERENCES item_template;
-ALTER TABLE tdg_submission ADD FOREIGN KEY (tdg_user_id) REFERENCES tdg_users;
+ALTER TABLE tdg_submission ADD FOREIGN KEY (user_id) REFERENCES tdg_users;
 ALTER TABLE tdg_submission ADD FOREIGN KEY (audit_id) REFERENCES tdg_audit;
 
 -- SOP
@@ -338,6 +364,9 @@ ALTER TABLE tdg_users ADD FOREIGN KEY (item_organization_id) REFERENCES item_org
 -- Audit
 ALTER TABLE tdg_assigned_auditor_m2m ADD FOREIGN KEY (user_id) REFERENCES tdg_users;
 ALTER TABLE tdg_assigned_auditor_m2m ADD FOREIGN KEY (audit_id) REFERENCES tdg_audit;
+
+ALTER TABLE tdg_audit ADD FOREIGN KEY (catalog_id) REFERENCES tdg_catalog;
+ALTER TABLE tdg_audit ADD FOREIGN KEY (user_id) REFERENCES tdg_users;
 
 -- FUNCTIONS --
 

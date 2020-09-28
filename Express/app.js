@@ -54,6 +54,8 @@ app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTe
 // Front Page Stats
 app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
+app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center>&copy The Data Grid ${new Date().getFullYear()}<center>`))
+
 // Incomplete Routes
 //app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
