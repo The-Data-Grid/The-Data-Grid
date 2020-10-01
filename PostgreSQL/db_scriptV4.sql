@@ -185,6 +185,10 @@ CREATE TABLE tdg_audit (
 
 -- Metadata --
 
+/*
+The reference type of the data_... column. Important for joining the column
+as well creating the table and columns inside construct.js
+*/
 CREATE TABLE metadata_reference_type (
     type_id SERIAL PRIMARY KEY,
     type_name TEXT NOT NULL
@@ -195,12 +199,16 @@ INSERT INTO metadata_reference_type
     VALUES
         (DEFAULT, 'local'),
         (DEFAULT, 'local-global'),
-        (DEFAULT, 'location'),
-        (DEFAULT, 'item'),
+        (DEFAULT, 'item_id'),
+        (DEFAULT, 'item_non-id'),
         (DEFAULT, 'list'),
         (DEFAULT, 'special'),
-        (DEFAULT, 'submission');
+        (DEFAULT, 'submission'),
+        (DEFAULT, 'attribute');
 
+/*
+Type of UI data input / filtering selectors displayed in frontend
+*/
 CREATE TABLE metadata_selector (
     selector_id SERIAL PRIMARY KEY,
     selector_name TEXT NOT NULL
@@ -246,61 +254,172 @@ INSERT INTO metadata_frontend_type
         (DEFAULT, 'date', 'Date in form of MM-DD-YYYY'),
         (DEFAULT, 'hyperlink', 'When clicked open link in new page'),
         (DEFAULT, 'bool', 'Display "True" for 1 and "False" for 0'),
-				(DEFAULT, 'location', 'JSONB object representing geographic location (point, path or geom region)'),
-				(DEFAULT, 'integer', 'Integer'),
-				(DEFAULT, 'float', 'Floating point numeric value');
+		(DEFAULT, 'location', 'JSONB object representing geographic location (point, path or geom region)'),
+		(DEFAULT, 'integer', 'Integer'),
+		(DEFAULT, 'float', 'Floating point numeric value');
 
+
+
+/*
+is_sub T is_gl T is_... F : submission col
+is_sub F is_gl T is_... F : local-global and special
+is_f F is_a T is_id T : item id column
+is_f F is_a T is_id F : item standard attribute column
+is_f T is_a T is_id F : item factor attribute column
+is_f F is_a F is_id F : observation column stored in feature_... table 
+
+Fill 
+
+item column -> id
+item column -> non-id
+item column -> attribute
+
+        (DEFAULT, 'local'), - associated with item but in feature_... table
+        (DEFAULT, 'local-global'), -- associated with item but in feature_... table AND exists for every feature
+        (DEFAULT, 'location'), -- associated with item
+        (DEFAULT, 'item'),  -- many now
+        (DEFAULT, 'list'),  -- m2m associated with item and is joined to feature_... table
+        (DEFAULT, 'special'), -- special join needed, 2 specials 
+        (DEFAULT, 'submission');
+
+SELECT c.column_name, t.table_name from information_schema.tables as t inner join information_schema.columns as c on t.table_name = c.table_name WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE' AND c.column_name LIKE 'data\_%';
+
+*/
+
+/*
+All item_... tables
+*/
 CREATE TABLE metadata_item (
-    metadata_item_id SERIAL PRIMARY KEY,
+    item_id SERIAL PRIMARY KEY,
+
+    /*
+    Actual table name
+    */
     item_table_name TEXT NOT NULL,
+
+    /*
+    Self referencing the item that is required to identify this item
+    */
     required_item_id INTEGER, --fk *self reference*
+
+    /*
+    Privilege level needed to add a new item
+    */
     creation_privilege TEXT NOT NULL
 );
 
-CREATE TABLE metadata_item_column (
-    item_column_id SERIAL PRIMARY KEY,
-    is_id BOOLEAN NOT NULL,
-    is_attribute BOOLEAN NOT NULL,
-    column_name TEXT,
+/*
+All data_... columns. These are either in 
+item_..., location_..., feature_..., subfeature_..., list_..., or tdg_... tables
+*/
+CREATE TABLE metadata_column (
+    column_id SERIAL PRIMARY KEY,
+    
+    /*
+    Actual column and table name
+    */
+    column_name TEXT NOT NULL,
+    table_name TEXT NOT NULL,
+    
+    /*
+    Item that is related to this column. Note this isn't strictly the item that the data column is in,
+    lists and local columns are still related to their feature's observable item
+    */
+    metadata_item_id INTEGER, --fk 
+
+    /*
+    For frontend
+    */
+    is_nullable BOOLEAN NOT NULL,
+    frontend_name TEXT NOT NULL,
     filter_selector INTEGER, --fk
     input_selector INTEGER, --fk
-    sql_type INTEGER NOT NULL, --fk
-    reference_type INTEGER NOT NULL, --fk
     frontend_type INTEGER NOT NULL, --fk
-);
-
-
-CREATE TABLE metadata_column ( -- Add featureitem_location??
-    column_id SERIAL PRIMARY KEY, -- used as the columnBackendID
-    feature_id INTEGER, --fk
-    rootfeature_id INTEGER, --fk
-    frontend_name TEXT NOT NULL,
-    reference_column_name JSON,
-    reference_table_name JSON,
     information TEXT,
-    -- metadata_item_column
-    item_column_id
 
-
-
-
-    is_nullable BOOLEAN NOT NULL,
-    is_default BOOLEAN NOT NULL,
-    is_global BOOLEAN NOT NULL,  
-    is_ground_truth BOOLEAN, --NULL if reference_type is not 'location'
-
-    unique_identifier JSON --NULL if reference_type is not 'item'
+    /*
+    For backend
+    */
+    sql_type INTEGER NOT NULL, --fk
+    reference_type INTEGER NOT NULL --fk
 );
 
+/*
+All returnable columns. This is different than data_... columns because they are specific to a certain
+feature. For example there is one row in metadata_column for the data_room_number column of the item_room
+table, but there are five rows in metadata_returnable for the data_room_number column of the item_room
+table because it is a data column for each of the five features.
+*/
+CREATE TABLE metadata_returnable (
+    returnable_id SERIAL PRIMARY KEY, -- used as the returnableID
+
+    /*
+    The associated data column in metadata_column. This is required because it contains all of the actual
+    metadata for the column.
+    */
+    data_column_id INTEGER NOT NULL, --fk
+
+    /*
+    NULL if the reference_type of the associated metadata_column is 'submission'
+    */
+    feature_id INTEGER, --fk 
+
+    /*
+    The root feature for this subfeature, NULL if not subfeature
+    */
+    rootfeature_id INTEGER, --fk
+
+    /*
+    if F then feature_id must be NOT NULL
+    if T then feature_id must be NULL
+    */
+    is_submission BOOLEAN NOT NULL,
+    
+    /*
+    Arrays of table and columns needed to make the join to the column. These are different 
+    for different returnables that reference the same metadata_column! This is the whole point, 
+    The same data_... column is joined and treated differently in backend depending on the
+    feature that references it
+    */
+    reference_column_list JSON,
+    reference_table_list JSON,
+
+    /*
+    Specifies if this returnable is the standard geographic location for the feature.
+    NULL if reference_type is not 'location'
+    */
+    is_real_geo BOOLEAN NOT NULL
+);
+
+/*
+Contains the information on the various features and subfeatures. This includes the heirarchy
+information as well as the other frontend metadata requirements.
+*/
 CREATE TABLE metadata_feature (
     feature_id SERIAL PRIMARY KEY,
+
+    /*
+    Actual table name (feature_... or subfeature_...)
+    */
     table_name TEXT NOT NULL,
+
+    /*
+    Self referencing foreign key that specifies the parent feature. Note that this is only
+    NOT NULL for subfeatures.
+    */
     parent_id INTEGER, --fk
+
+    /*
+    direct to REST API numFeatureRange
+    numFeatureRange is the allowable number of instantiations of a subfeature for its parent (is only non-NULL for subfeatures)
+    */
     num_feature_range INTEGER,
+
+    /*
+    Frontend metadata
+    */
     information TEXT,
     frontend_name TEXT NOT NULL,
-
-    --real_geo_returnable_id INTEGER not need because in metadata_column
 );
 
 

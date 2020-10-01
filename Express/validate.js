@@ -15,7 +15,8 @@ for (let id in returnableIDLookup) {
 var validate = {};
 
 for (let id in idColumnTableLookup) {
-    let feature = idColumnTableLookup[id].feature;
+    // Getting the root feature
+    let feature = (idColumnTableLookup[id].rootfeature === null ? idColumnTableLookup[id].feature : idColumnTableLookup[id].rootfeature)
 
     // if empty or feature not included yet, initialize column and filter array for new feature
     if(!Object.keys(validate).includes(feature)) {

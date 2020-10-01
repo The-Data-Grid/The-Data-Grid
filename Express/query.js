@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const { // will import from statement.js as single 'statement' object properties
+const { // will import from statement.js as single 'statement' object 
         select, 
         where, 
         whereCondition, 
