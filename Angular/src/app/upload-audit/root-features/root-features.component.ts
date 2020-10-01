@@ -4,7 +4,8 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
 
 interface Data {
   name: string,
-  features: Object
+  features: Object,
+  included: boolean
   
 }
 
@@ -51,6 +52,55 @@ export class RootFeaturesComponent implements OnInit {
     }
     
   }
+
+  getFeaturesLength() {
+    for (var i = 0;; i++) {
+      try {
+        console.log(this.data[i].name);
+      }
+      catch (e) {
+        return (i - 1);
+      }
+  }
+}
+
+getSubFeaturesLength(subfeatureList) {
+  for (var i = 0;; i++) {
+    try {
+      console.log(subfeatureList.features[i].name)
+    }
+    catch (e) {
+      return (i - 1);
+    }
+  }
+}
+
+
+  updateFeatures() {
+    var featuresLength = this.getFeaturesLength();
+    console.log(featuresLength + " is the features length");
+
+    for (var i = 0; i <= featuresLength; ++i) {
+      console.log("rotate through one time")
+      const feature = document.getElementById(this.data[i].name + " checkbox") as HTMLInputElement;
+      if (!feature.checked) {
+        this.data[i].included = false;
+      }
+
+      const subFeaturesLength = this.getSubFeaturesLength(this.data[i]);
+      for (var j = 0; j <= subFeaturesLength; j++) {
+        const subFeature = document.getElementById(this.data[i].features[j].name + " checkbox") as HTMLInputElement;
+        if (!subFeature.checked) {
+          this.data[i].features[j].included = false;
+        }
+      }
+
+    }
+    this.close();
+
+  }
+
+  isChecked = false;
 
   status = "template";
 

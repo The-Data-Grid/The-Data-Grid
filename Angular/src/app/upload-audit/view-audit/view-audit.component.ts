@@ -2,23 +2,27 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { RootFeaturesComponent } from '../root-features/root-features.component';
 import { GlobalPresetsComponent} from '../global-presets/global-presets.component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-view-audit',
   templateUrl: './view-audit.component.html',
-  styleUrls: ['./view-audit.component.css']
+  styleUrls: ['./view-audit.component.css'],
+  providers: [DatePipe]
 })
 export class ViewAuditComponent implements OnInit {
 
-  constructor(public dialog: MatDialog) { }
+  myDate = new Date();
+
+  constructor(public dialog: MatDialog, private datePipe: DatePipe) {
+   }
 
   audit = { auditName: "Bathroom Audit 1", uploadStatus: "uploaded", _id: "1234567890" };
 
-
   audits = [
-    {name:"Restroom Audit", features: ["Toilet", "Sink", "Urinal"]},
-    {name: "Irrigation Audit", features: ["Sprinkler", "Canal", "Sewer"]},
-    {name: "Boiler Room Audit", features: ["Boiler", "Pump"]}
+    {name:"Restroom Audit", included: true, features: [{name: "Toilet", included: true}, {name: "Sink", included: true}, {name: "Urinal", included: true}]},
+    {name: "Irrigation Audit", included: true, features: [{name: "Sprinkler", included: true}, {name: "Canal", included: true}, {name: "Sewer", included: true}]},
+    {name: "Boiler Room Audit", included: true, features: [{name: "Boiler", included: true}, {name: "Pump", included: true}]}
   ]
 
 
