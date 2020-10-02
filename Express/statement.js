@@ -34,7 +34,7 @@ const where = '$(clause:value) ($(condition:raw))'
 
 const whereCondition = '$(select:value) $(operation:value) $(filterValue)';
 
-const submission = 'INNER JOIN tdg_submission ON d0.submission_id = tdg_submission.submission_id';
+const submission = 'INNER JOIN tdg_submission ON $(feature:value).submission_id = tdg_submission.submission_id';
 
 
 // STATS //
@@ -109,7 +109,7 @@ let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== 
 
 
 const subfeatureJoin = 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id';
-const rootFeatureJoin = 'FROM $(rootFeature:value) AS d0';
+const rootFeatureJoin = 'FROM $(rootFeature:value)';
 
 // iterate through subfeatures and create query for each one
 // Javascript template literal syntax

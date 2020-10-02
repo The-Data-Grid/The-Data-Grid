@@ -35,19 +35,6 @@ CREATE TABLE item_building (
     location_geom_region_id INTEGER NOT NULL --fk **
 );
 
--- 
-
--- Community (deprecated for entity)
-/*
-CREATE TABLE item_community (
-    item_id SERIAL PRIMARY KEY, 
-    data_community_name TEXT UNIQUE NOT NULL,
-    data_city TEXT NOT NULL,
-    data_state TEXT NOT NULL,
-    data_country TEXT NOT NULL,
-    location_id INT NOT NULL --fk
-);
-*/
 
 -- Organization, Entity, City, County, State, Country
 
@@ -70,9 +57,9 @@ CREATE TABLE item_city (
 
 CREATE TABLE item_county (
     item_id SERIAL PRIMARY KEY,
-		data_county_name TEXT NOT NULL,
+	data_county_name TEXT NOT NULL,
     data_fips_code NUMERIC NOT NULL UNIQUE,    
-		item_state_id INTEGER NOT NULL, --fk **
+	item_state_id INTEGER NOT NULL, --fk **
     location_geom_region_id INTEGER NOT NULL --fk **
 );
 
@@ -102,7 +89,7 @@ CREATE TABLE tdg_observation_count (
     observation_count_id SERIAL PRIMARY KEY
 );
 
-CREATE TABLE tdg_sop (
+CREATE TABLE item_sop (
     sop_id SERIAL PRIMARY KEY, 
     tdg_filepath TEXT NOT NULL,
     data_name TEXT NOT NULL,
@@ -110,7 +97,7 @@ CREATE TABLE tdg_sop (
     item_organization_id INT NOT NULL --fk **
 );
 
-CREATE TABLE tdg_sop_m2m (
+CREATE TABLE item_sop_m2m (
     observation_count_id INTEGER NOT NULL, --fk **
     sop_id INTEGER NOT NULL --fk **
 );
@@ -128,7 +115,7 @@ CREATE TABLE tdg_auditor_m2m (
     user_id INTEGER NOT NULL --fk **
 );
 
-CREATE TABLE tdg_users (
+CREATE TABLE item_users (
     user_id SERIAL PRIMARY KEY,
     tdg_privilege_id INT NOT NULL, --fk **
     item_organization_id INT NOT NULL, --fk **
@@ -139,13 +126,13 @@ CREATE TABLE tdg_users (
     tdg_p_salt TEXT NOT NULL
 );
 
-CREATE TABLE tdg_privilege (
+CREATE TABLE item_privilege (
     privilege_id INT PRIMARY KEY, 
     data_privilege_name TEXT NOT NULL
 );
 
 -- Submission
-CREATE TABLE tdg_submission (
+CREATE TABLE item_submission (
     submission_id SERIAL PRIMARY KEY,
     audit_id INTEGER NOT NULL, --fk **
     item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
@@ -155,7 +142,7 @@ CREATE TABLE tdg_submission (
     data_submission_name TEXT
 );
 
-CREATE TABLE tdg_submission_edit (
+CREATE TABLE item_submission_edit (
     submission_edit_id SERIAL PRIMARY KEY,
     submission_id INTEGER NOT NULL, --fk
     tdg_user_id INTEGER NOT NULL, --fk
@@ -205,6 +192,24 @@ INSERT INTO metadata_reference_type
         (DEFAULT, 'special'),
         (DEFAULT, 'submission'),
         (DEFAULT, 'attribute');
+
+/*
+Two different things, data storage type, data representation type
+_storage
+item_id
+item_non-id
+local
+local-global
+list
+special
+tdg
+
+_representation
+submission
+
+
+*/
+
 
 /*
 Type of UI data input / filtering selectors displayed in frontend
@@ -261,30 +266,21 @@ INSERT INTO metadata_frontend_type
 
 
 /*
-is_sub T is_gl T is_... F : submission col
-is_sub F is_gl T is_... F : local-global and special
-is_f F is_a T is_id T : item id column
-is_f F is_a T is_id F : item standard attribute column
-is_f T is_a T is_id F : item factor attribute column
-is_f F is_a F is_id F : observation column stored in feature_... table 
-
-Fill 
-
-item column -> id
-item column -> non-id
-item column -> attribute
-
-        (DEFAULT, 'local'), - associated with item but in feature_... table
-        (DEFAULT, 'local-global'), -- associated with item but in feature_... table AND exists for every feature
-        (DEFAULT, 'location'), -- associated with item
-        (DEFAULT, 'item'),  -- many now
-        (DEFAULT, 'list'),  -- m2m associated with item and is joined to feature_... table
-        (DEFAULT, 'special'), -- special join needed, 2 specials 
-        (DEFAULT, 'submission');
-
-SELECT c.column_name, t.table_name from information_schema.tables as t inner join information_schema.columns as c on t.table_name = c.table_name WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE' AND c.column_name LIKE 'data\_%';
-
+Query that gets all data_... columns and their respective tables:
+    SELECT c.column_name, t.table_name from information_schema.tables as t inner join information_schema.columns as c on t.table_name = c.table_name WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE' AND c.column_name LIKE 'data\_%';
 */
+
+CREATE TABLE metadata_item_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL
+);
+
+INSERT INTO metadata_item_type 
+    (type_id, type_name)
+    VALUES
+        (DEFAULT, 'observable'),
+        (DEFAULT, 'potential-observable'),
+        (DEFAULT, 'non-observable');
 
 /*
 All item_... tables
@@ -298,9 +294,14 @@ CREATE TABLE metadata_item (
     item_table_name TEXT NOT NULL,
 
     /*
+    Item type: observable (feature item), potential observable, non-observable
+    */
+    item_type INTEGER NOT NULL, --fk
+
+    /*
     Self referencing the item that is required to identify this item
     */
-    required_item_id INTEGER, --fk *self reference*
+    required_item_id INTEGER, --fk
 
     /*
     Privilege level needed to add a new item
@@ -323,7 +324,8 @@ CREATE TABLE metadata_column (
     
     /*
     Item that is related to this column. Note this isn't strictly the item that the data column is in,
-    lists and local columns are still related to their feature's observable item
+    lists and local columns are still related to their feature's observable item. This is only NULL
+    when the reference type is 'tdg'
     */
     metadata_item_id INTEGER, --fk 
 
