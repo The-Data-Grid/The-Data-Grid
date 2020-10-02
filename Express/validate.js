@@ -98,25 +98,25 @@ function validateAudit(req, res, next) {
     var filters = Object.keys(universalFilters);
     // Validate universalFilters query
     if (hasDuplicates(filters)) {
-        return res.status(400).send(`Bad Request: Cannot have duplicate filters.`);
+        return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters.`);
     } else if(filters.includes('sorta') && filters.includes('sortd')) {
-        return res.status(400).send(`Bad Request: Cannot use both sorta and sortd.`);
+        return res.status(400).send(`Bad Request 2206: Cannot use both sorta and sortd.`);
     } else if(filters.includes('offset') && (!filters.includes('sorta') && !filters.includes('sortd'))) {
-        return res.status(400).send(`Bad Request: Offset requires either sorta or sortd.`);
+        return res.status(400).send(`Bad Request 2207: Offset requires either sorta or sortd.`);
     } else if(filters.includes('limit') && !filters.includes('offset')) {
-        return res.status(400).send(`Bad Request: Limit requires offset.`);
+        return res.status(400).send(`Bad Request 2208: Limit requires offset.`);
     }
 
     // Validate universalFilters input fields
     for(let filter of filters) {
         // Validate field
         if (filter == 'limit' && !isPositiveIntegerOrZero(universalFilters[filter])) {
-            return res.status(400).send(`Bad Request: Field for ${filter} must be zero or a postiive integer.`);
+            return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a postiive integer.`);
         } else if (filter == 'offset' && !isPositiveInteger(universalFilters[filter])) {
-            return res.status(400).send(`Bad Request: Field for ${filter} must be a postiive integer.`);
+            return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a postiive integer.`);
         } else if (filter == 'sorta' || filter == 'sortd') {
             if (!validate[feature]['column'].includes(parseInt(universalFilters[filter])) && !globals.includes(parseInt(universalFilters[filter]))) {
-                return res.status(400).send(`Bad Request: Field for ${filter} must be a positive integer.`);
+                return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer.`);
             }
         }
     }
