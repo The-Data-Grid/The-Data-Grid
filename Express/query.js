@@ -237,7 +237,7 @@ function featureQuery(req, res) {
     // if submission returnables exist
     if(submissionReturnableIDs.length >= 1) {
         // get all join objects in request
-        let joins = submissionReturnableIDs.map(returnable => returnable.joinObjects)
+        let joins = submissionReturnableIDs.map(returnable => returnable.joinObject)
 
         // perform reference selection to trim join tree and assign aliases
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
@@ -283,7 +283,7 @@ function featureQuery(req, res) {
     let dynamicClauseArray = [];
     if(dynamicReturnableIDs.length >= 1) {
         // get all join objects in request
-        let joins = dynamicReturnableIDs.map(returnable => returnable.joinObjects)
+        let joins = dynamicReturnableIDs.map(returnable => returnable.joinObject)
         
         // perform reference selection to trim join tree and assign aliases
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
