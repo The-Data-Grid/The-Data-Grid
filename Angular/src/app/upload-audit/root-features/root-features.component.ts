@@ -86,12 +86,18 @@ getSubFeaturesLength(subfeatureList) {
       if (!feature.checked) {
         this.data[i].included = false;
       }
+      else {
+        this.data[i].included = true;
+      }
 
       const subFeaturesLength = this.getSubFeaturesLength(this.data[i]);
       for (var j = 0; j <= subFeaturesLength; j++) {
         const subFeature = document.getElementById(this.data[i].features[j].name + " checkbox") as HTMLInputElement;
         if (!subFeature.checked) {
           this.data[i].features[j].included = false;
+        }
+        else {
+          this.data[i].features[j].included = true;
         }
       }
 
