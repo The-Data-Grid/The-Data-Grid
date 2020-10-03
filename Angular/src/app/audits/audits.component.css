@@ -86,12 +86,15 @@
     margin-top: 3rem;
 }
 
-#global-filters {
-    background-color: rgba(73, 116, 165, 0.8);
+.datetime-picker{
+    text-align: center;
+    font-size: x-small;
 }
 
-#audit-filters {
-    background-color: rgba(73, 116, 165, 0.72);
+/* matInput datetime picker icon color */
+::-webkit-calendar-picker-indicator { 
+    color: white !important;
+    /* background: transparent;  */
 }
 
 #apply-button {

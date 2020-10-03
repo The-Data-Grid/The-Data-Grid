@@ -273,7 +273,7 @@
     </ng-template>
 
     <ng-template #calendarRangeTemplate let-column>
-        <mat-form-field>
+        <!-- <mat-form-field>
             <mat-label>{{column.columnFrontendName}} Range</mat-label>
             <input #datepicker matInput [matDatepicker]="picker1" (dateInput)="applyDateFilter($event.target.value)"
                 style="width: 75px; text-align: center;">
@@ -284,10 +284,15 @@
                 style="width: 75px; text-align: center;">
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
             <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field> -->
+        <div style="width: 85%; margin-left: auto; margin-right: auto;">
+        <mat-form-field style="width: 50%;">
+            <input matInput class="datetime-picker" type="datetime-local" placeholder={{column.columnFrontendName}}>
         </mat-form-field>
-        <!-- <ngx-datetime-range-picker name="date" [options]="datePickerOptions" [settings]="datePickerSettings"
-            [(dateRangeModel)]="selectedDate" (dateRangeChanged)="onFilterChange($event)" required>
-        </ngx-datetime-range-picker> -->
+        <mat-form-field style="width: 50%;">
+            <input matInput class="datetime-picker" type="datetime-local">
+        </mat-form-field>
+    </div>
     </ng-template>
 
     <ng-template #calendarEqualTemplate let-column>
