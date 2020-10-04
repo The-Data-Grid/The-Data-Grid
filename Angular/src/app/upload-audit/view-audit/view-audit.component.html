@@ -1,4 +1,9 @@
 <!-- outside div body wrapper to make sure tab bar doesnt push down content -->
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
+    
+</head>
 <div id="body">
     <mat-card>
         <div id="top-buttons" fxLayoutAlign="end center">
@@ -10,7 +15,9 @@
             </button>
         </div>
         <mat-card-header>
-            {{audit.auditName}}
+            <div id="name">
+                {{audit.auditName}}
+            </div>
         </mat-card-header>
         <mat-card-subtitle>
             <button mat-button (click)="openGlobalPresets()">
@@ -27,5 +34,35 @@
     </mat-card>
 
     <!-- <h1>{{myDate | date:'yyyy-MM-dd'}}</h1> -->
+    <div style="margin-top: 30px;"></div>
+    <div class="lower_bound"></div>
+    <div *ngFor="let audit of audits">
+        <div *ngFor="let feature of audit.features">
+            <div *ngIf="feature.included">
+                <h1 class="audit_name">{{ feature.name }}</h1>
+                <h2 class="add" [id]="feature.name + ' add'">+</h2>
+                <span class="caret_formatting" (click)="showOrHideTable(feature.name)">
+                    <i [id]="feature.name + ' caret'" class="fa fa-caret-down subformatting" style="font-size: 18px;"></i>
+                </span>
+                <div class="lower_bound"></div>
+                                  
+                <table [id]="feature.name" class="center" style="display: none; margin-left: 8px;">
+                    <tr>
+                      <th class="column_name">Action</th><th class="column_name">Last Updated</th><th class="column_name">Clockwise Number</th><th class="column_name">Room</th>
+                    </tr>
+                    <tr *ngFor="let action of feature.actions">
+                            <td>{{ action.action }}</td>
+                            <td>{{ action.updated }}</td>
+                            <td>{{ action.c_number }}</td>
+                            <td>{{ action.room }}</td>
+                    </tr>
+                  </table>
+                  
+    
+        </div>
+    </div>
 
 </div>
+
+<div style="padding-bottom: 40px;"></div>
+

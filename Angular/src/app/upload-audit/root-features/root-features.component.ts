@@ -81,7 +81,6 @@ getSubFeaturesLength(subfeatureList) {
     console.log(featuresLength + " is the features length");
 
     for (var i = 0; i <= featuresLength; ++i) {
-      console.log("rotate through one time")
       const feature = document.getElementById(this.data[i].name + " checkbox") as HTMLInputElement;
       if (!feature.checked) {
         this.data[i].included = false;
@@ -92,6 +91,10 @@ getSubFeaturesLength(subfeatureList) {
 
       const subFeaturesLength = this.getSubFeaturesLength(this.data[i]);
       for (var j = 0; j <= subFeaturesLength; j++) {
+        if (this.data[i].included == false) {
+          this.data[i].features[j].included = false;
+          continue;
+        }
         const subFeature = document.getElementById(this.data[i].features[j].name + " checkbox") as HTMLInputElement;
         if (!subFeature.checked) {
           this.data[i].features[j].included = false;
