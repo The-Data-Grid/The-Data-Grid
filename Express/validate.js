@@ -1,4 +1,13 @@
-const {idColumnTableLookup} = require('./setup.js');
+const {idColumnTableLookup, returnableIDLookup} = require('./setup.js');
+
+// Generate array of ids that are global
+var globals = [];
+
+for (let id in returnableIDLookup) {
+    if (returnableIDLookup[id].returnType == "global") {
+        globals.push(id);
+    }
+}
 
 // Dynamically generating the validate object by
 // looping through all ids in idColumnTableLookup
@@ -6,7 +15,8 @@ const {idColumnTableLookup} = require('./setup.js');
 var validate = {};
 
 for (let id in idColumnTableLookup) {
-    let feature = idColumnTableLookup[id].feature;
+    // Getting the root feature
+    let feature = (idColumnTableLookup[id].rootfeature === null ? idColumnTableLookup[id].feature : idColumnTableLookup[id].rootfeature)
 
     // if empty or feature not included yet, initialize column and filter array for new feature
     if(!Object.keys(validate).includes(feature)) {
@@ -42,9 +52,7 @@ function validateAudit(req, res, next) {
     // Validate columns for feature
 
     for(let column of res.locals.parsed.columns) {
-        console.log(validate[feature]['column'])
-        console.log(parseInt(column))
-        if(!validate[feature]['column'].includes(parseInt(column))) {
+        if(!validate[feature]['column'].includes(parseInt(column)) && !globals.includes(parseInt(column))) {
             return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
         };
     };
@@ -87,25 +95,37 @@ function validateAudit(req, res, next) {
         index++;
     };
 
-    // Validate universal filters
-    validateUniversalFilter(universalFilters);
+    var filters = Object.keys(universalFilters);
+    // Validate universalFilters query
+    if (hasDuplicates(filters)) {
+        return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters.`);
+    } else if(filters.includes('sorta') && filters.includes('sortd')) {
+        return res.status(400).send(`Bad Request 2206: Cannot use both sorta and sortd.`);
+    } else if(filters.includes('offset') && (!filters.includes('sorta') && !filters.includes('sortd'))) {
+        return res.status(400).send(`Bad Request 2207: Offset requires either sorta or sortd.`);
+    } else if(filters.includes('limit') && !filters.includes('offset')) {
+        return res.status(400).send(`Bad Request 2208: Limit requires offset.`);
+    }
+
+    // Validate universalFilters input fields
+    for(let filter of filters) {
+        // Validate field
+        if (filter == 'limit' && !isPositiveIntegerOrZero(universalFilters[filter])) {
+            return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a postiive integer.`);
+        } else if (filter == 'offset' && !isPositiveInteger(universalFilters[filter])) {
+            return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a postiive integer.`);
+        } else if (filter == 'sorta' || filter == 'sortd') {
+            if (!validate[feature]['column'].includes(parseInt(universalFilters[filter])) && !globals.includes(parseInt(universalFilters[filter]))) {
+                return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer.`);
+            }
+        }
+    }
 
     // Passing to query.js
     next();
 }
 
-function validateUniversalFilter(universalFilters) {
-    var filters = Object.keys(universalFilters);
-    if (hasDuplicates(filters)) {
-        return res.status(400).send(`Bad Request: Cannot have duplicate filters.`);
-    } else if(filters.includes('sorta') && filters.includes('sortd')) {
-        return res.status(400).send(`Bad Request: Cannot use both sorta and sortd.`);
-    } else if(filters.includes('offset') && (!filters.includes('sorta') && !filters.includes('sortd'))) {
-        return res.status(400).send(`Bad Request: Offset requires either sorta or sortd.`);
-    } else if(filters.includes('limit') && !filters.includes('offset')) {
-        return res.status(400).send(`Bad Request: Limit requires offset.`);
-    }
-}
+//// Helper validation functions ////
 
 function hasDuplicates(array) {
     return (new Set(array)).size !== array.length;
@@ -136,6 +156,16 @@ function isValidDate(field)
     return composedDate.getDate() == d &&
             composedDate.getMonth() == m &&
             composedDate.getFullYear() == y;
+}
+
+function isPositiveIntegerOrZero(field) {
+    var n = Math.floor(Number(field));
+    return n !== Infinity && String(n) === field && n >= 0;
+}
+
+function isPositiveInteger(field) {
+    var n = Math.floor(Number(field));
+    return n !== Infinity && String(n) === field && n > 0;
 }
 
 module.exports = {

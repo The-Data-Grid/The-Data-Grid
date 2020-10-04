@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const {
+const { // will import from statement.js as single 'statement' object 
         select, 
         where, 
         whereCondition, 
@@ -174,14 +174,19 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
 
 
 
-function string2Join(string, prefix) {
-    // 0: originalTable, 1: originalColumn, 2: joinTable, 3: joinColumn
+function string2Join(string, prefix, feature) {
     let clauseArray = [];
+
+    // 0: originalTable, 1: originalColumn, 2: joinTable, 3: joinColumn
     string[2].split('>').forEach(el => {
         clauseArray.push(el.split('.')[0])
         clauseArray.push(el.split('.')[1])
     })
-    let originalAlias = prefix + string[0]
+    
+    // if parentAlias is the root feature join to the feature rather than an alias
+    let originalAlias;
+    (string[0] === -1 ? originalAlias = feature : originalAlias = prefix + string[0])
+
     let joinAlias = prefix + string[1]
     return(pgp.as.format(referenceSelectionJoin, {
         joinTable: clauseArray[2],
@@ -232,12 +237,14 @@ function featureQuery(req, res) {
     // if submission returnables exist
     if(submissionReturnableIDs.length >= 1) {
         // get all join objects in request
-        let joins = submissionReturnableIDs.map(returnable => returnable.joinObjects)
+        let joins = submissionReturnableIDs.map(returnable => returnable.joinObject)
+
         // perform reference selection to trim join tree and assign aliases
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
+
         // make joins and add to clauseArray
         for(let join of joinArray.builtArray) {
-            submissionClauseArray.push(string2Join(join, 's'))
+            submissionClauseArray.push(string2Join(join, 's', feature))
         }
         // add selections to selectClauses
         for(let returnable of submissionReturnableIDs) {
@@ -276,15 +283,18 @@ function featureQuery(req, res) {
     let dynamicClauseArray = [];
     if(dynamicReturnableIDs.length >= 1) {
         // get all join objects in request
-        let joins = dynamicReturnableIDs.map(returnable => returnable.joinObjects)
+        let joins = dynamicReturnableIDs.map(returnable => returnable.joinObject)
         
         // perform reference selection to trim join tree and assign aliases
         let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
+        console.log('BA')
+        console.log(joinArray.builtArray)
+        console.log('IDAL')
+        console.log(joinArray.idAliasLookup)
 
         // make joins and add to clauseArray
         for(let join of joinArray.builtArray) {
-            console.log(join)
-            dynamicClauseArray.push(string2Join(join, 'd'))
+            dynamicClauseArray.push(string2Join(join, 'd', feature))
         }
         // add selections to selectClauses
         for(let returnable of dynamicReturnableIDs) {
@@ -464,7 +474,7 @@ function featureQuery(req, res) {
     // EXECUTING QUERY
     // ==================================================
     // Adding commas to select clauses
-    selectClauses = ['SELECT ', selectClauses.join(' , ')]
+    selectClauses = ['SELECT ', selectClauses.join(', ')]
 
     // Adding clauses to query in order
     let query = [...selectClauses, ...featureClauseArray, ...submissionClauseArray, ...listAndSpecialClauseArray, ...dynamicClauseArray, ...whereClauseArray, ...universalFilterArray]; 
@@ -481,13 +491,14 @@ function featureQuery(req, res) {
 
             // Constructing the tableObject and sending response
             return res.json(data)
+            // will write this soon!
             return res.json(makeTableObject(data));
 
         }).catch(err => {
 
             console.log(err)
             // Error
-            return res.status(500).send('Internal Server Error 1702: Query constructed properly but error thrown in database');
+            return res.status(500).send(`<center><h3>Internal Server Error 1702: Malformed Query</h3></center><hr><center>&copy The Data Grid ${new Date().getFullYear()}<center>`);
             
         });
 }

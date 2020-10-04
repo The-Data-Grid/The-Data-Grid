@@ -52,12 +52,12 @@ class ReturnableID {
         this.joinSQL = joinSQL
         this.selectSQL = selectSQL
 
-        this.joinObjects = this.makeJoinObjects(columnTree, tableTree, ID)
+        this.joinObject = this.makeJoinObject(columnTree, tableTree, ID)
 
         Object.freeze(this)
     }
 
-    makeJoinObjects(columnTree, tableTree, ID) {
+    makeJoinObject(columnTree, tableTree, ID) {
         if(columnTree === null || tableTree === null) {
             return null
         } else {
@@ -80,7 +80,9 @@ class ReturnableID {
                 joinListArray.push(`${join.originalTable}.${join.originalColumn}>${join.joinTable}.${join.joinColumn}`)
             })
 
-            return {parentAlias: 0, ID: ID, refs: joinListArray}
+            // recursiveReferenceSelection input. Note parentAlias is always input as -1 because the function
+            // selects references from the feature_... table and builds out. -1 indicates a join to this table
+            return {parentAlias: -1, ID: ID, refs: joinListArray}
         }
     }
 }
@@ -93,6 +95,8 @@ class ReturnableID {
 // ============================================================
 const {returnableIDLookup,idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
 
+console.log(idColumnTableLookup)
+//console.log(returnableIDLookup)
     
 module.exports = {
     returnableIDLookup: returnableIDLookup,

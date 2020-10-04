@@ -46,7 +46,7 @@ app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.v
 app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
 
 // Audit Upload
-app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
+//app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
 
 // Template Query
 app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTemplate should be in query.js
@@ -54,11 +54,14 @@ app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTe
 // Front Page Stats
 app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
+// Easter Egg
+app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center>&copy TDG API Error Response ${new Date().getFullYear()}<center>`))
+
 // Incomplete Routes
 //app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
-app.listen(port)
+app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 
 ////// LISTEN WITH SSL //////
 //https.createServer(options, app).listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`));
