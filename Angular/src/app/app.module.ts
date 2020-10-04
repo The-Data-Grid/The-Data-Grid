@@ -27,7 +27,7 @@ import { ClickOutsideModule } from 'ng-click-outside'
 import { MaterialModule } from './material.module';
 import { RootFeaturesComponent } from './upload-audit/root-features/root-features.component';
 import { GlobalPresetsComponent} from './upload-audit/global-presets/global-presets.component';
-
+import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audit.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -45,7 +45,8 @@ import { GlobalPresetsComponent} from './upload-audit/global-presets/global-pres
     UploadAuditComponent,
     ViewAuditComponent,
     RootFeaturesComponent,
-    GlobalPresetsComponent
+    GlobalPresetsComponent,
+    FeatureAuditComponent
   ],
   imports: [
     BrowserModule,

@@ -48,8 +48,8 @@ export class ApiService {
     if (this.columnsString) {
       url = url + "/" + this.columnsString;
     }
-    return this.http.get<TableObject>(url, { params: qsparams });
-    //  console.log(url);
+    // return this.http.get<TableObject>(url, { params: qsparams });
+     console.log(url);
 
     
     // var url = fakeServerURL + '/table';
