@@ -268,6 +268,8 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
             selectSQL = 'tdg_sop.data_name'
 
         } else if(row['rt__type_name'] == 'list') {
+            //join SQL should equal query
+            //select SQL --> tablename.columnname
 
             //// List ////
 
@@ -278,6 +280,9 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
             ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
             INNER JOIN $(listName:value) \
             ON $(listName:value).list_id = $(listName:value)_m2m.list_id', {myTable: 'feature_toilet', myTable2: 'sldkfjds'})
+
+            //myTable, myTable2 will be interpolated using $()
+            //second argument would be the row[]
 
             let listName= "listName_" + referenceTable + referenceColumn;
 
@@ -297,18 +302,23 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
                 }
             }
             */
+           //feature name, tablename, 
+           //table name is c__table_name
+           //featuer name is feature or f__table_name
+           //many to many to the feature table and list table to many to many
+           //list c__table_name
 
-            let listJoin = {
-                feature: {
-                    listName_referenceTableName_referenceColumnName : { //Join m2m to audit table then join 
-                        query: 'INNER JOIN $(listName:value)_m2m \
-                                ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
-                                INNER JOIN $(listName:value) \
-                                ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
-                        dependencies: ['referenceTableName']
-                    }
-                }
-            }
+           //m2m table will just have _m2m at the end
+
+
+
+         joinSQL= pgp.as.format('INNER JOIN $(feature:value)_m2m \
+                                ON $(feature:value)_m2m.observation_id = $(feature:value).observation_id \
+                                INNER JOIN $(tablename:value) \
+                                ON $(tablename:value).list_id = $(tablename:value)_m2m.list_id', {feature: row['f__table_name'], tablename : row['c__table_name']})
+        
+         selectSQL = pgp.as.format('$(table:value).$(column:value)', {table:row['c__table_name'], column: row['c__column_name']})
+            
 
         } else {
             selectSQL = `$(table:value).${row['c__column_name']}`
