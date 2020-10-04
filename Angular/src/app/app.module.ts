@@ -45,7 +45,7 @@ import { GlobalPresetsComponent} from './upload-audit/global-presets/global-pres
     UploadAuditComponent,
     ViewAuditComponent,
     RootFeaturesComponent,
-    GlobalPresetsComponent
+    GlobalPresetsComponent,
   ],
   imports: [
     BrowserModule,
