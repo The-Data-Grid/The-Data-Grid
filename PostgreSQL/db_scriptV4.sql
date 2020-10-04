@@ -1,10 +1,44 @@
---------------------------------------------
----- ALL STATIC TABLES AND FOREIGN KEYS ----
---------------------------------------------
+/* ----------------------------------------------------------------------------------------------------------                                                                                                                                                   _______                                       
+         _____                    _____                    _____          
+        /\    \                  /\    \                  /\    \         
+       /::\    \                /::\    \                /::\    \        
+       \:::\    \              /::::\    \              /::::\    \       
+        \:::\    \            /::::::\    \            /::::::\    \      
+         \:::\    \          /:::/\:::\    \          /:::/\:::\    \     
+          \:::\    \        /:::/  \:::\    \        /:::/  \:::\    \    
+          /::::\    \      /:::/    \:::\    \      /:::/    \:::\    \   
+         /::::::\    \    /:::/    / \:::\    \    /:::/    / \:::\    \  
+        /:::/\:::\    \  /:::/    /   \:::\ ___\  /:::/    /   \:::\ ___\ 
+       /:::/  \:::\____\/:::/____/     \:::|    |/:::/____/  ___\:::|    |
+      /:::/    \::/    /\:::\    \     /:::|____|\:::\    \ /\  /:::|____|
+     /:::/    / \/____/  \:::\    \   /:::/    /  \:::\    /::\ \::/    / 
+    /:::/    /            \:::\    \ /:::/    /    \:::\   \:::\ \/____/  
+   /:::/    /              \:::\    /:::/    /      \:::\   \:::\____\    
+   \::/    /                \:::\  /:::/    /        \:::\  /:::/    /    
+    \/____/                  \:::\/:::/    /          \:::\/:::/    /     
+                              \::::::/    /            \::::::/    /      
+                               \::::/    /              \::::/    /       
+                                \::/____/                \::/____/        
+                                 ~~                                       
+   ----------------------------------------------------------------------------------------------------------
+*/
 
--- TABLES --
+-- Database Creation Script --
+
+/* ----------------------------------------------------------------------------------------------------------                                                                                                              
+                                        ,,                                      ,,          ,,                   
+    .M"""bgd   mm               mm      db               MMP""MM""YMM          *MM        `7MM                   
+   ,MI    "Y   MM               MM                       P'   MM   `7           MM          MM                   
+   `MMb.     mmMMmm   ,6"Yb.  mmMMmm  `7MM   ,p6"bo           MM       ,6"Yb.   MM,dMMb.    MM   .gP"Ya  ,pP"Ybd 
+     `YMMNq.   MM    8)   MM    MM      MM  6M'  OO           MM      8)   MM   MM    `Mb   MM  ,M'   Yb 8I   `" 
+   .     `MM   MM     ,pm9MM    MM      MM  8M                MM       ,pm9MM   MM     M8   MM  8M"""""" `YMMMa. 
+   Mb     dM   MM    8M   MM    MM      MM  YM.    ,          MM      8M   MM   MM.   ,M9   MM  YM.    , L.   I8 
+   P"Ybmmd"    `Mbmo `Moo9^Yo.  `Mbmo .JMML. YMbmd'         .JMML.    `Moo9^Yo. P^YbmdP'  .JMML. `Mbmmd' M9mmmP' 
+*/ ----------------------------------------------------------------------------------------------------------       
+
 
 -- Location
+
 CREATE TABLE location_point (
     location_id SERIAL PRIMARY KEY,
     data_longitude NUMERIC NOT NULL,
@@ -24,7 +58,7 @@ CREATE TABLE location_path (
 -- Room, Building
 CREATE TABLE item_room (
     item_id SERIAL PRIMARY KEY,
-    data_room_number INTEGER NOT NULL,
+    data_room_number TEXT NOT NULL,
     item_building_id INTEGER NOT NULL --fk **
 );
 
@@ -43,7 +77,7 @@ CREATE TABLE item_entity (
     data_entity_name TEXT NOT NULL,
     data_entity_address TEXT NOT NULL,
     item_city_id INTEGER NOT NULL, --fk **
-    UNIQUE (data_entity_address, data_entity_name)
+    UNIQUE (data_entity_name)
 );
 
 CREATE TABLE item_city (
@@ -52,7 +86,8 @@ CREATE TABLE item_city (
     data_population NUMERIC,
 	item_county_id INTEGER NOT NULL, --fk **
     location_geom_region_id INTEGER, --fk **
-    location_point_id INTEGER
+    location_point_id INTEGER, --fk
+    UNIQUE(item_county_id, data_city_name)
 );
 
 CREATE TABLE item_county (
@@ -60,28 +95,33 @@ CREATE TABLE item_county (
 	data_county_name TEXT NOT NULL,
     data_fips_code NUMERIC NOT NULL UNIQUE,    
 	item_state_id INTEGER NOT NULL, --fk **
-    location_geom_region_id INTEGER NOT NULL --fk **
+    location_geom_region_id INTEGER NOT NULL, --fk **
+    UNIQUE(data_county_name, item_state_id)
 );
 
 CREATE TABLE item_state (
     item_id SERIAL PRIMARY KEY,
     data_state_name TEXT NOT NULL,    
     item_country_id INTEGER NOT NULL, --fk **
-		location_geom_region_id INTEGER NOT NULL --fk **
+	location_geom_region_id INTEGER NOT NULL, --fk **
+    UNIQUE(data_state_name, item_country_id)
 );
 
 CREATE TABLE item_country (
     item_id SERIAL PRIMARY KEY,
     data_country_name TEXT NOT NULL,
-    location_geom_region_id INTEGER NOT NULL --fk **
+    location_geom_region_id INTEGER NOT NULL, --fk **
+    UNIQUE(data_country_name)
 );
 
 CREATE TABLE item_organization (
     item_id SERIAL PRIMARY KEY,  
     data_organization_name_text TEXT NOT NULL,
     data_organization_name_link TEXT,
-    item_entity_id INTEGER --fk **
+    item_entity_id INTEGER, --fk **
+    UNIQUE(data_organization_name_text, item_entity_id)
 );
+
 
 -- Observation supertable, SOP and User which reference it
 
@@ -121,17 +161,18 @@ CREATE TABLE item_users (
     item_organization_id INT NOT NULL, --fk **
     data_first_name TEXT NOT NULL,
     data_last_name TEXT NOT NULL,
-    tdg_email TEXT NOT NULL,
-    tdg_p_hash TEXT NOT NULL,
-    tdg_p_salt TEXT NOT NULL
+    data_email TEXT NOT NULL,
+    tdg_p_hash TEXT NOT NULL
 );
 
-CREATE TABLE item_privilege (
+CREATE TABLE tdg_privilege (
     privilege_id INT PRIMARY KEY, 
     data_privilege_name TEXT NOT NULL
 );
 
+
 -- Submission
+
 CREATE TABLE item_submission (
     submission_id SERIAL PRIMARY KEY,
     audit_id INTEGER NOT NULL, --fk **
@@ -147,6 +188,13 @@ CREATE TABLE item_submission_edit (
     submission_id INTEGER NOT NULL, --fk
     tdg_user_id INTEGER NOT NULL, --fk
     data_time_edited TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE item_observation_edit (
+    observation_edit_id SERIAL PRIMARY KEY,
+    observation_count_id INTEGER NOT NULL, --fk
+    submission_edit_id INTEGER NOT NULL, --fk
+    data_edit_description TEXT
 );
 
 CREATE TABLE tdg_assigned_auditor_m2m (
@@ -170,7 +218,18 @@ CREATE TABLE tdg_audit (
     data_time_created TIMESTAMPTZ NOT NULL
 );
 
--- Metadata --
+
+/* ----------------------------------------------------------------------------------------------------------                                                                                                                                                   _______                                       
+                                                    ,,                            
+   `7MMM.     ,MMF'           mm                  `7MM             mm             
+     MMMb    dPMM             MM                    MM             MM             
+     M YM   ,M MM   .gP"Ya  mmMMmm   ,6"Yb.    ,M""bMM   ,6"Yb.  mmMMmm   ,6"Yb.  
+     M  Mb  M' MM  ,M'   Yb   MM    8)   MM  ,AP    MM  8)   MM    MM    8)   MM  
+     M  YM.P'  MM  8M""""""   MM     ,pm9MM  8MI    MM   ,pm9MM    MM     ,pm9MM  
+     M  `YM'   MM  YM.    ,   MM    8M   MM  `Mb    MM  8M   MM    MM    8M   MM  
+   .JML. `'  .JMML. `Mbmmd'   `Mbmo `Moo9^Yo. `Wbmd"MML.`Moo9^Yo.  `Mbmo `Moo9^Yo. 
+   ----------------------------------------------------------------------------------------------------------
+*/
 
 /*
 The reference type of the data_... column. Important for joining the column
@@ -181,34 +240,45 @@ CREATE TABLE metadata_reference_type (
     type_name TEXT NOT NULL
 );
 
+/*
+Reference Type Information
+
+item-id
+    - Identifying data column of an item
+    ex: item_room > data_room_number
+item-non-id
+    - Non Identifying data column of an item
+    ex: item_building > data_color
+obs
+    - Observational data column within a feature_... table
+    ex: feature_toilet > data_gpf
+obs-global
+    - Observational data column within all feature_... tables
+    ex: feature_... > data_time_conducted
+obs-list
+    - Observational data column associated with a feature_... table through a many to many
+      relationship which can take on multiple values at a time
+    ex: list_toilet_flushometer_condition > data_element 
+special
+    - Special data column that may contain multiple actual columns and requires special treatment
+    ex: (there are two)
+        SOP Name: joined to observation_count instead of feature_... table
+        Auditor Name: is a coalesce between two data columns in different tables
+attribute
+    - Associated with the feature_... table AND the item table, meant to change rarely with the current
+      value being the item reference and the observed value being the feature reference
+    ex: attribute_toilet_flushometer_brand > data_name
+*/
 INSERT INTO metadata_reference_type
     (type_id, type_name)
     VALUES
-        (DEFAULT, 'local'),
-        (DEFAULT, 'local-global'),
-        (DEFAULT, 'item_id'),
-        (DEFAULT, 'item_non-id'),
-        (DEFAULT, 'list'),
+        (DEFAULT, 'item-id'),
+        (DEFAULT, 'item-non-id'),
+        (DEFAULT, 'obs'),
+        (DEFAULT, 'obs-global'),
+        (DEFAULT, 'obs-list'),
         (DEFAULT, 'special'),
-        (DEFAULT, 'submission'),
         (DEFAULT, 'attribute');
-
-/*
-Two different things, data storage type, data representation type
-_storage
-item_id
-item_non-id
-local
-local-global
-list
-special
-tdg
-
-_representation
-submission
-
-
-*/
 
 
 /*
@@ -264,7 +334,6 @@ INSERT INTO metadata_frontend_type
 		(DEFAULT, 'float', 'Floating point numeric value');
 
 
-
 /*
 Query that gets all data_... columns and their respective tables:
     SELECT c.column_name, t.table_name from information_schema.tables as t inner join information_schema.columns as c on t.table_name = c.table_name WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE' AND c.column_name LIKE 'data\_%';
@@ -283,6 +352,16 @@ INSERT INTO metadata_item_type
         (DEFAULT, 'non-observable');
 
 /*
+Child-Parent item relationships. The is_id column specifies whether the child item is needed to identify
+The parent.
+*/
+CREATE TABLE metadata_item_m2m (
+    parent_item_id INTEGER NOT NULL, --fk
+    child_item_id INTEGER NOT NULL, --fk
+    is_id BOOLEAN NOT NULL
+);
+
+/*
 All item_... tables
 */
 CREATE TABLE metadata_item (
@@ -297,11 +376,6 @@ CREATE TABLE metadata_item (
     Item type: observable (feature item), potential observable, non-observable
     */
     item_type INTEGER NOT NULL, --fk
-
-    /*
-    Self referencing the item that is required to identify this item
-    */
-    required_item_id INTEGER, --fk
 
     /*
     Privilege level needed to add a new item
@@ -421,11 +495,22 @@ CREATE TABLE metadata_feature (
     Frontend metadata
     */
     information TEXT,
-    frontend_name TEXT NOT NULL,
+    frontend_name TEXT NOT NULL
 );
 
 
--- FOREIGN KEYS --
+/* ----------------------------------------------------------------------------------------------------------                                                                                                          
+                                         ,,                                                                     
+`7MM"""YMM                               db                            `7MMF' `YMM'                             
+  MM    `7                                                               MM   .M'                               
+  MM   d    ,pW"Wq.  `7Mb,od8  .gP"Ya  `7MM   .P"Ybmmm `7MMpMMMb.        MM .d"      .gP"Ya  `7M'   `MF',pP"Ybd 
+  MM""MM   6W'   `Wb   MM' "' ,M'   Yb   MM  :MI  I8     MM    MM        MMMMM.     ,M'   Yb   VA   ,V  8I   `" 
+  MM   Y   8M     M8   MM     8M""""""   MM   WmmmP"     MM    MM        MM  VMA    8M""""""    VA ,V   `YMMMa. 
+  MM       YA.   ,A9   MM     YM.    ,   MM  8M          MM    MM        MM   `MM.  YM.    ,     VVV    L.   I8 
+.JMML.      `Ybmd9'  .JMML.    `Mbmmd' .JMML. YMMMMMb  .JMML  JMML.    .JMML.   MMb. `Mbmmd'     ,V     M9mmmP' 
+                                             6'     dP                                          ,V              
+                                             Ybmmmd'                                         OOb"               
+*/ ----------------------------------------------------------------------------------------------------------
 
 -- Metadata
 

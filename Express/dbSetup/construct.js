@@ -178,13 +178,17 @@ var auditSchemaGlobal = readSchema('/auditSchema/global/globalColumns.json');
 5. Add local-global and special columns into metadata_column for every feature
 */
 
-/* NEW IDEA
-1. Insert features into metadata_feature,
-    create feature_..., subfeature_..., and item_... tables (auditing tables)
-2. Add foreign key constraints for auditing tables
-3. Insert columns into metadata_column and add data_... columns to observable item tables
-4. Add foreign key constraints for data_... columns
-5. Add local-global and special columns into metadata_column for every feature
+/* 
+What must be added
+- attribute creation, reference, metadata insertion
+- generate item unique constraints
+- add isExisting to all observable items
+- metadata_item 
+
+What must be changed
+- metadata 
+
+
 */
 // ============================================================
 
