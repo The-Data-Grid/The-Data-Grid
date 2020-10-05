@@ -9,3 +9,16 @@ body, html {
     width: 100%; 
     background-color: rgba(228, 228, 228);
 }
+
+.stat-card {
+  background-color: rgb(86, 156, 215, .2);
+  width: 100%;
+}
+
+.services-card {
+    width: 20%;
+    height: 300px;
+    border-radius: 5px;
+    border: 2px solid rgba(86, 156, 215);
+    box-shadow: 10px 10px rgba(95,167,132, 0.2);
+}
