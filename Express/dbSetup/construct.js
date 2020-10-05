@@ -181,12 +181,37 @@ var auditSchemaGlobal = readSchema('/auditSchema/global/globalColumns.json');
 /* 
 What must be added
 - attribute creation, reference, metadata insertion
+    if refType = attribute:
+        create table
+        create two refs
+        insert into metadata
 - generate item unique constraints
+    go through feature.item and add constraint 
 - add isExisting to all observable items
-- metadata_item 
+    trivial
+- metadata_item and metadata_item_m2m (item requirement)
+    go through feature.item and input into m2m
+- metadata_returnable
+    go through returnable and add columns, will probably need to subquery to get FK
+- all the submission and other statics inserted into metadata
+    do this inside db_scriptV4.sql
+        insert every static item table into metadata_item
+        insert every static data_... column into metadata_column
+        insert connections into metadata_item_m2m
+        insert every submission tied data_... column into metadata_returnable
 
 What must be changed
-- metadata 
+- metadata_column
+- metadata_feature
+- featureInput
+- ColumnInput
+
+Proposed New Steps:
+1. Insert features into metadata_feature,
+    create feature_..., subfeature_..., and item_... tables (auditing tables)
+2. Add foreign key constraints for auditing tables
+*3. Iterate through waterColumn and add item columns, attribute tables, lists, etc for each item
+*4. Iterate through waterReturnable and add to metadata_returnable 
 
 
 */

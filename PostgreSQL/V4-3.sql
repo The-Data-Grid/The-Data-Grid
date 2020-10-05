@@ -23,7 +23,8 @@
    ----------------------------------------------------------------------------------------------------------
 */
 
--- Database Creation Script --
+-- The Data Grid Database Creation Script --
+-- Version 4-3 --
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                              
                                         ,,                                      ,,          ,,                   
@@ -155,7 +156,8 @@ CREATE TABLE tdg_auditor_m2m (
     user_id INTEGER NOT NULL --fk **
 );
 
-CREATE TABLE item_users (
+-- Rewrite Foreign keys
+CREATE TABLE item_user (
     user_id SERIAL PRIMARY KEY,
     tdg_privilege_id INT NOT NULL, --fk **
     item_organization_id INT NOT NULL, --fk **
@@ -268,6 +270,9 @@ attribute
     - Associated with the feature_... table AND the item table, meant to change rarely with the current
       value being the item reference and the observed value being the feature reference
     ex: attribute_toilet_flushometer_brand > data_name
+
+location?? 
+    ...
 */
 INSERT INTO metadata_reference_type
     (type_id, type_name)
@@ -356,8 +361,8 @@ Child-Parent item relationships. The is_id column specifies whether the child it
 The parent.
 */
 CREATE TABLE metadata_item_m2m (
-    parent_item_id INTEGER NOT NULL, --fk
-    child_item_id INTEGER NOT NULL, --fk
+    item_id INTEGER NOT NULL, --fk
+    referenced_item_id INTEGER NOT NULL, --fk
     is_id BOOLEAN NOT NULL
 );
 
@@ -371,6 +376,7 @@ CREATE TABLE metadata_item (
     Actual table name
     */
     item_table_name TEXT NOT NULL,
+    UNIQUE(item_table_name),
 
     /*
     Item type: observable (feature item), potential observable, non-observable
@@ -392,20 +398,26 @@ CREATE TABLE metadata_column (
     
     /*
     Actual column and table name
+
+    EDIT ! location ??
     */
     column_name TEXT NOT NULL,
     table_name TEXT NOT NULL,
+    UNIQUE(column_name, table_name),
     
     /*
     Item that is related to this column. Note this isn't strictly the item that the data column is in,
     lists and local columns are still related to their feature's observable item. This is only NULL
-    when the reference type is 'tdg'
+    when the reference type is 'tdg' 
+
+    EDIT ! NOT NULL ?
     */
     metadata_item_id INTEGER, --fk 
 
     /*
     For frontend
     */
+    is_default BOOLEAN NOT NULL,
     is_nullable BOOLEAN NOT NULL,
     frontend_name TEXT NOT NULL,
     filter_selector INTEGER, --fk
@@ -449,7 +461,7 @@ CREATE TABLE metadata_returnable (
     if F then feature_id must be NOT NULL
     if T then feature_id must be NULL
     */
-    is_submission BOOLEAN NOT NULL,
+    -- is_submission BOOLEAN NOT NULL,
     
     /*
     Arrays of table and columns needed to make the join to the column. These are different 

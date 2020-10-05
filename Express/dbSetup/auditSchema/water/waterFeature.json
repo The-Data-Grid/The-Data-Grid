@@ -5,7 +5,9 @@
         "frontendName": "Toilet",
         "numFeatureRange": null,
         "information": "A fixed receptacle into which a person may urinate or defecate",
-        "location": "item_room"
+        "item": {
+            "id": "item_room"
+        }
     },
     {
         "tableName": "feature_urinal",
@@ -13,7 +15,9 @@
         "frontendName": "Urinal",
         "numFeatureRange": null,
         "information": "A bowl or other receptacle into which men may urinate",
-        "location": "item_room"
+        "item": {
+            "id": "item_room"
+        }
     },
     {
         "tableName": "subfeature_urinal_divider",
@@ -21,7 +25,9 @@
         "frontendName": "Divider",
         "numFeatureRange": 1,
         "information": "Privacy barriers between adjacent urinals",
-        "location": null
+        "item": {
+            "id": "item_urinal"
+        }
     },
     {
         "tableName": "feature_sink",
@@ -29,7 +35,9 @@
         "frontendName": "Sink",
         "numFeatureRange": null,
         "information": "A fixed basin with a water supply and a drain",
-        "location": "item_room"
+        "item": {
+            "id": "item_room"
+        }
     },
     {
         "tableName": "feature_mirror",
@@ -37,7 +45,9 @@
         "frontendName": "Mirror",
         "numFeatureRange": null,
         "information": "A reflective surface that reflects a clear image",
-        "location": "item_room"
+        "item": {
+            "id": "item_room"
+        }
     },
     {
         "tableName": "feature_room",
@@ -45,7 +55,9 @@
         "frontendName": "Room",
         "numFeatureRange": null,
         "information": "A part or division of a building enclosed by walls, floor, and ceiling",
-        "location": "item_room"
+        "item": {
+            "id": "item_building"
+        }
     },
     {
         "tableName": "subfeature_toilet_sensor",
@@ -53,7 +65,9 @@
         "frontendName": "Sensor",
         "numFeatureRange": 1,
         "information": "A motion/infrared sensor that triggers flush",
-        "location": null
+        "item": {
+            "id": "item_toilet"
+        }
     },
     {
         "tableName": "subfeature_urinal_sensor",
@@ -61,7 +75,9 @@
         "frontendName": "Sensor",
         "numFeatureRange": 1,
         "information": "A motion/infrared sensor that triggers flush",
-        "location": null
+        "item": {
+            "id": "item_urinal"
+        }
     },
     {
         "tableName": "subfeature_sink_sensor",
@@ -69,7 +85,9 @@
         "frontendName": "Sensor",
         "numFeatureRange": 1,
         "information": "A motion/infrared sensor that triggers flush",
-        "location": null
+        "item": {
+            "id": "item_sink"
+        }
     },
     {
         "tableName": "subfeature_toilet_stall",
@@ -77,6 +95,8 @@
         "frontendName": "Restroom Stall",
         "numFeatureRange": 1,
         "information": "Privacy barrier separating toilet from restroom common space",
-        "location": null
+        "item": {
+            "id": "item_toilet"
+        }
     }
 ]
