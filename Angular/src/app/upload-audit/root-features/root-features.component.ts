@@ -1,12 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { ApiService } from '../../api.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-
 
 interface Data {
   name: string,
   features: Object,
   included: boolean
-  
 }
 
 @Component({
@@ -16,12 +15,15 @@ interface Data {
 })
 export class RootFeaturesComponent implements OnInit {
 
-  constructor(
+  constructor(private apiService: ApiService,
     public dialogRef: MatDialogRef<RootFeaturesComponent>,
     @Inject(MAT_DIALOG_DATA)public data: Data) {}
 
   ngOnInit(): void {
   }
+
+  setupObject;
+  all_root_features = [];
 
   hideOrShow(id) {
     if (document.getElementById(id).style.display != "none") {
@@ -119,6 +121,23 @@ getSubFeaturesLength(subfeatureList) {
 
   changeStatus(toggleOption) {
     this.status = toggleOption;
+    if (this.status == 'roots') {
+      this.getSetupObject();
+    }
+  }
+
+  getSetupObject() {
+    this.apiService.getSetupTableObject(null).subscribe((res) => {
+      this.setupObject = res;
+
+
+      for (var i = 0; i < this.setupObject.subfeatureStartIndex; i++) {
+        if (document.getElementById(this.setupObject.featureColumns[i].frontendName) != null) {
+          if (!this.all_root_features.includes(this.setupObject.featureColumns[i].frontendName))
+            this.all_root_features.push(this.setupObject.featureColumns[i].frontendName)
+        }
+      }
+    });
   }
 
 
