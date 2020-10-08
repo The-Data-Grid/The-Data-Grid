@@ -26,6 +26,9 @@
             <button mat-button (click)="openRootFeatures()">
                 Add Root Features
             </button>
+            <button mat-button (click)="openFeatureAudit()">
+                see feature audit component (temp)
+            </button>
         </mat-card-subtitle>
   
     </mat-card>
@@ -37,7 +40,7 @@
         <div *ngFor="let feature of audit.features">
             <div *ngIf="feature.included">
                 <h1 class="audit_name">{{ feature.name }}</h1>
-                <h2 class="add" [id]="feature.name + ' add'">+</h2>
+                <h2 class="add" [id]="feature.name + ' add'">+</h2> 
                 <span class="caret_formatting" (click)="showOrHideTable(feature.name)">
                     <i [id]="feature.name + ' caret'" class="fa fa-caret-down subformatting" style="font-size: 18px;"></i>
                 </span>

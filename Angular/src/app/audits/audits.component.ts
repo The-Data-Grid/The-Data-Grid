@@ -28,7 +28,6 @@ export class AuditsComponent implements OnInit {
   featureDropdownValues = new Map(); //map name to direct children
   selectedFeature;
   appliedFilterSelections = {};
-  testval;
 
   // the following are for multiselect dropdowns
   dropdownList = [
@@ -72,7 +71,7 @@ export class AuditsComponent implements OnInit {
       this.setupObject = res;
 
       // parse global columns
-      this.globalSelectors = this.parseColumn(this.setupObject.globalColumns);
+      this.globalSelectors = this.parseColumns(this.setupObject.globalColumns);
 
       // parse feature columns
       var i = 0;
@@ -87,19 +86,19 @@ export class AuditsComponent implements OnInit {
           this.featureDropdownValues.set(featureColumn.frontendName, childFeatures);
           i++;
         }
-        this.featureSelectors[featureColumn.frontendName] = this.parseColumn(featureColumn.dataColumns);
-        this.featureSelectors[featureColumn['_userSelection']] = null;
+        this.featureSelectors[featureColumn.frontendName] = this.parseColumns(featureColumn.dataColumns);
       });
 
       // get datatypes array
       this.datatypes = this.setupObject.datatypes;
-      console.log(this.globalSelectors);
-      console.log(this.featureSelectors);
+      // console.log(this.globalSelectors);
+      // console.log(this.featureSelectors);
+      console.log(this.appliedFilterSelections);
       this.applyFilters();
     });
   }
 
-  parseColumn(columns): any {
+  parseColumns(columns): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],
@@ -115,15 +114,30 @@ export class AuditsComponent implements OnInit {
 
     columns.forEach(column => {
       if (column.filterSelector) {
+        //by default, columnBackendID to user's input
+        //range and multiselect selectors have different format for recording 
+        this.appliedFilterSelections[column.columnBackendID] = null;
         switch (column.filterSelector.selectorKey) {
           case "dropdown": { selectors.dropdown.push(column); break; }
           case "numericChoice": { selectors.numericChoice.push(column); break; }
-          case "numericEqual": { selectors.numericEqual.push(column); break; }
-          case "calendarRange": { selectors.calendarRange.push(column); break; }
+          case "numericEqual": {
+            selectors.numericEqual.push(column);
+            this.appliedFilterSelections[column.columnBackendID] = { relation: null, input: null }; break;
+          }
+          case "calendarRange": {
+            selectors.calendarRange.push(column);
+            console.log(column.columnBackendID);
+            this.appliedFilterSelections[column.columnBackendID] = { start: null, end: null }; break;
+          }
           case "calendarEqual": { selectors.calendarEqual.push(column); break; }
-          case "searchableDropdown": { selectors.searchableDropdown.push(column); break; }
-          case "checklistDropdown": { selectors.checklistDropdown.push(column); break; }
-          case "searchableChecklistDropdown": { selectors.searchableChecklistDropdown.push(column); break; }
+          case "searchableDropdown": { 
+            console.log(column.columnBackendID);
+            selectors.searchableDropdown.push(column); break; }
+          case "checklistDropdown": {this.appliedFilterSelections[column.columnBackendID] = []; break; }
+          case "searchableChecklistDropdown": {
+            selectors.searchableChecklistDropdown.push(column); 
+            this.appliedFilterSelections[column.columnBackendID] = []; break;
+          }
           case "text": { selectors.text.push(column); break; }
           case "bool": { selectors.bool.push(column); break; }
         }
@@ -282,33 +296,14 @@ export class AuditsComponent implements OnInit {
     console.log(this.oldCellEdited);
   }
 
-  // filterDatatable(event) {
-  //   // get the value of the key pressed and make it lowercase
-  //   let val = event.target.value.toLowerCase();
-  //   // get the amount of columns in the table
-  //   let colsAmt = this.columns.length;
-  //   // get the key names of each column in the dataset
-  //   let keys = Object.keys(this.response[0]);
-  //   // assign filtered matches to the active datatable
-  //   this.rows = this.filteredData.filter(function (item) {
-  //     // iterate through each row's column data
-  //     for (let i = 0; i < colsAmt; i++) {
-  //       // check for a match
-  //       if (item[keys[i]].toString().toLowerCase().indexOf(val) !== -1 || !val) {
-  //         // found match, return true to add to result set
-  //         return true;
-  //       }
-  //     }
-  //   });
-  // }
-
   applyFilters() {
+    console.log(this.appliedFilterSelections);
+
     /* get api response */
     if (!this.selectedFeature) {
       return;
-    } 
-    console.log(this.appliedFilterSelections);
-    this.getTableObject();
+    }
+    // this.getTableObject();
   }
 
 

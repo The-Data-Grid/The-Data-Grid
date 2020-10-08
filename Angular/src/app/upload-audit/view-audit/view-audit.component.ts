@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { RootFeaturesComponent } from '../root-features/root-features.component';
 import { GlobalPresetsComponent} from '../global-presets/global-presets.component';
+import { FeatureAuditComponent} from '../feature-audit/feature-audit.component';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -57,6 +58,14 @@ export class ViewAuditComponent implements OnInit {
     }
   }
   
+  openFeatureAudit(): void {
+    const dialogRef = this.dialog.open(FeatureAuditComponent, {
+      width: '400px',
+      height: '600px',
+      data: this.audits
+    })
+  }
+
   ngOnInit(): void {
   }
 
