@@ -2,6 +2,7 @@
     position: relative;
     left: 0;
     right: 0;
+    background-color: white;
     /* top: 50px;
     bottom: 30px; */
 }
@@ -92,5 +93,27 @@ table {
     margin-right: auto;
   
 }
+
+.table_styling {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
   
+/* .table_styling tr:nth-child(even){background-color: #f2f2f2;} */
+
+.table_styling tr:hover {background-color: #ddd;}
+
+.table_separation {
+    display: block;
+    margin-left: 2px;
+    height: 40px;
+    background-image: linear-gradient(#FFFFFF, #F8F8F8, #F5F5F5, #F0F0F0, #E8E8E8);
+    min-width: 95%;
+    overflow: none;
+
+}
+
+.id_style {
+    background-image: linear-gradient(#FFFFFF, #F8F8F8);
+}
+
 
