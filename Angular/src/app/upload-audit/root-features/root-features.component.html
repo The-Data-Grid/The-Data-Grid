@@ -56,4 +56,11 @@
         </div>
 
     </div>
+    <div *ngIf="status=='roots'">
+        <div class="first_separator"></div>
+        <div *ngFor="let feature of all_root_features">
+            <p class="all_features">{{ feature }}</p>
+            <div class="dynamic_separators"></div>
+        </div>
+    </div>
 </body>

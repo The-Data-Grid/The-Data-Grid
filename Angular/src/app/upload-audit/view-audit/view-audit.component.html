@@ -45,8 +45,9 @@
                     <i [id]="feature.name + ' caret'" class="fa fa-caret-down subformatting" style="font-size: 18px;"></i>
                 </span>
                 <div class="lower_bound"></div>
-                                  
-                <table [id]="feature.name" class="center" style="display: none; margin-left: 8px;">
+
+                <table [id]="feature.name" class="center table_styling" style="display: none; margin-left: 8px;">
+                    <th class="column_name id_style"></th> <th class="column_name id_style"></th> <th class="column_name id_style" style="padding: 1px; margin-top: 1px;">{{ feature.name }} ID</th> <th class="column_name id_style" style="padding: 1px;">Room ID</th>
                     <tr>
                       <th class="column_name">Action</th><th class="column_name">Last Updated</th><th class="column_name">Clockwise Number</th><th class="column_name">Room</th>
                     </tr>
@@ -57,6 +58,13 @@
                             <td>{{ action.room }}</td>
                     </tr>
                   </table>
+                    <div *ngIf="checkIfTableShown(feature.name)" class="table_separation">
+                        <!-- <tr>
+                            <td class="table_separation"></td>
+                        </tr> -->
+                    </div>
+
+
                   
     
         </div>

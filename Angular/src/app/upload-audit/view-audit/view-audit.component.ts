@@ -57,6 +57,13 @@ export class ViewAuditComponent implements OnInit {
       document.getElementById(feature + ' caret').classList.add('fa-caret-down');
     }
   }
+
+  checkIfTableShown(feature) {
+    if (document.getElementById(feature).style.display == 'none') {
+      return false;
+    }
+    return true;
+  }
   
   openFeatureAudit(): void {
     const dialogRef = this.dialog.open(FeatureAuditComponent, {
@@ -66,7 +73,9 @@ export class ViewAuditComponent implements OnInit {
     })
   }
 
+
   ngOnInit(): void {
   }
+
 
 }
