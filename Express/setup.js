@@ -88,6 +88,9 @@ class ReturnableID {
 
 // HOISTED FUNCTIONS //
 // ============================================================
+const {returnableIDLookup,idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
+
+
 
 function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures) {
 

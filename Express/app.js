@@ -61,7 +61,9 @@ app.get('/api/stats/', parse.statsParse, query.statsQuery);
 app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
 
 
-app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
+// FOR TESTING PURPOSES: Need to allow each test file to start server on their own so comment out app.listen (below)
+// app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
+module.exports = app;
 
 ////// LISTEN WITH SSL //////
 //https.createServer(options, app).listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`));
