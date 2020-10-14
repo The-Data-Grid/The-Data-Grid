@@ -96,8 +96,6 @@ class ReturnableID {
 const {returnableIDLookup,idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
 
 console.log(idColumnTableLookup)
-//console.log(returnableIDLookup)
-    
 module.exports = {
     returnableIDLookup: returnableIDLookup,
     idColumnTableLookup: idColumnTableLookup,
@@ -358,5 +356,7 @@ function sendSetup(req, res) {
     }
 }
 
-
-
+module.exports = {
+    setupQuery,
+    sendSetup
+}
