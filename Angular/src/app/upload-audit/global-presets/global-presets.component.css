@@ -6,7 +6,7 @@
 
 .top_decoration {
   height: 30px;
-  width: 401px;
+  width: 802px;
   margin-left: -25px;
   margin-top: -25px;
   background-color: #569CD7;
@@ -33,7 +33,7 @@
 .save_text {
   cursor: pointer;
   margin-top: -36px;
-  margin-left: 330px;
+  margin-left: 720px;
   font-weight: 600;
 }
 
@@ -42,7 +42,7 @@
   margin-bottom: 10px;
   background-color: black;
   height: 1px;
-  width: 430px;
+  width: 831px;
   margin-left: -54px
 }
 
@@ -51,7 +51,7 @@
   margin-bottom: 10px;
   background-color: lightgray;
   height: 1px;
-  width: 430px;
+  width: 831px;
   margin-left: -54px
 }
 

@@ -29,16 +29,16 @@ export class ViewAuditComponent implements OnInit {
 
   openRootFeatures(): void {
     const dialogRef = this.dialog.open(RootFeaturesComponent, {
-      width: '400px',
-      height: '600px',
+      width: '801px',
+      height: '500px',
       data: this.audits
     })
   }
 
   openGlobalPresets(): void {
     const dialogRef = this.dialog.open(GlobalPresetsComponent, {
-      width: '400px',
-      height: '600px',
+      width: '801px',
+      height: '500px',
       data: this.audits
     })
   }
@@ -67,8 +67,8 @@ export class ViewAuditComponent implements OnInit {
   
   openFeatureAudit(): void {
     const dialogRef = this.dialog.open(FeatureAuditComponent, {
-      width: '400px',
-      height: '600px',
+      width: '801px',
+      height: '500px',
       data: this.audits
     })
   }
