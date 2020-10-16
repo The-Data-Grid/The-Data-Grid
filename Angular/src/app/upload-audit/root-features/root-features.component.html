@@ -62,7 +62,11 @@
     <div *ngIf="status=='roots'">
         <div class="first_separator"></div>
         <div *ngFor="let feature of all_root_features">
-            <p class="all_features">{{ feature }}</p>
+            <p class="audit_names">{{ feature }}</p>
+                <label class="container">
+                    <input [id]="feature + ' root checkbox'" type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+            </label>
             <div class="dynamic_separators"></div>
         </div>
     </div>

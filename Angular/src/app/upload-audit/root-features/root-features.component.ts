@@ -19,11 +19,14 @@ export class RootFeaturesComponent implements OnInit {
     public dialogRef: MatDialogRef<RootFeaturesComponent>,
     @Inject(MAT_DIALOG_DATA)public data: Data) {}
 
-  ngOnInit(): void {
-  }
 
   setupObject;
   all_root_features = [];
+
+  ngOnInit(): void {
+
+  }
+
 
   hideOrShow(id) {
     if (document.getElementById(id).style.display != "none") {
@@ -79,6 +82,7 @@ getSubFeaturesLength(subfeatureList) {
 
 
   updateFeatures() {
+    if (this.status == 'template') {
     var featuresLength = this.getFeaturesLength();
     console.log(featuresLength + " is the features length");
 
@@ -108,6 +112,10 @@ getSubFeaturesLength(subfeatureList) {
 
     }
     this.close();
+  }
+  else {
+    this.close();
+  }
 
   }
 
@@ -118,6 +126,7 @@ getSubFeaturesLength(subfeatureList) {
   close() {
     this.dialogRef.close();
   }
+
 
   changeStatus(toggleOption) {
     this.status = toggleOption;
