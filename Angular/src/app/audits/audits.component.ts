@@ -303,7 +303,7 @@ export class AuditsComponent implements OnInit {
     if (!this.selectedFeature) {
       return;
     }
-    // this.getTableObject();
+    this.getTableObject();
   }
 
 
