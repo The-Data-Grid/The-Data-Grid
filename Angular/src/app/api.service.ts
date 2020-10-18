@@ -43,17 +43,17 @@ export class ApiService {
   }
 
   public getTableObject(feature: string, columns: any, qsparams: any): any {
-    var url = API_URL + "/audit/" + feature;
+    // var url = API_URL + "/audit/" + feature;
     this.columnsString = this.makeColumnsString(columns);
     if (this.columnsString) {
       url = url + "/" + this.columnsString;
     }
     // return this.http.get<TableObject>(url, { params: qsparams });
-     console.log(url);
+    // console.log(url);
 
     
-    // var url = fakeServerURL + '/table';
-    // return this.http.get<TableObject>(url);
+    var url = fakeServerURL + '/table';
+    return this.http.get<TableObject>(url);
   }
 
 
