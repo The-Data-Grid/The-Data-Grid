@@ -46,6 +46,7 @@ import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audi
     ViewAuditComponent,
     RootFeaturesComponent,
     GlobalPresetsComponent,
+    FeatureAuditComponent
   ],
   imports: [
     BrowserModule,

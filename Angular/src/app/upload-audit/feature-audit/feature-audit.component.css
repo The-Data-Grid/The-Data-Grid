@@ -1,16 +1,34 @@
-#body {
-    overflow-y: scroll;
-    overflow-x: scroll;
-    overflow: scroll;
-  }
-  
-  .top_decoration {
-    height: 30px;
-    width: 802px;
-    margin-left: -25px;
-    margin-top: -25px;
-    background-color: #569CD7;
-    overflow-y: hidden;
-    overflow-x: hidden;
-  }
-  
+
+
+
+.mat-expansion-panel {
+  width: 95% !important;
+  margin-right: auto;
+  margin-left: auto;
+  border-radius: 0 !important;
+}
+
+.primary_separator {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: black;
+  height: 1px;
+  width: 801px;
+  margin-left: -54px
+}
+.secondary_separator {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: lightgray;
+  height: 1px;
+  width: 801px;
+  margin-left: -54px
+}
+
+/* .cdk-global-overlay-wrapper {
+  display: flex;
+  position: absolute;
+  z-index: 1000;
+  overflow: auto;
+  pointer-events: auto;  
+} */

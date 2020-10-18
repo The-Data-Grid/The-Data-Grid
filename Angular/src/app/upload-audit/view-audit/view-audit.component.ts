@@ -68,7 +68,7 @@ export class ViewAuditComponent implements OnInit {
   openFeatureAudit(): void {
     const dialogRef = this.dialog.open(FeatureAuditComponent, {
       width: '801px',
-      height: '500px',
+      maxHeight: '500px',
       data: this.audits
     })
   }

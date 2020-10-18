@@ -1,10 +1,25 @@
 <body>
     <div class="top_decoration"></div>
-    <div class="cancel" (click)="close()">
-        <span class="material-icons arrow_position">arrow_back</span>
-        <p class="cancel_text">Save & Back</p>
-    </div>
-    <div>
-        <p class="save_text">Cancel Changes</p>
+    <h3>Bathroom Audit 1</h3>
+    <mat-accordion>
+        <mat-expansion-panel *ngFor="let panel of dummy">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    {{panel.title}}
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div *ngFor="let string of panel.content">
+                <div class="secondary_separator"></div>
+                {{string}}
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+    <div style="float: right; margin-top: 20px;">
+        <button mat-button (click)="close()" style="margin-right: 10px; ">
+            Cancel Changes
+        </button>
+        <button mat-button (click)="close()" style="background-color: #569CD7; color: white;">
+            Save & Back
+        </button>
     </div>
 </body>
