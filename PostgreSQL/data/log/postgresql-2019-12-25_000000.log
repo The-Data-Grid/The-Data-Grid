@@ -1,5 +1,0 @@
-2019-12-25 16:54:34.551 PST [5968] LOG:  received fast shutdown request
-2019-12-25 16:54:34.555 PST [5968] LOG:  aborting any active transactions
-2019-12-25 16:54:34.571 PST [5968] LOG:  background worker "logical replication launcher" (PID 7024) exited with exit code 1
-2019-12-25 16:54:34.577 PST [6948] LOG:  shutting down
-2019-12-25 16:54:34.609 PST [5968] LOG:  database system is shut down
