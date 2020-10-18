@@ -1,9 +1,82 @@
 const pgp = require("pg-promise");
 const PS = pgp.PreparedStatement;
 
+const referenceSelectionJoin = 'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(originalAlias:value).$(originalColumn:value) = $(joinAlias:value).$(joinColumn:value)'
+// joinTable
+// joinAlias
+// joinColumn
+// originalAlias
+// originalColumn
+
+const sorta = 'ORDER BY $(columnName:value) ASC'
+
+const sortd = 'ORDER BY $(columnName:value) DESC'
+
+const limit = 'LIMIT $(limit)'
+
+const offset = 'OFFSET $(offset)'
+
 
  // NEW CODE
 //const {idColumnTableLookup, tableParents} = require('./setup.js');
+
+////////////////////////////////////////////////////////////
+// Query column to database table lookup table generation //
+////////////////////////////////////////////////////////////
+
+// Serves the functionality of tableLookup and setupTableLookup
+
+// Select and Where clauses //
+const select = 'SELECT $(returnColumns:raw) FROM $(feature:name)'
+
+// ex: {clause: 'AND', select: "item_sop.sop_name", operation: "=", filterValue: "Example SOP #1"}
+const where = '$(clause:value) ($(condition:raw))'
+
+const whereCondition = '$(select:value) $(operation:value) $(filterValue)';
+
+const submission = 'INNER JOIN tdg_submission ON $(feature:value).submission_id = tdg_submission.submission_id';
+
+
+// STATS //
+
+/*************
+* Approach 1 *
+*************/
+var feature;
+var subfeature;
+var feature_item;
+var list;
+var list_m2m;
+
+'SELECT list.data_elementname FROM list INNER JOIN list_m2m ON list_m2m.list_id = list.list_id'
+'INNER JOIN subfeature ON subfeature.observation_id = list_m2m.observation_id;'
+
+/*************
+* Approach 2 *
+**************/
+var metadata_table;
+var metadata_col;
+var metadata_datatype;
+var metadata_selector;
+
+// How do we connect different metadata_tables? Still a little confused on how the metadata stuff works.
+'SELECT metadata_col.information FROM metadata_col INNER JOIN metadata_table ON metadata_col.table_id = metadata_table.table_id;'
+
+/////////////////////////////////
+// Generate table join clauses //
+/////////////////////////////////
+
+// Serves functionality of statement.js. We can use the format from statement.js
+// of ```tablename: {query: 'INNER JOIN...', dependencies: [] }```
+
+/*
+module.exports = {
+    idColumnTableLookup,
+    tableParents
+};
+*/
+
+
 
 // Inputs //
 
@@ -34,14 +107,17 @@ let tableParents = {
 
 let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]]);
 
-/*
+
+const subfeatureJoin = 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id';
+const rootFeatureJoin = 'FROM $(rootFeature:value)';
 
 // iterate through subfeatures and create query for each one
 // Javascript template literal syntax
+/*
 
 let subfeatureJoin = {
     subfeatures[0]: {
-        query: 'INNER JOIN $(subfeature[1]) ON $(subfeature[1]).table_id = $(subfeature[0]).parent_id',
+        query: 'INNER JOIN $(subfeature[1]:value) ON $(subfeature[1]:value).table_id = $(subfeature[0]:value).parent_id',
         dependencies: [subfeature[1]]
     }
 };
@@ -61,7 +137,7 @@ let featureItemJoin = {
 
 // get all unique tables and features (if not null) from idColumnTableLookup
 // not sure if the syntax for this is correct, particularly due to the part inside the brackets
-var tablesAndFeatures = new Set(idColumnTableLookup[id]);
+//var tablesAndFeatures = new Set(idColumnTableLookup[id]);
 
 // Feature //
 /*
@@ -90,28 +166,32 @@ let makeLocation = (locationTableName, referenceTableName, referenceColumnName) 
     list_... -> list_m2m_... -> feature_...
 */
 
-pgp.as.format('INNER JOIN $(listName:value)_m2m \
-ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
-INNER JOIN $(listName:value) \
-ON $(listName:value).list_id = $(listName:value)_m2m.list_id', {myTable: 'feature_toilet', myTable2: 'sldkfjds'})
+// pgp.as.format('SELECT + FROM $(referenceTable:value)', {myTable: 'referenceColumn'});
 
-let listName= "listName_" + referenceTable + referenceColumn;
+//pgp.as.format() , two parameter, takes a statement like 'select + from $(myTable:value)', (myTable:'feature_toliet')
 
-if (table.includes("list_"))
-{
+/*
     let listJoin = {
-        feature: {
+        //change feature 
+        featureName: {
             listName : { //Join m2m to audit table then join 
-                query: 'INNER JOIN $(listName:value)_m2m \
-                        ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
-                        INNER JOIN $(listName:value) \
-                        ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+                //use id column lookup to construct array of queries
+                //given 9 tables, generate 9 statements
+                query: pgp.as.format('SELECT + FROM $(referenceTable:value)', 
+                {referenceTable: idColumnTableLookup.referenceTable, referenceColumn: idColumnTableLookup.referenceColumn}),
+
+                //many to many to the list and  many to many to the feature table
+                // query: 'INNER JOIN $(listName:value)_m2m \
+                //         ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+                //         INNER JOIN $(listName:value) \
+                //         ON $(listName:value).list_id = $(listName:value)_m2m.list_id'
+                
                 dependencies: ['referenceTable']
             }
         }
-
     }
-}
+    
+*/
 
 
 // let listJoin = {
@@ -158,270 +238,19 @@ let tableNameSQLLookup = {
 
 
 
-// Submission
-
-let submission = {
-    query: 'INNER JOIN tdg_submission ON $(feature:raw).submission_id = tdg_submission.submission_id',
-}
 
 
-// Select and Where clauses //
-const select = {
-    query: 'SELECT $(returnColumns:raw) FROM $(feature:name)'
-};
-
-const where = { // ex: {clause: 'AND', filter: "item_sop.sop_name", operation: "=", value: "Example SOP #1"}
-    query: '$(clause:value) $(filterColumns:value) $(operation:value) $(value)' 
-};
-
-const commonJoin = { //JOINS THAT ARE SHARED BETWEEN FEATURES
-
-/***********************************
- ** LOCATION AND AUDIT SUBMISSION **
- ***********************************/
-
-// table joins for toilet location columns and toilet audit submission columns
-// Left join for room and regions (null in location tables)
-
-// loc
-loc : { // note: changed to inner join
-    query: 'INNER JOIN loc ON $(feature:value).location_id = loc.location_id',
-    dependencies: []
-},
-
-// room_number
-item_room : {
-    query:'INNER JOIN item_room ON loc.room_id = item_room.room_id',
-    dependencies: ['loc']
-},
-
-// building_name
-item_building : {
-    query: 'INNER JOIN item_building ON item_room.building_id = item_building.building_id',
-    dependencies: ['item_room', 'loc']
-},
-
-// building_community_name //CHANGE TO COMMUNITY ID
-item_community : {
-    query: 'INNER JOIN item_community ON item_building.location_id = item_community.community_id',
-    dependencies: ['item_building', 'item_room', 'loc']
-},
-
-// date_submitted -- unsure
-
-
-
-// sop_name
-item_sop : {
-    query: 'INNER JOIN item_sop ON audit_submission.sop_id = item_sop.sop_id',
-    //may need to change as it may not be referenced
-    dependencies: ['tdg_submission']
-},
-
-// organization_name
-tdg_organization : {
-    query: 'INNER JOIN tdg_organization ON audit_submission.organization_id = tdg_organization.organization_id',
-    dependencies: ['tdg_submission']
-},
-
-// template_name
-tdg_template : {
-    query: 'INNER JOIN tdg_template ON audit_submission.template_id = tdg_template.template_id',
-    // query: 'INNER JOIN item_template ON audit_submission.organization_id = item_template.organization_id',
-    dependencies: ['tdg_submission']
-}
-
-};
-
-const urinalJoin = { 
-/****************
- ** URINAL M2M **
- ****************/
- /*
-SELECT urinal_divider_condition.divider_condition_name, audit_urinal.gpf, audit_urinal.location_id, audit_urinal.time_conducted, audit_urinal.commentary
-FROM audit_urinal INNER JOIN urinal_divider_condition_m2m ON urinal_divider_condition_m2m.observation_id = audit_urinal.observation_id
-INNER JOIN urinal_divider_condition ON urinal_divider_condition.divider_condition_id = urinal_divider_condition_m2m.divider_condition_id;
-*/
-urinal_divider_condition : {
-    query: 'INNER JOIN urinal_divider_condition_m2m ON urinal_divider_condition_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_divider_condition ON urinal_divider_condition.divider_condition_id = urinal_divider_condition_m2m.divider_condition_id',
-    dependencies: []
-},
-
-urinal_flushometer_condition : {
-    query: 'INNER JOIN urinal_flushometer_condition_m2m ON urinal_flushometer_condition_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_flushometer_condition ON urinal_flushometer_condition_m2m.flushometer_condition_id = urinal_flushometer_condition.flushometer_condition_id',
-    dependencies: []
-},
-
-urinal_sensor_condition : {
-    query: 'INNER JOIN urinal_sensor_condition_m2m ON urinal_sensor_condition_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_sensor_condition ON urinal_sensor_condition_m2m.sensor_condition_id = urinal_sensor_condition.sensor_condition_id',
-    dependencies: []
-},
-
-urinal_flushometer_brand : {
-    query: 'INNER JOIN urinal_flushometer_brand_m2m ON urinal_flushometer_brand_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_flushometer_brand ON urinal_flushometer_brand_m2m.flushometer_brand_id = urinal_flushometer_brand.flushometer_brand_id',
-    dependencies: []
-},
-
-urinal_basin_condition : {
-    query: 'INNER JOIN urinal_basin_condition_m2m ON urinal_basin_condition_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_basin_condition ON urinal_basin_condition_m2m.basin_condition_id = urinal_basin_condition.basin_condition_id',
-    dependencies: []
-},
-
-urinal_basin_brand : {
-    query: 'INNER JOIN urinal_basin_brand_m2m ON urinal_basin_brand_m2m.observation_id = audit_urinal.observation_id INNER JOIN urinal_basin_brand ON urinal_basin_brand_m2m.basin_brand_id = urinal_basin_brand.basin_brand_id',
-    dependencies: []
-}
-
-};
-
-const toiletJoin = {
-/****************
- ** TOILET M2M **
- ****************/
-/*
-SELECT toilet_flushometer_brand.flushometer_brand_name, audit_toilet.gpf, audit_toilet.time_conducted, audit_toilet.commentary
-FROM audit_toilet INNER JOIN toilet_flushometer_brand_m2m ON audit_toilet.observation_id = toilet_flushometer_brand_m2m.observation_id
-INNER JOIN toilet_flushometer_brand ON toilet_flushometer_brand_m2m.flushometer_brand_id = toilet_flushometer_brand_m2m.flushometer_brand_id;
-*/
-toilet_flushometer_brand : {
-    query: 'INNER JOIN toilet_flushometer_brand_m2m ON audit_toilet.observation_id = toilet_flushometer_brand_m2m.observation_id INNER JOIN toilet_flushometer_brand ON toilet_flushometer_brand_m2m.flushometer_brand_id = toilet_flushometer_brand.flushometer_brand_id',
-    dependencies: []
-},
-
-toilet_flushometer_condition : {
-    query: 'INNER JOIN toilet_flushometer_condition_m2m ON audit_toilet.observation_id = toilet_flushometer_condition_m2m.observation_id INNER JOIN toilet_flushometer_condition ON toilet_flushometer_condition_m2m.flushometer_condition_id = toilet_flushometer_condition.flushometer_condition_id',
-    dependencies: []
-},
-
-toilet_basin_condition : {
-    query: 'INNER JOIN toilet_basin_condition_m2m ON audit_toilet.observation_id = toilet_basin_condition_m2m.observation_id INNER JOIN toilet_basin_condition ON toilet_basin_condition_m2m.basin_condition_id = toilet_basin_condition.basin_condition_id',
-    dependencies: []
-},
-
-toilet_sensor_condition : {
-    query: 'INNER JOIN toilet_sensor_condition_m2m ON audit_toilet.observation_id = toilet_sensor_condition_m2m.observation_id INNER JOIN toilet_sensor_condition ON toilet_sensor_condition_m2m.sensor_condition_id = toilet_sensor_condition.sensor_condition_id',
-    dependencies: []
-},
-
-toilet_stall_condition : {
-    query: 'INNER JOIN toilet_stall_condition_m2m ON audit_toilet.observation_id = toilet_stall_condition_m2m.observation_id INNER JOIN toilet_stall_condition ON toilet_stall_condition_m2m.stall_condition_id = toilet_stall_condition.stall_condition_id',
-    dependencies: []
-},
-
-toilet_basin_brand : {
-    query: 'INNER JOIN toilet_basin_brand_m2m ON audit_toilet.observation_id = toilet_basin_brand_m2m.observation_id INNER JOIN toilet_basin_brand ON toilet_basin_brand_m2m.basin_brand_id = toilet_basin_brand.basin_brand_id',
-    dependencies: []
-}
-
-};
-
-const sinkJoin = {
-/**************
- ** SINK M2M **
- **************/
-sink_faucet_condition : {
-    query: 'INNER JOIN sink_faucet_condition_m2m ON audit_sink.observation_id = sink_faucet_condition_m2m.observation_id INNER JOIN sink_faucet_condition ON sink_faucet_condition_m2m.faucet_condition_id = sink_faucet_condition.faucet_condition_id',
-    dependencies: []
-},
-
-sink_faucet_brand : {
-    query: 'INNER JOIN sink_faucet_brand_m2m ON audit_sink.observation_id = sink_faucet_brand_m2m.observation_id INNER JOIN sink_faucet_brand ON sink_faucet_brand_m2m.faucet_brand_id = sink_faucet_brand.faucet_brand_id',
-    dependencies: []
-},
-
-sink_basin_condition : {
-    query: 'INNER JOIN sink_basin_condition_m2m ON audit_sink.observation_id = sink_basin_condition_m2m.observation_id INNER JOIN sink_basin_condition ON sink_basin_condition_m2m.basin_condition_id = sink_basin_condition.basin_condition_id',
-    dependencies: []
-},
-
-sink_basin_brand : {
-    query: 'INNER JOIN sink_basin_brand_m2m ON audit_sink.observation_id = sink_basin_brand_m2m.observation_id INNER JOIN sink_basin_brand ON sink_basin_brand_m2m.basin_brand_id = sink_basin_brand.basin_brand_id',
-    dependencies: []
-},
-
-sink_sensor_condition : {
-    query: 'INNER JOIN sink_sensor_condition_m2m ON audit_sink.observation_id = sink_sensor_condition_m2m.observation_id INNER JOIN sink_sensor_condition ON sink_sensor_condition_m2m.sensor_condition_id = sink_sensor_condition.sensor_condition_id',
-    dependencies: []
-}
-
-};
-
-const mirrorJoin = {
-/****************
- ** MIRROR M2M **
- ****************/
-mirror_condition : {
-    query: 'INNER JOIN mirror_condition_m2m ON audit_mirror.observation_id = mirror_condition_m2m.observation_id INNER JOIN mirror_condition ON mirror_condition_m2m.mirror_condition_id = mirror_condition.mirror_condition_id',
-    dependencies: []
-}
-
-}; 
-
-/***** END OF JOINS *****/
-
-
-/*let toiletLocations = {
-    query: 'LEFT JOIN loc ON audit_toilet.location_id = loc.location_id\
-    LEFT JOIN item_room ON loc.room_id = item_room.room_id\
-    LEFT JOIN item_building on loc.location_id = item_building.location_id',
-    dependencies: ['loc', 'item_room', 'item_building'],
-}
-
-let auditSubmission = {
-    query: '"audit_submission" AS a_s OUTER JOIN "item_template" as i_t ON a_s.organization_id = i_t.organization_id) \
-          OUTER JOIN "sop" as sop ON a_s.sop_id = sop.sop_id \
-          OUTER JOIN "item_organization" as i_o ON a_s.organization_id = i_o.organization_id \
-          OUTER JOIN "item_community" as i_c on i_o.community_id = i_c.community_id,',
-    dependencies: ['audit_submission','item_template', 'sop', 'item_organization', 'item_community'],
-}
-*/
-
-// Old Query Format
-
-/* 
-
-Commented out because it threw error at runtime. 
-
-let toiletFilter1 = { 
-    type: 'toilet',
-    query: 'WHERE $(columns)$(operator)$(value);',
-    columns: ['gpf', 'commentary', 'date_conducted'],
-    operator: ['=','>=']
-};
-
-let toiletPathFull = {
-    type: 'toilet',
-    query: 'SELECT a_t.gpf, a_t.commentary, a_t.date_conducted \
-            FROM "audit_toilet" AS a_t \
-            INNER JOIN "audit_submission" as a_s ON a_s.audit_id = a_t.audit_id \
-            LEFT JOIN "loc" as loc ON a_t.location_id = loc.location_id;',
-    columns: [a_t.gpf, a_t.commentary, a_t.date_conducted]
-}
-let auditSubmissionFilter = {
-    type: 'audit',
-    query: 'WHERE $(columns)$(operator)$(value);',
-    columns: [a_s.date_submitted, a_s.template_id, a_s.sop_id, i_o.organization_name, i_c.community_name, i_c.city, i_c.state, i_c.country],
-    operator: ['=','>=']
-}
-
-let auditSubmissionPath = {
-    type: 'audit',
-    query: 'SELECT a_s.date_submitted, a_s.template_id, a_s.sop_id, i_o.organization_name, i_c.community_name, i_c.city, i_c.state, i_c.country \
-          FROM ("audit_submission" AS a_s OUTER JOIN "item_template" as i_t ON a_s.organization_id = i_t.organization_id) \
-          OUTER JOIN "sop" as sop ON a_s.sop_id = sop.sop_id \
-          OUTER JOIN "item_organization" as i_o ON a_s.organization_id = i_o.organization_id \
-          OUTER JOIN "item_community" as i_c on i_o.community_id = i_c.community_id \
-    ;',
-    columns: [a_s.date_submitted, a_s.template_id, a_s.sop_id, i_o.organization_name, i_c.community_name, i_c.city, i_c.state, i_c.country]
-}
-*/
 
 module.exports = {
+    subfeatureJoin,
+    rootFeatureJoin,
     select,
     where,
-    commonJoin,
-    urinalJoin,
-    toiletJoin,
-    sinkJoin,
-    mirrorJoin
+    whereCondition,
+    referenceSelectionJoin,
+    submission,
+    sorta,
+    sortd,
+    limit,
+    offset
 }; //this will export everything to the query engine 
