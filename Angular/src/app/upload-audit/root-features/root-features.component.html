@@ -1,0 +1,73 @@
+<body>
+    <div class="top_decoration"></div>
+    <div class="cancel" (click)="close()">
+        <span class="material-icons arrow_position">arrow_back</span>
+        <p class="cancel_text">Cancel</p>
+    </div>
+    <div>
+        <p class="add_text" (click)="updateFeatures()">Add</p>
+    </div>
+    <div id="toggle">
+        <mat-button-toggle-group name="featureToggle" id="featureToggle" value="template">
+            <mat-button-toggle (click)="changeStatus('roots')" value="all_features"> <span
+                    style="margin-top: 200px;">All Root Features</span></mat-button-toggle>
+            <mat-button-toggle (click)="changeStatus('template')" value="template">From Template</mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <div *ngIf="status=='template'">
+
+
+        <div class="first_separator"></div>
+
+        <div *ngFor="let audit of data">
+            <h1 class="audit_names">{{ audit.name }}</h1>
+            <label class="container">
+                <span *ngIf="audit.included">
+                    <input [id]="audit.name + ' checkbox'" type="checkbox" checked="checked">
+                    <span class="checkmark"></span>    
+                </span>
+                <span *ngIf="!audit.included">
+                    <input [id]="audit.name + ' checkbox'" type="checkbox">
+                    <span class="checkmark"></span>    
+                </span>
+            </label>
+            <div style="position: relative;">
+                <i style="position: absolute;" class="arrow right" [id]="audit.name + ' caret'"
+                    (click)="hideOrShow(audit.name)"></i>
+            </div>
+            <div [id]="audit.name + ' separator'" class="dynamic_separators"></div>
+            <div [id]="audit.name" style="display: none;" class="subFeatures">
+                <div *ngFor="let feature of audit.features">
+                    <h1 class="subFeatures">{{ feature.name }}</h1>
+                    <label class="container">
+                        <span *ngIf="feature.included && audit.included">
+                            <input [id]="feature.name + ' checkbox'" type="checkbox" checked="checked">
+                            <span style="top:-40px; height: 20px; width: 20px" class="checkmark_small"></span>    
+                        </span>
+                        <span *ngIf="!feature.included || !audit.included">
+                            <input [id]="feature.name + ' checkbox'" type="checkbox">
+                            <span style="top:-40px; height: 20px; width: 20px" class="checkmark_small"></span>    
+                        </span>
+                    </label>
+                    <div class="subfeature_separators"></div>
+
+                </div>
+                <div class="sep_style"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div *ngIf="status=='roots'">
+        <div class="first_separator"></div>
+        <div *ngFor="let feature of all_root_features">
+            <p class="audit_names">{{ feature }}</p>
+                <label class="container">
+                    <input [id]="feature + ' root checkbox'" type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+            </label>
+            <div class="dynamic_separators"></div>
+        </div>
+    </div>
+</body>

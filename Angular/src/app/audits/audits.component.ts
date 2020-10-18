@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
+import { DatePipe } from '@angular/common';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 @Component({
   selector: 'app-audits',
@@ -7,14 +9,321 @@ import { ApiService } from '../api.service';
   styleUrls: ['./audits.component.css']
 })
 
-export class AuditsComponent implements OnInit { 
-  constructor(private apiService: ApiService) { }
-  toiletAudits;
+export class AuditsComponent implements OnInit {
+  // variables for table 
+  dataTableColumns = [];
+  rows = [];
+  tableObject;
+  currentlyEditingCell = {};
+  cellEdited = {};
+  editingMode: boolean = false;
+  oldRowInfo = [];
+  oldCellEdited = {};
+
+  // variables for filtering sidebar
+  filterBy = "Submission";
+  setupObject;
+  datatypes;
+  defaultColumns = [];
+  featureDropdownValues = new Map(); //map name to direct children
+  selectedFeature;
+  appliedFilterSelections = {};
+
+  // the following are for multiselect dropdowns
+  dropdownList = [
+    { item_id: 1, item_text: 'Mumbai' },
+    { item_id: 2, item_text: 'Bangaluru' },
+    { item_id: 3, item_text: 'Pune' },
+    { item_id: 4, item_text: 'Navsari' },
+    { item_id: 5, item_text: 'New Delhi' }
+  ];
+  searchableDropdownSettings: IDropdownSettings = {
+    singleSelection: true,
+    idField: 'item_id',
+    textField: 'item_text',
+    closeDropDownOnSelection: true,
+    allowSearchFilter: true
+  };
+  checklistDropdownSettings: IDropdownSettings = {
+    enableCheckAll: true,
+    idField: 'item_id',
+    textField: 'item_text',
+    allowSearchFilter: true
+  };
+  searchableChecklistDropdownSettings: IDropdownSettings = {
+    enableCheckAll: true,
+    idField: 'item_id',
+    textField: 'item_text',
+    allowSearchFilter: true
+  };
+
+  featureSelectors = {};
+  globalSelectors = {};
+
+  constructor(private apiService: ApiService, public datepipe: DatePipe) { }
 
   ngOnInit() {
-     this.apiService.sendHttps("getToilets").subscribe((data)=>{
-       console.log(data);
-       this.toiletAudits = data;
-     });
+    this.getSetupTableObject();
   }
+
+  getSetupTableObject() {
+    this.apiService.getSetupTableObject(null).subscribe((res) => {
+      this.setupObject = res;
+
+      // parse global columns
+      this.globalSelectors = this.parseColumns(this.setupObject.globalColumns);
+
+      // parse feature columns
+      var i = 0;
+      this.setupObject.featureColumns.forEach(featureColumn => {
+        if (i < this.setupObject.subfeatureStartIndex) {
+          var childFeatures = [];
+          // use indicies from directChildren arr to find the corresponsing object
+          featureColumn.directChildren.forEach(index => {
+            childFeatures.push(this.setupObject.featureColumns[index]);
+          });
+          // map parent child's name to array of children
+          this.featureDropdownValues.set(featureColumn.frontendName, childFeatures);
+          i++;
+        }
+        this.featureSelectors[featureColumn.frontendName] = this.parseColumns(featureColumn.dataColumns);
+      });
+
+      // get datatypes array
+      this.datatypes = this.setupObject.datatypes;
+      // console.log(this.globalSelectors);
+      // console.log(this.featureSelectors);
+      console.log(this.appliedFilterSelections);
+      this.applyFilters();
+    });
+  }
+
+  parseColumns(columns): any {
+    let selectors = {
+      numericChoice: [],
+      numericEqual: [],
+      calendarRange: [],
+      calendarEqual: [],
+      dropdown: [],
+      searchableDropdown: [],
+      checklistDropdown: [],
+      searchableChecklistDropdown: [],
+      text: [],
+      bool: []
+    };
+
+    columns.forEach(column => {
+      if (column.filterSelector) {
+        //by default, columnBackendID to user's input
+        //range and multiselect selectors have different format for recording 
+        this.appliedFilterSelections[column.columnBackendID] = null;
+        switch (column.filterSelector.selectorKey) {
+          case "dropdown": { selectors.dropdown.push(column); break; }
+          case "numericChoice": { selectors.numericChoice.push(column); break; }
+          case "numericEqual": {
+            selectors.numericEqual.push(column);
+            this.appliedFilterSelections[column.columnBackendID] = { relation: null, input: null }; break;
+          }
+          case "calendarRange": {
+            selectors.calendarRange.push(column);
+            console.log(column.columnBackendID);
+            this.appliedFilterSelections[column.columnBackendID] = { start: null, end: null }; break;
+          }
+          case "calendarEqual": { selectors.calendarEqual.push(column); break; }
+          case "searchableDropdown": { 
+            console.log(column.columnBackendID);
+            selectors.searchableDropdown.push(column); break; }
+          case "checklistDropdown": {this.appliedFilterSelections[column.columnBackendID] = []; break; }
+          case "searchableChecklistDropdown": {
+            selectors.searchableChecklistDropdown.push(column); 
+            this.appliedFilterSelections[column.columnBackendID] = []; break;
+          }
+          case "text": { selectors.text.push(column); break; }
+          case "bool": { selectors.bool.push(column); break; }
+        }
+      }
+      if (column.default) {
+        this.defaultColumns.push(column.columnBackendID);
+      }
+    });
+    return selectors;
+  }
+
+  getTableObject() {
+    // clear the column headers
+    this.dataTableColumns = [];
+    this.rows = [];
+    var i;
+
+    this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+      this.tableObject = res;
+      // console.log(res);
+      // construct the column header arrays
+      for (i = 0; i < this.tableObject.columnIndex.length; i++) {
+        // globals
+        if (this.tableObject.columnIndex[i][0] === null) {
+          var idx = this.tableObject.columnIndex[i][1];
+          var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
+
+          this.dataTableColumns.push({
+            prop: this.setupObject.globalColumns[idx].columnFrontendName,
+            type: this.datatypes[datatypeIdx],
+            id: this.setupObject.globalColumns[idx].columnID
+          });
+        }
+        // features
+        else {
+          var idx1 = this.tableObject.columnIndex[i][0];
+          var idx2 = this.tableObject.columnIndex[i][1];
+          var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
+
+          this.dataTableColumns.push({
+            prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName,
+            type: this.datatypes[datatypeIdx],
+            id: this.setupObject.globalColumns[idx].columnID
+          });
+        }
+      }
+
+      //add rows to the table one by one
+      this.tableObject.rowData.forEach(element => {
+        var row = {};
+        row["_hyperlinks"] = {};
+
+        // fill out the row object
+        for (i = 0; i < this.tableObject.columnIndex.length; i++) {
+          // global
+          if (this.tableObject.columnIndex[i][0] === null) {
+            var idx = this.tableObject.columnIndex[i][1];
+            var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
+
+            switch (this.datatypes[datatypeIdx]) {
+              case "string": {
+                row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i]; break;
+              }
+              case "hyperlink": {
+                row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i].displayString;
+                row["_hyperlinks"][this.setupObject.globalColumns[idx].columnFrontendName] = element[i].URL; break;
+              }
+              case "bool": {
+                if (element[i]) {
+                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "True";
+                }
+                else {
+                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "False";
+                } break;
+              }
+            }
+          }
+          // feature
+          else {
+            var idx1 = this.tableObject.columnIndex[i][0];
+            var idx2 = this.tableObject.columnIndex[i][1];
+            var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
+
+            switch (this.datatypes[datatypeIdx]) {
+              case "string": {
+                row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i]; break;
+              }
+              case "hyperlink": {
+                row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].displayString;
+                row["_hyperlinks"][this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].URL; break;
+              }
+              case "bool": {
+                if (element[i]) {
+                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "True";
+                }
+                else {
+                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "False";
+                } break;
+              }
+            }
+          }
+        }
+        // console.log(row);
+        this.rows.push(row);
+      });
+    });
+  }
+
+  updateValue(event, columnName, rowIndex) {
+    console.log('inline editing rowIndex', rowIndex);
+    this.toggleEditingCell(rowIndex, columnName); //stop editing
+    // save the old value
+    this.oldRowInfo.push({
+      rowIndex: rowIndex,
+      columnName: columnName,
+      previousValue: this.rows[rowIndex][columnName]
+    });
+    this.cellEdited[rowIndex + columnName] = true;
+    this.rows[rowIndex][columnName] = event.target.value;
+    console.log('UPDATED!', this.rows[rowIndex][columnName]);
+  }
+
+  toggleEditingCell(rowIndex, columnName) {
+    if (!this.editingMode) { return; }
+    if (!this.currentlyEditingCell[rowIndex + columnName]) {
+      this.currentlyEditingCell[rowIndex + columnName] = true;
+      console.log("now editing cell");
+    }
+    else {
+      this.currentlyEditingCell[rowIndex + columnName] = false;
+      console.log("now not editing cell");
+    }
+  }
+
+  toggleEditingMode() {
+    this.editingMode = !this.editingMode;
+    // if in editing mode, make a copy of rows. if not in editing mode, clear editing object
+    if (this.editingMode) {
+      console.log("clearing old row info");
+      this.oldRowInfo = [];
+      this.oldCellEdited = Object.assign({}, this.cellEdited);
+    }
+    else {
+      this.currentlyEditingCell = {};
+    }
+  }
+
+  cancelEditing() {
+    this.toggleEditingMode();
+    // restore cellEdited object and row info to previous state
+    this.oldRowInfo.forEach(obj => {
+      this.rows[obj.rowIndex][obj.columnName] = obj.previousValue;
+      this.rows = [...this.rows];
+    });
+    this.cellEdited = Object.assign({}, this.oldCellEdited);
+    console.log(this.oldCellEdited);
+  }
+
+  applyFilters() {
+    console.log(this.appliedFilterSelections);
+
+    /* get api response */
+    if (!this.selectedFeature) {
+      return;
+    }
+    // this.getTableObject();
+  }
+
+
+  applyDateFilter = (val: string) => {
+    val = this.datepipe.transform(val, 'MM-dd-yyyy');
+    // console.log(val);
+
+    // this.rows = this.filteredData.filter(function (item) {
+    //   if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
+    //     return true;
+    //   }
+    // });
+  }
+
+
+  onItemSelect(item: any) {
+    // console.log(item);
+  }
+  onSelectAll(items: any) {
+    // console.log(items);
+  }
+
 }

@@ -1,6 +1,12 @@
+// export class SwimlaneColumn {
+//     name: string;
+//     constructor(name: string) {
+//       this.name = name;
+//     }
+//   }
+
 /* audit submission model */
-export class auditSubmission 
-{
+export class AuditSubmission {
     timeConducted: number;
     timeSubmitted: number;
     sopID: number;
@@ -9,15 +15,13 @@ export class auditSubmission
 }
 
 /* feature models */
-export class mirrorObject
-{
+export class MirrorObject {
     objectType: "mirror";
     mirrorConditionID: number;
     comment: string;
 }
 
-export class toiletObject
-{
+export class ToiletObject {
     objectType: "toilet";
     gpf: number;
     flushometerBrand: string;
@@ -26,10 +30,14 @@ export class toiletObject
     basinConditionID: number;
     flushometerConditionID: number;
     comment: string;
+    dateConducted: string;
+
+    constructor(values: Object = {}) {
+        Object.assign(this, values);
+    }
 }
 
-export class urinalObject
-{
+export class UrinalObject {
     objectType: "urinal";
     gpf: number;
     flushometerBrand: string;
@@ -40,8 +48,7 @@ export class urinalObject
     comment: string;
 }
 
-export class sinkObject
-{
+export class SinkObject {
     objectType: "sink";
     gpm: number;
     faucetBrand: string;
@@ -49,4 +56,40 @@ export class sinkObject
     faucetConditionID: number;
     basinConditionID: number;
     comment: string;
+}
+
+
+export class SetupTableObject {
+    globalSelectors: FilterSelector[];
+    featureFilters: {
+        Sink: FilterSelector[];
+        Toilet: FilterSelector[];
+        featureColumns: {
+            Sink: DataColumn[];
+            Toilet: DataColumn[];
+        };
+    };
+}
+
+export class TableObject {
+    columnViewValue: string[];
+    columnDataTypeKey: string[];
+    columnData: any[];
+}
+
+
+export class DataColumn {
+    columnQueryValue: string;
+    columnViewValue: string;
+    default: Boolean;
+
+}
+
+export class FilterSelector {
+    type: string;
+    filterQueryValue: string;
+    filterViewValue: string
+    values: string[] 
+    validation: string[] 
+
 }

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download</title>
+</head>
+
+<body>
+    <div class = "main">
+    <h1 class="header">Download our Data Template</h1>
+    <h2 class="selectText">Select Audit Template:</h2>
+    <!-- <button mat-raised-button>{{ selectedValue }}&nbsp; &nbsp; &nbsp; there</button> -->
+    
+    <form>
+        <mat-form-field class='inputForm'>
+          <mat-label>Audit Template</mat-label>
+          <mat-select [(ngModel)]="currentValue" name="audits">
+            <mat-option *ngFor="let audits of audits" [value]="audits.value">
+              {{audits.viewValue}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- <p>Selected Audit: {{ currentValue }}</p> -->
+</form>  
+<div *ngIf="currentValue==''">
+<!-- <button mat-button color="primary" style="background-color: #569CD7; color: white; filter: grayscale(50%); cursor: auto; position: absolute; margin-top: 240px; margin-left: 400px;">DOWNLOAD</button>
+<button mat-button color="primary" style="background-color: #5FA784; color: white; filter: grayscale(50%); cursor: auto; position: absolute; margin-top: 240px; margin-left: 290px;">CANCEL</button> -->
+</div>
+<!-- <div *ngIf="currentValue=='water'">
+    <h4 style="color: #757575; font-size: 18px; font-weight: 500;"> Select File Format</h4>
+    </div> -->
+    
+<div *ngIf="currentValue == 'water'">
+    <h3 style="color: #757575; font-size: 18px; font-weight: 500;">Select Included Features</h3>
+    <div class='wrapper'>
+    <label class="container" id="gpf">Gallons Per Flush (gpf)
+        <input class="checkmarklocation" type="checkbox" checked="checked">
+        <span class="checkmark"></span>
+      </label>
+      </div>
+    <div class='wrapper'>
+        <label class="container" id="basinbrand" >Basin Brand
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label>
+          </div>
+    <div class='wrapper'>
+        <label class="container" id="condition" >Stall Condition
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+         </div>    
+
+    <div class='wrapper'>
+        <label class="container" id="flushometerbrand" >Flushometer Brand
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+         </div>
+
+    <div class='wrapper'>
+         <label class="container" id="comment" >Comment
+           <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+       </div> 
+       
+       <h4 style="color: #757575; font-size: 18px; font-weight: 500; margin-top: 60px;">Select File Format:</h4>
+       <button mat-button color="primary" (click)="changeFileValue('CSV')" style="background-color: #569CD7; color: white; position: absolute; margin-top: -55px; margin-left: 300px;" [class.isNotActive]="fileValue!='CSV'">+CSV</button>
+       <button mat-button color="primary" (click)="changeFileValue('Excel')" style="background-color: #569CD7; color: white; position: absolute; margin-top: -55px; margin-left: 450px;" [class.isNotActive]="fileValue!='Excel'">+Excel</button>
+       <a href="assets/sample.pdf" download>
+       <button mat-button color="primary" style="background-color: #569CD7; color: white; cursor: pointer; position: absolute; margin-top: 40px; margin-left: 450px;">DOWNLOAD</button>
+       </a>
+       <button mat-button color="primary" (click)="currentValue=''" style="background-color: #5FA784; color: white; cursor: pointer; position: absolute; margin-top: 40px; margin-left: 340px;">CANCEL</button>
+       
+    </div>
+
+<div *ngIf="currentValue == 'food'">
+    <div class='wrapper'>
+   <label class="container" id="food1">Food Audit #1
+       <input class="checkmarklocation" type="checkbox" checked="checked">
+       <span class="checkmark"></span>
+      </label>
+      </div>
+    <div class='wrapper'>
+        <label class="container" id="food2" >Food Audit #2
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label>
+          </div>
+    <div class='wrapper'>
+        <label class="container" id="food3" >Food Audit #3
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+         </div>    
+    
+    <div class='wrapper'>
+        <label class="container" id="food4" >Food Audit #4
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+         </div>    
+    <h4 style="color: #757575; font-size: 18px; font-weight: 500; margin-top: 60px;">Select File Format:</h4>
+     <button mat-button color="primary" (click)="changeFileValue('CSV')" style="background-color: #569CD7; color: white; position: absolute; margin-top: -55px; margin-left: 300px;" [class.isNotActive]="fileValue!='CSV'">+CSV</button>
+     <button mat-button color="primary" (click)="changeFileValue('Excel')" style="background-color: #569CD7; color: white; position: absolute; margin-top: -55px; margin-left: 450px;" [class.isNotActive]="fileValue!='Excel'">+Excel</button>
+     <a href="assets/sample.pdf" download>
+     <button mat-button color="primary" style="background-color: #569CD7; color: white; cursor: pointer; position: absolute; margin-top: 40px; margin-left: 450px;">DOWNLOAD</button>
+     </a>
+     <button mat-button color="primary" (click)="currentValue=''" style="background-color: #5FA784; color: white; cursor: pointer; position: absolute; margin-top: 40px; margin-left: 340px;">CANCEL</button>
+  
+    </div>
+
+<div *ngIf="currentValue == 'electricity'">
+    <div class='wrapper'>
+    <label class="container" id="electricity1">Electricity Audit #1
+        <input class="checkmarklocation" type="checkbox" checked="checked">
+        <span class="checkmark"></span>
+      </label>
+     </div>
+    <div class='wrapper'>
+        <label class="container" id="electricity2" >Electricity Audit #2
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label>
+          </div>
+   <div class='wrapper'>
+        <label class="container" id="electricity3" >Electricity Audit #3
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+         </div>    
+        
+    <div class='wrapper'>
+        <label class="container" id="electricity4" >Electricity Audit #4
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+        </div>    
+    <h4 style="color: #757575; font-size: 18px; font-weight: 500; margin-top: 60px;">Select File Format:</h4>
+    <button mat-button color="primary" (click)="changeFileValue('CSV')" style="background-color: #569CD7; color: white; position: absolute; margin-top: -55px; margin-left: 300px;" [class.isNotActive]="fileValue!='CSV'">+CSV</button>
+    <button mat-button color="primary" (click)="changeFileValue('Excel')" style="background-color: #569CD7; color: white; position: absolute; margin-top: -55px; margin-left: 450px;" [class.isNotActive]="fileValue!='Excel'">+Excel</button>
+    <a href="assets/sample.pdf" download>
+    <button mat-button color="primary" style="background-color: #569CD7; color: white; cursor: pointer; position: absolute; margin-top: 40px; margin-left: 450px;">DOWNLOAD</button>
+    </a>
+    <button mat-button color="primary" (click)="currentValue=''" style="background-color: #5FA784; color: white; cursor: pointer; position: absolute; margin-top: 40px; margin-left: 340px;">CANCEL</button>
+ 
+    </div>
+
+
+<div *ngIf="currentValue == 'other'">
+    <div class='wrapper'>
+    <label class="container" id="other1">Other Audit #1
+        <input class="checkmarklocation" type="checkbox" checked="checked">
+        <span class="checkmark"></span>
+      </label>
+     </div>
+   <div class='wrapper'>
+        <label class="container" id="other2" >Other Audit #2
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label>
+          </div>
+   <div class='wrapper'>
+        <label class="container" id="other3" >Other Audit #3
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+         </div>    
+            
+    <div class='wrapper'>
+        <label class="container" id="other4" >Other Audit #4
+            <input class="checkmarklocation" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+         </label>
+        </div>    
+    <h4 style="color: #757575; font-size: 18px; font-weight: 500; margin-top: 60px;">Select File Format:</h4>
+    <button mat-button color="primary" (click)="changeFileValue('CSV')" style="background-color: #569CD7; color: white; position: absolute; margin-top: -55px; margin-left: 300px;" [class.isNotActive]="fileValue!='CSV'">+CSV</button>
+    <button mat-button color="primary" (click)="changeFileValue('Excel')" style="background-color: #569CD7; color: white; position: absolute; margin-top: -55px; margin-left: 450px;" [class.isNotActive]="fileValue!='Excel'">+Excel</button>
+    <a href="assets/sample.pdf" download>
+    <button mat-button color="primary" style="background-color: #569CD7; color: white; cursor: pointer; position: absolute; margin-top: 40px; margin-left: 450px;">DOWNLOAD</button>
+    </a>
+    <button mat-button color="primary" (click)="currentValue=''" style="background-color: #5FA784; color: white; cursor: pointer; position: absolute; margin-top: 40px; margin-left: 340px;">CANCEL</button>
+ 
+    </div>
+        
+    
+    
+    
+            
+</div>
+
+
+
+</body>

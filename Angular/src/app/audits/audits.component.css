@@ -1,0 +1,102 @@
+/* entire sidenav including main content and sidenav bar */
+
+.sidenav-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    /* space for bottom bar: */
+    bottom: 30px;
+}
+
+::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {
+    /*change color of label*/
+    color: rgb(228, 228, 228) !important;
+}
+
+::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple {
+    background-color: rgba(228, 228, 228, 0.5) !important;
+}
+
+/* main content */
+
+#table-buttons {
+    margin-top: 5px;
+    border-radius: 0%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+}
+
+#table {
+    margin-bottom: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    width: 90%;
+}
+
+.mat-icon {
+    color: rgba(73, 73, 73, .8);
+}
+
+/* actual sidebar */
+
+.sidenav {
+    width: 25%;
+    text-align: center;
+    color: rgb(228, 228, 228);
+    background-color: rgba(73, 73, 73, .8) !important;
+    /* background-color: gray; */
+    /* box-shadow: 5px 0 3px -2px #888; */
+    font-size: small;
+    border-right: black;
+}
+
+/* form fields within sidenav bar */
+
+.mat-form-field {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: small;
+    width: 85%;
+    color: rgb(228, 228, 228) !important;
+}
+
+.mat-expansion-panel {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: small;
+    width: 80%;
+    background-color: transparent;
+    overflow: visible !important;
+}
+
+.mat-expansion-panel-header-title {
+    font-size: small;
+    color: rgb(228, 228, 228) !important;
+}
+
+.mat-radio-button {
+    margin: 5px;
+}
+
+.sidenav .mat-button {
+    background-color: rgb(95, 167, 132);
+    margin-top: 3rem;
+}
+
+.datetime-picker{
+    text-align: center;
+    font-size: x-small;
+}
+
+/* matInput datetime picker icon color */
+::-webkit-calendar-picker-indicator { 
+    color: white !important;
+    /* background: transparent;  */
+}
+
+#apply-button {
+    margin-bottom: 25px;
+}
