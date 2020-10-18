@@ -62,7 +62,7 @@ app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
 // FOR TESTING PURPOSES: Need to allow each test file to start server on their own so comment out app.listen (below)
-// app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
+//app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 module.exports = app;
 
 ////// LISTEN WITH SSL //////
