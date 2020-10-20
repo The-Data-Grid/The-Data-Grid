@@ -95,8 +95,6 @@ getSubFeaturesLength(subfeatureList) {
       const feature = document.getElementById(this.data[i].name + " checkbox") as HTMLInputElement;
       if (!feature.checked) {
         this.data[i].included = false;
-        console.log(this.data[i].name + " is the thing")
-        console.log(no.checked + " is the second thing")
       }
       else {
         this.data[i].included = true;

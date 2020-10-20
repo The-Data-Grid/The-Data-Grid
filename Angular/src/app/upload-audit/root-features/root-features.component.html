@@ -15,7 +15,7 @@
         </mat-button-toggle-group>
     </div>
     <div style="margin-top: 20px;" *ngIf="status=='template'">
-
+  
         <mat-accordion>
             <div *ngFor="let audit of data">
                 <mat-expansion-panel>
@@ -26,20 +26,20 @@
                       <mat-panel-description>
                         <input [id]="audit.name+ ' checkbox'" class="checkmark" style="cursor: pointer;" type="checkbox" [checked]="audit.included" (click)="$event.stopPropagation()">
                       </mat-panel-description>
-                    </mat-expansion-panel-header> 
+                    </mat-expansion-panel-header>
                     <div *ngFor="let feature of audit.features">
                         <div class="secondary_separator"></div>
                         <div class="subfeature">
                             <p class="subfeature-right" style="margin-left: 25px;">{{ feature.name }}</p>
                             <input [id]="feature.name + ' checkbox'" class="subfeature-left checkmark" style="cursor: pointer; margin-top: 13px;" type="checkbox" [checked]="feature.included">
                         </div>
-                    </div>   
-        </mat-expansion-panel>                                    
+                    </div>  
+        </mat-expansion-panel>                                   
             </div>
         </mat-accordion>
     </div>
-
-    
+  
+   
     <div *ngIf="status=='roots'" style="margin-top: 20px;">
         <mat-accordion>
             <div *ngFor="let feature of all_root_features">
@@ -56,4 +56,5 @@
             </div>
         </mat-accordion>
     </div>
-</body>
+ </body>
+ 
