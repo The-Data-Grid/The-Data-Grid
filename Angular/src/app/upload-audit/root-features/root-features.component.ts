@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { ApiService } from '../../api.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MatCheckboxModule, MatCheckbox} from '@angular/material/checkbox';
 
 interface Data {
   name: string,
@@ -15,16 +16,17 @@ interface Data {
 })
 export class RootFeaturesComponent implements OnInit {
 
+
   constructor(private apiService: ApiService,
     public dialogRef: MatDialogRef<RootFeaturesComponent>,
-    @Inject(MAT_DIALOG_DATA)public data: Data) {}
+    @Inject(MAT_DIALOG_DATA)public data: Data) {
+    }
 
 
   setupObject;
   all_root_features = [];
 
   ngOnInit(): void {
-
   }
 
 
@@ -69,6 +71,7 @@ export class RootFeaturesComponent implements OnInit {
   }
 }
 
+
 getSubFeaturesLength(subfeatureList) {
   for (var i = 0;; i++) {
     try {
@@ -86,10 +89,14 @@ getSubFeaturesLength(subfeatureList) {
     var featuresLength = this.getFeaturesLength();
     console.log(featuresLength + " is the features length");
 
+
     for (var i = 0; i <= featuresLength; ++i) {
+      const no = (<HTMLInputElement>document.getElementById(this.data[i].name + " checkbox"))
       const feature = document.getElementById(this.data[i].name + " checkbox") as HTMLInputElement;
       if (!feature.checked) {
         this.data[i].included = false;
+        console.log(this.data[i].name + " is the thing")
+        console.log(no.checked + " is the second thing")
       }
       else {
         this.data[i].included = true;
