@@ -20,7 +20,6 @@ export class ViewAuditComponent implements OnInit {
     return col.replace(/\s+/g, '_');
   }
 
-  throw = [{Action:"42",Last_Updated:"41",Room_ID:"ahhh",Clockwise_Number:"looo"}]
 
   constructor(public dialog: MatDialog, private datePipe: DatePipe) {
    }
