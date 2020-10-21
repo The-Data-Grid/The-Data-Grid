@@ -34,49 +34,39 @@
 
     </mat-card>
 
-    <!-- <h1>{{myDate | date:'yyyy-MM-dd'}}</h1> -->
-    <div style="margin-top: 30px;"></div>
-    <div class="lower_bound"></div>
-    <div *ngFor="let audit of audits">
-        <div *ngFor="let feature of audit.features">
-            <div *ngIf="feature.included">
-                <h1 class="audit_name">{{ feature.name }}</h1>
-                <h2 class="add" [id]="feature.name + ' add'">+</h2>
-                <span class="caret_formatting" (click)="showOrHideTable(feature.name)">
-                    <i [id]="feature.name + ' caret'" class="fa fa-caret-down subformatting"
-                        style="font-size: 18px;"></i>
-                </span>
-                <div class="lower_bound"></div>
-
-                <table [id]="feature.name" class="center table_styling" style="display: none; margin-left: 8px;">
-                    <th class="column_name id_style"></th>
-                    <th class="column_name id_style"></th>
-                    <th class="column_name id_style" style="padding: 1px; margin-top: 1px;">{{ feature.name }} ID</th>
-                    <th class="column_name id_style" style="padding: 1px;">Room ID</th>
-                    <tr>
-                        <th class="column_name">Action</th>
-                        <th class="column_name">Last Updated</th>
-                        <th class="column_name">Clockwise Number</th>
-                        <th class="column_name">Room</th>
-                    </tr>
-                    <tr *ngFor="let action of feature.actions">
-                        <td>{{ action.action }}</td>
-                        <td>{{ action.updated }}</td>
-                        <td>{{ action.c_number }}</td>
-                        <td>{{ action.room }}</td>
-                    </tr>
-                </table>
-                <div *ngIf="checkIfTableShown(feature.name)" class="table_separation">
-                    <!-- <tr>
-                            <td class="table_separation"></td>
-                        </tr> -->
+<div style="width: 90%; margin-left: 5%;">
+    <mat-accordion>
+        <div *ngFor="let audit of audits">
+            <div *ngFor="let feature of audit.features">
+                <div *ngIf="feature.included">
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <span style="margin-left: 15px;">
+                                    {{ feature.name }}
+                                </span>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <ngx-datatable
+                        class="material"
+                        [rows]="feature.actions"
+                        columnMode="force"
+                        [headerHeight]="50"
+                        [footerHeight]="50"
+                        rowHeight="auto"
+                        [scrollbarH]="false"
+                        [limit]="5"
+                        >
+                        <ngx-datatable-column *ngFor="let col of columns" [prop]="getProp(col)" [name]="col"></ngx-datatable-column>
+                        </ngx-datatable>
+                    </mat-expansion-panel>
                 </div>
-
-
-
 
             </div>
         </div>
+    </mat-accordion>
+
+</div>
 
     </div>
 

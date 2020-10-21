@@ -14,6 +14,13 @@ import { DatePipe } from '@angular/common';
 export class ViewAuditComponent implements OnInit {
 
   myDate = new Date();
+  columns = ["Action","Last Updated","Room ID","Clockwise Number"]
+
+  getProp(col) {
+    return col.replace(/\s+/g, '_');
+  }
+
+  throw = [{Action:"42",Last_Updated:"41",Room_ID:"ahhh",Clockwise_Number:"looo"}]
 
   constructor(public dialog: MatDialog, private datePipe: DatePipe) {
    }
@@ -21,9 +28,9 @@ export class ViewAuditComponent implements OnInit {
   audit = { auditName: "Bathroom Audit 1", uploadStatus: "uploaded", _id: "1234567890" };
 
   audits = [
-    {name:"Restroom Audit", included: true, features: [{name: "Toilet", included: true, actions:[{action: "Removal", updated: "5 mins ago", room: "1201B", c_number: 8}, {action: "Creation", updated: "3 days ago", room:"1201B", c_number: 4}, {action: "Observation", updated: "3 days ago", room:"1201B", c_number: 5}]}, {name: "Sink", included: true, actions:[{action: "Deletion Request", updated: "45 mins ago", room: "1201B", c_number: 3}, {action: "Creation and Observation", updated: "4 months ago", room: "1201B", c_number: 7}]}, {name: "Urinal", included: true, actions:[{action: "Creation", updated: "1 hr ago", room: "1201B", c_number: 2}, {action: "Observation", updated: "1 hr ago", room: "1201B", c_number: 1}]}]},
-    {name: "Irrigation Audit", included: true, features: [{name: "Sprinkler", included: true, actions:[{action: "Creation", updated: "12 mins ago", room: "23A", c_number: 2}, {action:"Observation", updated: "33 mins ago", room:"23A", c_number:4}]}, {name: "Canal", included: true, actions:[{action: "Creation and Observation", updated: "3 weeks ago", room: "23A", c_number: 13}]}, {name: "Sewer", included: true, actions:[{action: "Deletion Request", updated: "3 weeks ago", room: "23A", c_number: 9}, {action: "Observation and Creation", updated: "3 weeks ago", room: "23A", c_number: 3}]}]},
-    {name: "Boiler Room Audit", included: true, features: [{name: "Boiler", included: true, actions:[{action: "Removal", updated: "1 year ago", room: "11C", c_number: 22},{action: "Creation", updated: "12 years ago", room: "11C", c_number: 16}]}, {name: "Pump", included: true, actions:[{action: "Deletion Request", updated: "3 years ago", room: "12B", c_number: 9}, {action:"Creation", updated:"65 years ago", room:"12B", c_number: 7}]}]}
+    {name:"Restroom Audit", included: true, features: [{name: "Toilet", included: true, actions:[{Action: "Removal", Last_Updated: "5 mins ago", Room_ID: "1201B", Clockwise_Number: 8}, {Action: "Creation", Last_Updated: "3 days ago", Room_ID:"1201B", Clockwise_Number: 4}, {Action: "Observation", Last_Updated: "3 days ago", Room_ID:"1201B", Clockwise_Number: 5}]}, {name: "Sink", included: true, actions:[{Action: "Deletion Request", Last_Updated: "45 mins ago", Room_ID: "1201B", Clockwise_Number: 3}, {Action: "Creation and Observation", Last_Updated: "4 months ago", Room_ID: "1201B", Clockwise_Number: 7}]}, {name: "Urinal", included: true, actions:[{Action: "Creation", Last_Updated: "1 hr ago", Room_ID: "1201B", Clockwise_Number: 2}, {Action: "Observation", Last_Updated: "1 hr ago", Room_ID: "1201B", Clockwise_Number: 1}]}]},
+    {name: "Irrigation Audit", included: true, features: [{name: "Sprinkler", included: true, actions:[{Action: "Creation", Last_Updated: "12 mins ago", Room_ID: "23A", Clockwise_Number: 2}, {Action:"Observation", Last_Updated: "33 mins ago", Room_ID:"23A", Clockwise_Number:4}]}, {name: "Canal", included: true, actions:[{Action: "Creation and Observation", Last_Updated: "3 weeks ago", Room_ID: "23A", Clockwise_Number: 13}]}, {name: "Sewer", included: true, actions:[{Action: "Deletion Request", Last_Updated: "3 weeks ago", Room_ID: "23A", Clockwise_Number: 9}, {Action: "Observation and Creation", Last_Updated: "3 weeks ago", Room_ID: "23A", Clockwise_Number: 3}]}]},
+    {name: "Boiler Room Audit", included: true, features: [{name: "Boiler", included: true, actions:[{Action: "Removal", Last_Updated: "1 year ago", Room_ID: "11C", Clockwise_Number: 22},{Action: "Creation", Last_Updated: "12 years ago", Room_ID: "11C", Clockwise_Number: 16}]}, {name: "Pump", included: true, actions:[{Action: "Deletion Request", Last_Updated: "3 years ago", Room_ID: "12B", Clockwise_Number: 9}, {Action:"Creation", Last_Updated:"65 years ago", Room_ID:"12B", Clockwise_Number: 7}]}]}
   ]
 
 
