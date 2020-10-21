@@ -1,9 +1,12 @@
 node_modules/*
 PostgreSQL/data/*
-#exclude
+# exclude
 !node_modules/.gitkeep
 !PostgreSQL/data/.gitkeep
 
 .env
 
 .DS_Store
+
+# computed returnables
+Express/dataRepresentation/auditSchemas/*/returnables/

@@ -14,6 +14,102 @@ const client = new Client()
 // sync connecting to the database
 client.connectSync('host=localhost port=5432 dbname=meta connect_timeout=5')
 
+/* TO DO
+joinPath Generation
+
+add alias to selectSQL 
+
+We impose that:
+    no item can reference a location type more than once
+
+test: each feature has exactly one returnableID with realGeo === true
+
+either joinSQL and joinObject where joinObject is put through rRS and joinObject as appended
+    or 
+
+in:
+    column, table, and item (to get metadata_column)
+    feature to query
+
+if location:
+    columnArray.push('location_id', `${tableName}_id`)
+    tableArray.push(tableName, itemTableName)
+
+if item-list:
+    samika's code
+
+
+
+// construct the joinObject and frontendName based on the reference type
+        {
+            columns: Array,
+            tables: Array,
+            appendSQL: String,
+            selectSQL: String
+        }
+        switch (col.ReferenceTypeName) {
+            case 'item-id':
+                // in item
+                joinObject.selectSQL = pgp.as.format('a$(alias:raw).$(columnName:raw) AS $(returnableAlias:raw)', {
+                    returnableAlias: returnableID,
+                    columnName: col.columnName
+                });
+                break;
+            case 'item-non-id':
+                // in item 
+                joinObject.selectSQL = pgp.as.format('a$(alias:raw).$(columnName:raw)', {
+                    alias: returnableID,
+                    columnName: col.columnName
+                });
+                break;
+            case 'item-list':
+                // list
+                joinObject.selectSQL = pgp.as.format('a$(listTableName:raw).$(columnName:raw)', {
+                    listTableName: col.tableName,
+                    columnName: col.columnName
+                });
+                // needs custom SQL for join
+                joinSQL = pgp.as.format('INNER JOIN m2m_$(listTableName:raw) \
+                                        ON m2m_$(listTableName:raw).item_id = $(alias:raw).item_id \
+                                        INNER JOIN $(listTableName:raw) \
+                                        ON $(listTableName:raw).list_id = m2m_$(listTableName:raw).list_id', {
+                    listTableName: col.tableName, 
+                    alias: returnableID
+                })
+                break;
+            case 'item-location':
+                joinObject.selectSQL = pgp.as.format('a$(locationTableName:raw).$(columnName:raw)', {
+                    locationTableName: ,
+                    columnName: col.columnName
+                });
+                break;
+            case 'item-factor':
+                break;
+            case 'obs':
+                break;
+            case 'obs-global':
+                break;
+            case 'obs-list':
+                break;
+            case 'obs-factor':
+                break;
+            case 'special':
+                break;
+            case 'attribute':
+                break;
+        }
+
+
+
+
+
+
+
+*/
+function generateJoins(column, table, item, feature) {
+    
+}
+
 // QUERIES //
 // ==================================================
 let rawQuery = client.querySync('SELECT f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
@@ -93,7 +189,7 @@ class ReturnableID {
 
 // CALLING SETUP FUNCTION AND EXPORTING
 // ============================================================
-const {returnableIDLookup,idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
+const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
 
 console.log(idColumnTableLookup)
 //console.log(returnableIDLookup)
@@ -271,57 +367,15 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
             selectSQL = 'tdg_sop.data_name'
 
-        } else if(row['rt__type_name'] == 'list') {
-            //join SQL should equal query
-            //select SQL --> tablename.columnname
+        } else if(row['rt__type_name'] == 'obs-list') {
 
-            //// List ////
-
-            // list_... -> list_m2m_... -> feature_...
-
-            /*
-            pgp.as.format('INNER JOIN $(listName:value)_m2m \
-            ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
-            INNER JOIN $(listName:value) \
-            ON $(listName:value).list_id = $(listName:value)_m2m.list_id', {myTable: 'feature_toilet', myTable2: 'sldkfjds'})
-
-            //myTable, myTable2 will be interpolated using $()
-            //second argument would be the row[]
-
-            let listName= "listName_" + referenceTable + referenceColumn;
-
-            if (table.includes("list_"))
-            {
-                let listJoin = {
-                    feature: {
-                        listName : { //Join m2m to audit table then join 
-                            query: 'INNER JOIN $(listName:value)_m2m \
-                                    ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
-                                    INNER JOIN $(listName:value) \
-                                    ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
-                            dependencies: ['referenceTable']
-                        }
-                    }
-
-                }
-            }
-            */
-           //feature name, tablename, 
-           //table name is c__table_name
-           //featuer name is feature or f__table_name
-           //many to many to the feature table and list table to many to many
-           //list c__table_name
-
-           //m2m table will just have _m2m at the end
-
-
-
-         joinSQL= pgp.as.format('INNER JOIN $(feature:value)_m2m \
-                                ON $(feature:value)_m2m.observation_id = $(feature:value).observation_id \
-                                INNER JOIN $(tablename:value) \
-                                ON $(tablename:value).list_id = $(tablename:value)_m2m.list_id', {feature: row['f__table_name'], tablename : row['c__table_name']})
+            joinSQL= pgp.as.format('INNER JOIN $(tableName:value)_m2m \
+                                    ON $(tableName:value)_m2m.observation_id = $(feature:value).observation_id \
+                                    INNER JOIN $(tableName:value) \
+                                    ON $(tableName:value).list_id = $(tableName:value)_m2m.list_id', {feature: row['f__table_name'], tableName : row['c__table_name']})
         
-         selectSQL = pgp.as.format('$(table:value).$(column:value)', {table:row['c__table_name'], column: row['c__column_name']})
+            // Add STRING_AGG() here? ...
+            selectSQL = pgp.as.format('$(table:value).$(column:value)', {table:row['c__table_name'], column: row['c__column_name']})
             
 
         } else {

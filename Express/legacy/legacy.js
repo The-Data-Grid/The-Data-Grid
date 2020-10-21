@@ -7,9 +7,53 @@
 // ============================================================
 
 
+// Setup.js //
+// ==================================================
+
+//join SQL should equal query
+            //select SQL --> tablename.columnname
+
+            //// List ////
+
+            // list_... -> list_m2m_... -> feature_...
+
+            /*
+            pgp.as.format('INNER JOIN $(listName:value)_m2m \
+            ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+            INNER JOIN $(listName:value) \
+            ON $(listName:value).list_id = $(listName:value)_m2m.list_id', {myTable: 'feature_toilet', myTable2: 'sldkfjds'})
+
+            //myTable, myTable2 will be interpolated using $()
+            //second argument would be the row[]
+
+            let listName= "listName_" + referenceTable + referenceColumn;
+
+            if (table.includes("list_"))
+            {
+                let listJoin = {
+                    feature: {
+                        listName : { //Join m2m to audit table then join 
+                            query: 'INNER JOIN $(listName:value)_m2m \
+                                    ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
+                                    INNER JOIN $(listName:value) \
+                                    ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
+                            dependencies: ['referenceTable']
+                        }
+                    }
+
+                }
+            }
+            */
+           //feature name, tablename, 
+           //table name is c__table_name
+           //featuer name is feature or f__table_name
+           //many to many to the feature table and list table to many to many
+           //list c__table_name
+
+           //m2m table will just have _m2m at the end
 
 
-// Query.JS //
+// Query.js //
 // ==================================================
 /*
 

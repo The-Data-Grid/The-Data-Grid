@@ -1,0 +1,11 @@
+{
+    "easyWayToInclude": {
+        "id1": true,
+        "id2": false
+    }, 
+
+    "aa": {
+        "this should be a function instead":  true,
+        "this should be a function as well!": true
+    }
+}
