@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-feature-audit',
   templateUrl: './feature-audit.component.html',
   styleUrls: ['./feature-audit.component.css'],
-  encapsulation: ViewEncapsulation.None
 })
 export class FeatureAuditComponent implements OnInit {
 

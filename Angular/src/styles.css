@@ -205,5 +205,7 @@ html, body {
 flex: 0 0 auto;
 }
 
-
-
+.mat-dialog-container {
+  padding: 0 !important;
+  }
+  

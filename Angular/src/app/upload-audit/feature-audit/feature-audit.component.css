@@ -20,7 +20,7 @@
   background-color: black;
   height: 1px;
   width: 801px;
-  margin-left: -54px
+  /* margin-left: -54px */
 }
 .secondary_separator {
   margin-top: 10px;
@@ -28,7 +28,7 @@
   background-color: lightgray;
   height: 1px;
   width: 801px;
-  margin-left: -54px
+  margin-left: -64px
 }
 
 .mat-dialog-container {

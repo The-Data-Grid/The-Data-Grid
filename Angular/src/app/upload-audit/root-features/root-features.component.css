@@ -82,7 +82,7 @@ width:500px;
   background-color: black;
   height: 1px;
   width: 831px;
-  margin-left: -54px
+  margin-left: 0px
 }
 
 .cdk-global-overlay-wrapper {
@@ -105,7 +105,7 @@ width:500px;
   background-color: black;
   height: 1px;
   width: 831px;
-  margin-left: -54px;
+  margin-left: 0px;
   /* box-shadow: 20px 0px 10px 5px black; */
 
 }
@@ -159,7 +159,7 @@ width:500px;
   background-color: black;
   height: 1px;
   width: 800px;
-  margin-left: -54px
+  margin-left: 0px
 
 }
 
@@ -204,7 +204,9 @@ width:500px;
   color: black;
   display: flex;
   justify-content: space-between;
+  padding: 0px;
   width: 90%;
+  padding: 0px !important;
 
 }
 
@@ -212,7 +214,7 @@ width:500px;
   background-color: lightgray;
   height: 1px;
   width: 801px;
-  margin-left: -54px
+  margin-left: -54px;
 
 }
 
@@ -223,5 +225,3 @@ overflow-y: hidden;
 .mat-dialog-container {
   padding: 0px !important;
 }
-
-

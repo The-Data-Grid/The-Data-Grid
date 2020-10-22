@@ -43,6 +43,7 @@ export class ViewAuditComponent implements OnInit {
 
   openGlobalPresets(): void {
     const dialogRef = this.dialog.open(GlobalPresetsComponent, {
+      panelClass: 'audit-dialog-no-padding',
       width: '801px',
       height: '500px',
       data: this.audits

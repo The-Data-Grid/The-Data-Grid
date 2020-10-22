@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewChild, ViewEncapsulation, HostListener } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild, HostListener } from '@angular/core';
 import { ApiService } from '../../api.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatCheckboxModule, MatCheckbox} from '@angular/material/checkbox';
@@ -13,7 +13,6 @@ interface Data {
   selector: 'app-root-features',
   templateUrl: './root-features.component.html',
   styleUrls: ['./root-features.component.css'],
-  encapsulation: ViewEncapsulation.None
 })
 export class RootFeaturesComponent implements OnInit {
 

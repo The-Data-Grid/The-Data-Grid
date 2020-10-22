@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from '../../api.service';
 
@@ -11,7 +11,6 @@ interface Data {
   selector: 'app-global-presets',
   templateUrl: './global-presets.component.html',
   styleUrls: ['./global-presets.component.css'],
-  encapsulation: ViewEncapsulation.None
 })
 export class GlobalPresetsComponent implements OnInit {
 
