@@ -1,0 +1,452 @@
+/*
+    WATER AUDIT SCHEMA DATA COLUMNS
+*/
+[
+    /*
+        TOILET
+    */
+    { // TOILIET GALLONS PER FLUSH
+        "tableName": "observation_toilet",
+        "columnName": "data_room_number",
+        "observationTableName": "observation_toilet",
+        "subobservationTableName": null,
+        "itemName": "item_toilet",
+
+        "sqlType": "NUMERIC",
+        "referenceType": "obs",
+
+        "frontendName": "Gallons Per Flush",
+        "information": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "numericChoice",
+        "inputSelectorName": "numericEqual",
+        "frontendType": "string"
+    },
+    { // TOILET STALL CONDITION
+        "tableName": "list_toilet_stall_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_toilet",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Stall Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // TOILET BASIN BRAND
+        "tableName": "attribute_toilet_basin_brand",
+        "columnName": "data_attribute",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_toilet",
+
+        "sqlType": "TEXT",
+        "referenceType": "attribute",
+
+        "frontendName": "Basin Brand",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableChecklistDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // TOILET BASIN CONDITION
+        "tableName": "list_toilet_basin_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_toilet",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Basin Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // TOILET SENSOR CONDITION
+        "tableName": "list_toilet_sensor_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_toilet",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Sensor Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // TOILET FLUSHOMETER BRAND
+        "tableName": "attribute_toilet_flushometer_brand",
+        "columnName": "data_attribute",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_toilet",
+
+        "sqlType": "TEXT",
+        "referenceType": "attribute",
+
+        "frontendName": "Flushometer Brand",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableChecklistDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // TOILET FLUSHOMETER CONDITION
+        "tableName": "list_toilet_flushometer_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_toilet",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Flushometer Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    /*
+        ROOM
+    */
+    { // ROOM NUMBER
+        "tableName": "item_room",
+        "columnName": "data_room_number",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_room",
+
+        "sqlType": "TEXT",
+        "referenceType": "item-id",
+
+        "frontendName": "Room Number",
+        "information": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "searchableChecklistDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // ROOM EXHAUST VENT
+        "tableName": "item_room",
+        "columnName": "data_exhaust_vent",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_room",
+
+        "sqlType": "BOOLEAN",
+        "referenceType": "item-non-id",
+
+        "frontendName": "Exhaust Vent Existence",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "dropdown",
+        "inputSelectorName": "dropdown",
+        "frontendType": "bool"
+    },
+    { // ROOM ACCESS PANEL
+        "tableName": "item_room",
+        "columnName": "data_access_panel",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_room",
+
+        "sqlType": "BOOLEAN",
+        "referenceType": "item-non-id",
+
+        "frontendName": "Access Panel Existence",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "dropdown",
+        "inputSelectorName": "dropdown",
+        "frontendType": "bool"
+    },
+    /*
+        URINAL
+    */
+    { // URINAL GALLONS PER FLUSH
+        "tableName": "observation_urinal",
+        "columnName": "data_gpf",
+        "observationTableName": "observation_urinal",
+        "subobservationTableName": null,
+        "itemName": "item_urinal",
+
+        "sqlType": "NUMERIC",
+        "referenceType": "obs",
+
+        "frontendName": "Gallons Per Flush",
+        "information": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "numericChoice",
+        "inputSelectorName": "numericEqual",
+        "frontendType": "string"
+    },
+    { // URINAL BASIN BRAND
+        "tableName": "attribute_urinal_basin_brand",
+        "columnName": "data_attribute",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_urinal",
+
+        "sqlType": "TEXT",
+        "referenceType": "attribute",
+
+        "frontendName": "Basin Brand",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableChecklistDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // URINAL BASIN CONDITION
+        "tableName": "list_urinal_basin_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_urinal",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Basin Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // URINAL SENSOR CONDITION
+        "tableName": "list_urinal_sensor_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_urinal",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Sensor Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // URINAL DIVIDER CONDITION
+        "tableName": "list_urinal_divider_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_urinal",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Divider Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // URINAL FLUSHOMETER BRAND
+        "tableName": "attribute_urinal_flushometer_brand",
+        "columnName": "data_attribute",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_urinal",
+
+        "sqlType": "TEXT",
+        "referenceType": "attribute",
+
+        "frontendName": "Flushometer Brand",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableChecklistDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // URINAL FLUSHOMETER CONDITION
+        "tableName": "list_urinal_flushometer_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_urinal",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Flushometer Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    /*
+        SINK
+    */
+    { // SINK GALLONS PER MINUTE
+        "tableName": "observation_sink",
+        "columnName": "data_gpm",
+        "observationTableName": "observation_sink",
+        "subobservationTableName": null,
+        "itemName": "item_sink",
+
+        "sqlType": "NUMERIC",
+        "referenceType": "obs",
+
+        "frontendName": "Gallons Per Minute",
+        "information": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "numericChoice",
+        "inputSelectorName": "numericEqual",
+        "frontendType": "string"
+    },
+    { // SINK BASIN BRAND
+        "tableName": "attribute_sink_basin_brand",
+        "columnName": "data_attribute",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_sink",
+
+        "sqlType": "TEXT",
+        "referenceType": "attribute",
+
+        "frontendName": "Basin Brand",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableChecklistDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // SINK BASIN CONDITION
+        "tableName": "list_sink_basin_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_sink",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Basin Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // SINK FAUCET BRAND
+        "tableName": "attribute_sink_faucet_brand",
+        "columnName": "data_attribute",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_sink",
+
+        "sqlType": "TEXT",
+        "referenceType": "attribute",
+
+        "frontendName": "Faucet Brand",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableChecklistDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // SINK FAUCET CONDITION
+        "tableName": "list_sink_faucet_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_sink",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Faucet Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    { // SINK SENSOR CONDITION
+        "tableName": "list_sink_sensor_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_sink",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Sensor Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    },
+    /*
+        MIRROR
+    */
+    { // MIRROR CONDITION
+        "tableName": "list_mirror_condition",
+        "columnName": "data_element",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_mirror",
+
+        "sqlType": "TEXT",
+        "referenceType": "obs-list",
+
+        "frontendName": "Condition",
+        "information": null,
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": "searchableDropdown",
+        "inputSelectorName": "searchableDropdown",
+        "frontendType": "string"
+    }
+]
