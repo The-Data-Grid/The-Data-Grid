@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild, ViewEncapsulation, HostListener } from '@angular/core';
 import { ApiService } from '../../api.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatCheckboxModule, MatCheckbox} from '@angular/material/checkbox';
@@ -12,7 +12,8 @@ interface Data {
 @Component({
   selector: 'app-root-features',
   templateUrl: './root-features.component.html',
-  styleUrls: ['./root-features.component.css']
+  styleUrls: ['./root-features.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class RootFeaturesComponent implements OnInit {
 
@@ -25,9 +26,18 @@ export class RootFeaturesComponent implements OnInit {
 
   setupObject;
   all_root_features = [];
+  currentWindowWidth;
 
   ngOnInit(): void {
+    this.currentWindowWidth = window.innerWidth
   }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.currentWindowWidth = window.innerWidth;
+    console.log(this.currentWindowWidth)
+  }
+
 
 
   hideOrShow(id) {

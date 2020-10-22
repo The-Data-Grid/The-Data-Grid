@@ -1,5 +1,8 @@
+<html>
 <body>
-    <div class="top_decoration"></div>
+    <div style="overflow-x: hidden;">
+        <div class="top_decoration"></div>
+    </div>
     <div class="cancel" (click)="close()">
         <span class="material-icons arrow_position">arrow_back</span>
         <p class="cancel_text">Cancel</p>
@@ -7,14 +10,14 @@
     <div>
         <p class="add_text" (click)="updateFeatures()">Add</p>
     </div>
-    <div id="toggle">
+    <div id="toggle" class="main-width">
         <mat-button-toggle-group name="featureToggle" id="featureToggle" value="template">
-            <mat-button-toggle (click)="changeStatus('roots')" value="all_features"> <span
+            <mat-button-toggle [class.main-width]="currentWindowWidth > 900" [class.second-width]="currentWindowWidth > 800" [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('roots')" value="all_features"> <span
                     style="margin-top: 200px;">All Root Features</span></mat-button-toggle>
-            <mat-button-toggle (click)="changeStatus('template')" value="template">From Template</mat-button-toggle>
+            <mat-button-toggle [class.main-width]="currentWindowWidth > 900" [class.second-width]="currentWindowWidth > 800" [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('template')" value="template">From Template</mat-button-toggle>
         </mat-button-toggle-group>
     </div>
-    <div style="margin-top: 20px;" *ngIf="status=='template'">
+    <div style="margin-top: 20px; width: 90%; margin-left:25px" *ngIf="status=='template'">
   
         <mat-accordion>
             <div *ngFor="let audit of data">
@@ -40,7 +43,7 @@
     </div>
   
    
-    <div *ngIf="status=='roots'" style="margin-top: 20px;">
+    <div *ngIf="status=='roots'" style="margin-top: 20px; width: 90%; margin-left:25px">
         <mat-accordion>
             <div *ngFor="let feature of all_root_features">
                 <mat-expansion-panel>
@@ -57,4 +60,4 @@
         </mat-accordion>
     </div>
  </body>
- 
+ </html>
