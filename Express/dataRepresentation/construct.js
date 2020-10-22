@@ -8,11 +8,57 @@
 // ============================================================
 const pgp = require("pg-promise")(); // Postgres interaction
 var fs = require('fs'); // Import Node.js File System
+var stripJsonComments = require('strip-json-comments');
 // SQL statements
+
 const {} = require('../statement.js');
 
+// Database Connection Setup
+// connection info
+const connection = { 
+    host: 'localhost',
+    port: 5432,
+    database: 'v4',
+    user: 'postgres',
+    password: null,
+    max: 5 // use up to 5 connections
+    };
+
+    // connect to postgres
+    var db = pgp(connection);
 
 
+var insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable))';
+
+var add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable))';
+
+var insert_metadata_column = 'CALL \
+"insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(sqlType), $(referenceType))';
+
+var insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))';
+
+var insert_metadata_subfeature = 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))';
+
+var insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(creationPrivilege))';
+
+var create_observation_table = 'CALL "create_observation_table"($(tableName))';
+
+var create_subobservation_table = 'CALL "create_subobservation_table"($(tableName), $(parentTableName))';
+
+var create_observational_item_table = 'SELECT "create_observational_item_table"($(featureName))';
+
+var add_unique_constraint = 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))';
+
+var add_data_col = 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))';
+
+var add_list = 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))';
+
+var add_location = 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))';
+
+var add_factor = 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))';
+
+var add_attribute = 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))';
+    
 // Construction CLI //
 // ============================================================
 
@@ -65,23 +111,11 @@ if(process.argv[0] == 'make-schema') {
 async function makeSchema(commandLineArgs) {
     console.log(commandLineArgs)
 
-    // Database Connection Setup
-    // connection info
-    const connection = { 
-    host: 'localhost',
-    port: 5432,
-    database: 'meta',
-    user: 'postgres',
-    password: null,
-    max: 5 // use up to 5 connections
-    };
 
-    // connect to postgres
-    const db = pgp(connection);
 
     // Read schema
-    let columns = readSchema(`/auditSchemas/${commandLineArgs.schema}/columns.json`);
-    let features = readSchema(`/auditSchemas/${commandLineArgs.schema}/features.json`);
+    let columns = readSchema(`/auditSchemas/${commandLineArgs.schema}/columns.jsonc`);
+    let features = readSchema(`/auditSchemas/${commandLineArgs.schema}/features.jsonc`);
 
     // Call Construction Function
     await asyncConstructAuditingTables(features, columns, commandLineArgs);
@@ -99,7 +133,7 @@ async function makeSchema(commandLineArgs) {
 
 
 function readSchema(file) { // Schema read function
-    return JSON.parse(fs.readFileSync(__dirname + file, 'utf8'))
+    return JSON.parse(stripJsonComments(fs.readFileSync(__dirname + file, 'utf8')))
 }
 
 
@@ -649,37 +683,6 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
 };
 
 
-var insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable))';
-
-var add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable))';
-
-var insert_metadata_column = 'CALL \
-"insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(sqlType), $(referenceType))';
-
-var insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))';
-
-var insert_metadata_subfeature = 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))';
-
-var insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(creationPrivilege))';
-
-var create_observation_table = 'CALL "create_observation_table"($(tableName))';
-
-var create_subobservation_table = 'CALL "create_subobservation_table"($(tableName), $(parentTableName))';
-
-var create_observational_item_table = 'SELECT "create_observational_item_table"($(featureName))';
-
-var add_unique_constraint = 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))';
-
-var add_data_col = 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))';
-
-var add_list = 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))';
-
-var add_location = 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))';
-
-var add_factor = 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))';
-
-var add_attribute = 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))';
-
 async function addDataColumns2(columns, features, itemIDColumnLookup, featureItemLookup) {
 
     // Globals
@@ -981,6 +984,8 @@ async function constructFeatures2(features) {
                 featureName: feature.tableName
             }));
 
+            item = item.create_observational_item_table;
+
             console.log('\x1b[32m', `Feature Construction: Observable item table created for ${feature.tableName}`);
 
             // make lookups
@@ -998,7 +1003,7 @@ async function constructFeatures2(features) {
         try {
             await db.none(pgp.as.format(insert_metadata_item_observable, {
                 itemName: featureItemLookup[feature.tableName],
-                creationPrivilege: feature.creationPrivilege
+                creationPrivilege: feature.observableItem.creationPrivilege
             }));
 
             console.log('\x1b[32m', `Feature Construction: Inserted ${featureItemLookup[feature.tableName]} into metadata_item`);

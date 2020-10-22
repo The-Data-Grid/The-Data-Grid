@@ -36,6 +36,7 @@
     "pg-native": "^3.0.0",
     "pg-promise": "^10.5.6",
     "rxjs": "^ 6.5.4",
+    "strip-json-comments": "^3.1.1",
     "zone.js": "^0.10.3"
   },
   "devDependencies": {

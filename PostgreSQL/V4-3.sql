@@ -790,7 +790,7 @@ CREATE FUNCTION add_item_to_item_reference(observable_item regclass,
 
             -- Add the foreign key constraint
             EXECUTE FORMAT('ALTER TABLE %I
-                            ADD FOREIGN KEY %I
+                            ADD FOREIGN KEY (%I)
                             REFERENCES %I ("item_id")', observable_item, required_item_column, referenced);
         
             -- Return the id-column
@@ -1004,17 +1004,17 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
             
             -- Observation Count reference
             EXECUTE FORMAT('ALTER TABLE %I 
-                            ADD FOREIGN KEY "observation_count_id"
+                            ADD FOREIGN KEY ("observation_count_id")
                             REFERENCES "observation_count" ("observation_count_id")', table_name);
         
             -- Submission reference
             EXECUTE FORMAT('ALTER TABLE %I (
-                            ADD FOREIGN KEY "submission_id"
+                            ADD FOREIGN KEY ("submission_id")
                             REFERENCES "item_submission" ("submission_id")', table_name);
             
             -- Observable Item reference
             EXECUTE FORMAT('ALTER TABLE %I (
-                            ADD FOREIGN KEY "observableitem_id"
+                            ADD FOREIGN KEY ("observableitem_id")
                             REFERENCES %s ("item_id")', table_name, observable_item);
 
             COMMIT;
@@ -1034,12 +1034,12 @@ CREATE PROCEDURE create_subobservation_table(table_name TEXT, parent_table_name 
             
             -- Parent feature reference
             EXECUTE FORMAT('ALTER TABLE %I (
-                            ADD FOREIGN KEY "parent_id"
+                            ADD FOREIGN KEY ("parent_id")
                             REFERENCES %s ("observation_id")', table_name, parent_table_name);
 
             -- Observation Count reference
             EXECUTE FORMAT('ALTER TABLE %I 
-                            ADD FOREIGN KEY "observation_count_id"
+                            ADD FOREIGN KEY ("observation_count_id")
                             REFERENCES "observation_count" ("observation_count_id")', table_name);
 
             COMMIT;
