@@ -1,12 +1,14 @@
-<body style="position: relative;">
+<body style="position: relative; overflow-x: hidden;">
     <div class="top_decoration"></div>
-    <p style="font-weight: 600;">Global Presets</p>
+    <p style="font-weight: 600;margin-left: 20px;">Global Presets</p>
     <div class="primary_separator"></div>
     <div *ngFor="let selector of globalSelectors">
-        {{selector.columnFrontendName}}:
+        <span style="margin-left: 20px;">
+            {{selector.columnFrontendName}}:
+        </span>
         <div class="secondary_separator"></div>
     </div>
-    <div style="position: absolute; bottom: 0px; right: 0px;">
+    <div style="position: absolute; bottom: 30px; right: 30px;">
         <button mat-button (click)="close()" style="margin-right: 10px; ">
             Cancel
         </button>

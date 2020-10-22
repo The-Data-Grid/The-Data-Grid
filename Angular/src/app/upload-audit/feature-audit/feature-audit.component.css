@@ -1,4 +1,10 @@
-
+.top_decoration {
+  height: 30px;
+  min-width:3000px;
+  background-color: #569CD7;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
 
 
 .mat-expansion-panel {
@@ -24,6 +30,11 @@
   width: 801px;
   margin-left: -54px
 }
+
+.mat-dialog-container {
+  padding: 0px !important;
+}
+
 
 /* .cdk-global-overlay-wrapper {
   display: flex;
