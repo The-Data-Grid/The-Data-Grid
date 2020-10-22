@@ -7,7 +7,7 @@
     "dev": "nodemon ./Express/app.js -e *",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
-    "constructSchema": "node ./Express/dbSetup/construct.js"
+    "construct": "node ./Express/dataRepresentation/construct.js"
   },
   "author": "",
   "license": "ISC",

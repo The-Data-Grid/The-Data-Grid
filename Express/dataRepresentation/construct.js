@@ -9,7 +9,7 @@
 const pgp = require("pg-promise")(); // Postgres interaction
 var fs = require('fs'); // Import Node.js File System
 // SQL statements
-const {} = require('statement.js');
+const {} = require('../statement.js');
 
 
 
@@ -19,15 +19,18 @@ const {} = require('statement.js');
 // remove boilerplate argv elements
 process.argv.splice(0, 2)
 
+console.log(process.argv[0])
+
 if(process.argv[0] == 'make-schema') {
     let commandLineArgs = {};
     // remove command
     process.argv.splice(0, 1);
     // get and remove audit type
-    commandLineArgs.schema = process.argv.pop();
+    commandLineArgs.schema = process.argv[0];
+    process.argv.splice(0, 1);
     // configure command line arguments
-    (process.argv.includes('show-computed') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
-    (process.argv.includes('log') ? commandLineArgs.log = true : commandLineArgs.log = false);
+    (process.argv.includes('--show-computed') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
+    (process.argv.includes('--log') ? commandLineArgs.log = true : commandLineArgs.log = false);
     // here we go
     return makeSchema(commandLineArgs);
 } else if(process.argv[0] == 'config-returnables') {
@@ -59,7 +62,8 @@ if(process.argv[0] == 'make-schema') {
 
 // High Level Functions //
 // ============================================================
-function makeSchema(commandLineArgs) {
+async function makeSchema(commandLineArgs) {
+    console.log(commandLineArgs)
 
     // Database Connection Setup
     // connection info
@@ -76,8 +80,8 @@ function makeSchema(commandLineArgs) {
     const db = pgp(connection);
 
     // Read schema
-    let columns = readSchema(`/auditSchema/${commandLineArgs.schema}/columns.json`);
-    let features = readSchema(`/auditSchema/${commandLineArgs.schema}/features.json`);
+    let columns = readSchema(`/auditSchemas/${commandLineArgs.schema}/columns.json`);
+    let features = readSchema(`/auditSchemas/${commandLineArgs.schema}/features.json`);
 
     // Call Construction Function
     await asyncConstructAuditingTables(features, columns, commandLineArgs);
@@ -154,8 +158,7 @@ Proposed New Steps:
 
 Problem
     attributes make there a single metadata_column map to two returnables within a feature
-
-
+\
 constraint: no item can reference another item more than once
             lists are always nullable
             item cannot reference same location type more than once
@@ -182,29 +185,6 @@ let returnableTreeObject = {
         columnIndex: 2
     }, {}], [], []]
 }
-
-
-
-
-keys:
-    feature
-    item
-
-returnable inherits column's frontendName unless specialName: <> is specified
-
-What must be changed
-- metadata_column
-- metadata_feature
-- featureInput
-- ColumnInput
-
-generates returnables for any observable item or the submission item
-
-
-SELECT table_name FROM metadata_item WHERE item_type = (SELECT type_id FROM metadata_item_type WHERE type_name = 'observable');
-['item_toilet', 'item_urinal'].reduce((returnableArray, feature) => {
-    return generateReturnables([feature], returnableArray)
-}, [])
 
 
 
@@ -267,8 +247,8 @@ out: returnables: Array of the returnables for the item
 async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLookup) {
     let returnables = [];
     let joinObject = {
-        columns = [],
-        tables = []
+        columns: [],
+        tables: []
     };
     let featureID;
     let isRealGeo;
@@ -309,7 +289,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
     }
     
     // for each column related to the item
-    columns.forEach(col => {
+    for(let col of columns) {
         // PK
         let columnID = col.columnID;
         let frontendName = col.frontendName;
@@ -394,10 +374,10 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 // set attribute type
                 insertableJoinObject.attributeType = 'observed';
                 // make valid JSON
-                let insertableJoinObject_ = JSON.stringify(insertableJoinObject);
+                insertableJoinObject_ = JSON.stringify(insertableJoinObject);
 
                 // insert returnable into metadata_returnable and get returnableID
-                let returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
+                returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
                     columnID: columnID,
                     featureID: featureID,
                     rootFeatureID: rootFeatureID,
@@ -428,18 +408,12 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             console.log(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`);
         }
         
-    });
+    };
 
     return returnables;
 }
 
-let itemArray = [
-    {
-        featureName: 'observation_sink',
-        itemName: 'item_sink',
-        path: []
-    }
-];
+
 
 /* generateReturnables (itemArray, returnableArray, itemParentLookup, itemRealGeoLookup)
 ============================================================
@@ -534,7 +508,7 @@ async function makeItemParentLookup() {
 // ============================================================
 
 //                                    (featureSchema, columnSchema)
-asyncConstructAuditingTables(auditSchemaWaterFeature, [...auditSchemaWaterDynamic, ...auditSchemaGlobal])
+// asyncConstructAuditingTables(auditSchemaWaterFeature, [...auditSchemaWaterDynamic, ...auditSchemaGlobal])
 
 // FUNCTIONS //
 
@@ -640,63 +614,29 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     // for each root feature generate returnables
     Object.keys(featureOutput.featureItemLookup).forEach(feature => {
         console.log('\x1b[1m', `Constructing returnables for the ${feature} feature`);
-        let returnables = generateReturnables(itemArray, returnableArray, itemParentLookup, featureOutput.itemRealGeoLookup);
+        let itemArray = [
+            {
+                featureName: feature,
+                itemName: featureOutput.featureItemLookup[feature],
+                path: []
+            }
+        ];
+        let returnables = generateReturnables(itemArray, [], itemParentLookup, featureOutput.itemRealGeoLookup);
         console.log('\x1b[1m', `Constructed IDs: ${returnables.join(', ')} for the ${feature} feature`);
     })
 
     // Creating the computed file and returnables folder 
-    console.log('\x1b[1m', `Writing returnables to the ${commandLineArgs.schema} folder`)
-    fs.mkdirSync(__dirname + 'auditSchemas/' + commandLineArgs.schema + '/returnables', {recursive: true})
+    if(commandLineArgs.makeSchema === true) {
+        console.log('\x1b[1m', `Writing returnables to the ${commandLineArgs.schema} folder`)
+        fs.mkdirSync(__dirname + 'auditSchemas/' + commandLineArgs.schema + '/returnables', {recursive: true})
 
-    let currentReturnables = await db.many(getReturnables);
-    currentReturnables = JSON.stringify(currentReturnables);
+        let currentReturnables = await db.many(getReturnables);
+        currentReturnables = JSON.stringify(currentReturnables);
 
-    fs.writeFileSync(`computedAt${Date.now()}.json`, currentReturnables);
-
-
-
-
-    /*
-
-    //let {fCreateList, fRefList, fMetadataList} = constructFeatures(featureSchema);
-    //let featureCreateInsert = [...fCreateList, ...fMetadataList].map((sql) => db.none(sql));
+        // writing the JSON
+        fs.writeFileSync(`computedAt${Date.now()}.json`, currentReturnables);
+    }
     
-    await Promise.all(featureCreateInsert)
-    
-    console.log("Feature Insert and Create Done...") 
-    console.log("Generating SQL...")
-
-    // Step 2.
-    // Add foreign key constraints for auditing tables
-    let featureRelation = fRefList.map((sql) => db.none(sql))
-
-    await Promise.all(featureRelation)
-
-    console.log("Feature Foreign Key Constraints Done...")
-    console.log("Generating SQL...")
-
-    // Step 3.
-    // Insert columns into metadata_column and add data_... columns
-    let {cCreateList, cRefList, cMetadataList} = addDataColumns(columnSchema, featureSchema);
-    // console.log(cMetadataList)
-    let columnCreateInsert = [...cCreateList, ...cMetadataList].map((sql) => db.none(sql));
-
-    await Promise.all(columnCreateInsert)
-
-    console.log("Column Insert and Create Done...")
-    console.log("Generating SQL...")
-
-    // Step 4.
-    // Add foreign key constraints for data_... columns
-    let columnRelation = cRefList.map((sql) => db.none(sql))
-    
-    await Promise.all(columnRelation)
-
-    console.log("Column Foreign Key Constraints Done...")
-
-    */
-    
-
     // Done!
     
     console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
@@ -705,58 +645,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '                             ');
     console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
     console.log('\x1b[47m\x1b[2m\x1b[30m%s\x1b[0m', ' Long live the power source! ');
-    /*
-        let createList = addDataColumns(columnSchema).createList;
-                                        
-        console.log('aa')
-                                            
-        let refList = [...constructFeatures(featureSchema).refList,
-                                            ...addDataColumns(columnSchema).refList];
-                                            
-        let metadataList = [...constructFeatures(featureSchema).metadataList, 
-                                            ...addDataColumns(columnSchema).metadataList];
-
-        
-
-
-        console.log("Creating tables...")
-            
-            // Array of insert metadata queries
-            let metadataQueries = [];
-            for (let metadata of metadataList) {
-                    console.log(metadata)
-                    metadataQueries.push(db.none(metadata)) }
-            
-            Promise.all(metadataQueries).then( () => {
-                    console.log("Done inserting metadata!") } )
-
-        // Array of create table queries
-        let createQueries = [];
-        for (let create of createList) {
-            createQueries.push(db.none(create)) }
-
-        Promise.all(createQueries).then( () => {
-                    console.log("Done creating feature tables!")
-            console.log("Setting up Foreign Key Constraints...")
-
-            // Array of foreign key constrant queries
-            let refQueries = [];
-            for(let ref of refList) {
-                refQueries.push(db.none(ref))
-            }
-
-            Promise.all(refQueries).then( () => {
-                console.log("Done!")
-
-                // Closing the database connection
-                db.$pool.end();
-            })
-            
-        });
-    })
-
-
-    */
+    
 };
 
 
@@ -795,8 +684,8 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
 
     // Globals
     // These data columns are defined for every feature
-    columns.filter(column => column.referenceType === 'obs-global' || column.referenceType === 'special').forEach(column => {
-        features.forEach(feature => {
+    for(let column of columns.filter(column => column.referenceType === 'obs-global' || column.referenceType === 'special')) {
+        for(let feature of features) {
 
             // insert into metadata_column
             try {
@@ -838,12 +727,12 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                 }
             }
             
-        })
+        }
         
-    });
+    };
 
     // Standard columns (Non global)
-    columns.filter(column => column.referenceType !== 'obs-global' && column.referenceType !== 'special').forEach(column => {
+    for(let column of columns.filter(column => column.referenceType !== 'obs-global' && column.referenceType !== 'special')) {
 
         // insert into metadata_column
         try {
@@ -1036,7 +925,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
         } catch(sqlError) {
             return constructjsError(sqlError);
         };
-    });
+    };
 
     // Adding unique constraints
     for(let item in itemIDColumnLookup) {
@@ -1065,6 +954,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
 function constructjsError(error) {
     console.log(error);
     console.log('\x1b[31m', 'CONSTRUCT.JS EXECUTION HALTED');
+    throw Error('we are throwing I guess!');
     return {error: true};
 }
 
@@ -1084,7 +974,7 @@ async function constructFeatures2(features) {
     }
 
     // a. Create item_... tables for root features and make lookups
-    rootFeatures.forEach(feature => {
+    for(let feature of rootFeatures) {
         try {
             // Wait for item table creation and return item table name
             let item = await db.one(pgp.as.format(create_observational_item_table, {
@@ -1101,10 +991,10 @@ async function constructFeatures2(features) {
         } catch(sqlError) {
             return constructjsError(sqlError);
         }
-    })
+    };
 
     // b. Insert observable items into metadata_item
-    rootFeatures.forEach(feature => {
+    for(let feature of rootFeatures) {
         try {
             await db.none(pgp.as.format(insert_metadata_item_observable, {
                 itemName: featureItemLookup[feature.tableName],
@@ -1115,13 +1005,13 @@ async function constructFeatures2(features) {
         } catch(sqlError) {
             return constructjsError(sqlError);
         }
-    })
+    };
 
     // c. Add foreign key constraints for observational item tables
     // d. Insert item to item relations into m2m_metadata_item    
-    rootFeatures.forEach(feature => {
+    for(let feature of rootFeatures) {
         // for every required item in the feature
-        feature.observableItem.requiredItem.forEach(required => {
+        for(let required of feature.observableItem.requiredItem) {
             try {
                 // c.
                 let idColumn = await db.one(pgp.as.format(add_item_to_item_reference, {
@@ -1147,23 +1037,23 @@ async function constructFeatures2(features) {
             } catch(sqlError) {
                 return constructjsError(sqlError);
             }
-        })
-    })
+        }
+    };
 
     // e. Create observation_... tables
     // f. Insert features into metadata_feature
     // filtering to get just root features
-    rootFeatures.forEach(rootFeature => {
+    for(let rootFeature of rootFeatures) {
         try {
             // e.
-            db.none(pgp.as.format(create_observation_table, {
+            await db.none(pgp.as.format(create_observation_table, {
                 tableName: rootFeature.tableName
             }));
 
             console.log('\x1b[32m', `Feature Construction: Created ${rootFeature.tableName} table`);
 
             //f. 
-            db.none(pgp.as.format(insert_metadata_feature, {
+            await db.none(pgp.as.format(insert_metadata_feature, {
                 tableName: rootFeature.tableName,
                 itemTableName: featureItemLookup[rootFeature.tableName],
                 information: rootFeature.information,
@@ -1175,15 +1065,15 @@ async function constructFeatures2(features) {
         } catch(sqlError) {
             return constructjsError(sqlError);
         }
-    })
+    };
 
     // g. Create subobservation_... tables
     // h. Insert subfeatures into metadata_feature
     // filtering to get just subfeatures
-    subfeatures.forEach(subfeature => {
+    for(let subfeature of subfeatures) {
         try {
             // g.
-            db.none(pgp.as.format(create_subobservation_table, {
+            await db.none(pgp.as.format(create_subobservation_table, {
                 tableName: subfeature.tableName,
                 parentTableName: subfeature.parentTableName
             }));
@@ -1191,7 +1081,7 @@ async function constructFeatures2(features) {
             console.log('\x1b[32m', `Feature Construction: Created ${subfeature.tableName} table`);
 
             // h.
-            db.none(pgp.as.format(insert_metadata_subfeature, {
+            await db.none(pgp.as.format(insert_metadata_subfeature, {
                 tableName: subfeature.tableName,
                 parentTableName: subfeature.parentTableName,
                 numFeatureRange: subfeature.numFeatureRange,
@@ -1203,7 +1093,7 @@ async function constructFeatures2(features) {
         } catch(sqlError) {
             return constructjsError(sqlError);
         }
-    })
+    };
 
     // No construction errors
     return {error: false, itemIDColumnLookup, featureItemLookup, itemRealGeoLookup};
@@ -1582,268 +1472,3 @@ function addDataColumns(columns, features) {
     
     return {cCreateList: createList, cRefList: refList, cMetadataList: metadataList};
 };
-
-//!! OLD !!//
-
-/*
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-  
-async function asyncConstructDataCols(ms) {
-    console.log("Setting up foreign key constraints...")
-    await timeout(ms); //we wait for the CREATE TABLE promises to resolve
-
-    // Array of foreign key constrant queries
-    let fkQueries = [];
-    for(let index = 0; index < fkTable.length; index++) {
-        fkQueries.push(db.none(pgp.as.format(reference.default, {fkTable: fkTable[index], fkCol: fkCol[index], pkTable: pkTable[index], pkCol: pkCol[index]})))
-    }
-
-    // Wait for all the queries to resolve and then close the connection
-    Promise.all(fkQueries).then( () => {
-        console.log("Done!")
-        // closing the connection
-        db.$pool.end();
-    })
-}
-*/
-
-/*
-
-/////////////////////////////////////////////////////
-// Recursive function to construct all subfeatures //
-/////////////////////////////////////////////////////
-
-function makeSubfeatures(parent, dependencies) {
-    if('subfeatures' in parent) {
-        //making subfeature tables
-        for(let subfeature in parent.subfeatures) {
-            
-            //////////////////
-            /// SUBFEATURE ///
-            //////////////////
-
-            //feature to item_auditor
-            fkTable.push(`subfeature_${dependencies.join("_")}_${subfeature}`);
-            fkCol.push('auditor_id');
-            pkTable.push('item_auditor');
-            pkCol.push('item_id');
-
-            //adding subfeature data and/or items
-            
-            if('additionalCols' in parent.subfeatures[subfeature]) {
-                // CREATE TABLE subfeature_... with additional columns
-                let cols = parent.subfeatures[subfeature].additionalCols.join(', ');
-                db.none(pgp.as.format(createSubfeature.additional, {subfeature: subfeature, parent: dependencies.join("_"), additionalCols: cols}))
-            } else {
-                // CREATE TABLE subfeature_... with no additional columns
-                db.none(pgp.as.format(createSubfeature.default, {subfeature: subfeature, parent: dependencies.join("_")}))
-            };
-
-
-            //subfeature to feature foreign key
-            if(dependencies.length = 1) {
-                fkTable.push(`subfeature_${dependencies.join("_")}_${subfeature}`);
-                fkCol.push('parent_id')
-                pkTable.push(`feature_${dependencies.join("_")}`)
-                pkCol.push('observation_id')
-            } else {
-                //subfeature to subfeature foreign key
-                fkTable.push(`subfeature_${dependencies.join("_")}_${subfeature}`);
-                fkCol.push('parent_id')
-                pkTable.push(`subfeature_${dependencies.join("_")}`)
-                pkCol.push('observation_id')
-            }
-            
-            ///////////////////
-            /// FEATUREITEM ///
-            /////////////////// 
-
-            //featureitem items and data cols
-            if('featureitem' in parent.subfeatures[subfeature]) {
-                //adding data and item cols to featureitem
-                if('additionalCols' in parent.subfeatures[subfeature].featureitem) {
-                    let cols = parent.subfeatures[subfeature].featureitem.additionalCols.join(', ');
-                    // CREATE TABLE featureitem_... (featureitem for a subfeature) with additional columns
-                    db.none(pgp.as.format(createFeatureitem.additonal, {featureitem: String(dependencies.join("_") + `_${subfeature}`), additionalCols: cols}))
-                } else {
-                    // CREATE TABLE featureitem_... (featureitem for a subfeature) with no additional columns
-                    db.none(pgp.as.format(createFeatureitem.default, {featureitem: String(dependencies.join("_") + `_${subfeature}`)}))
-                }
-
-                //featureitem to location foreign key
-                if('location' in parent.subfeatures[subfeature].featureitem) { //This has to be true (should be validated)
-                    if(['item_room', 'item_bulding'].includes(parent.subfeatures[subfeature].featureitem.location)) {
-                        fkTable.push(`featureitem_${dependencies.join("_")}_${subfeature}`);
-                        fkCol.push('location_id')
-                        pkTable.push(parent.subfeatures[subfeature].featureitem.location)
-                        pkCol.push('item_id')
-                    } else {
-                        fkTable.push(`featureitem_${dependencies.join("_")}_${subfeature}`);
-                        fkCol.push('location_id')
-                        pkTable.push(`location_${parent.subfeatures[subfeature].featureitem.location}`)
-                        pkCol.push('location_id')
-                    }
-                }
-            }
-            //subfeature to featureitem foreign key
-            fkTable.push(`subfeature_${dependencies.join("_")}_${subfeature}`);
-            fkCol.push('featureitem_id')
-            pkTable.push(`featureitem_${dependencies.join("_")}_${subfeature}`)
-            pkCol.push('featureitem_id')
-
-            /////////////
-            /// LISTS ///
-            /////////////
-
-            //lists and list_m2m for subfeatures
-            if('lists' in parent.subfeatures[subfeature]) {
-                for(let list of parent.subfeatures[subfeature].lists) {
-
-                    //list_m2m to subfeature foreign key
-                    fkTable.push(`list_m2m_${dependencies.join("_")}_${subfeature}_${list}`);
-                    fkCol.push('observation_id')
-                    pkTable.push(`subfeature_${dependencies.join("_")}_${subfeature}`)
-                    pkCol.push('observation_id')
-                    //list_m2m to list
-                    fkTable.push(`list_m2m_${dependencies.join("_")}_${subfeature}_${list}`);
-                    fkCol.push('list_id')
-                    pkTable.push(`list_${dependencies.join("_")}_${subfeature}_${list}`)
-                    pkCol.push('list_id')
-
-                    // CREATE TABLE list_m2m_...
-                    db.none(pgp.as.format(createListM2M.default, {parent: dependencies.join("_") + `_${subfeature}`, list: list}))
-                    // CREATE TABLE list_...
-                    db.none(pgp.as.format(createList.default, {parent: dependencies.join("_") + `_${subfeature}`, list: list}))
-                }
-            }
-
-            //making the children subfeatures
-            makeSubfeatures(parent.subfeatures[subfeature], [...dependencies, subfeature]) // !recursion
-        };
-    }
-}
-
-//////////////////////////
-// database constructor //
-//////////////////////////
-
-var fkTable = []; 
-var fkCol = [];
-var pkTable = [];
-var pkCol = [];
-
-function constructDB(data) {
-
-    console.log('Creating tables...')
-
-    //making feature tables
-    for(let feature in data) {
-
-        ///////////////
-        /// FEATURE ///
-        ///////////////
-
-        //feature to submission foreign key
-        fkTable.push(`feature_${feature}`);
-        fkCol.push('submission_id');
-        pkTable.push('submission');
-        pkCol.push('submission_id');
-
-        //sop_m2m to feature foreign key
-        fkTable.push('item_sop_m2m');
-        fkCol.push('observation_id');
-        pkTable.push(`feature_${feature}`);
-        pkCol.push('observation_id');
-
-        //feature to item_auditor
-        fkTable.push(`feature_${feature}`);
-        fkCol.push('auditor_id');
-        pkTable.push('item_auditor');
-        pkCol.push('item_id');
-
-        //adding data and/or items
-        if('additionalCols' in data[feature]) {
-            let cols = data[feature]['additionalCols'].join(', ');
-            //CREATE TABLE feature_... with additional columns
-            db.none(pgp.as.format(createFeature.additional, {feature: feature, additionalCols: cols}))
-        } else {
-            //CREATE TABLE feature_... with no additional columns
-            db.none(pgp.as.format(createFeature.default, {feature: feature}))
-        }
-         
-        ///////////////////
-        /// FEATUREITEM ///
-        ///////////////////
-
-        //adding featureitem table
-        if('featureitem' in data[feature]) {
-            //adding data and item cols to featureitem
-            if('additionalCols' in data[feature].featureitem) {
-                let cols = data[feature].featureitem['additionalCols'].join(', ');
-                // CREATE TABLE featureitem_... with additional columns
-                db.none(pgp.as.format(createFeatureitem.additional, {featureitem: feature, additionalCols: cols}))
-            } else {
-                // CREATE TABLE featureitem_... with no additional columns
-                db.none(pgp.as.format(createFeatureitem.default, {featureitem: feature}))
-            }
-
-            //featureitem to location foreign key
-            if('location' in data[feature].featureitem) {
-                if(['item_room', 'item_building'].includes(data[feature].featureitem.location)) {
-                    fkTable.push(`featureitem_${feature}`);
-                    fkCol.push('location_id')
-                    pkTable.push(data[feature].featureitem.location)
-                    pkCol.push('item_id')
-                } else {
-                    fkTable.push(`featureitem_${feature}`);
-                    fkCol.push('location_id')
-                    pkTable.push(`location_${data[feature].featureitem.location}`)
-                    pkCol.push('location_id')
-                } 
-            }
-        };
-
-        //feature to featureitem foreign key
-        fkTable.push(`feature_${feature}`);
-        fkCol.push('featureitem_id')
-        pkTable.push(`featureitem_${feature}`)
-        pkCol.push('featureitem_id')
-
-        /////////////
-        /// LISTS ///
-        /////////////
-
-        // adding lists
-        if('lists' in data[feature]) {
-            for(let list of data[feature].lists) {
-
-                //list_m2m to feature foreign key
-                fkTable.push(`list_m2m_${feature}_${list}`);
-                fkCol.push('observation_id')
-                pkTable.push(`feature_${feature}`)
-                pkCol.push('observation_id')
-                //list_m2m to list
-                fkTable.push(`list_m2m_${feature}_${list}`);
-                fkCol.push('list_id')
-                pkTable.push(`list_${feature}_${list}`)
-                pkCol.push('list_id')
-
-                // CREATE TABLE list_m2m_...
-                db.none(pgp.as.format(createListM2M.default, {parent: feature, list: list}))
-                // CREATE TABLE list_...
-                db.none(pgp.as.format(createList.default, {parent: feature, list: list}))
-            }
-        }
-
-        //////////////////////////////////////////////
-        /// CALLING RECURSIVE SUBFEATURE GENERATOR ///
-        //////////////////////////////////////////////
-
-        makeSubfeatures(data[feature], Array(feature))
-        
-    };
-}
-
-*/
