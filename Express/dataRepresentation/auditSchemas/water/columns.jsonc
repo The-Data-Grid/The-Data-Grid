@@ -7,7 +7,7 @@
     */
     { // TOILIET GALLONS PER FLUSH
         "tableName": "observation_toilet",
-        "columnName": "data_room_number",
+        "columnName": "data_gpf",
         "observationTableName": "observation_toilet",
         "subobservationTableName": null,
         "itemName": "item_toilet",

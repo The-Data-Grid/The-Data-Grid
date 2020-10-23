@@ -858,14 +858,14 @@ CREATE PROCEDURE insert_metadata_column(column_name TEXT,
 
 
 -- Insert a feature into metadata_feature
-CREATE PROCEDURE insert_metadata_feature(table_name TEXT,
+CREATE PROCEDURE insert_metadata_feature(_table_name TEXT,
                                         item_table_name TEXT,
                                         information TEXT,
                                         frontend_name TEXT)
     AS
     $$
         BEGIN
-            IF table_name NOT LIKE 'observation\_%' THEN
+            IF _table_name NOT LIKE 'observation\_%' THEN
                 RAISE EXCEPTION 'Root Features must follow the naming convention ''observation_...''';
             END IF;
             INSERT INTO metadata_feature
@@ -876,8 +876,8 @@ CREATE PROCEDURE insert_metadata_feature(table_name TEXT,
                 frontend_name)
                 VALUES (
                     DEFAULT,
-                    table_name,
-                    (SELECT item_id FROM metadata_item WHERE table_name = item_table_name),
+                    _table_name,
+                    (SELECT item_id FROM metadata_item AS m WHERE m.table_name = item_table_name),
                     information,
                     frontend_name
                 );
@@ -887,7 +887,7 @@ CREATE PROCEDURE insert_metadata_feature(table_name TEXT,
     $$ LANGUAGE plpgsql;
 
 -- Insert a subfeature into metadata_feature
-CREATE PROCEDURE insert_metadata_subfeature(table_name TEXT,
+CREATE PROCEDURE insert_metadata_subfeature(_table_name TEXT,
                                            parent_table_name TEXT,
                                            num_feature_range INTEGER,
                                            information TEXT,
@@ -895,7 +895,7 @@ CREATE PROCEDURE insert_metadata_subfeature(table_name TEXT,
     AS
     $$
         BEGIN
-            IF table_name NOT LIKE 'subobservation\_%' THEN
+            IF _table_name NOT LIKE 'subobservation\_%' THEN
                 RAISE EXCEPTION 'Subfeatures must follow the naming convention ''subobservation_...''';
             END IF;
             INSERT INTO metadata_feature
@@ -907,8 +907,8 @@ CREATE PROCEDURE insert_metadata_subfeature(table_name TEXT,
                 frontend_name)
                 VALUES (
                     DEFAULT,
-                    table_name,
-                    (SELECT feature_id FROM metadata_feature WHERE table_name = parent_table_name),
+                    _table_name,
+                    (SELECT feature_id FROM metadata_feature AS f WHERE f.table_name = parent_table_name),
                     num_feature_range,
                     information,
                     frontend_name
@@ -948,10 +948,11 @@ CREATE FUNCTION insert_metadata_returnable(column_id INTEGER,
                                           is_used BOOLEAN,
                                           join_object JSON,
                                           is_real_geo BOOLEAN)
-    RETURNS INTEGER
+    RETURNS TABLE (returnableid INTEGER)
     AS
     $$
         BEGIN
+            RETURN QUERY
             INSERT INTO metadata_returnable
                 (returnable_id,
                 column_id,
@@ -971,8 +972,7 @@ CREATE FUNCTION insert_metadata_returnable(column_id INTEGER,
                     join_object,
                     is_real_geo
                 )
-            RETURNING returnable_id AS returnableID;
-
+            RETURNING returnable_id AS returnableid;
         END
     $$ LANGUAGE plpgsql;
 
@@ -1005,17 +1005,17 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
             -- Observation Count reference
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("observation_count_id")
-                            REFERENCES "observation_count" ("observation_count_id")', table_name);
+                            REFERENCES "tdg_observation_count" ("observation_count_id")', table_name);
         
             -- Submission reference
-            EXECUTE FORMAT('ALTER TABLE %I (
+            EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("submission_id")
                             REFERENCES "item_submission" ("submission_id")', table_name);
             
             -- Observable Item reference
-            EXECUTE FORMAT('ALTER TABLE %I (
+            EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("observableitem_id")
-                            REFERENCES %s ("item_id")', table_name, observable_item);
+                            REFERENCES %I ("item_id")', table_name, observable_item);
 
             COMMIT;
         END
@@ -1033,14 +1033,14 @@ CREATE PROCEDURE create_subobservation_table(table_name TEXT, parent_table_name 
                             parent_id INTEGER NOT NULL)', table_name);
             
             -- Parent feature reference
-            EXECUTE FORMAT('ALTER TABLE %I (
+            EXECUTE FORMAT('ALTER TABLE %I
                             ADD FOREIGN KEY ("parent_id")
-                            REFERENCES %s ("observation_id")', table_name, parent_table_name);
+                            REFERENCES %I ("observation_id")', table_name, parent_table_name);
 
             -- Observation Count reference
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("observation_count_id")
-                            REFERENCES "observation_count" ("observation_count_id")', table_name);
+                            REFERENCES "tdg_observation_count" ("observation_count_id")', table_name);
 
             COMMIT;
         END
@@ -1072,22 +1072,21 @@ CREATE FUNCTION create_observational_item_table(feature_name TEXT)
 
 -- Column Reference Type construction
 
-
 CREATE PROCEDURE add_data_col(table_name regclass, column_name TEXT, sql_type_name TEXT, is_nullable BOOLEAN)
     AS
     $$
         BEGIN
             IF is_nullable = TRUE THEN
-                EXECUTE FORMAT('ALTER TABLE %I ADD COLUMN %I %L', table_name, column_name, sql_type_name);
+                EXECUTE FORMAT('ALTER TABLE %I ADD COLUMN %I %s', table_name, column_name, sql_type_name);
             ELSE
-                EXECUTE FORMAT('ALTER TABLE %I ADD COLUMN %I %L NOT NULL', table_name, column_name, sql_type_name);
+                EXECUTE FORMAT('ALTER TABLE %I ADD COLUMN %I %s NOT NULL', table_name, column_name, sql_type_name);
             END IF;
 
             COMMIT;
         END
     $$ LANGUAGE plpgsql;
 
-CREATE PROCEDURE add_list(item_table_name regclass, table_name TEXT, column_name TEXT, sql_type_name TEXT, is_observational BOOLEAN)
+CREATE PROCEDURE add_list(item_table_name TEXT, table_name TEXT, column_name TEXT, sql_type_name TEXT, is_observational BOOLEAN)
     AS
     $$
         DECLARE
@@ -1095,7 +1094,7 @@ CREATE PROCEDURE add_list(item_table_name regclass, table_name TEXT, column_name
             observation_table_name regclass := regexp_replace(item_table_name, '^item', 'observation');
         BEGIN
             -- Create list_... table
-            EXECUTE FORMAT('CREATE TABLE %I (list_id SERIAL PRIMARY KEY, %I %L NOT NULL)', table_name, column_name, sql_type_name);
+            EXECUTE FORMAT('CREATE TABLE %I (list_id SERIAL PRIMARY KEY, %I %s NOT NULL)', table_name, column_name, sql_type_name);
 
             -- If linked to observation_... table else linked to item_... table
             IF is_observational = TRUE THEN
@@ -1126,7 +1125,7 @@ CREATE PROCEDURE add_location(item_table_name regclass, location_table_name regc
         END
     $$ LANGUAGE plpgsql;
 
-CREATE PROCEDURE add_factor(item_table_name regclass, table_name TEXT, column_name TEXT, sql_type_name TEXT, is_nullable BOOLEAN, is_observational BOOLEAN)
+CREATE PROCEDURE add_factor(item_table_name TEXT, table_name TEXT, column_name TEXT, sql_type_name TEXT, is_nullable BOOLEAN, is_observational BOOLEAN)
     AS
     $$
         DECLARE
@@ -1134,7 +1133,7 @@ CREATE PROCEDURE add_factor(item_table_name regclass, table_name TEXT, column_na
             observation_table_name regclass := regexp_replace(item_table_name, '^item', 'observation');
         BEGIN
             -- Add factor table
-            EXECUTE FORMAT('CREATE TABLE %I (factor_id SERIAL PRIMARY KEY, %I %L NOT NULL)', table_name, column_name, sql_type_name);
+            EXECUTE FORMAT('CREATE TABLE %I (factor_id SERIAL PRIMARY KEY, %I %s NOT NULL)', table_name, column_name, sql_type_name);
 
             IF is_observational = TRUE THEN
                 -- Add referencing column to observation table
@@ -1156,7 +1155,7 @@ CREATE PROCEDURE add_factor(item_table_name regclass, table_name TEXT, column_na
         END
     $$ LANGUAGE plpgsql;
 
-CREATE PROCEDURE add_attribute(item_table_name regclass, table_name TEXT, column_name TEXT, sql_type_name TEXT)
+CREATE PROCEDURE add_attribute(item_table_name TEXT, table_name TEXT, column_name TEXT, sql_type_name TEXT)
     AS
     $$
         DECLARE
@@ -1164,7 +1163,7 @@ CREATE PROCEDURE add_attribute(item_table_name regclass, table_name TEXT, column
             observation_table_name regclass := regexp_replace(item_table_name, '^item', 'observation');
         BEGIN
             -- Create attribute table
-            EXECUTE FORMAT('CREATE TABLE %I (attribute_id SERIAL PRIMARY KEY, %I %L NOT NULL)', table_name, column_name, sql_type_name);
+            EXECUTE FORMAT('CREATE TABLE %I (attribute_id SERIAL PRIMARY KEY, %I %s NOT NULL)', table_name, column_name, sql_type_name);
 
             -- Add attribute column to observation table
             EXECUTE FORMAT('ALTER TABLE %I ADD COLUMN %I INTEGER REFERENCES %I', observation_table_name, attribute_column_name, table_name);
@@ -1182,7 +1181,7 @@ CREATE PROCEDURE add_unique_constraint(table_name regclass, unique_over TEXT)
         DECLARE 
             constraint_name TEXT := concat(table_name, '_id_columns');
         BEGIN
-            EXECUTE FORMAT('ALTER TABLE %I ADD CONSTRAINT %I UNIQUE (%L)', table_name, constraint_name, unique_over);
+            EXECUTE FORMAT('ALTER TABLE %I ADD CONSTRAINT %I UNIQUE (%s)', table_name, constraint_name, unique_over);
 
             COMMIT;
         END
