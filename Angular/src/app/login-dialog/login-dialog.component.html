@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-  <div *ngIf="modal=='sign_in'">
+  <div *ngIf="modal=='sign_in'" style="padding:15px;margin-top:10px">
   <mat-dialog-actions>
     <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
   </mat-dialog-actions>
@@ -36,7 +36,7 @@
 
 </div>
 
-<div *ngIf="modal=='sign_up'">
+<div *ngIf="modal=='sign_up'" style="margin-left: 20px; margin-top: 20px;">
   <mat-dialog-actions>
     <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
   </mat-dialog-actions>
