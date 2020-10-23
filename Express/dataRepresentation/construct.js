@@ -187,8 +187,7 @@ if(process.argv[0] == 'make-schema') {
     commandLineArgs.schema = process.argv[0];
     process.argv.splice(0, 1);
     // configure command line arguments
-    (process.argv.includes('--show-computed') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
-    (process.argv.includes('--log') ? commandLineArgs.log = true : commandLineArgs.log = false);
+    (process.argv.includes('--show-computed') || process.argv.includes('-sc') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
     // here we go
     return makeSchema(commandLineArgs);
 } else if(process.argv[0] == 'config-returnables') {
@@ -208,10 +207,18 @@ if(process.argv[0] == 'make-schema') {
     let commandLineArgs = {};
     // remove command
     process.argv.splice(0, 1);
-    // get and remove audit type
-    commandLineArgs.schema = process.argv.pop();
+    // configure command line arguments
+    if(process.argv.includes('--returnable') || process.argv.includes('-r')) {
+        commandLineArgs.type = 'r'
+    } else if(process.argv.includes('--feature') || process.argv.includes('-f')) {
+        commandLineArgs.type = 'f'
+    } else if(process.argv.includes('--column') || process.argv.includes('-c')) {
+        commandLineArgs.type = 'c'
+    } else {
+        throw Error('\'construct inspect\' requires flag of \'-r\', \'-f\', or \'-f\'')
+    }
     // here we go
-    return logReturnables(commandLineArgs);
+    return inspectSchema(commandLineArgs);
 } else {
     throw Error('Not a valid construction command');
 };
@@ -223,14 +230,29 @@ if(process.argv[0] == 'make-schema') {
 async function makeSchema(commandLineArgs) {
     console.log(commandLineArgs)
 
-
-
     // Read schema
     let columns = readSchema(`/auditSchemas/${commandLineArgs.schema}/columns.jsonc`);
     let features = readSchema(`/auditSchemas/${commandLineArgs.schema}/features.jsonc`);
 
     // Call Construction Function
     await asyncConstructAuditingTables(features, columns, commandLineArgs);
+
+    // Closing the database connection
+    db.$pool.end();
+}
+
+async function inspectSchema(commandLineArgs) {
+    let out;
+
+    if(commandLineArgs.type === 'r') {
+        out = await db.many('SELECT * FROM metadata_returnable');
+    } else if(commandLineArgs.type === 'f') {
+        out = await db.many('SELECT * FROM metadata_feature');
+    } else if(commandLineArgs.type === 'c') {
+        out = await db.many('SELECT * FROM metadata_column');
+    }
+
+    console.log(out)
 
     // Closing the database connection
     db.$pool.end();
@@ -283,7 +305,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
         return
     }
 
-    console.log(chalk.greenBright('Done Constructing Features \n'))
+    console.log(chalk.green('Done Constructing Features \n'))
 
     // Step 2.
     /*
@@ -333,11 +355,11 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     }
 
     // Intermezzo: construct the itemParents object
-    let itemParentLookup = makeItemParentLookup();
+    let itemParentLookup = await makeItemParentLookup();
 
-    console.log(chalk.greenBright('Constructed the itemParents object'));
+    console.log(chalk.green('Constructed the itemParents object'));
     
-    console.log(chalk.greenBright('Done Constructing Columns \n'));
+    console.log(chalk.green('Done Constructing Columns \n'));
 
     // Step 3.
     // Generate Returnables and insert into metadata_returnable
@@ -348,7 +370,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
 
     // for each root feature generate returnables
     for(let feature of Object.keys(featureOutput.featureItemLookup)) {
-        console.log(chalk.greenBright(`Constructing returnables for the ${feature} feature`));
+        console.log(chalk.whiteBright.bold(`Constructing returnables for the ${feature} feature`));
         let itemArray = [
             {
                 featureName: feature,
@@ -356,8 +378,10 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
                 path: []
             }
         ];
+
+        // Calling generateReturnables
         let returnables = await generateReturnables(itemArray, [], itemParentLookup, featureOutput.itemRealGeoLookup, featureOutput.featureItemLookup);
-        console.log(chalk.greenBright.bold(`Constructed IDs: ${returnables.join(', ')} for the ${feature} feature`));
+        console.log(chalk.whiteBright.bold(`Constructed IDs: ${returnables.join(', ')} for the ${feature} feature \n`));
     };
 
     // Creating the computed file and returnables folder 
@@ -377,12 +401,12 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     
     // Done!
     
-    console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-    console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '                             ');
-    console.log('\x1b[47m\x1b[1m\x1b[32m%s\x1b[0m', '   Successful Construction   ');
-    console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '                             ');
-    console.log('\x1b[47m\x1b[2m\x1b[34m%s\x1b[0m', '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-    console.log('\x1b[47m\x1b[2m\x1b[30m%s\x1b[0m', ' Long live the power source! ');
+    console.log(chalk.blueBright.bgWhiteBright('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'));
+    console.log(chalk.blueBright.bgWhiteBright('                             '));
+    console.log(chalk.green.bgWhiteBright('   Successful Construction   '));
+    console.log(chalk.blueBright.bgWhiteBright('                             '));
+    console.log(chalk.blueBright.bgWhiteBright('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'));
+    console.log(chalk.black.bgWhiteBright(' Long live the power source! '));
     
 };
 
@@ -426,7 +450,7 @@ async function constructFeatures2(features) {
 
             item = item.create_observational_item_table;
 
-            console.log(chalk.greenBright(`Feature Construction: Observable item table created for ${feature.tableName}`));
+            console.log(chalk.green(`Feature Construction: Observable item table created for ${feature.tableName}`));
 
             // make lookups
             featureItemLookup[feature.tableName] = item;
@@ -446,7 +470,7 @@ async function constructFeatures2(features) {
                 creationPrivilege: feature.observableItem.creationPrivilege
             }));
 
-            console.log(chalk.greenBright(`Feature Metadata: Inserted ${featureItemLookup[feature.tableName]} into metadata_item`));
+            console.log(chalk.green(`Feature Metadata: Inserted ${featureItemLookup[feature.tableName]} into metadata_item`));
         } catch(sqlError) {
             return constructjsError(sqlError);
         }
@@ -466,13 +490,11 @@ async function constructFeatures2(features) {
                     isNullable: required.isNullable
                 }));
 
-                console.log(chalk.red(util.inspect(idColumn, {depth: null})));
-
                 idColumn = idColumn.idcolumn;
 
                 itemIDColumnLookup[featureItemLookup[feature.tableName]].push(idColumn);
 
-                console.log(chalk.greenBright(`Feature Construction: ${featureItemLookup[feature.tableName]} to ${required.name} relation created`));
+                console.log(chalk.green(`Feature Construction: ${featureItemLookup[feature.tableName]} to ${required.name} relation created`));
 
                 // d.
                 await db.none(pgp.as.format(insert_m2m_metadata_item, {
@@ -482,7 +504,7 @@ async function constructFeatures2(features) {
                     isNullable: required.isNullable
                 })); 
 
-                console.log(chalk.greenBright(`Feature Metadata: Inserted ${featureItemLookup[feature.tableName]} to ${required.name} relation into m2m_metadata_item`));
+                console.log(chalk.green(`Feature Metadata: Inserted ${featureItemLookup[feature.tableName]} to ${required.name} relation into m2m_metadata_item`));
             } catch(sqlError) {
                 return constructjsError(sqlError);
             }
@@ -499,7 +521,7 @@ async function constructFeatures2(features) {
                 tableName: rootFeature.tableName
             }));
 
-            console.log(chalk.greenBright(`Feature Construction: Created ${rootFeature.tableName} table`));
+            console.log(chalk.green(`Feature Construction: Created ${rootFeature.tableName} table`));
 
             //f. 
             await db.none(pgp.as.format(insert_metadata_feature, {
@@ -509,7 +531,7 @@ async function constructFeatures2(features) {
                 frontendName: rootFeature.frontendName
             }));
 
-            console.log(chalk.greenBright(`Feature Metadata: Inserted ${rootFeature.tableName} into metadata_feature`));
+            console.log(chalk.green(`Feature Metadata: Inserted ${rootFeature.tableName} into metadata_feature`));
 
         } catch(sqlError) {
             return constructjsError(sqlError);
@@ -527,7 +549,7 @@ async function constructFeatures2(features) {
                 parentTableName: subfeature.parentTableName
             }));
 
-            console.log(chalk.greenBright(`Feature Construction: Created ${subfeature.tableName} table`));
+            console.log(chalk.green(`Feature Construction: Created ${subfeature.tableName} table`));
 
             // h.
             await db.none(pgp.as.format(insert_metadata_subfeature, {
@@ -538,13 +560,11 @@ async function constructFeatures2(features) {
                 frontendName: subfeature.frontendName
             }));
 
-            console.log(chalk.greenBright(`Feature Metadata: Inserted ${subfeature.tableName} into metadata_feature`));
+            console.log(chalk.green(`Feature Metadata: Inserted ${subfeature.tableName} into metadata_feature`));
         } catch(sqlError) {
             return constructjsError(sqlError);
         }
     };
-
-    console.log(util.inspect(itemIDColumnLookup, {depth: null}))
 
     // No construction errors
     return {error: false, itemIDColumnLookup, featureItemLookup, itemRealGeoLookup};
@@ -591,7 +611,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                     referenceType: column.referenceType
                 }));
 
-                console.log(chalk.greenBright(`Column Metadata: Inserted global column ${column.columnName} into metadata_column for ${featureItemLookup[feature.tableName]}`));
+                console.log(chalk.green(`Column Metadata: Inserted global column ${column.columnName} into metadata_column for ${featureItemLookup[feature.tableName]}`));
             } catch(sqlError) {
                 return constructjsError(sqlError);
             }
@@ -606,7 +626,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isNullable: column.isNullable
                     }))
 
-                    console.log(chalk.greenBright(`Column Construction: Added global column ${column.columnName} to ${feature.tableName}`));
+                    console.log(chalk.green(`Column Construction: Added global column ${column.columnName} to ${feature.tableName}`));
                 } catch(sqlError) {
                     return constructjsError(sqlError);
                 }
@@ -638,7 +658,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                 referenceType: column.referenceType
             }));
 
-            console.log(chalk.greenBright(`Column Metadata: Inserted column ${column.columnName} into metadata_column for ${column.itemName}`));
+            console.log(chalk.green(`Column Metadata: Inserted column ${column.columnName} into metadata_column for ${column.itemName}`));
         } catch(sqlError) {
             return constructjsError(sqlError);
         }
@@ -662,7 +682,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isNullable: column.isNullable // must be false
                     }));
 
-                    console.log(chalk.greenBright(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
                     break;
 
                 case 'item-non-id':
@@ -678,7 +698,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isNullable: column.isNullable
                     }));
 
-                    console.log(chalk.greenBright(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
                     break;
 
                 case 'item-list':
@@ -695,7 +715,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isObservational: false  // false because item-list and not obs-list
                     }));
 
-                    console.log(chalk.greenBright(`Column Construction: Created ${column.tableName} tables with ${column.columnName} column for ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Created ${column.tableName} tables with ${column.columnName} column for ${column.itemName}`));
                     break;
 
                 case 'item-location':
@@ -710,7 +730,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isNullable: column.isNullable
                     }));
 
-                    console.log(chalk.greenBright(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
                     break;
                     
                 case 'item-factor':
@@ -728,7 +748,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isObservational: false  // false because item-factor and not obs-factor
                     }));
 
-                    console.log(chalk.greenBright(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
                     break;
 
                 case 'obs':
@@ -740,7 +760,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isNullable: column.isNullable
                     }));
 
-                    console.log(chalk.greenBright(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
                     break;
                     
                 case 'obs-global':
@@ -762,7 +782,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isObservational: true  // true because obs-list and not item-list
                     }));
 
-                    console.log(chalk.greenBright(`Column Construction: Created ${column.tableName} tables with ${column.columnName} column for ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Created ${column.tableName} tables with ${column.columnName} column for ${column.itemName}`));
                     break;
 
                 case 'obs-factor':
@@ -780,7 +800,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         isObservational: true  // true because obs-factor and not item-factor
                     }));
 
-                    console.log(chalk.greenBright(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
                     break;
 
                 case 'special':
@@ -801,7 +821,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         sqlType: column.sqlType
                     }));
                     
-                    console.log(chalk.greenBright(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
+                    console.log(chalk.green(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
                     break;
 
                 default:
@@ -814,12 +834,8 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
 
     // Adding unique constraints
     for(let item in itemIDColumnLookup) {
-        console.log(chalk.redBright.bgWhite(util.inspect(itemIDColumnLookup[item], {depth: null})))
-        
 
         let uniqueOver = itemIDColumnLookup[item].join(', ');
-        console.log(chalk.redBright.bgWhite(uniqueOver + ' \n'))
-
         try {
             await db.none(pgp.as.format(add_unique_constraint, {
                 tableName: item,
@@ -829,7 +845,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
             return constructjsError(sqlError);
         }
         
-        console.log(chalk.greenBright(`Column Construction: Created unique constraint on ${item} over ID columns ${uniqueOver}`));
+        console.log(chalk.green(`Column Construction: Created unique constraint on ${item} over ID columns ${uniqueOver}`));
     }
 
     // No construction errors
@@ -855,23 +871,26 @@ async function generateReturnables(itemArray, returnableArray, itemParentLookup,
     for(let itemObject of itemArray) {
 
         // generate returnable for every data column within or referenced by item
+        // Calling makeItemReturnables
         let itemReturnables = await makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLookup)
-
-        console.log(chalk.red(itemReturnables))
 
         // add returnables to master list
         returnableArray = [...returnableArray, ...itemReturnables];
 
         // if item has a parent calculate new path and add to referencedItems array 
-        if(itemObject.itemName in itemParentLookup) {
+        if(Object.keys(itemParentLookup).includes(itemObject.itemName)) {
 
             let parentItemArray = itemParentLookup[itemObject.itemName]
 
             // for each parent item
             parentItemArray.forEach(parent => {
 
+                console.log(chalk.greenBright.underline(`Returnable Construction: Added parent item ${parent.itemName} of child item ${itemObject.itemName} to item stack`))
+
                 // Make path with new item
                 let newPath = [...itemObject.path, ...[itemObject.itemName, parent.itemName]]
+
+                console.log(chalk.greenBright(`Returnable Construction: Path Updated: ${itemObject.path.join(', ')} -> ${newPath.join(', ')}`))
 
                 // add parent to referencedItems
                 referencedItems.push({
@@ -886,7 +905,7 @@ async function generateReturnables(itemArray, returnableArray, itemParentLookup,
         
     if(referencedItems.length > 0) {
         // call again with new items and pass found returnables
-        return generateReturnables(referencedItems, returnableArray, itemParentLookup, itemRealGeoLookup)
+        return generateReturnables(referencedItems, returnableArray, itemParentLookup, itemRealGeoLookup, featureItemLookup)
     } else {
         // return all the returnables
         return returnableArray
@@ -931,7 +950,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
     // construct joinObject from path
     if(itemObject.path.length > 0) {
         // sanity check
-        if(itemObject.path % 2 !== 0) {
+        if(itemObject.path.length % 2 !== 0) {
             throw 'References must come in sets of 2'
         }
         // copy tables
@@ -947,12 +966,11 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
 
     // if this is not the feature's observable item we ignore all non item-... columns
     if(featureItemLookup[itemObject.featureName] !== itemObject.itemName) {
-        columns = columns.filter(col => ['item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'].includes(col))
+        columns = columns.filter(col => ['item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'].includes(col.referencetypename))
     }
     
     // for each column related to the item
     for(let col of columns) {
-        console.log(chalk.cyanBright.bgWhite(util.inspect(col)));
         // PK
         let columnID = col.columnid;
         let frontendName = col.frontendname;
@@ -977,11 +995,11 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             if(col.subobservationtablename !== null) {
                 rootFeatureID = featureID;
                 console.log(chalk.red.bgBlack(pgp.as.format(makeItemReturnablesSubobservationQuery, {
-                    subobservationTableName: col.subobservationTableName
+                    subobservationTableName: col.subobservationtablename
                 })));
 
                 featureID = await db.one(pgp.as.format(makeItemReturnablesSubobservationQuery, {
-                    subobservationTableName: col.subobservationTableName
+                    subobservationTableName: col.subobservationtablename
                 }));
 
                 
@@ -1022,7 +1040,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 returnableID = returnableID.returnableid;
 
                 returnables.push(returnableID);
-                console.log(chalk.greenBright(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
+                console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
 
             } else { // special case of two returnables per column
 
@@ -1045,7 +1063,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 returnableID = returnableID.returnableid;
 
                 returnables.push(returnableID);
-                console.log(chalk.greenBright(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
+                console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
 
 
                 // set attribute type
@@ -1067,7 +1085,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 returnableID = returnableID.returnableid;
 
                 returnables.push(returnableID);
-                console.log(chalk.greenBright(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
+                console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
             }
         } else { //then not an attribute and do things normally
 
@@ -1085,12 +1103,10 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 isRealGeo: isRealGeo
             }));
 
-            console.log(chalk.bgBlack.cyanBright(util.inspect(returnableID)));
-
             returnableID = returnableID.returnableid;
 
             returnables.push(returnableID);
-            console.log(chalk.greenBright(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
+            console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
         }
         
     };
