@@ -217,6 +217,7 @@ if(process.argv[0] == 'make-schema') {
         } else {
             commandLineArgs.filter = null;
         }
+        (process.argv.includes('-u') || process.argv.includes('--used') ? commandLineArgs.used = true : commandLineArgs.used = false);
     } else if(process.argv.includes('--feature') || process.argv.includes('-f')) {
         commandLineArgs.type = 'f'
     } else if(process.argv.includes('--column') || process.argv.includes('-c')) {
@@ -256,12 +257,22 @@ async function inspectSchema(commandLineArgs) {
 
     if(commandLineArgs.type === 'r') {
 
-        if(commandLineArgs.filter !== null) {
-            out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter))', {
-                filter: commandLineArgs.filter
-            }));
+        if(commandLineArgs.used === true) {
+            if(commandLineArgs.filter !== null) {
+                out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter)) AND r.is_used = true', {
+                    filter: commandLineArgs.filter
+                }));
+            } else {
+                out = await db.any('SELECT * FROM metadata_returnable WHERE is_used = true')
+            }
         } else {
-            out = await db.any('SELECT * FROM metadata_returnable')
+            if(commandLineArgs.filter !== null) {
+                out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter))', {
+                    filter: commandLineArgs.filter
+                }));
+            } else {
+                out = await db.any('SELECT * FROM metadata_returnable')
+            }
         }
         
     } else if(commandLineArgs.type === 'f') {
