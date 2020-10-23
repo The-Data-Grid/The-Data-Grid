@@ -190,16 +190,17 @@ if(process.argv[0] == 'make-schema') {
     (process.argv.includes('--show-computed') || process.argv.includes('-sc') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
     // here we go
     return makeSchema(commandLineArgs);
-} else if(process.argv[0] == 'config-returnables') {
+} else if(process.argv[0] == 'config') {
     let commandLineArgs = {};
     // remove command
     process.argv.splice(0, 1);
     // get and remove audit type
-    commandLineArgs.schema = process.argv.pop();
+    commandLineArgs.schema = process.argv[0];
+    process.argv.splice(0, 1);
     // configure command line arguments
     let argFile = process.argv.filter(arg => /^file=.*/.test(arg));
     if(argFile.length != 1) throw 'One file must be specified as a command line argument with \'--file=yourFile\'';
-    commandLineArgs.file = argFile.match(/^file=(.*)/)[1];
+    commandLineArgs.file = argFile[0].match(/^file=(.*)/)[1];
     (process.argv.includes('log') ? commandLineArgs.log = true : commandLineArgs.log = false);
     // here we go
     return configureReturnables(commandLineArgs);
@@ -210,6 +211,12 @@ if(process.argv[0] == 'make-schema') {
     // configure command line arguments
     if(process.argv.includes('--returnable') || process.argv.includes('-r')) {
         commandLineArgs.type = 'r'
+        let argFilter = process.argv.filter(arg => /^--filter=.*/.test(arg));
+        if(argFilter.length == 1) {
+            commandLineArgs.filter = argFilter[0].match(/^--filter=(.*)/)[1];
+        } else {
+            commandLineArgs.filter = null;
+        }
     } else if(process.argv.includes('--feature') || process.argv.includes('-f')) {
         commandLineArgs.type = 'f'
     } else if(process.argv.includes('--column') || process.argv.includes('-c')) {
@@ -231,11 +238,14 @@ async function makeSchema(commandLineArgs) {
     console.log(commandLineArgs)
 
     // Read schema
+    // Columns
     let columns = readSchema(`/auditSchemas/${commandLineArgs.schema}/columns.jsonc`);
+    let globalColumns = readSchema('/auditSchemas/globalSchema/columns.jsonc');
+    // Features
     let features = readSchema(`/auditSchemas/${commandLineArgs.schema}/features.jsonc`);
 
     // Call Construction Function
-    await asyncConstructAuditingTables(features, columns, commandLineArgs);
+    await asyncConstructAuditingTables(features, [...columns, ...globalColumns], commandLineArgs);
 
     // Closing the database connection
     db.$pool.end();
@@ -245,11 +255,19 @@ async function inspectSchema(commandLineArgs) {
     let out;
 
     if(commandLineArgs.type === 'r') {
-        out = await db.many('SELECT * FROM metadata_returnable');
+
+        if(commandLineArgs.filter !== null) {
+            out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter))', {
+                filter: commandLineArgs.filter
+            }));
+        } else {
+            out = await db.any('SELECT * FROM metadata_returnable')
+        }
+        
     } else if(commandLineArgs.type === 'f') {
-        out = await db.many('SELECT * FROM metadata_feature');
+        out = await db.any('SELECT * FROM metadata_feature');
     } else if(commandLineArgs.type === 'c') {
-        out = await db.many('SELECT * FROM metadata_column');
+        out = await db.any('SELECT * FROM metadata_column');
     }
 
     console.log(out)

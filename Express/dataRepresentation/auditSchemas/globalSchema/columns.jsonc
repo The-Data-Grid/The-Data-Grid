@@ -1,0 +1,78 @@
+/*
+    DATA COLUMNS THAT ARE REPEATED FOR EVERY FEATURE
+*/
+[
+    { // DATE CONDUCTED 
+        "tableName": null,
+        "columnName": "data_time_conducted",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": null,
+    
+        "sqlType": "TIMESTAMPTZ",
+        "referenceType": "local-global",
+    
+        "frontendName": "Date Conducted",
+        "information": "Date the feature was audited",
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "calendarRange",
+        "inputSelectorName": "calendarEqual",
+        "frontendType": "date"
+    },
+    { // COMMENTARY
+        "tableName": null,
+        "columnName": "data_commentary",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": null,
+    
+        "sqlType": "TEXT",
+        "referenceType": "local-global",
+    
+        "frontendName": "Commentary",
+        "information": "Additional commentary about the observation",
+        "isNullable": true,
+        "isDefault": true,
+        "filterSelectorName": null,
+        "inputSelectorName": "text",
+        "frontendType": "string"
+    },
+    { // AUDITOR NAME
+        "tableName": null,
+        "columnName": "data_auditor",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": null,
+    
+        "sqlType": "TEXT",
+        "referenceType": "special",
+    
+        "frontendName": "Auditor Name",
+        "information": "Name of the auditor(s) who conducted this observation",
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": null,
+        "inputSelectorName": null,
+        "frontendType": "string"
+    },
+    { // SOP NAME
+        "tableName": null,
+        "columnName": "data_name",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": null,
+    
+        "sqlType": "TEXT",
+        "referenceType": "special",
+    
+        "frontendName": "Standard Operating Procedure",
+        "information": "The standard operating procedure(s) used for the audit on this feature",
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "searchableChecklistDropdown",
+        "inputSelectorName": "searchableChecklistDropdown",
+        "frontendType": "string"
+    }
+]
+
