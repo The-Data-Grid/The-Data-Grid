@@ -211,9 +211,9 @@ if(process.argv[0] == 'make-schema') {
     // configure command line arguments
     if(process.argv.includes('--returnable') || process.argv.includes('-r')) {
         commandLineArgs.type = 'r'
-        let argFilter = process.argv.filter(arg => /^--feature=.*/.test(arg));
+        let argFilter = process.argv.filter(arg => /^--choose=.*/.test(arg));
         if(argFilter.length == 1) {
-            commandLineArgs.filter = argFilter[0].match(/^--feature=(.*)/)[1];
+            commandLineArgs.filter = argFilter[0].match(/^--choose=(.*)/)[1];
         } else {
             commandLineArgs.filter = null;
         }
@@ -236,7 +236,7 @@ if(process.argv[0] == 'make-schema') {
 // High Level Functions //
 // ============================================================
 async function makeSchema(commandLineArgs) {
-    console.log(commandLineArgs)
+    //console.log(commandLineArgs)
 
     // Read schema
     // Columns
@@ -253,7 +253,7 @@ async function makeSchema(commandLineArgs) {
 }
 
 async function configSchema(commandLineArgs) {
-    console.log(commandLineArgs)
+    //console.log(commandLineArgs)
 
     let schema = commandLineArgs.schema;
     let file = commandLineArgs.file;
