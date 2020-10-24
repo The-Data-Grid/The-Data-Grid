@@ -10,7 +10,7 @@
         "itemName": null,
     
         "sqlType": "TIMESTAMPTZ",
-        "referenceType": "local-global",
+        "referenceType": "obs-global",
     
         "frontendName": "Date Conducted",
         "information": "Date the feature was audited",
@@ -28,7 +28,7 @@
         "itemName": null,
     
         "sqlType": "TEXT",
-        "referenceType": "local-global",
+        "referenceType": "obs-global",
     
         "frontendName": "Commentary",
         "information": "Additional commentary about the observation",

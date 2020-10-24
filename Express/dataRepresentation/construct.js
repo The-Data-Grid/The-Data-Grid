@@ -167,8 +167,8 @@ const makeItemReturnablesSubobservationQuery = 'SELECT f.feature_id AS featureID
 const insert_metadata_returnable = 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject:json), $(isRealGeo)) AS returnableid'
     
 // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
-const checkAuditorNameTrigger = "CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:value) \
-FOR EACH ROW EXECUTE FUNCTION check_auditor_name();"
+const checkAuditorNameTrigger = 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \
+FOR EACH ROW EXECUTE FUNCTION check_auditor_name()'
 
 
 // Construction CLI //
@@ -211,9 +211,9 @@ if(process.argv[0] == 'make-schema') {
     // configure command line arguments
     if(process.argv.includes('--returnable') || process.argv.includes('-r')) {
         commandLineArgs.type = 'r'
-        let argFilter = process.argv.filter(arg => /^--filter=.*/.test(arg));
+        let argFilter = process.argv.filter(arg => /^--feature=.*/.test(arg));
         if(argFilter.length == 1) {
-            commandLineArgs.filter = argFilter[0].match(/^--filter=(.*)/)[1];
+            commandLineArgs.filter = argFilter[0].match(/^--feature=(.*)/)[1];
         } else {
             commandLineArgs.filter = null;
         }
@@ -262,6 +262,7 @@ async function inspectSchema(commandLineArgs) {
                 out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter)) AND r.is_used = true', {
                     filter: commandLineArgs.filter
                 }));
+
             } else {
                 out = await db.any('SELECT * FROM metadata_returnable WHERE is_used = true')
             }
@@ -281,7 +282,9 @@ async function inspectSchema(commandLineArgs) {
         out = await db.any('SELECT * FROM metadata_column');
     }
 
+    let count = out.length
     console.log(out)
+    console.log(chalk.cyanBright.underline(`Count: ${count}`))
 
     // Closing the database connection
     db.$pool.end();
@@ -619,8 +622,17 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
     // Globals
     // These data columns are defined for every feature
     for(let column of columns.filter(column => column.referenceType === 'obs-global' || column.referenceType === 'special')) {
-        for(let feature of features) {
+        // for every root feature
+        for(let feature of features.filter(f => f.parentTableName === null)) {
 
+            //console.log(chalk.red.bgWhite(util.inspect(feature)))
+            let itemTableName;
+            // if subfeature
+            if(feature.parentTableName !== null) {
+                itemTableName = featureItemLookup[feature.parentTableName];
+            } else { // then root feature
+                itemTableName = featureItemLookup[feature.tableName];
+            }
             // insert into metadata_column
             try {
                 await db.none(pgp.as.format(insert_metadata_column, {
@@ -628,7 +640,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                     tableName: (column.tableName === null ? feature.tableName : column.tableName),
                     observationTableName: column.observationTableName,
                     subobservationTableName: column.subobservationTableName,
-                    itemTableName: featureItemLookup[feature.tableName],
+                    itemTableName: itemTableName,
                     isDefault: column.isDefault,
                     isNullable: column.isNullable,
                     frontendName: column.frontendName,
@@ -660,6 +672,25 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                     return constructjsError(sqlError);
                 }
             }
+
+            // Auditor Name Special Case
+            if(column.referenceType === 'special' && column.frontendName === 'Auditor Name') {
+                await db.none(pgp.as.format(add_data_col, {
+                    tableName: feature.tableName,
+                    columnName: column.columnName,
+                    sqlType: column.sqlType,
+                    isNullable: column.isNullable
+                }))
+
+                console.log(chalk.green(`Column Construction: Added special column ${column.columnName} to ${feature.tableName}`));
+
+                // Auditor Name trigger is added for every feature
+                await db.none(pgp.as.format(checkAuditorNameTrigger, {
+                    tableName: feature.tableName
+                }))
+
+                console.log(chalk.green(`Column Construction: Added 'Auditor Name' trigger function to ${feature.tableName}`));
+            }
             
         }
         
@@ -667,6 +698,8 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
 
     // Standard columns (Non global)
     for(let column of columns.filter(column => column.referenceType !== 'obs-global' && column.referenceType !== 'special')) {
+
+        //console.log(chalk.red.bgWhite(util.inspect(column)))
 
         // insert into metadata_column
         try {
