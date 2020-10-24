@@ -153,7 +153,7 @@ var add_factor = 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName
 var add_attribute = 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))';
 
 const getReturnables = 'SELECT r.returnable_id AS id, f.table_name AS feature, r.frontend_name as frontendName, r.is_used AS isUsed, r.join_object AS joinObject, r.is_real_geo AS isRealGeo \
-                        FROM metadata_returnable AS r LEFT JOIN metadata_feature AS f on r.feature_id = f.feature_id'
+                        FROM metadata_returnable AS r LEFT JOIN metadata_feature AS f on r.feature_id = f.feature_id ORDER BY id ASC';
 
 
 const getItemParents = 'SELECT child.table_name AS child, parent.table_name AS parent_, m2m.is_id AS isID \
@@ -198,12 +198,12 @@ if(process.argv[0] == 'make-schema') {
     commandLineArgs.schema = process.argv[0];
     process.argv.splice(0, 1);
     // configure command line arguments
-    let argFile = process.argv.filter(arg => /^file=.*/.test(arg));
+    let argFile = process.argv.filter(arg => /^--file=.*/.test(arg));
     if(argFile.length != 1) throw 'One file must be specified as a command line argument with \'--file=yourFile\'';
-    commandLineArgs.file = argFile[0].match(/^file=(.*)/)[1];
-    (process.argv.includes('log') ? commandLineArgs.log = true : commandLineArgs.log = false);
+    commandLineArgs.file = argFile[0].match(/^--file=(.*)/)[1];
+    (process.argv.includes('--show-computed') || process.argv.includes('-sc') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
     // here we go
-    return configureReturnables(commandLineArgs);
+    return configSchema(commandLineArgs);
 } else if(process.argv[0] == 'inspect') {
     let commandLineArgs = {};
     // remove command
@@ -252,6 +252,48 @@ async function makeSchema(commandLineArgs) {
     db.$pool.end();
 }
 
+async function configSchema(commandLineArgs) {
+    console.log(commandLineArgs)
+
+    let schema = commandLineArgs.schema;
+    let file = commandLineArgs.file;
+
+    let controller = readSchema(`/auditSchemas/${schema}/${file}`);
+
+    // sanity check
+    if(controller.IDs.length !== controller.controller.length) {
+        throw Error('Controller error: IDs and controller must be the same length');
+    }
+
+    // for every change
+    for(let id of controller.IDs) {
+        let change = controller.controller[controller.IDs.indexOf(id)]
+        // if isUsed exists db.none
+        if('isUsed' in change) {
+            db.none(pgp.as.format('UPDATE metadata_returnable SET is_used = $(isUsed) WHERE returnable_id = $(id)', {
+                isUsed: change.isUsed,
+                id: id
+            }));
+
+            console.log(chalk.green(`Config: is_used column of ReturnableID:${id} updated to ${change.isUsed}`));
+        }
+        // if frontendName exists db.none
+        if('frontendName' in change) {
+            db.none(pgp.as.format('UPDATE metadata_returnable SET frontend_name = $(frontendName) WHERE returnable_id = $(id)', {
+                frontendName: change.frontendName,
+                id: id
+            }));
+
+            console.log(chalk.green(`Config: frontend_name column of ReturnableID:${id} updated to ${change.frontendName}`));
+        }
+    }      
+
+    await showComputed(commandLineArgs);
+
+    // Closing the database connection
+    db.$pool.end();
+}
+
 async function inspectSchema(commandLineArgs) {
     let out;
 
@@ -259,18 +301,29 @@ async function inspectSchema(commandLineArgs) {
 
         if(commandLineArgs.used === true) {
             if(commandLineArgs.filter !== null) {
-                out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter)) AND r.is_used = true', {
-                    filter: commandLineArgs.filter
-                }));
+                // if submission
+                if(commandLineArgs.filter === 'submission') {
+                    out = await db.any('SELECT * FROM metadata_returnable AS r WHERE r.feature_id IS NULL AND r.is_used = true')
+                } else {
+                    out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter)) AND r.is_used = true', {
+                        filter: commandLineArgs.filter
+                    }));
+                }
 
             } else {
                 out = await db.any('SELECT * FROM metadata_returnable WHERE is_used = true')
             }
         } else {
             if(commandLineArgs.filter !== null) {
-                out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter))', {
-                    filter: commandLineArgs.filter
-                }));
+                // if submission
+                if(commandLineArgs.filter === 'submission') {
+                    out = await db.any('SELECT * FROM metadata_returnable AS r WHERE r.feature_id IS NULL')
+                } else {
+                    out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter))', {
+                        filter: commandLineArgs.filter
+                    }));
+                }
+                
             } else {
                 out = await db.any('SELECT * FROM metadata_returnable')
             }
@@ -415,22 +468,22 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
         let returnables = await generateReturnables(itemArray, [], itemParentLookup, featureOutput.itemRealGeoLookup, featureOutput.featureItemLookup);
         console.log(chalk.whiteBright.bold(`Constructed IDs: ${returnables.join(', ')} for the ${feature} feature \n`));
     };
-
-    // Creating the computed file and returnables folder 
-    if(commandLineArgs.showComputed === true) {
-        console.log(chalk.whiteBright.bold(`Writing returnables to the ${commandLineArgs.schema} folder`));
-
-        fs.mkdirSync(__dirname + '/auditSchemas/' + commandLineArgs.schema + '/returnables', {recursive: true})
-        console.log(chalk.whiteBright.bold(`Made the 'returnables' directory for auditSchemas/${commandLineArgs.schema}`));
-
-        let currentReturnables = await db.many(getReturnables);
-        currentReturnables = JSON.stringify(currentReturnables);
-
-        // writing the JSON
-        fs.writeFileSync(`${__dirname}/auditSchemas/${commandLineArgs.schema}/returnables/computedAt-${Date.now()}.json`, currentReturnables);
-        console.log(chalk.whiteBright.bold(`Wrote computedAt-${Date.now()}.json in the 'returnables' directory for auditSchemas/${commandLineArgs.schema}`));
-    }
+    // for item_submission generate returnables
+    console.log(chalk.whiteBright.bold(`Constructing returnables for the item_submission tree`));
+    let itemArray = [
+        {
+            featureName: null,
+            itemName: 'item_submission',
+            path: []
+        }
+    ];
+    let returnables = await generateReturnables(itemArray, [], itemParentLookup, featureOutput.itemRealGeoLookup, featureOutput.featureItemLookup);
+    console.log(chalk.whiteBright.bold(`Constructed IDs: ${returnables.join(', ')} for item_submission \n`));
     
+    // Creating the computed file and returnables folder 
+    await showComputed(commandLineArgs);
+    
+
     // Done!
     
     console.log(chalk.blueBright.bgWhiteBright('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'));
@@ -1074,8 +1127,8 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
 
         } else { // else then submission and no feature or geo information
             isRealGeo = false;
-            featureID = false;
-            rootFeatureID = false;
+            featureID = null;
+            rootFeatureID = null;
         }
 
         // attribute edge case where one column maps to 2 returnables
@@ -1168,7 +1221,14 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             returnableID = returnableID.returnableid;
 
             returnables.push(returnableID);
-            console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
+
+            // if submission
+            if(itemObject.featureName === null) {
+                console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the item_submission tree`));
+            } else {
+                console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
+            }
+            
         }
         
     };
@@ -1222,6 +1282,24 @@ function readSchema(file) { // Schema read function
 }
 
 
+async function showComputed(commandLineArgs) {
+    // Creating the computed file and returnables folder 
+    if(commandLineArgs.showComputed === true) {
+       console.log(chalk.whiteBright.bold(`Writing returnables to the ${commandLineArgs.schema} folder`));
+
+       fs.mkdirSync(__dirname + '/auditSchemas/' + commandLineArgs.schema + '/returnables', {recursive: true})
+       console.log(chalk.whiteBright.bold(`Made the 'returnables' directory for auditSchemas/${commandLineArgs.schema}`));
+
+       let currentReturnables = await db.many(getReturnables);
+       currentReturnables = JSON.stringify(currentReturnables);
+
+       // writing the JSON
+       fs.writeFileSync(`${__dirname}/auditSchemas/${commandLineArgs.schema}/returnables/computedAt-${Date.now()}.json`, currentReturnables);
+       console.log(chalk.whiteBright.bold(`Wrote computedAt-${Date.now()}.json in the 'returnables' directory for auditSchemas/${commandLineArgs.schema}`));
+    }   
+}
+
+   
 
 
 
