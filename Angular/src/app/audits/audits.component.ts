@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
-import { SetupObjectService } from '../setup-object.service';
 import { DatePipe } from '@angular/common';
-import { setupObject, tableObject } from '../responses'
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../dropdown-settings'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+
+import { SetupObjectService } from '../setup-object.service';
+import { setupObject, tableObject } from '../responses'
+import { environment } from '../../environments/environment';
+const USE_FAKE_DATA = environment.useFakeData;
 
 @Component({
   selector: 'app-audits',
@@ -13,8 +16,6 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 })
 
 export class AuditsComponent implements OnInit {
-  USE_FAKE_DATA: boolean = true;
-
   // variables for table 
   dataTableColumns = [];
   rows = [];
@@ -51,7 +52,7 @@ export class AuditsComponent implements OnInit {
 
   getSetupObject() {
     this.apiService.getSetupTableObject(null).subscribe((res) => {
-      this.USE_FAKE_DATA ? this.setupObject = setupObject : this.setupObject = res;
+      USE_FAKE_DATA ? this.setupObject = setupObject : this.setupObject = res;
 
       // parse global columns
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(
@@ -88,7 +89,7 @@ export class AuditsComponent implements OnInit {
     var i;
 
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
-      this.USE_FAKE_DATA ? this.tableObject = tableObject : this.tableObject = res;
+      // USE_FAKE_DATA ? this.tableObject = tableObject : this.tableObject = res;
 
       // construct the column header arrays
       for (i = 0; i < this.tableObject.columnIndex.length; i++) {
