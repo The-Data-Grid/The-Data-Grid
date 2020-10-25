@@ -1,5 +1,5 @@
 
-export let setupObject = {
+export let SetupObject = {
     children: [
         [
             0,
@@ -266,7 +266,7 @@ export let setupObject = {
 
 
 
-export let tableObject = {
+export let TableObject = {
     returnableColumnIDs: [
         10,
         11,

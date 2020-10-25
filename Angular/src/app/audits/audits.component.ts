@@ -5,7 +5,7 @@ import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableCheckl
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 import { SetupObjectService } from '../setup-object.service';
-import { setupObject, tableObject } from '../responses'
+import { SetupObject, TableObject } from '../responses'
 import { environment } from '../../environments/environment';
 const USE_FAKE_DATA = environment.useFakeData;
 
@@ -52,7 +52,7 @@ export class AuditsComponent implements OnInit {
 
   getSetupObject() {
     this.apiService.getSetupTableObject(null).subscribe((res) => {
-      USE_FAKE_DATA ? this.setupObject = setupObject : this.setupObject = res;
+      USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
 
       // parse global columns
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(
