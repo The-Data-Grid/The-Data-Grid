@@ -1,10 +1,3 @@
-// export class SwimlaneColumn {
-//     name: string;
-//     constructor(name: string) {
-//       this.name = name;
-//     }
-//   }
-
 /* audit submission model */
 export class AuditSubmission {
     timeConducted: number;

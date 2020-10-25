@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
+import { SetupObjectService } from '../setup-object.service';
 import { DatePipe } from '@angular/common';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
-
+import { setupObject, tableObject } from '../responses'
 @Component({
   selector: 'app-audits',
   templateUrl: './audits.component.html',
@@ -10,6 +11,8 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 })
 
 export class AuditsComponent implements OnInit {
+  USE_FAKE_DATA: boolean = true;
+
   // variables for table 
   dataTableColumns = [];
   rows = [];
@@ -25,10 +28,10 @@ export class AuditsComponent implements OnInit {
   setupObject;
   datatypes;
   defaultColumns = [];
-  featureDropdownValues = new Map(); //map name to direct children
+  rootFeatures = [];
   selectedFeature;
   appliedFilterSelections = {};
-
+  selectorsLoaded: boolean = false;
   // the following are for multiselect dropdowns
   dropdownList = [
     { item_id: 1, item_text: 'Mumbai' },
@@ -60,45 +63,67 @@ export class AuditsComponent implements OnInit {
   featureSelectors = {};
   globalSelectors = {};
 
-  constructor(private apiService: ApiService, public datepipe: DatePipe) { }
+  constructor(private apiService: ApiService, public datepipe: DatePipe, private setupObjectService: SetupObjectService) { }
 
   ngOnInit() {
-    this.getSetupTableObject();
+    this.getSetupObject();
   }
 
-  getSetupTableObject() {
+  getSetupObject() {
     this.apiService.getSetupTableObject(null).subscribe((res) => {
-      this.setupObject = res;
+      this.USE_FAKE_DATA ? this.setupObject = setupObject : this.setupObject = res;
 
-      // parse global columns
-      this.globalSelectors = this.parseColumns(this.setupObject.globalColumns);
+      // parse global features
+      this.globalSelectors = this.setupObjectService.getGlobalSelectors(
+        this.setupObject,
+        this.appliedFilterSelections,
+        this.defaultColumns);
+      // get root features
+      this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
 
-      // parse feature columns
-      var i = 0;
-      this.setupObject.featureColumns.forEach(featureColumn => {
-        if (i < this.setupObject.subfeatureStartIndex) {
-          var childFeatures = [];
-          // use indicies from directChildren arr to find the corresponsing object
-          featureColumn.directChildren.forEach(index => {
-            childFeatures.push(this.setupObject.featureColumns[index]);
+
+      let featureColumns = [];
+      let j = 0;
+      // for each feature
+      this.setupObject.children[0].forEach((featureIndex, k) => {
+        featureColumns = [];
+        // find feature's observation columns
+        this.setupObject.features[featureIndex].children[0].forEach((observationColumnIndex, i) => {
+          featureColumns.push({
+            column: this.setupObject.columns[observationColumnIndex],
+            returnableID: this.getReturnableID([0, k, 0, i])
           });
-          // map parent child's name to array of children
-          this.featureDropdownValues.set(featureColumn.frontendName, childFeatures);
-          i++;
-        }
-        this.featureSelectors[featureColumn.frontendName] = this.parseColumns(featureColumn.dataColumns);
+        });
+        // find feature's attribute columns
+        this.setupObject.features[featureIndex].children[1].forEach((attributeColumnIndex, i) => {
+          featureColumns.push({
+            column: this.setupObject.columns[attributeColumnIndex],
+            returnableID: this.getReturnableID([0, k, 1, i])
+          });
+        });
+        this.featureSelectors[this.setupObject.features[featureIndex].frontendName] = this.parseColumns(featureColumns);
       });
 
       // get datatypes array
       this.datatypes = this.setupObject.datatypes;
-      // console.log(this.globalSelectors);
-      // console.log(this.featureSelectors);
+
+      console.log("global selectors:");
+      console.log(this.globalSelectors);
+      console.log("feature selectors:");
+      console.log(this.featureSelectors);
+      console.log("applied filter selections:");
       console.log(this.appliedFilterSelections);
       this.applyFilters();
+      this.selectorsLoaded = true
     });
   }
 
-  parseColumns(columns): any {
+  getReturnableID(tree: any[]): string {
+    let treeID = tree.join('>');
+    return setupObject.treeIDToReturnableID[treeID];
+  }
+
+  parseColumns(infos): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],
@@ -112,38 +137,42 @@ export class AuditsComponent implements OnInit {
       bool: []
     };
 
-    columns.forEach(column => {
-      if (column.filterSelector) {
-        //by default, columnBackendID to user's input
+    infos.forEach(info => {
+      if (info.column.filterSelector) {
+        //by default, returnableID to user's input
         //range and multiselect selectors have different format for recording 
-        this.appliedFilterSelections[column.columnBackendID] = null;
-        switch (column.filterSelector.selectorKey) {
-          case "dropdown": { selectors.dropdown.push(column); break; }
-          case "numericChoice": { selectors.numericChoice.push(column); break; }
+        this.appliedFilterSelections[info.returnableID] = null;
+
+        switch (info.column.filterSelector.selectorKey) {
+          case "dropdown": { selectors.dropdown.push(info); break; }
+          case "numericChoice": { selectors.numericChoice.push(info); break; }
           case "numericEqual": {
-            selectors.numericEqual.push(column);
-            this.appliedFilterSelections[column.columnBackendID] = { relation: null, input: null }; break;
+            selectors.numericEqual.push(info);
+            this.appliedFilterSelections[info.returnableID] = { relation: null, input: null }; break;
           }
           case "calendarRange": {
-            selectors.calendarRange.push(column);
-            console.log(column.columnBackendID);
-            this.appliedFilterSelections[column.columnBackendID] = { start: null, end: null }; break;
+            selectors.calendarRange.push(info);
+            this.appliedFilterSelections[info.returnableID] = { start: null, end: null }; break;
           }
-          case "calendarEqual": { selectors.calendarEqual.push(column); break; }
-          case "searchableDropdown": { 
-            console.log(column.columnBackendID);
-            selectors.searchableDropdown.push(column); break; }
-          case "checklistDropdown": {this.appliedFilterSelections[column.columnBackendID] = []; break; }
+          case "calendarEqual": { selectors.calendarEqual.push(info); break; }
+          case "searchableDropdown": {
+            selectors.searchableDropdown.push(info);
+            this.appliedFilterSelections[info.returnableID] = []; break;
+          }
+          case "checklistDropdown": {
+            selectors.checklistDropdown.push(info);
+            this.appliedFilterSelections[info.returnableID] = []; break;
+          }
           case "searchableChecklistDropdown": {
-            selectors.searchableChecklistDropdown.push(column); 
-            this.appliedFilterSelections[column.columnBackendID] = []; break;
+            selectors.searchableChecklistDropdown.push(info);
+            this.appliedFilterSelections[info.returnableID] = []; break;
           }
-          case "text": { selectors.text.push(column); break; }
-          case "bool": { selectors.bool.push(column); break; }
+          case "text": { selectors.text.push(info); break; }
+          case "bool": { selectors.bool.push(info); break; }
         }
       }
-      if (column.default) {
-        this.defaultColumns.push(column.columnBackendID);
+      if (info.column.default) {
+        this.defaultColumns.push(info.column.returnableID);
       }
     });
     return selectors;
@@ -156,8 +185,8 @@ export class AuditsComponent implements OnInit {
     var i;
 
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
-      this.tableObject = res;
-      // console.log(res);
+      this.USE_FAKE_DATA ? this.tableObject = tableObject : this.tableObject = res;
+
       // construct the column header arrays
       for (i = 0; i < this.tableObject.columnIndex.length; i++) {
         // globals
@@ -297,7 +326,7 @@ export class AuditsComponent implements OnInit {
   }
 
   applyFilters() {
-    console.log(this.appliedFilterSelections);
+    // console.log(this.appliedFilterSelections);
 
     /* get api response */
     if (!this.selectedFeature) {
