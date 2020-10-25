@@ -36,7 +36,7 @@ export class ViewAuditComponent implements OnInit {
   openRootFeatures(): void {
     const dialogRef = this.dialog.open(RootFeaturesComponent, {
       width: '801px',
-      height: '500px',
+      maxHeight: '500px',
       data: this.audits
     })
   }
@@ -45,7 +45,7 @@ export class ViewAuditComponent implements OnInit {
     const dialogRef = this.dialog.open(GlobalPresetsComponent, {
       panelClass: 'audit-dialog-no-padding',
       width: '801px',
-      height: '500px',
+      maxHeight: '500px',
       data: this.audits
     })
   }

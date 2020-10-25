@@ -187,6 +187,12 @@ html, body {
   color: rgb(228, 228, 228) !important;
 }
 
+.mat-expansion-panel {
+  border-radius: 0 !important;
+}
+
+
+
 
 /* the bar at the bottom of a tab on the nav bar */
 .mat-ink-bar {
