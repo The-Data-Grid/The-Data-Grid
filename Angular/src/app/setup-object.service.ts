@@ -5,17 +5,18 @@ import { Injectable } from '@angular/core';
 })
 export class SetupObjectService {
 
-  IDX_OF_ROOT_FEATURES_ARR = 0;
+  IDX_OF_FEATURES_ARR = 0;
   IDX_OF_GLOBAL_ITEM_IDX = 1;
-  IDX_OF_ID_COLUMN_IDXS = 0
+  IDX_OF_ID_COL_IDXS = 0;
+  IDX_OF_OBSERVATION_COL_IDXS = 0;
+  IDX_OF_ATTRIBUTE_COL_IDXS = 1;
+
   constructor() { }
 
   getRootFeatures(setupObject) {
     let rootFeatures = []
-    let j = 0;
-    while (j < setupObject.subfeatureStartIndex) {
-      rootFeatures.push(setupObject.features[setupObject.children[this.IDX_OF_ROOT_FEATURES_ARR][j]]);
-      j++;
+    for (let j = 0; j < setupObject.subfeatureStartIndex; j++) {
+      rootFeatures.push(setupObject.features[setupObject.children[this.IDX_OF_FEATURES_ARR][j]]);
     }
     return rootFeatures;
   }
@@ -24,15 +25,43 @@ export class SetupObjectService {
     let globalItemIndex = setupObject.children[this.IDX_OF_GLOBAL_ITEM_IDX];
     let globalColumns = [];
     // look at global IDColumns 
-    setupObject.items[globalItemIndex].children[this.IDX_OF_ID_COLUMN_IDXS].forEach((IDColumnIndex, i) => {
+    setupObject.items[globalItemIndex].children[this.IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
       console.log(setupObject);
       globalColumns.push({
         column: setupObject.columns[IDColumnIndex],
-        returnableID: this.getReturnableID([this.IDX_OF_GLOBAL_ITEM_IDX, this.IDX_OF_ID_COLUMN_IDXS, i], setupObject)
+        returnableID: this.getReturnableID([this.IDX_OF_GLOBAL_ITEM_IDX, this.IDX_OF_ID_COL_IDXS, i], setupObject)
       });
     });
     return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumns);
   }
+
+  getFeatureSelectors(setupObject, appliedFilterSelections, defaultColumns) {
+    let allFeatureSelectors = [];
+    // for each feature
+    setupObject.children[this.IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
+      let featureColumns = [];
+      // find feature's observation columns
+      setupObject.features[featureIndex].children[this.IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
+        featureColumns.push({
+          column: setupObject.columns[observationColumnIndex],
+          returnableID: this.getReturnableID([this.IDX_OF_FEATURES_ARR, k, this.IDX_OF_OBSERVATION_COL_IDXS, i], setupObject)
+        });
+      });
+      // find feature's attribute columns
+      setupObject.features[featureIndex].children[this.IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
+        featureColumns.push({
+          column: setupObject.columns[attributeColumnIndex],
+          returnableID: this.getReturnableID([this.IDX_OF_FEATURES_ARR, k, this.IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject)
+        });
+      });
+      allFeatureSelectors[setupObject.features[featureIndex].frontendName] = this.parseColumns(featureColumns,
+        appliedFilterSelections,
+        defaultColumns);
+    });
+    return allFeatureSelectors;
+  }
+
+
 
   private getReturnableID(tree: any[], setupObject): string {
     let treeID = tree.join('>');

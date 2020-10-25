@@ -2,8 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
 import { SetupObjectService } from '../setup-object.service';
 import { DatePipe } from '@angular/common';
-import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { setupObject, tableObject } from '../responses'
+import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../dropdown-settings'
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+
 @Component({
   selector: 'app-audits',
   templateUrl: './audits.component.html',
@@ -32,33 +34,11 @@ export class AuditsComponent implements OnInit {
   selectedFeature;
   appliedFilterSelections = {};
   selectorsLoaded: boolean = false;
-  // the following are for multiselect dropdowns
-  dropdownList = [
-    { item_id: 1, item_text: 'Mumbai' },
-    { item_id: 2, item_text: 'Bangaluru' },
-    { item_id: 3, item_text: 'Pune' },
-    { item_id: 4, item_text: 'Navsari' },
-    { item_id: 5, item_text: 'New Delhi' }
-  ];
-  searchableDropdownSettings: IDropdownSettings = {
-    singleSelection: true,
-    idField: 'item_id',
-    textField: 'item_text',
-    closeDropDownOnSelection: true,
-    allowSearchFilter: true
-  };
-  checklistDropdownSettings: IDropdownSettings = {
-    enableCheckAll: true,
-    idField: 'item_id',
-    textField: 'item_text',
-    allowSearchFilter: true
-  };
-  searchableChecklistDropdownSettings: IDropdownSettings = {
-    enableCheckAll: true,
-    idField: 'item_id',
-    textField: 'item_text',
-    allowSearchFilter: true
-  };
+  // the following are for multiselect dropdowns:
+  dropdownList = FakeData;
+  searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
+  checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
+  searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
 
   featureSelectors = {};
   globalSelectors = {};
@@ -73,7 +53,7 @@ export class AuditsComponent implements OnInit {
     this.apiService.getSetupTableObject(null).subscribe((res) => {
       this.USE_FAKE_DATA ? this.setupObject = setupObject : this.setupObject = res;
 
-      // parse global features
+      // parse global columns
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(
         this.setupObject,
         this.appliedFilterSelections,
@@ -81,28 +61,11 @@ export class AuditsComponent implements OnInit {
       // get root features
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
 
-
-      let featureColumns = [];
-      let j = 0;
-      // for each feature
-      this.setupObject.children[0].forEach((featureIndex, k) => {
-        featureColumns = [];
-        // find feature's observation columns
-        this.setupObject.features[featureIndex].children[0].forEach((observationColumnIndex, i) => {
-          featureColumns.push({
-            column: this.setupObject.columns[observationColumnIndex],
-            returnableID: this.getReturnableID([0, k, 0, i])
-          });
-        });
-        // find feature's attribute columns
-        this.setupObject.features[featureIndex].children[1].forEach((attributeColumnIndex, i) => {
-          featureColumns.push({
-            column: this.setupObject.columns[attributeColumnIndex],
-            returnableID: this.getReturnableID([0, k, 1, i])
-          });
-        });
-        this.featureSelectors[this.setupObject.features[featureIndex].frontendName] = this.parseColumns(featureColumns);
-      });
+      // parse feature columns
+      this.featureSelectors = this.setupObjectService.getFeatureSelectors(
+        this.setupObject,
+        this.appliedFilterSelections,
+        this.defaultColumns);
 
       // get datatypes array
       this.datatypes = this.setupObject.datatypes;
@@ -116,66 +79,6 @@ export class AuditsComponent implements OnInit {
       this.applyFilters();
       this.selectorsLoaded = true
     });
-  }
-
-  getReturnableID(tree: any[]): string {
-    let treeID = tree.join('>');
-    return setupObject.treeIDToReturnableID[treeID];
-  }
-
-  parseColumns(infos): any {
-    let selectors = {
-      numericChoice: [],
-      numericEqual: [],
-      calendarRange: [],
-      calendarEqual: [],
-      dropdown: [],
-      searchableDropdown: [],
-      checklistDropdown: [],
-      searchableChecklistDropdown: [],
-      text: [],
-      bool: []
-    };
-
-    infos.forEach(info => {
-      if (info.column.filterSelector) {
-        //by default, returnableID to user's input
-        //range and multiselect selectors have different format for recording 
-        this.appliedFilterSelections[info.returnableID] = null;
-
-        switch (info.column.filterSelector.selectorKey) {
-          case "dropdown": { selectors.dropdown.push(info); break; }
-          case "numericChoice": { selectors.numericChoice.push(info); break; }
-          case "numericEqual": {
-            selectors.numericEqual.push(info);
-            this.appliedFilterSelections[info.returnableID] = { relation: null, input: null }; break;
-          }
-          case "calendarRange": {
-            selectors.calendarRange.push(info);
-            this.appliedFilterSelections[info.returnableID] = { start: null, end: null }; break;
-          }
-          case "calendarEqual": { selectors.calendarEqual.push(info); break; }
-          case "searchableDropdown": {
-            selectors.searchableDropdown.push(info);
-            this.appliedFilterSelections[info.returnableID] = []; break;
-          }
-          case "checklistDropdown": {
-            selectors.checklistDropdown.push(info);
-            this.appliedFilterSelections[info.returnableID] = []; break;
-          }
-          case "searchableChecklistDropdown": {
-            selectors.searchableChecklistDropdown.push(info);
-            this.appliedFilterSelections[info.returnableID] = []; break;
-          }
-          case "text": { selectors.text.push(info); break; }
-          case "bool": { selectors.bool.push(info); break; }
-        }
-      }
-      if (info.column.default) {
-        this.defaultColumns.push(info.column.returnableID);
-      }
-    });
-    return selectors;
   }
 
   getTableObject() {
