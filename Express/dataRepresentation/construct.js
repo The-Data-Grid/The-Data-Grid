@@ -43,7 +43,7 @@ const insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableIt
 const add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn';
 
 const insert_metadata_column = 'CALL \
-"insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(sqlType), $(referenceType))';
+"insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(accuracy), $(sqlType), $(referenceType))';
 
 const insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))';
 
@@ -621,6 +621,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                     inputSelectorName: column.inputSelectorName,
                     frontendType: column.frontendType,
                     information: column.information,
+                    accuracy: column.accuracy,
                     sqlType: column.sqlType,
                     referenceType: column.referenceType
                 }));
@@ -689,6 +690,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                 inputSelectorName: column.inputSelectorName,
                 frontendType: column.frontendType,
                 information: column.information,
+                accuracy: column.accuracy,
                 sqlType: column.sqlType,
                 referenceType: column.referenceType
             }));

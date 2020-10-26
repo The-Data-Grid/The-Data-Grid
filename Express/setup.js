@@ -144,35 +144,57 @@ let rawQuery = client.querySync('SELECT f.table_name as f__table_name, f.num_fea
 
                                  */
 
-let rawQuery = client.querySync('SELECT \
-                                 f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
-                                 f.frontend_name as f__frontend_name, \
-                                 \
-                                 rf.table_name as rf__table_name, \
-                                 \
-                                 c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
-                                 c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
-                                 c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, \
-                                 \
-                                 fs.selector_name as fs__selector_name, \
-                                 ins.selector_name as ins__selector_name, \
-                                 sql.type_name as sql__type_name, \
-                                 rt.type_name as rt__type_name, \
-                                 ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
-                                 \
-                                 r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, r.is_real_geo as r__is_real_geo, \
-                                 \
-                                 i.table_name as i__table_name \
-                                 FROM metadata_column as c \
-                                 LEFT JOIN metadata_returnable AS r ON c.column_id = r.column_id \
-                                 LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id \
-                                 LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id \
-                                 LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
-                                 LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
-                                 LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
-                                 LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
-                                 LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
-                                 LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
+let returnableQuery = client.querySync('SELECT \
+                                        \
+                                        f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
+                                        f.frontend_name as f__frontend_name, \
+                                        \
+                                        rf.table_name as rf__table_name, \
+                                        \
+                                        c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
+                                        c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
+                                        c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, \
+                                        \
+                                        fs.selector_name as fs__selector_name, \
+                                        ins.selector_name as ins__selector_name, \
+                                        sql.type_name as sql__type_name, \
+                                        rt.type_name as rt__type_name, \
+                                        ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
+                                        \
+                                        r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, r.is_real_geo as r__is_real_geo, \
+                                        \
+                                        i.table_name as i__table_name \
+                                        FROM metadata_column as c \
+                                        LEFT JOIN metadata_returnable AS r ON c.column_id = r.column_id \
+                                        LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id \
+                                        LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id \
+                                        LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
+                                        LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
+                                        LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
+                                        LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
+                                        LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
+                                        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
+
+let columnQuery = client.querySync('SELECT \
+                                    \
+                                    c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
+                                    c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
+                                    c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, \
+                                    \
+                                    fs.selector_name as fs__selector_name, \
+                                    ins.selector_name as ins__selector_name, \
+                                    sql.type_name as sql__type_name, \
+                                    rt.type_name as rt__type_name, \
+                                    ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
+                                    \
+                                    i.table_name as i__table_name \
+                                    FROM metadata_column as c \
+                                    LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
+                                    LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
+                                    LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
+                                    LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
+                                    LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
+                                    LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
 
 let frontendTypes = client.querySync('SELECT type_name FROM metadata_frontend_type');
 
@@ -182,7 +204,24 @@ let allFeatures = client.querySync('SELECT f.table_name as f__table_name, f.num_
                                     LEFT JOIN metadata_feature as ff ON f.parent_id = ff.feature_id');
 
 
-// ...
+
+
+// CALLING SETUP FUNCTION AND EXPORTING
+// ============================================================
+const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
+
+console.log(idColumnTableLookup)
+//console.log(returnableIDLookup)
+    
+module.exports = {
+    returnableIDLookup: returnableIDLookup,
+    idColumnTableLookup: idColumnTableLookup,
+    featureParents: featureParents,
+    sendSetup: sendSetup
+}
+
+
+
 
 // RETURNABLE ID CLASS
 // ============================================================
@@ -231,25 +270,6 @@ class ReturnableID {
 }
 
 
-// ...
-
-
-// CALLING SETUP FUNCTION AND EXPORTING
-// ============================================================
-const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
-
-console.log(idColumnTableLookup)
-//console.log(returnableIDLookup)
-    
-module.exports = {
-    returnableIDLookup: returnableIDLookup,
-    idColumnTableLookup: idColumnTableLookup,
-    featureParents: featureParents,
-    sendSetup: sendSetup
-}
-
-
-// ...
 
 
 // HOISTED FUNCTIONS //
@@ -266,16 +286,54 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     frontendTypes = frontendTypes.map((el) => el.type_name)
 
     // Order so features come before subfeatures
-    allFeatures = [...allFeatures.filter((feature) => feature['ff__table_name'] === null), ...allFeatures.filter((feature) => feature['ff__table_name'] !== null)]
+    let allFeaturesPreLength = allFeatures.length;
+    allFeatures = [...allFeatures.filter((feature) => feature['ff__table_name'] === null), ...allFeatures.filter((feature) => feature['ff__table_name'] !== null)];
+    let allFeaturesPostLength = allFeatures.length;
+    // sanity check
+    if(allFeaturesPostLength !== allFeaturesPreLength) {
+        throw Error('Features are not partitioned correctly!')
+    };
          
     // Construct setup object //
     // ============================================================
+    // DOCUMENTATION SCATCH PAD
+    /*
+    let setupObject2 = {
+        children: [[Number,...],Number], 
+        subfeatureStartIndex: Number,
+        items: [itemNodeObject,...],
+        features: [featureNodeObject,...],
+        columns: [columnObject,...],
+        returnableIDToTreeID: returnableIDToTreeIDObject,
+        treeIDToReturnableID: treeIDToReturnableIDObject,
+        lastModified: Date
+    };     
+
+    */
+    /*
+    columnObject
+    {
+        “default”: Bool,
+        “frontendName”: String,
+        “filterSelector”: selectorObject|NULL,
+        “inputSelector”: selectorObject|NULL,
+        “datatype”: datatypeObject,
+        “nullable”: Bool,
+        “information”: String,
+        //“isGroundTruth”: true|false
+        “accuracy”: Number
+    }
+    */
+
+    let datatypeArray = ['hyperlink', 'string', 'bool'];
 
     // Construct columnObjects
     // ==================================================
     let columnObjects = rawQuery.map((row) => {
 
+        // filterSelector
         let fSelector = (row['fs__selector_name'] === null ? null : {selectorKey: row['fs__selector_name'], selectorValue: 'SQL HERE!'})
+
         
         let iSelector = (row['ins__selector_name'] === null ? null : {selectorKey: row['ins__selector_name'], selectorValue: 'SQL HERE!'})
 

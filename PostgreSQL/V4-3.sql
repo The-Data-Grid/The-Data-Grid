@@ -478,6 +478,7 @@ CREATE TABLE metadata_column (
     input_selector INTEGER, --fk **
     frontend_type INTEGER NOT NULL, --fk **
     information TEXT,
+    accuracy TEXT,
 
     /*
     For backend
@@ -810,6 +811,7 @@ CREATE PROCEDURE insert_metadata_column(column_name TEXT,
                                        input_selector_name TEXT,
                                        frontend_type_name TEXT,
                                        information TEXT,
+                                       accuracy TEXT,
                                        sql_type_name TEXT,
                                        reference_type_name TEXT)
     AS
@@ -829,6 +831,7 @@ CREATE PROCEDURE insert_metadata_column(column_name TEXT,
                 input_selector,
                 frontend_type,
                 information,
+                accuracy,
                 sql_type,
                 reference_type)
                 VALUES (
@@ -845,6 +848,7 @@ CREATE PROCEDURE insert_metadata_column(column_name TEXT,
                     (SELECT selector_id FROM metadata_selector WHERE selector_name = input_selector_name),
                     (SELECT type_id FROM metadata_frontend_type WHERE type_name = frontend_type_name),
                     information,
+                    accuracy,
                     (SELECT type_id FROM metadata_sql_type WHERE type_name = sql_type_name),
                     (SELECT type_id FROM metadata_reference_type WHERE type_name = reference_type_name)
                 );
@@ -1254,42 +1258,42 @@ CALL "insert_m2m_metadata_item"('item_audit', 'item_user', FALSE, FALSE);
 
 -- Inserting Columns into metadata
 -- Item columns
-CALL "insert_metadata_column"('data_time_created', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Time Audit Created', 'calendarRange', NULL, 'date', NULL, 'TIMESTAMPTZ', 'item-non-id');
-CALL "insert_metadata_column"('data_population', 'item_city', NULL, NULL, 'item_city', TRUE, TRUE, 'City Population', 'numericEqual', NULL, 'string', NULL, 'NUMERIC', 'item-non-id');
-CALL "insert_metadata_column"('data_fips_code', 'item_county', NULL, NULL, 'item_county', TRUE, TRUE, 'FIPS County Code', 'numericEqual', NULL, 'string', 'Five digit number which uniquely identify counties and county equivalents', 'NUMERIC', 'item-non-id');
-CALL "insert_metadata_column"('data_time_uploaded', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Time SOP Uploaded', 'calendarRange', NULL, 'date', NULL, 'TIMESTAMPTZ', 'item-non-id');
-CALL "insert_metadata_column"('data_template_json', 'item_template', NULL, NULL, 'item_template', FALSE, FALSE, 'Audit Template JSON', 'searchableDropdown', NULL, 'string', 'JSON representation of an audit input template', 'JSON', 'item-non-id');
-CALL "insert_metadata_column"('data_time_submitted', 'item_submission', NULL, NULL, 'item_submission', TRUE, FALSE, 'Time Audit Submission Submitted', 'calendarRange', NULL, 'date', NULL, 'TIMESTAMPTZ', 'item-non-id');
-CALL "insert_metadata_column"('data_description', 'item_catalog', NULL, NULL, 'item_catalog', FALSE, TRUE, 'Audit Description', NULL, 'text', 'string', 'A description of the audit which will appear in the catalog', 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_building_name', 'item_building', NULL, NULL, 'item_building', TRUE, FALSE, 'Building Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_entity_name', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Name', 'searchableDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_entity_address', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Address', 'searchableDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_city_name', 'item_city', NULL, NULL, 'item_city', TRUE, FALSE, 'City Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_submission_name', 'item_submission', NULL, NULL, 'item_submission', TRUE, TRUE, 'Audit Submission Name', 'searchableChecklistDropdown', 'text', 'string', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_county_name', 'item_county', NULL, NULL, 'item_county', TRUE, FALSE, 'County Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, TRUE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_state_name', 'item_state', NULL, NULL, 'item_state', TRUE, FALSE, 'State Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_country_name', 'item_country', NULL, NULL, 'item_country', TRUE, FALSE, 'Country Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_organization_name_text', 'item_organization', NULL, NULL, 'item_organization', TRUE, FALSE, 'Organization Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_organization_name_link', 'item_organization', NULL, NULL, 'item_organization', TRUE, TRUE, 'Organization Website', NULL, NULL, 'hyperlink', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_template_name', 'item_template', NULL, NULL, 'item_template', TRUE, TRUE, 'Audit Template Name', 'text', 'text', 'string', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_title', 'item_catalog', NULL, NULL, 'item_catalog', TRUE, FALSE, 'Audit Title', 'searchableChecklistDropdown', 'text', 'string', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_full_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_time_created', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Time Audit Created', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
+CALL "insert_metadata_column"('data_population', 'item_city', NULL, NULL, 'item_city', TRUE, TRUE, 'City Population', 'numericEqual', NULL, 'string', NULL, NULL, 'NUMERIC', 'item-non-id');
+CALL "insert_metadata_column"('data_fips_code', 'item_county', NULL, NULL, 'item_county', TRUE, TRUE, 'FIPS County Code', 'numericEqual', NULL, 'string', 'Five digit number which uniquely identify counties and county equivalents', NULL, 'NUMERIC', 'item-non-id');
+CALL "insert_metadata_column"('data_time_uploaded', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Time SOP Uploaded', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
+CALL "insert_metadata_column"('data_template_json', 'item_template', NULL, NULL, 'item_template', FALSE, FALSE, 'Audit Template JSON', 'searchableDropdown', NULL, 'string', 'JSON representation of an audit input template', NULL, 'JSON', 'item-non-id');
+CALL "insert_metadata_column"('data_time_submitted', 'item_submission', NULL, NULL, 'item_submission', TRUE, FALSE, 'Time Audit Submission Submitted', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
+CALL "insert_metadata_column"('data_description', 'item_catalog', NULL, NULL, 'item_catalog', FALSE, TRUE, 'Audit Description', NULL, 'text', 'string', 'A description of the audit which will appear in the catalog', NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_building_name', 'item_building', NULL, NULL, 'item_building', TRUE, FALSE, 'Building Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_entity_name', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Name', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_entity_address', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Address', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_city_name', 'item_city', NULL, NULL, 'item_city', TRUE, FALSE, 'City Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_submission_name', 'item_submission', NULL, NULL, 'item_submission', TRUE, TRUE, 'Audit Submission Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_county_name', 'item_county', NULL, NULL, 'item_county', TRUE, FALSE, 'County Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, TRUE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_state_name', 'item_state', NULL, NULL, 'item_state', TRUE, FALSE, 'State Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_country_name', 'item_country', NULL, NULL, 'item_country', TRUE, FALSE, 'Country Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_organization_name_text', 'item_organization', NULL, NULL, 'item_organization', TRUE, FALSE, 'Organization Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_organization_name_link', 'item_organization', NULL, NULL, 'item_organization', TRUE, TRUE, 'Organization Website', NULL, NULL, 'hyperlink', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_template_name', 'item_template', NULL, NULL, 'item_template', TRUE, TRUE, 'Audit Template Name', 'text', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_title', 'item_catalog', NULL, NULL, 'item_catalog', TRUE, FALSE, 'Audit Title', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_full_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 
 -- Locations
 -- Building
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_building', FALSE, FALSE, 'Building Geographic Region', NULL, NULL, 'location', NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_building', FALSE, FALSE, 'Building Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
 -- City
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_city', FALSE, FALSE, 'City Geographic Region', NULL, NULL, 'location', NULL, 'Polygon', 'item-location');
-CALL "insert_metadata_column"('data_point', 'location_point', NULL, NULL, 'item_city', FALSE, FALSE, 'City Geographic Point', NULL, NULL, 'location', NULL, 'Point', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_city', FALSE, FALSE, 'City Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_point', 'location_point', NULL, NULL, 'item_city', FALSE, FALSE, 'City Geographic Point', NULL, NULL, 'location', NULL, NULL, 'Point', 'item-location');
 -- County
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_county', FALSE, FALSE, 'County Geographic Region', NULL, NULL, 'location', NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_county', FALSE, FALSE, 'County Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
 -- State
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_state', FALSE, FALSE, 'State Geographic Region', NULL, NULL, 'location', NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_state', FALSE, FALSE, 'State Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
 -- Country
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_country', FALSE, FALSE, 'Country Geographic Region', NULL, NULL, 'location', NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_country', FALSE, FALSE, 'Country Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
 
 
 

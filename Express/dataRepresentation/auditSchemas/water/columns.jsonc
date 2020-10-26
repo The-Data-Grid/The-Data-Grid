@@ -17,6 +17,7 @@
 
         "frontendName": "Gallons Per Flush",
         "information": null,
+        "accuracy": null,
         "isNullable": false,
         "isDefault": true,
         "filterSelectorName": "numericChoice",
@@ -35,6 +36,7 @@
 
         "frontendName": "Stall Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -53,6 +55,7 @@
 
         "frontendName": "Basin Brand",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableChecklistDropdown",
@@ -71,6 +74,7 @@
 
         "frontendName": "Basin Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -89,6 +93,7 @@
 
         "frontendName": "Sensor Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -107,6 +112,7 @@
 
         "frontendName": "Flushometer Brand",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableChecklistDropdown",
@@ -125,6 +131,7 @@
 
         "frontendName": "Flushometer Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -146,6 +153,7 @@
 
         "frontendName": "Room Number",
         "information": null,
+        "accuracy": null,
         "isNullable": false,
         "isDefault": true,
         "filterSelectorName": "searchableChecklistDropdown",
@@ -164,6 +172,7 @@
 
         "frontendName": "Exhaust Vent Existence",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "dropdown",
@@ -182,6 +191,7 @@
 
         "frontendName": "Access Panel Existence",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "dropdown",
@@ -203,6 +213,7 @@
 
         "frontendName": "Gallons Per Flush",
         "information": null,
+        "accuracy": null,
         "isNullable": false,
         "isDefault": true,
         "filterSelectorName": "numericChoice",
@@ -221,6 +232,7 @@
 
         "frontendName": "Basin Brand",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableChecklistDropdown",
@@ -239,6 +251,7 @@
 
         "frontendName": "Basin Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -257,6 +270,7 @@
 
         "frontendName": "Sensor Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -275,6 +289,7 @@
 
         "frontendName": "Divider Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -293,6 +308,7 @@
 
         "frontendName": "Flushometer Brand",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableChecklistDropdown",
@@ -311,6 +327,7 @@
 
         "frontendName": "Flushometer Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -332,6 +349,7 @@
 
         "frontendName": "Gallons Per Minute",
         "information": null,
+        "accuracy": null,
         "isNullable": false,
         "isDefault": true,
         "filterSelectorName": "numericChoice",
@@ -350,6 +368,7 @@
 
         "frontendName": "Basin Brand",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableChecklistDropdown",
@@ -368,6 +387,7 @@
 
         "frontendName": "Basin Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -386,6 +406,7 @@
 
         "frontendName": "Faucet Brand",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableChecklistDropdown",
@@ -404,6 +425,7 @@
 
         "frontendName": "Faucet Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -422,6 +444,7 @@
 
         "frontendName": "Sensor Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
@@ -443,6 +466,7 @@
 
         "frontendName": "Condition",
         "information": null,
+        "accuracy": null,
         "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableDropdown",
