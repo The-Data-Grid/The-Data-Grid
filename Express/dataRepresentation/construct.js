@@ -460,7 +460,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
             {
                 featureName: feature,
                 itemName: featureOutput.featureItemLookup[feature],
-                path: []
+                path: [feature, featureOutput.featureItemLookup[feature]]
             }
         ];
 
@@ -1063,6 +1063,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
     }
 
     // construct joinObject from path
+    // if path exists
     if(itemObject.path.length > 0) {
         // sanity check
         if(itemObject.path.length % 2 !== 0) {
@@ -1072,10 +1073,16 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         joinObject.tables = Array.from(itemObject.path)
         // make columns
         for(let n = 0; n < itemObject.path.length; n += 2) {
-            // push foreign key column
-            joinObject.columns.push(`${itemObject.path[n+1]}_id`);
-            // push primary key column
-            joinObject.columns.push('item_id');
+            if(n == 0 && featureItemLookup[itemObject.featureName] === itemObject.itemName) { // if observable item and first join
+                // push the item_id column (in both the observation_... and item_... table)
+                joinObject.columns.push('item_id');
+                joinObject.columns.push('item_id');
+            } else {
+                // push foreign key column
+                joinObject.columns.push(`${itemObject.path[n+1]}_id`);
+                // push primary key column
+                joinObject.columns.push('item_id');
+            }
         }
     }
 
@@ -1089,12 +1096,23 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         // PK
         let columnID = col.columnid;
         let frontendName = col.frontendname;
+        let insertableJoinObject;
         // this is lowkey kind of dumb. The attributeType is different between cols so we can't
         // mutate the base joinObject. I'm sure there's a better way.
-        let insertableJoinObject = {
-            columns: joinObject.columns,
-            tables: joinObject.tables,
-            attributeType: null
+
+        // if item-... and not obs-... reference type
+        if(['item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'].includes(col.referencetypename)) {
+            insertableJoinObject = {
+                columns: joinObject.columns,
+                tables: joinObject.tables,
+                attributeType: null
+            };
+        } else { // empty columns and tables for obs-... reference types
+            insertableJoinObject = {
+                columns: [],
+                tables: [],
+                attributeType: null
+            }
         };
 
         // if not submission
@@ -1116,8 +1134,6 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 featureID = await db.one(pgp.as.format(makeItemReturnablesSubobservationQuery, {
                     subobservationTableName: col.subobservationtablename
                 }));
-
-                
 
                 featureID = featureID.featureid;
             } else {
