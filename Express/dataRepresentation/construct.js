@@ -1,27 +1,21 @@
-// CALLING //
-// ============================================================
-
-/*
-constraints: no item can reference another item more than once
-            lists are always nullable
-            item cannot reference same location type more than once
-            attributes are always non nullable
-            lists and factors are specific to one item or observation table
-*/
-
 // ============================================================
 // This script constructs feature/subfeature tables
 // and simultaneously inserts relevant metadata.
 //
-// TODO: referencing items that were specified
-//       everything inside a transaction?
+// TODO: everything inside a transaction?
+//
+//    constraints: - no item can reference another item more than once
+//                 - lists are always nullable
+//                 - item cannot reference the same location type more than once
+//                 - attributes are always non nullable
+//                 - lists and factors are specific to one item or observation table
 //
 // ============================================================
 const pgp = require("pg-promise")(); // Postgres interaction
 const fs = require('fs'); // Import Node.js File System
-const stripJsonComments = require('strip-json-comments');
-const chalk = require('chalk');
-var util = require('util');
+const stripJsonComments = require('strip-json-comments'); // .jsonc handling
+const chalk = require('chalk'); // pretty console.log
+var util = require('util'); // util.inspect()
 
 
 const {} = require('../statement.js');
@@ -44,36 +38,36 @@ const connection = {
 
 // SQL Statements
 
-var insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable))';
+const insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable))';
 
-var add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn';
+const add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn';
 
-var insert_metadata_column = 'CALL \
+const insert_metadata_column = 'CALL \
 "insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(sqlType), $(referenceType))';
 
-var insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))';
+const insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))';
 
-var insert_metadata_subfeature = 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))';
+const insert_metadata_subfeature = 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))';
 
-var insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(creationPrivilege))';
+const insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(creationPrivilege))';
 
-var create_observation_table = 'CALL "create_observation_table"($(tableName))';
+const create_observation_table = 'CALL "create_observation_table"($(tableName))';
 
-var create_subobservation_table = 'CALL "create_subobservation_table"($(tableName), $(parentTableName))';
+const create_subobservation_table = 'CALL "create_subobservation_table"($(tableName), $(parentTableName))';
 
-var create_observational_item_table = 'SELECT "create_observational_item_table"($(featureName))';
+const create_observational_item_table = 'SELECT "create_observational_item_table"($(featureName))';
 
-var add_unique_constraint = 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))';
+const add_unique_constraint = 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))';
 
-var add_data_col = 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))';
+const add_data_col = 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))';
 
-var add_list = 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))';
+const add_list = 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))';
 
-var add_location = 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))';
+const add_location = 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))';
 
-var add_factor = 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))';
+const add_factor = 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))';
 
-var add_attribute = 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))';
+const add_attribute = 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))';
 
 const getReturnables = 'SELECT r.returnable_id AS id, f.table_name AS feature, r.frontend_name as frontendName, r.is_used AS isUsed, r.join_object AS joinObject, r.is_real_geo AS isRealGeo \
                         FROM metadata_returnable AS r LEFT JOIN metadata_feature AS f on r.feature_id = f.feature_id ORDER BY id ASC';
@@ -85,8 +79,11 @@ const getItemParents = 'SELECT child.table_name AS child, parent.table_name AS p
                           INNER JOIN metadata_item AS parent ON m2m.referenced_item_id = parent.item_id';
 
 const makeItemReturnablesColumnQuery = 'SELECT c.column_id AS columnID, c.column_name AS columnName, c.table_name AS tableName, c.subobservation_table_name AS subobservationTableName, c.frontend_name AS frontendName, r.type_name AS ReferenceTypeName FROM metadata_column AS c INNER JOIN metadata_reference_type AS r ON c.reference_type = r.type_id WHERE c.metadata_item_id = (SELECT i.item_id FROM metadata_item AS i WHERE i.table_name = $(itemName))'
+
 const makeItemReturnablesFeatureQuery = 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(featureName)'
+
 const makeItemReturnablesSubobservationQuery = 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(subobservationTableName)'
+
 const insert_metadata_returnable = 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject:json), $(isRealGeo)) AS returnableid'
     
 // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
