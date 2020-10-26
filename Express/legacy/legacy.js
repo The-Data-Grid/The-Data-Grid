@@ -241,6 +241,8 @@ newWaterAudit = JSON.parse(
     
     /*
     //!! OLD !!//
+
+    
     
     ///////////////////////////
     // custom creation tools //
@@ -484,6 +486,345 @@ async function asyncConstructDataCols(ms) {
     })
 }
 */
+
+
+// ============================================================
+// constructFeatures (features)
+// ============================================================
+// Takes a list of metadataFeatureInput objects
+// and returns an object of the form
+// 	{createList:	 [list of SQL create statements],
+// 	 refList:			 [list of SQL ref statements],
+//   metadataList: [list of SQL metadata insert statements]}
+// ============================================================
+
+function constructFeatures(features) {
+    
+		
+	let metadataList = [];
+    let createList = [];
+    let refList = [];
+
+    /* TODO: add validation so subfeature with nonexistent parent cannot be created */
+
+    //For every feature/subfeature
+    features.forEach((element, index) => {
+        
+        // if root feature
+        if (element.parentTableName === null) {
+            
+						// add metadata_feature entry
+						metadataList.push(pgp.as.format(newMetadataFeature, {
+                                tableName: element.tableName,
+								numFeatureRange: (element.numFeatureRange === null ?
+																	null : element.numFeatureRange),
+								information: element.information,
+								frontendName: element.frontendName
+            }));
+
+
+            // add create feature table to stack
+            createList.push(pgp.as.format(newCreateFeature, {
+                feature: element.tableName
+            }));
+
+            // add feature to submission reference to stack
+             refList.push(pgp.as.format(reference, {
+                pkCol: 'submission_id',
+                pkTable: 'tdg_submission',
+                fkCol: 'submission_id',
+                fkTable: element.tableName
+            }));
+            
+            // add feature to observation count reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol: 'observation_count_id' ,
+                pkTable: 'tdg_observation_count',
+                fkCol: 'observation_count_id',
+                fkTable: element.tableName
+            }));
+
+            // If room or building we need to do something else because these items already exist
+            if(['item_room', 'item_building'].includes(element.tableName.replace('feature_', 'item_'))) {
+
+                // add feature to feature item reference to stack
+                refList.push(pgp.as.format(reference, {
+                    pkCol: 'item_id',
+                    pkTable: element.tableName.replace('feature_', 'item_'),
+                    fkCol: 'featureitem_id',
+                    fkTable: element.tableName
+                }));
+
+            } else {
+
+                // add create feature item to stack
+                createList.push(pgp.as.format(newCreateFeatureItem, {
+                    feature: element.tableName.replace('feature_', 'item_'),
+                    location: element.location + '_id'  
+                }));
+
+                // add feature to feature item reference to stack
+                refList.push(pgp.as.format(reference, {
+                    pkCol: 'item_id',
+                    pkTable: element.tableName.replace('feature_', 'item_'),
+                    fkCol: 'featureitem_id',
+                    fkTable: element.tableName
+                }));
+
+                // add feature item to location reference to stack
+                if(['item_room', 'item_building'].includes(element.location)) {
+                    refList.push(pgp.as.format(reference, {
+                        pkCol: 'item_id',
+                        pkTable: element.location,
+                        fkCol: element.location + '_id' ,
+                        fkTable: element.tableName.replace('feature_', 'item_')
+                    }));
+                } else {
+                    refList.push(pgp.as.format(reference, {
+                        pkCol: 'location_id',
+                        pkTable: element.location,
+                        fkCol: element.location + '_id' ,
+                        fkTable: element.tableName.replace('feature_', 'item_')
+                    }));
+                }
+                
+            }
+
+        } else { // then a subfeature
+						
+						// add metadata_feature entry
+						metadataList.push(pgp.as.format(newMetadataSubfeature, {
+                                tableName: element.tableName,
+								parentTableName: element.parentTableName,
+								numFeatureRange: (element.numFeatureRange === null ?
+																	null : element.numFeatureRange),
+								information: element.information,
+								frontendName: element.frontendName
+            }));
+
+            // if no feature item
+            if(element.location === null) {
+
+                // add create subfeature to stack
+                createList.push(pgp.as.format(newCreateSubfeature.withoutFeatureItem, {
+                    feature: element.tableName
+                }));
+
+            } else { // then featureitem
+                
+                // add create subfeature to stack
+                createList.push(pgp.as.format(newCreateSubfeature.withFeatureItem, {
+                    feature: element.tableName
+                }));
+
+                // add create feature item to stack
+                createList.push(pgp.as.format(newCreateFeatureItem, {
+                    feature: element.tableName.replace('subfeature_', 'item_'),
+                    location: element.location + '_id'  
+                }));
+
+                // add subfeature to feature item reference to stack
+                refList.push(pgp.as.format(reference, {
+                    pkCol : 'featureitem_id',
+                    pkTable: element.tableName,
+                    fkCol: 'item_id',
+                    fkTable: element.tableName.replace('subfeature_', 'item_')
+                }))
+
+                // add feature item to location reference to stack
+                if(['item_room', 'item_building'].includes(element.location)) {
+                    refList.push(pgp.as.format(reference, {
+                        pkCol: 'item_id',
+                        pkTable: element.location,
+                        fkCol: element.location + '_id' ,
+                        fkTable: element.tableName.replace('feature_', 'item_')
+                    }));
+                } else {
+                    refList.push(pgp.as.format(reference, {
+                        pkCol: 'location_id',
+                        pkTable: element.location,
+                        fkCol: element.location + '_id' ,
+                        fkTable: element.tableName.replace('feature_', 'item_')
+                    }));
+                }
+
+            }
+
+            // add subfeature to observation count reference to stack
+            refList.push(pgp.as.format(reference, {
+                pkCol: 'observation_count_id' ,
+                pkTable: 'tdg_observation_count',
+                fkCol: 'observation_count_id',
+                fkTable: element.tableName
+            }));
+        }
+    })
+
+    return {fCreateList: createList, fRefList: refList, fMetadataList: metadataList}
+}
+
+// ============================================================
+// addDataColumns (columns)
+// ============================================================
+// Takes a list of metadataColumnInput objects
+// and returns an object of the form
+// 	{createList:	 [list of SQL create statements],
+// 	 refList:			 [list of SQL ref statements],
+//   metadataList: [list of SQL metadata insert statements]}
+// ============================================================
+
+function addDataColumns(columns, features) {
+
+    let createList = [];
+    let refList = [];
+	let metadataList = [];
+
+    columns.forEach( column => {
+
+        // INSERTING INTO METADATA_COLUMN //
+
+        if (column.referenceDatatype != 'local-global' && column.referenceDatatype != 'special') {
+
+            // Insert metadata_column entry for all non-globals (except submission)
+            metadataList.push(pgp.as.format(newMetadataColumn, {
+                featureName: column.featureName,
+                rootFeatureName: column.rootFeatureName,
+                frontendName: column.frontendName,
+                columnName: column.columnName,
+                tableName: column.tableName,
+                referenceColumnName: column.referenceColumnName,
+                referenceTableName: column.referenceTableName,
+                information: column.information,
+                filterSelectorName: column.filterSelectorName,
+                inputSelectorName: column.inputSelectorName,
+                sqlDatatype: column.sqlDatatype,
+                referenceDatatype: column.referenceDatatype,
+                frontendDatatype: column.frontendDatatype,
+                nullable: column.nullable,
+                default: column.default,
+                global: column.global,
+                groundTruthLocation: column.groundTruthLocation
+            }))
+
+        } else {
+
+            // Insert metadata_column entry for local-global and special FOR EVERY FEATURE
+            // Note: It's done this way because these are the same for every feature, and thus
+            //       are in globalColumns.json once, but must be included in metadata_column
+            //       for every feature
+
+            for(feature of features) {
+
+                metadataList.push(pgp.as.format(newMetadataColumn, {
+                    featureName: feature.tableName,
+                    rootFeatureName: null,
+                    frontendName: column.frontendName,
+                    columnName: column.columnName,
+                    tableName: feature.tableName,
+                    referenceColumnName: column.referenceColumnName,
+                    referenceTableName: column.referenceTableName,
+                    information: column.information,
+                    filterSelectorName: column.filterSelectorName,
+                    inputSelectorName: column.inputSelectorName,
+                    sqlDatatype: column.sqlDatatype,
+                    referenceDatatype: column.referenceDatatype,
+                    frontendDatatype: column.frontendDatatype,
+                    nullable: column.nullable,
+                    default: column.default,
+                    global: column.global,
+                    groundTruthLocation: column.groundTruthLocation
+                }))
+            }
+            
+        }
+
+        // CREATING LISTS, DATA_... COLUMNS, AND REFERENCES //
+				
+        if (column.referenceDatatype == 'list') {
+
+            // Create List table
+            createList.push(pgp.as.format(newCreateList, {
+                tableName: column.tableName,
+                columnName: column.columnName,
+                sqlDatatype: column.sqlDatatype
+            }))
+
+            // Create List Many to Many
+            createList.push(pgp.as.format(newCreateListm2m, {
+                tableName: column.tableName.replace('list_', 'list_m2m_')
+            }))
+
+            // Create m2m to List reference
+            refList.push(pgp.as.format(reference, {
+                pkCol: 'list_id',
+                pkTable: column.tableName,
+                fkCol: 'list_id',
+                fkTable: column.tableName.replace('list_', 'list_m2m_')
+            }))
+
+            // Create m2m to feature reference
+            refList.push(pgp.as.format(reference, {
+                pkCol: 'observation_id',
+                pkTable: column.featureName,
+                fkCol: 'observation_id',
+                fkTable: column.tableName.replace('list_', 'list_m2m_')
+            }))
+            
+        } else if (column.referenceDatatype == 'local') {
+
+            createList.push(pgp.as.format(newAddColumn, {
+                tableName: column.tableName,
+                columnName: column.columnName,
+                sqlDatatype: column.sqlDatatype,
+                nullable: (column.nullable ? '' : 'NOT NULL')
+            }))
+
+        } else if (column.referenceDatatype == 'item' || column.referenceDatatype == 'location' ) {
+            // For now new columns cannot be created with metadata_column entries!
+
+                /* DEFINING LOCAL-GLOBAL AND SPECIAL FOR EVERY FEATURE
+                1. Adding local-global and special entries to metdata_column for every feature
+                2. Adding local-global columns to every feature
+                3. Adding the data_auditor_name column to every feature
+                4. Adding the Auditor Name trigger for every feature
+                */
+
+        } else if (column.referenceDatatype == 'local-global') { //LOCAL GLOBALS ARE SPECIFIED FOR EVERY FEATURE
+
+            for(feature of features) { // Data column is added for every feature
+                
+                // 2.
+                createList.push(pgp.as.format(newAddColumn, {
+                    tableName: feature.tableName,
+                    columnName: column.columnName,
+                    sqlDatatype: column.sqlDatatype,
+                    nullable: (column.nullable ? '' : 'NOT NULL')
+                }))
+
+            } //for every feature
+        } else if (column.referenceDatatype == 'special' && column.frontendName == 'Auditor Name') {
+            // special case for auditor name
+            for(feature of features) { // for every feature
+                // Data column is added for every feature
+                createList.push(pgp.as.format(newAddColumn, {
+                    tableName: feature.tableName,
+                    columnName: column.columnName,
+                    sqlDatatype: column.sqlDatatype,
+                    nullable: (column.nullable ? '' : 'NOT NULL')
+                }))
+
+                // Auditor Name trigger is added for every feature
+                refList.push(pgp.as.format(checkAuditorNameTrigger, {
+                    tableName: feature.tableName
+                }))
+
+            } 
+        }
+        
+    })
+    
+    return {cCreateList: createList, cRefList: refList, cMetadataList: metadataList};
+};
 
 /*
 
