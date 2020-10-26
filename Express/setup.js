@@ -15,6 +15,8 @@ const client = new Client()
 client.connectSync('host=localhost port=5432 dbname=meta connect_timeout=5')
 
 /* TO DO
+close the db connection!
+
 joinPath Generation
 
 add alias to selectSQL 
@@ -38,9 +40,21 @@ if location:
 if item-list:
     samika's code
 
+So, what do we have to do?
+joinCols and joinTabs stay the same
+
+appendSQL 
+'$(inputAlias:name) <some SQL> $(outputAlias:name)'
+standard:
+null
+
+selectSQL
+'<some SQL> $(joinAlias:name).columnName'
+standard:
+'$(joinAlias:name).columnName'
 
 
-// construct the joinObject and frontendName based on the reference type
+// construct the joinObject based on the reference type
         {
             columns: Array,
             tables: Array,
@@ -112,6 +126,7 @@ function generateJoins(column, table, item, feature) {
 
 // QUERIES //
 // ==================================================
+/*
 let rawQuery = client.querySync('SELECT f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
                                  f.frontend_name as f__frontend_name, rf.table_name as rf__table_name, c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, \
                                  c.table_name as c__table_name, c.reference_column_name as c__reference_column_name, c.reference_table_name as c__reference_table_name, \
@@ -125,6 +140,38 @@ let rawQuery = client.querySync('SELECT f.table_name as f__table_name, f.num_fea
                                  LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
                                  LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
                                  LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
+                                 LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
+
+                                 */
+
+let rawQuery = client.querySync('SELECT \
+                                 f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
+                                 f.frontend_name as f__frontend_name, \
+                                 \
+                                 rf.table_name as rf__table_name, \
+                                 \
+                                 c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
+                                 c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
+                                 c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, \
+                                 \
+                                 fs.selector_name as fs__selector_name, \
+                                 ins.selector_name as ins__selector_name, \
+                                 sql.type_name as sql__type_name, \
+                                 rt.type_name as rt__type_name, \
+                                 ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
+                                 \
+                                 r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, r.is_real_geo as r__is_real_geo, \
+                                 \
+                                 i.table_name as i__table_name \
+                                 FROM metadata_column as c \
+                                 LEFT JOIN metadata_returnable AS r ON c.column_id = r.column_id \
+                                 LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id \
+                                 LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id \
+                                 LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
+                                 LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
+                                 LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
+                                 LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
+                                 LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
                                  LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
 
 let frontendTypes = client.querySync('SELECT type_name FROM metadata_frontend_type');
@@ -205,7 +252,7 @@ module.exports = {
 // ...
 
 
-// HOISTED FUNCTIONS AND CLASSES //
+// HOISTED FUNCTIONS //
 // ============================================================
 
 function setupQuery(rawQuery, frontendTypes, allFeatures) {
@@ -374,7 +421,7 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
                                     INNER JOIN $(tableName:value) \
                                     ON $(tableName:value).list_id = $(tableName:value)_m2m.list_id', {feature: row['f__table_name'], tableName : row['c__table_name']})
         
-            // Add STRING_AGG() here? ...
+            // Add STRING_AGG() here? ... yes, Oliver!
             selectSQL = pgp.as.format('$(table:value).$(column:value)', {table:row['c__table_name'], column: row['c__column_name']})
             
 

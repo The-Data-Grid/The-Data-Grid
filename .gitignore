@@ -10,3 +10,5 @@ PostgreSQL/data/*
 
 # computed returnables
 Express/dataRepresentation/auditSchemas/*/returnables/
+
+Express/queryTester.js

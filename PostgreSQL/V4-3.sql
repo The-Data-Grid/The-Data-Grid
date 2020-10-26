@@ -555,8 +555,6 @@ CREATE TABLE metadata_returnable (
             columns: Array,
             tables: Array,
             attributeType: null | 'current' | 'observed'
-            //appendSQL: String,
-            //selectSQL: String
         }
     */
     join_object JSON,
