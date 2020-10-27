@@ -420,6 +420,11 @@ CREATE TABLE metadata_item (
     Actual table name
     */
     table_name TEXT NOT NULL,
+
+    /*
+    Name of item displayed in frontend
+    */
+    frontend_name TEXT NOT NULL,
     
     /*
     Item type: observable (feature item), potential observable, non-observable
@@ -922,18 +927,20 @@ CREATE PROCEDURE insert_metadata_subfeature(_table_name TEXT,
 
 
 -- Inserts a new observable item into metadata_item
-CREATE PROCEDURE insert_metadata_item_observable(item TEXT, creation_privilege INTEGER)
+CREATE PROCEDURE insert_metadata_item_observable(item TEXT, frontend_name TEXT, creation_privilege INTEGER)
     AS
     $$
         BEGIN
             INSERT INTO metadata_item
                 (item_id,
-                table_name, 
+                table_name,
+                frontend_name,
                 item_type, 
                 creation_privilege)
                 VALUES (
                     DEFAULT, 
                     item,
+                    frontend_name,
                     (SELECT type_id FROM metadata_item_type WHERE type_name = 'observable'),
                     creation_privilege
                 );
@@ -1215,22 +1222,22 @@ CREATE FUNCTION check_auditor_name() RETURNS TRIGGER AS $check_auditor_name$
 
 -- 1. insert every static item table into metadata_item
 INSERT INTO metadata_item
-    (item_id, table_name, item_type, creation_privilege)
+    (item_id, table_name, frontend_name, item_type, creation_privilege)
         VALUES
             --('item_room', (SELECT type_id FROM metadata_item_type WHERE type_name = 'observable'), 4), --construct.js
-            (DEFAULT, 'item_building', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 4),
-            (DEFAULT, 'item_organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_city', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_county', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_state', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_country', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_sop', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 4),
-            (DEFAULT, 'item_template', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
-            (DEFAULT, 'item_user', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 1),
-            (DEFAULT, 'item_submission', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
-            (DEFAULT, 'item_catalog', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
-            (DEFAULT, 'item_audit', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3);
+            (DEFAULT, 'item_building', 'Building', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 4),
+            (DEFAULT, 'item_organization', 'Organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
+            (DEFAULT, 'item_entity', 'Entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
+            (DEFAULT, 'item_city', 'City', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
+            (DEFAULT, 'item_county', 'County', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
+            (DEFAULT, 'item_state', 'State', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
+            (DEFAULT, 'item_country', 'Country', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
+            (DEFAULT, 'item_sop', 'Standard Operating Procedure', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 4),
+            (DEFAULT, 'item_template', 'Template', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_user', 'User', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 1),
+            (DEFAULT, 'item_submission', 'Submission', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_catalog', 'Catalog', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_audit', 'Audit', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3);
 
 
 -- Calling insertion procedure

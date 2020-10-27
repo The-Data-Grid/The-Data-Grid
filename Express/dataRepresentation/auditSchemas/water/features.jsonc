@@ -17,6 +17,7 @@
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Toilet",
             "creationPrivilege": 3
         }
     },
@@ -35,6 +36,7 @@
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Urinal",
             "creationPrivilege": 3
         }
     },
@@ -53,6 +55,7 @@
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Sink",
             "creationPrivilege": 3
         }
     },
@@ -71,6 +74,7 @@
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Mirror",
             "creationPrivilege": 3
         }
     },
@@ -89,6 +93,7 @@
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Room",
             "creationPrivilege": 4
         }
     },

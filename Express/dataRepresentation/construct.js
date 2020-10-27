@@ -49,7 +49,7 @@ const insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(
 
 const insert_metadata_subfeature = 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))';
 
-const insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(creationPrivilege))';
+const insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(frontendName), $(creationPrivilege))';
 
 const create_observation_table = 'CALL "create_observation_table"($(tableName))';
 
@@ -472,6 +472,7 @@ async function constructFeatures2(features) {
         try {
             await db.none(pgp.as.format(insert_metadata_item_observable, {
                 itemName: featureItemLookup[feature.tableName],
+                frontendName: feature.observableItem.frontendName,
                 creationPrivilege: feature.observableItem.creationPrivilege
             }));
 
