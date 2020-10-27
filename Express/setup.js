@@ -12,7 +12,7 @@ const pgp = require("pg-promise")();
 const Client = require('pg-native')
 const client = new Client()
 // sync connecting to the database
-client.connectSync('host=localhost port=5432 dbname=meta connect_timeout=5')
+client.connectSync('host=localhost port=5432 dbname=v4 connect_timeout=5')
 
 /* TO DO
 close the db connection!
@@ -120,9 +120,7 @@ standard:
 
 
 */
-function generateJoins(column, table, item, feature) {
-    
-}
+
 
 // QUERIES //
 // ==================================================
@@ -165,8 +163,8 @@ let returnableQuery = client.querySync('SELECT \
                                         \
                                         i.table_name as i__table_name, i.frontend_name as i__frontend_name \
                                         \
-                                        FROM metadata_column as c \
-                                        LEFT JOIN metadata_returnable AS r ON c.column_id = r.column_id \
+                                        FROM metadata_returnable as r \
+                                        LEFT JOIN metadata_column AS c ON c.column_id = r.column_id \
                                         LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id \
                                         LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id \
                                         LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
@@ -224,22 +222,6 @@ let allFeatures = client.querySync('SELECT f.table_name as f__table_name, f.num_
 
 
 
-// CALLING SETUP FUNCTION AND EXPORTING
-// ============================================================
-const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
-
-console.log(idColumnTableLookup)
-//console.log(returnableIDLookup)
-    
-module.exports = {
-    returnableIDLookup: returnableIDLookup,
-    idColumnTableLookup: idColumnTableLookup,
-    featureParents: featureParents,
-    sendSetup: sendSetup
-}
-
-
-
 
 // RETURNABLE ID CLASS
 // ============================================================
@@ -293,7 +275,7 @@ class ReturnableID {
 // HOISTED FUNCTIONS //
 // ============================================================
 
-function setupQuery(rawQuery, frontendTypes, allFeatures) {
+function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures) {
 
     let returnableIDLookup = [];
     let idColumnTableLookup = {};
@@ -469,31 +451,10 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
         })
     });
 
-    let submissionItemIndex = columnOrder.indexOf('item_submission');
+    let submissionItemIndex = itemOrder.indexOf('item_submission');
 
+    
 
-    /*
-
-    featureNodeObject
-    {
-        “children”: [[Number,...], [Number,...], Number],
-        “frontendName”: String,
-        “information”: String,
-        //“numFeatureRange”: Number|NULL,
-        //ground truth location
-        “featureChildren”: [Number,...]
-    }
-
-    {
-        “children”: observationColumns, attributeColumns, itemIndex
-        “frontendName”: 
-        “information”: 
-        //“numFeatureRange”: 
-        //ground truth location
-        “featureChildren”: indexes of feature children
-    }
-
-    */
     // Construct featureNodeObject
     // ==================================================
     let rootFeatures = allFeatures.map((el) => [el['f__table_name'], el['ff__table_name']]).filter((el) => el[1] === null).map((el) => el[0])
@@ -559,19 +520,51 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     // Construct returnableIDToTreeID and treeIDToReturnableID
     // ==================================================
 
-    
+    // init
+    let returnableIDToTreeIDObject = {};
+    let treeIDToReturnableIDObject = {};
 
-    
+    // init statics
+    const statics = {
+        featureIndices,
+        featureNodeObjects,
+        featureOrder,
+        itemNodeObjects,
+        itemOrder,
+        columnObjects,
+        columnOrder
+    };
+
+    // adding each returnable to the objects
+    returnableQuery.forEach(returnable => {
+        // calling tree creation function
+        // note: this function calls itemReturnableMapper and featureReturnableMapper
+        let idTreeObject = initialReturnableMapper(returnable, statics);
+
+        // add to returnableIDToTreeIDObject
+        returnableIDToTreeIDObject[String(idTreeObject.returnableID)] = idTreeObject.treeID.join('>');
+
+        // add to treeIDToReturnableIDObject
+        treeIDToReturnableIDObject[idTreeObject.treeID.join('>')] = idTreeObject.returnableID;
+    });
 
 
+    // Constructing the final setupObject
+    // ==================================================
+
+    setupObject.children = [featureIndices, submissionItemIndex];
     setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
-    setupObject.globalColumns = columnObjects.filter((row) => row[0] === true).map((row) => row[1]);
-    setupObject.datatypes = frontendTypes;
-    setupObject.featureColumns = featureColumns;
+    setupObject.items = itemNodeObjects;
+    setupObject.features = featureNodeObjects;
+    setupObject.columns = columnObjects.map(obj => obj.object);
+    setupObject.returnableIDToTreeID = returnableIDToTreeIDObject;
+    setupObject.treeIDToReturnableID = treeIDToReturnableIDObject;
+    // yay
 
 
     // Construct idColumnTableLookup
-    // ============================================================                                  
+    // ============================================================
+    /*                      
     for(let row of rawQuery) {
 
         let id = row['c__column_id'].toString();
@@ -663,10 +656,7 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
     }
 
-    // for record in metadata
-        //if special type
-            //custom sql
-
+    */
 
     return({
         setupObject: setupObject,
@@ -676,7 +666,18 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     })
 }
 
-const featureReturnableMapper = (returnable, currentPath, treeArray) => {
+
+const featureReturnableMapper = (returnable, currentPath, treeArray, statics) => {
+    // destructure statics
+    const {
+        featureIndices,
+        featureNodeObjects,
+        featureOrder,
+        itemNodeObjects,
+        itemOrder,
+        columnObjects,
+        columnOrder
+    } = statics;
     // if observation returnable
     if(['obs', 'obs-list', 'obs-factor', 'obs-global', 'special'].includes(returnable['rt__type_name'])) {
         // sanity check
@@ -684,9 +685,9 @@ const featureReturnableMapper = (returnable, currentPath, treeArray) => {
         // push observationColumns index
         treeArray.push(0);
         // get columnID of columnObject of returnable
-        let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']);
+        let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']).map(obj => obj.additionalInfo.columnID);
             // sanity check
-            if(columnObjectIndex.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
+            if(columnObjectID.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
         // get columnObject index
         let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
         // get feature index
@@ -705,9 +706,9 @@ const featureReturnableMapper = (returnable, currentPath, treeArray) => {
         // push attributeColumns index
         treeArray.push(1);
         // get columnID of columnObject of returnable
-        let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']);
+        let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']).map(obj => obj.additionalInfo.columnID);
             // sanity check
-            if(columnObjectIndex.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
+            if(columnObjectID.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
         // get columnObject index
         let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
         // get feature index
@@ -728,12 +729,22 @@ const featureReturnableMapper = (returnable, currentPath, treeArray) => {
         // remove observation_... -> item_... from path
         currentPath.splice(0, 2)
         // calling itemReturnableMapper
-        return itemReturnableMapper(returnable, currentPath, treeArray);
+        return itemReturnableMapper(returnable, currentPath, treeArray, statics);
     }
 }
 
 
-const itemReturnableMapper = (returnable, currentPath, treeArray) => {
+const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
+    // destructure statics
+    const {
+        featureIndices,
+        featureNodeObjects,
+        featureOrder,
+        itemNodeObjects,
+        itemOrder,
+        columnObjects,
+        columnOrder
+    } = statics;
     // if returnable is within item
     if(currentPath.length == 0) {
         // if id-column
@@ -741,9 +752,9 @@ const itemReturnableMapper = (returnable, currentPath, treeArray) => {
             // push the idColumn index
             treeArray.push(0);
              // get columnID of columnObject of returnable
-            let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']);
+            let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']).map(obj => obj.additionalInfo.columnID);
                 // sanity check
-                if(columnObjectIndex.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
+                if(columnObjectID.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
             // get columnObject index
             let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
             // get item index
@@ -762,9 +773,9 @@ const itemReturnableMapper = (returnable, currentPath, treeArray) => {
             // push the idColumn index
             treeArray.push(2);
              // get columnID of columnObject of returnable
-            let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']);
+            let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']).map(obj => obj.additionalInfo.columnID);
                 // sanity check
-                if(columnObjectIndex.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
+                if(columnObjectID.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
             // get columnObject index
             let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
             // get item index
@@ -792,7 +803,7 @@ const itemReturnableMapper = (returnable, currentPath, treeArray) => {
         // sanity check
         if(isID.length !== 1) throw Error(`ReturnableID: ${returnable['r__returnable_id']} did not match to one item to item relation`);
         // if isID
-        if(isID === true) {
+        if(isID[0] === true) {
             // add index to tree
             treeArray.push(1);
             // get item index
@@ -804,11 +815,11 @@ const itemReturnableMapper = (returnable, currentPath, treeArray) => {
             // get itemNodeObject nonID itemChildNodePointerObjects
             let nonIDPointerObjects = itemNodeObject.children[1];
             // get index of relevant itemChildNodePointerObject
-            let pointerIndex = nonIDPointerObjects.map(e => e.object.index).indexOf(parentItemIndex);
+            let pointerIndex = nonIDPointerObjects.map(e => e.index).indexOf(parentItemIndex);
             // add index to tree
             treeArray.push(pointerIndex);
             // call recursively
-            return itemReturnableMapper(returnable, currentPath, treeArray);
+            return itemReturnableMapper(returnable, currentPath, treeArray, statics);
         } else {
             // add index to tree
             treeArray.push(3);
@@ -818,24 +829,38 @@ const itemReturnableMapper = (returnable, currentPath, treeArray) => {
             let parentItemIndex = itemOrder.indexOf(toItem);
             // get itemNodeObject
             let itemNodeObject = itemNodeObjects[itemIndex];
+            console.log(itemNodeObject)
+            console.log(returnable)
             // get itemNodeObject nonID itemChildNodePointerObjects
             let nonIDPointerObjects = itemNodeObject.children[3];
+            ////////console.log(nonIDPointerObjects)
             // get index of relevant itemChildNodePointerObject
-            let pointerIndex = nonIDPointerObjects.map(e => e.object.index).indexOf(parentItemIndex);
+            let pointerIndex = nonIDPointerObjects.map(e => e.index).indexOf(parentItemIndex);
             // add index to tree
             treeArray.push(pointerIndex);
             // call recursively
-            return itemReturnableMapper(returnable, currentPath, treeArray);
+            return itemReturnableMapper(returnable, currentPath, treeArray, statics);
         };
     };
 };
 
 
-const initialReturnableMapper = (returnable) => {
+const initialReturnableMapper = (returnable, statics) => {
+    // destructure statics
+    const {
+        featureIndices,
+        featureNodeObjects,
+        featureOrder,
+        itemNodeObjects,
+        itemOrder,
+        columnObjects,
+        columnOrder
+    } = statics;
     // init treeArray
-    let treeArray = []
+    let treeArray = [];
     // set current path to joinObject tables
-    let currentPath = JSON.parse(returnable['r__join_object']).tables
+    //console.log(returnable)
+    let currentPath = JSON.parse(returnable['r__join_object']).tables;
 
     // if submission
     if(returnable['f__table_name'] === null) {
@@ -845,7 +870,7 @@ const initialReturnableMapper = (returnable) => {
         // push index to treeArray
         // treeArray.push(referencedItemIndex);
         // calling itemReturnableMapper
-        return itemReturnableMapper(returnable, currentPath, treeArray);
+        return itemReturnableMapper(returnable, currentPath, treeArray, statics);
     } else {
         treeArray.push(0);
         // get feature
@@ -857,7 +882,7 @@ const initialReturnableMapper = (returnable) => {
         // push index to treeArray
         treeArray.push(featureIndex);
         // calling featureReturnableMapper
-        return featureReturnableMapper(returnable, currentPath, itemArray)
+        return featureReturnableMapper(returnable, currentPath, treeArray, statics)
     }
 };
 
@@ -873,7 +898,7 @@ function sendSetup(req, res) {
     // if(res.locals.parsed['lastModified'] < serverLastModified) { // setup is new
     if(true) {
 
-        setupObject['setupLastModified'] = serverLastModified
+        setupObject.lastModified = serverLastModified
         return res.status(200).json(setupObject) //send object
         
     } else {
@@ -885,4 +910,18 @@ function sendSetup(req, res) {
 }
 
 
+// CALLING SETUP FUNCTION AND EXPORTING
+// ============================================================
+const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
+
+//console.log(idColumnTableLookup)
+//console.log(returnableIDLookup)
+//console.log(setupObject)
+    
+module.exports = {
+    returnableIDLookup: returnableIDLookup,
+    idColumnTableLookup: idColumnTableLookup,
+    featureParents: featureParents,
+    sendSetup: sendSetup
+}
 
