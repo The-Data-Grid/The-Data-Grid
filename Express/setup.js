@@ -201,7 +201,16 @@ let columnQuery = client.querySync('SELECT \
 let allItems = client.querySync('SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
                                  i.creation_privilege as i__creation_privilege \
                                  FROM metadata_item AS i \
-                                 LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id');                              
+                                 LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id');
+
+let itemM2M = client.querySync('SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
+                                i.creation_privilege as i__creation_privilege, \
+                                m2m.is_id as m2m__is_id, m2m.is_nullable as m2m__is_nullable, m2m.frontend_name as m2m__frontend_name, \
+                                ri.table_name as ri__table_name \
+                                FROM metadata_item AS i \
+                                LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id \
+                                INNER JOIN m2m_metadata_item AS m2m ON m2m.item_id = i.item_id \
+                                INNER JOIN metadata_item AS ri ON m2m.referenced_item_id = ri.item_id');
 
 let frontendTypes = client.querySync('SELECT type_name FROM metadata_frontend_type');
 
@@ -417,8 +426,46 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
         // id column indices
         const IDColumnIndices = IDColumns.map(col => columnOrder.indexOf(col.additionalInfo.columnID));
 
+        // itemNodePointerObject
+        // get parentIndex
+        // filter on item table name = referencing table name
+        let itemParents = itemM2M.filter(m2m => m2m['i__table_name'] === item['i__table_name']);
+        // get referenced item indices
+        let itemChildNodePointerObjects = itemParents.map(e => {
+            let itemParentIndex = itemOrder.indexOf(e['ri__table_name']);
+
+            // get frontendName
+            let frontendName = e['m2m__frontend_name'];
+
+            // get nullable
+            let nullable = e['m2m__is_nullable'];
+
+            // get information
+            let information = e['m2m__information'];
+// INFO: information is null now, Kian needs to add
+
+            // get isID
+            let isID = e['m2m__is_id'];
+
+            return({
+                object: {
+                    index: itemParentIndex,
+                    frontendName: frontendName,
+                    nullable: nullable,
+                    information: information
+                },
+                isID: isID
+            })
+        })
+        
+        // filter by ID = true and map to object
+        let IDitemChildNodePointerObjects = itemChildNodePointerObjects.filter(obj => obj.isID === true).map(obj => obj.object);
+
+        // filter by ID = false and map to object
+        let nonIDitemChildNodePointerObjects = itemChildNodePointerObjects.filter(obj => obj.isID === false).map(obj => obj.object);
+
         return ({
-            children: [IDColumnIndices, 1, nonIDColumnIndices, 1],
+            children: [IDColumnIndices, IDitemChildNodePointerObjects, nonIDColumnIndices, nonIDitemChildNodePointerObjects],
             frontendName: row['i__frontend_name']
         })
     });
