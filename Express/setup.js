@@ -558,74 +558,10 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     
     // Construct returnableIDToTreeID and treeIDToReturnableID
     // ==================================================
-    /*
-     0>(index of toilet feature)>2(for itemIndex)>1(for IDitemNodePointerObjects)>(index of room item)>0(idColumns)>(columnObject index of room_number)
+
     
-    (submission or not)>(feature index)>
 
-
-    (referenceType or another item)>
-        initialReturnableMapper(returnableID)
-            let treeArray = []
-            let currentPath = joinObject.tables
-            if(submission) {
-                treeArray.push(1);
-                // remove item_submission from path
-                currentPath.splice(0, 1)
-                // get index of item
-                let referencedItemName = currentPath[0]
-                let referencedItemIndex = itemOrder.indexOf(referencedItemName)
-                // push index to treeArray
-                treeArray.push(referencedItemIndex);
-                // remove referenced item from path
-                currentPath.splice(0, 1)
-
-                // calling itemReturnableMapper
-                itemReturnableMapper(returnableID, currentPath, treeArray)
-            } else {
-                treeArray.push(0);
-                // get feature
-                let featureName = ...
-                // get index of feature
-                let featureIndex = featureOrder.indexOf(featureName);
-                // push index to treeArray
-                treeArray.push(featureIndex);
-                
-                // calling featureReturnableMapper
-                featureReturnableMapper(returnableID, currentPath, itemArray)
-            }
-
-
-        featureReturnableMapper(returnableID, currentPath, treeArray)
-            0: obs
-            1: attribute
-            2: joinObject.tables > 0 -> subtract 2 and go to item
-
-        itemReturnableMapper(returnableID, currentPath, treeArray)
-            if(joinObject.tables.length == 0)
-                0: id column
-                2: non-id column
-            else:
-                let from = joinObject.tables[0]
-                let to = joinObject.tables[1]
-                get m2m with from and to
-                let isID = m2m['m2m__is_id']
-                if isID:
-                    subtract 2 and go
-                    1
-                else
-                    subtract 2 and go
-                    3
-    */
-    /*
-    returnable.forEach
-        if feature_id NULL
-            0th = 1
-        else
-            0th = 0
-
-    */
-
+    
 
 
     setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
@@ -739,6 +675,192 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
         returnableIDLookup: returnableIDLookup
     })
 }
+
+const featureReturnableMapper = (returnable, currentPath, treeArray) => {
+    // if observation returnable
+    if(['obs', 'obs-list', 'obs-factor', 'obs-global', 'special'].includes(returnable['rt__type_name'])) {
+        // sanity check
+        if(currentPath.length !== 0) throw Error(`ReturnableID: ${returnable['r__returnable_id']} is an observation returnable but has a non zero length joinObject.tables`)
+        // push observationColumns index
+        treeArray.push(0);
+        // get columnID of columnObject of returnable
+        let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']);
+            // sanity check
+            if(columnObjectIndex.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
+        // get columnObject index
+        let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
+        // get feature index
+        let featureIndex = featureOrder.indexOf(returnable['f__table_name'])
+        // get index of columnObject index
+        let indexOfColumnObjectIndex = featureNodeObjects[featureIndex].children[0].indexOf(columnObjectIndex);
+        // push index to tree
+        treeArray.push(indexOfColumnObjectIndex);
+        // finish
+        return({
+            returnableID: returnable['r__returnable_id'],
+            treeID: treeArray,
+            isDefault: returnable['r__is_used']
+        })
+    } else if(['attribute'].includes(returnable['rt__type_name'])) { // if attribute returnable
+        // push attributeColumns index
+        treeArray.push(1);
+        // get columnID of columnObject of returnable
+        let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']);
+            // sanity check
+            if(columnObjectIndex.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
+        // get columnObject index
+        let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
+        // get feature index
+        let featureIndex = featureOrder.indexOf(returnable['f__table_name'])
+        // get index of columnObject index
+        let indexOfColumnObjectIndex = featureNodeObjects[featureIndex].children[1].indexOf(columnObjectIndex);
+        // push index to tree
+        treeArray.push(indexOfColumnObjectIndex);
+        // finish
+        return({
+            returnableID: returnable['r__returnable_id'],
+            treeID: treeArray,
+            isDefault: returnable['r__is_used']
+        })
+    } else { // then not an observation or attribute returnable
+        // push to tree
+        treeArray.push(2);
+        // remove observation_... -> item_... from path
+        currentPath.splice(0, 2)
+        // calling itemReturnableMapper
+        return itemReturnableMapper(returnable, currentPath, treeArray);
+    }
+}
+
+
+const itemReturnableMapper = (returnable, currentPath, treeArray) => {
+    // if returnable is within item
+    if(currentPath.length == 0) {
+        // if id-column
+        if(['item-id'].includes(returnable['rt__type_name'])) {
+            // push the idColumn index
+            treeArray.push(0);
+             // get columnID of columnObject of returnable
+            let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']);
+                // sanity check
+                if(columnObjectIndex.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
+            // get columnObject index
+            let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
+            // get item index
+            let itemIndex = itemOrder.indexOf(returnable['i__table_name']);
+            // get index of columnObject index
+            let indexOfColumnObjectIndex = itemNodeObjects[itemIndex].children[0].indexOf(columnObjectIndex);
+            // push index to tree
+            treeArray.push(indexOfColumnObjectIndex);
+            // finish
+            return({
+                returnableID: returnable['r__returnable_id'],
+                treeID: treeArray,
+                isDefault: returnable['r__is_used']
+            })
+        } else if(['item-non-id', 'item-list', 'item-location', 'item-factor'].includes(returnable['rt__type_name'])) {
+            // push the idColumn index
+            treeArray.push(2);
+             // get columnID of columnObject of returnable
+            let columnObjectID = columnObjects.filter(obj => obj.additionalInfo.columnID === returnable['c__column_id']);
+                // sanity check
+                if(columnObjectIndex.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
+            // get columnObject index
+            let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
+            // get item index
+            let itemIndex = itemOrder.indexOf(returnable['i__table_name']);
+            // get index of columnObject index
+            let indexOfColumnObjectIndex = itemNodeObjects[itemIndex].children[2].indexOf(columnObjectIndex);
+            // push index to tree
+            treeArray.push(indexOfColumnObjectIndex);
+            // finish
+            return({
+                returnableID: returnable['r__returnable_id'],
+                treeID: treeArray,
+                isDefault: returnable['r__is_used']
+            })
+        } else {
+            throw Error('This shouldn\'t happen... uwu')
+        }
+    } else { // then returnable is not in item
+        let fromItem = currentPath[0];
+        let toItem = currentPath[1];
+        // remove item_... -> item_... from path
+        currentPath.splice(0, 2);
+        // get isID based on the itemM2M
+        let isID = itemM2M.filter(m2m => m2m['i__table_name'] === fromItem && m2m['ri__table_name'] === toItem).map(m2m => m2m['m2m__is_id']);
+        // sanity check
+        if(isID.length !== 1) throw Error(`ReturnableID: ${returnable['r__returnable_id']} did not match to one item to item relation`);
+        // if isID
+        if(isID === true) {
+            // add index to tree
+            treeArray.push(1);
+            // get item index
+            let itemIndex = itemOrder.indexOf(returnable['i__table_name']);
+            // get referenced item index
+            let parentItemIndex = itemOrder.indexOf(toItem);
+            // get itemNodeObject
+            let itemNodeObject = itemNodeObjects[itemIndex];
+            // get itemNodeObject nonID itemChildNodePointerObjects
+            let nonIDPointerObjects = itemNodeObject.children[1];
+            // get index of relevant itemChildNodePointerObject
+            let pointerIndex = nonIDPointerObjects.map(e => e.object.index).indexOf(parentItemIndex);
+            // add index to tree
+            treeArray.push(pointerIndex);
+            // call recursively
+            return itemReturnableMapper(returnable, currentPath, treeArray);
+        } else {
+            // add index to tree
+            treeArray.push(3);
+            // get item index
+            let itemIndex = itemOrder.indexOf(returnable['i__table_name']);
+            // get referenced item index
+            let parentItemIndex = itemOrder.indexOf(toItem);
+            // get itemNodeObject
+            let itemNodeObject = itemNodeObjects[itemIndex];
+            // get itemNodeObject nonID itemChildNodePointerObjects
+            let nonIDPointerObjects = itemNodeObject.children[3];
+            // get index of relevant itemChildNodePointerObject
+            let pointerIndex = nonIDPointerObjects.map(e => e.object.index).indexOf(parentItemIndex);
+            // add index to tree
+            treeArray.push(pointerIndex);
+            // call recursively
+            return itemReturnableMapper(returnable, currentPath, treeArray);
+        };
+    };
+};
+
+
+const initialReturnableMapper = (returnable) => {
+    // init treeArray
+    let treeArray = []
+    // set current path to joinObject tables
+    let currentPath = JSON.parse(returnable['r__join_object']).tables
+
+    // if submission
+    if(returnable['f__table_name'] === null) {
+        treeArray.push(1);
+        // get index of item_submission
+        // let referencedItemIndex = itemOrder.indexOf('item_submission');
+        // push index to treeArray
+        // treeArray.push(referencedItemIndex);
+        // calling itemReturnableMapper
+        return itemReturnableMapper(returnable, currentPath, treeArray);
+    } else {
+        treeArray.push(0);
+        // get feature
+        let featureName = returnable['f__table_name'];
+        // get index of feature
+        let featureIndex = featureOrder.indexOf(featureName);
+        // get index of index of feature
+        featureIndex = featureIndices.indexOf(featureIndex);
+        // push index to treeArray
+        treeArray.push(featureIndex);
+        // calling featureReturnableMapper
+        return featureReturnableMapper(returnable, currentPath, itemArray)
+    }
+};
+
 
 function sendSetup(req, res) {
 
