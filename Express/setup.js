@@ -340,6 +340,8 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
     // Construct columnObjects
     // ==================================================
+    const columnOrder = columnQuery.map(row => row['c__column_id']);
+
     let columnObjects = columnQuery.map((row, i) => {
 
         // filterSelector
@@ -361,7 +363,7 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
                     columnName: row['c__column_name'],
                     tableName: row['c__table_name'],
                     referenceType: row['rt__type_name'],
-                    index: i
+                    columnID: row['c__column_id']
                 },
                 object: {
                     default: row['c__is_default'],
@@ -378,7 +380,48 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     });
     // Construct itemNodeObject
     // ==================================================
+    /*
+    {
+        “children”: [[Number,...], [itemChildNodePointerObject,...], [Number,...], \ 
+                    [itemChildNodePointerObject,...]],
+        “frontendName”: String,
+        “information”: String 
+    }
 
+    {
+        “children”: ID columns indexes, ID itemNodeObject indexes,
+                    nonID column indexes, non ID itemNodeObject indexes
+        “frontendName”: 
+        “information”: 
+    } */
+
+// INFO: item information does not exist right now
+
+    const itemOrder = allItems.map(row => row['i__table_name']);
+
+    
+
+    let itemNodeObjects = allItems.map(item => {
+        // getting frontend name
+        let frontendName = item['i__frontend_name'];
+
+        // getting non-id columns
+        const nonIDColumns = columnObjects.filter(col => col.additionalInfo.item === item['i__table_name'] && ['item-non-id', 'item-list', 'item-location', 'item-factor'].includes(col.additionalInfo.referenceType));
+
+        // non-id column indices
+        const nonIDColumnIndices = nonIDColumns.map(col => columnOrder.indexOf(col.additionalInfo.columnID));
+
+        // getting id columns
+        const IDColumns = columnObjects.filter(col => col.additionalInfo.item === item['i__table_name'] && ['item-id'].includes(col.additionalInfo.referenceType));
+
+        // id column indices
+        const IDColumnIndices = IDColumns.map(col => columnOrder.indexOf(col.additionalInfo.columnID));
+
+        return ({
+            children: [IDColumnIndices, 1, nonIDColumnIndices, 1],
+            frontendName: row['i__frontend_name']
+        })
+    });
 
 
 
@@ -424,7 +467,7 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     })
 
     let featureNodeObjects = allFeatures.map((el) => {
-        //
+
         let frontendName = el['f__frontend_name']
         let information = el['f__information']
         let numFeatureRange = el['f__num_feature_range'] 
@@ -436,18 +479,27 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
         // observation columns
         // filter on observable reference type and column item matching feature item
-        let observationColumns = columnObjects.filter(e => ['obs', 'obs-list', 'obs-factor', 'obs-global', 'special'].includes(e.additionalInfo.referenceType) && el['i__table_name'] === e.additionalInfo.item)
+        let observationColumns = columnObjects.filter(e => ['obs', 'obs-list', 'obs-factor', 'obs-global', 'special'].includes(e.additionalInfo.referenceType) && el['i__table_name'] === e.additionalInfo.item);
+
+        // observation column indicies
+        let observationColumnIndices = observationColumns.map(col => columnOrder.indexOf(col.additionalInfo.columnID));
 
         // attribute columns
         // filter on attribute reference type and column item matching feature item
-        let attributeColumns = columnObjects.filter(e => ['attribute'].includes(e.additionalInfo.referenceType) && el['i__table_name'] === e.additionalInfo.item)
+        let attributeColumns = columnObjects.filter(e => ['attribute'].includes(e.additionalInfo.referenceType) && el['i__table_name'] === e.additionalInfo.item);
 
-// TODO: Get item index
+        // attribute column indicies
+        let attributeColumnIndices = attributeColumns.map(col => columnOrder.indexOf(col.additionalInfo.columnID));
+
         // observable item
         let observableItem = el['i__table_name'];
 
+        // observable item index
+        let observableItemIndex = itemOrder.indexOf(observableItem);
+
 // INFO: numFeatureRange is commented out
         return({
+            children: [observationColumnIndices, attributeColumnIndices, observableItemIndex],
             frontendName: frontendName,
             information: information,
             // numFeatureRange: numFeatureRange,

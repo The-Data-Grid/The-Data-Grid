@@ -38,7 +38,7 @@ const connection = {
 
 // SQL Statements
 
-const insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable))';
+const insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable), $(frontendName))';
 
 const add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn';
 
@@ -507,7 +507,8 @@ async function constructFeatures2(features) {
                     observableItem: featureItemLookup[feature.tableName],
                     referenced: required.name,
                     isID: required.isID,
-                    isNullable: required.isNullable
+                    isNullable: required.isNullable,
+                    frontendName: required.frontendName
                 })); 
 
                 console.log(chalk.green(`Feature Metadata: Inserted ${featureItemLookup[feature.tableName]} to ${required.name} relation into m2m_metadata_item`));

@@ -406,6 +406,7 @@ CREATE TABLE m2m_metadata_item (
     referenced_item_id INTEGER NOT NULL, --fk **
     is_id BOOLEAN NOT NULL,
     is_nullable BOOLEAN NOT NULL,
+    frontend_name TEXT,
     -- Can't be ID and Nullable
     CHECK(NOT (is_id = TRUE AND is_nullable = TRUE))
 );
@@ -745,7 +746,8 @@ ALTER TABLE m2m_user_organization ADD FOREIGN KEY (organization_id) REFERENCES i
 CREATE PROCEDURE insert_m2m_metadata_item(observable_item TEXT, 
                                          referenced TEXT, 
                                          isID BOOLEAN,
-                                         isNullable BOOLEAN)
+                                         isNullable BOOLEAN,
+                                         frontendName TEXT)
     AS 
     $$
         BEGIN
@@ -754,12 +756,14 @@ CREATE PROCEDURE insert_m2m_metadata_item(observable_item TEXT,
                 (item_id, 
                 referenced_item_id, 
                 is_id,
-                is_nullable)
+                is_nullable,
+                frontend_name)
                     VALUES (
                         (SELECT item_id FROM metadata_item WHERE table_name = observable_item),
                         (SELECT item_id FROM metadata_item WHERE table_name = referenced),
                         isID,
-                        isNullable
+                        isNullable,
+                        frontendName
                     );
 
             COMMIT;
@@ -1242,23 +1246,23 @@ INSERT INTO metadata_item
 
 -- Calling insertion procedure
 -- potential-observable
-CALL "insert_m2m_metadata_item"('item_building', 'item_entity', TRUE, FALSE);
-CALL "insert_m2m_metadata_item"('item_organization', 'item_entity', TRUE, FALSE);
-CALL "insert_m2m_metadata_item"('item_entity', 'item_city', FALSE, FALSE);
-CALL "insert_m2m_metadata_item"('item_city', 'item_county', TRUE, FALSE);
-CALL "insert_m2m_metadata_item"('item_county', 'item_state', TRUE, FALSE);
-CALL "insert_m2m_metadata_item"('item_state', 'item_country', TRUE, FALSE);
+CALL "insert_m2m_metadata_item"('item_building', 'item_entity', TRUE, FALSE, 'Entity of Building');
+CALL "insert_m2m_metadata_item"('item_organization', 'item_entity', TRUE, FALSE, 'Entity of Organization');
+CALL "insert_m2m_metadata_item"('item_entity', 'item_city', FALSE, FALSE, 'City of Entity');
+CALL "insert_m2m_metadata_item"('item_city', 'item_county', TRUE, FALSE, 'County of City');
+CALL "insert_m2m_metadata_item"('item_county', 'item_state', TRUE, FALSE, 'State of County');
+CALL "insert_m2m_metadata_item"('item_state', 'item_country', TRUE, FALSE, 'Country of State');
 
 -- non-observable
-CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', FALSE, FALSE);
-CALL "insert_m2m_metadata_item"('item_template', 'item_user', FALSE, FALSE);
-CALL "insert_m2m_metadata_item"('item_template', 'item_organization', FALSE, FALSE);
-CALL "insert_m2m_metadata_item"('item_user', 'item_organization', FALSE, FALSE);
-CALL "insert_m2m_metadata_item"('item_submission', 'item_audit', FALSE, FALSE);
-CALL "insert_m2m_metadata_item"('item_submission', 'item_user', FALSE, FALSE);
-CALL "insert_m2m_metadata_item"('item_submission', 'item_template', FALSE, TRUE);
-CALL "insert_m2m_metadata_item"('item_audit', 'item_catalog', FALSE, TRUE);
-CALL "insert_m2m_metadata_item"('item_audit', 'item_user', FALSE, FALSE);
+CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', FALSE, FALSE, 'Authoring Organization');
+CALL "insert_m2m_metadata_item"('item_template', 'item_user', FALSE, FALSE, 'Authoring User');
+CALL "insert_m2m_metadata_item"('item_template', 'item_organization', FALSE, FALSE, 'Authoring Organization');
+CALL "insert_m2m_metadata_item"('item_user', 'item_organization', FALSE, FALSE, 'Member of Organization');
+CALL "insert_m2m_metadata_item"('item_submission', 'item_audit', FALSE, FALSE, 'Audit of Submission');
+CALL "insert_m2m_metadata_item"('item_submission', 'item_user', FALSE, FALSE, 'Submitting User');
+CALL "insert_m2m_metadata_item"('item_submission', 'item_template', FALSE, TRUE, 'Template Used');
+CALL "insert_m2m_metadata_item"('item_audit', 'item_catalog', FALSE, TRUE, 'Catalog of Audit');
+CALL "insert_m2m_metadata_item"('item_audit', 'item_user', FALSE, FALSE, 'Authoring User');
 
 
 
