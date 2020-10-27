@@ -409,7 +409,6 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
     const itemOrder = allItems.map(row => row['i__table_name']);
 
     
-
     let itemNodeObjects = allItems.map(item => {
         // getting frontend name
         let frontendName = item['i__frontend_name'];
@@ -466,10 +465,11 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
 
         return ({
             children: [IDColumnIndices, IDitemChildNodePointerObjects, nonIDColumnIndices, nonIDitemChildNodePointerObjects],
-            frontendName: row['i__frontend_name']
+            frontendName: item['i__frontend_name']
         })
     });
 
+    let submissionItemIndex = columnOrder.indexOf('item_submission');
 
 
     /*
@@ -554,11 +554,81 @@ function setupQuery(rawQuery, frontendTypes, allFeatures) {
         })
     })
 
+    let featureIndices = featureOrder.map((e, i) => i);
+    
+    // Construct returnableIDToTreeID and treeIDToReturnableID
+    // ==================================================
+    /*
+     0>(index of toilet feature)>2(for itemIndex)>1(for IDitemNodePointerObjects)>(index of room item)>0(idColumns)>(columnObject index of room_number)
+    
+    (submission or not)>(feature index)>
+
+
+    (referenceType or another item)>
+        initialReturnableMapper(returnableID)
+            let treeArray = []
+            let currentPath = joinObject.tables
+            if(submission) {
+                treeArray.push(1);
+                // remove item_submission from path
+                currentPath.splice(0, 1)
+                // get index of item
+                let referencedItemName = currentPath[0]
+                let referencedItemIndex = itemOrder.indexOf(referencedItemName)
+                // push index to treeArray
+                treeArray.push(referencedItemIndex);
+                // remove referenced item from path
+                currentPath.splice(0, 1)
+
+                // calling itemReturnableMapper
+                itemReturnableMapper(returnableID, currentPath, treeArray)
+            } else {
+                treeArray.push(0);
+                // get feature
+                let featureName = ...
+                // get index of feature
+                let featureIndex = featureOrder.indexOf(featureName);
+                // push index to treeArray
+                treeArray.push(featureIndex);
+                
+                // calling featureReturnableMapper
+                featureReturnableMapper(returnableID, currentPath, itemArray)
+            }
+
+
+        featureReturnableMapper(returnableID, currentPath, treeArray)
+            0: obs
+            1: attribute
+            2: joinObject.tables > 0 -> subtract 2 and go to item
+
+        itemReturnableMapper(returnableID, currentPath, treeArray)
+            if(joinObject.tables.length == 0)
+                0: id column
+                2: non-id column
+            else:
+                let from = joinObject.tables[0]
+                let to = joinObject.tables[1]
+                get m2m with from and to
+                let isID = m2m['m2m__is_id']
+                if isID:
+                    subtract 2 and go
+                    1
+                else
+                    subtract 2 and go
+                    3
+    */
+    /*
+    returnable.forEach
+        if feature_id NULL
+            0th = 1
+        else
+            0th = 0
+
+    */
 
 
 
-
-    setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true);
+    setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
     setupObject.globalColumns = columnObjects.filter((row) => row[0] === true).map((row) => row[1]);
     setupObject.datatypes = frontendTypes;
     setupObject.featureColumns = featureColumns;
