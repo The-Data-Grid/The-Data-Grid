@@ -126,23 +126,6 @@ standard:
 
 // QUERIES //
 // ==================================================
-/*
-let rawQuery = client.querySync('SELECT f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
-                                 f.frontend_name as f__frontend_name, rf.table_name as rf__table_name, c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, \
-                                 c.table_name as c__table_name, c.reference_column_name as c__reference_column_name, c.reference_table_name as c__reference_table_name, \
-                                 c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.is_global as c__is_global, \
-                                 c.is_ground_truth as c__is_ground_truth, fs.selector_name as fs__selector_name, ins.selector_name as ins__selector_name, \
-                                 sql.type_name as sql__type_name, rt.type_name as rt__type_name, ft.type_name as ft__type_name, ft.type_description as ft__type_description \
-                                 FROM metadata_column as c \
-                                 LEFT JOIN metadata_feature AS f ON c.feature_id = f.feature_id \
-                                 LEFT JOIN metadata_feature AS rf ON c.rootfeature_id = rf.feature_id \
-                                 LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
-                                 LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
-                                 LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
-                                 LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
-                                 LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
-
-                                 */
 
 let returnableQuery = client.querySync('SELECT \
                                         \
@@ -222,7 +205,8 @@ let allFeatures = client.querySync('SELECT f.table_name as f__table_name, f.num_
                                     LEFT JOIN metadata_item as i ON f.observable_item_id = i.item_id');
 
 
-
+// close the database connection
+client.end();
 
 
 // RETURNABLE ID CLASS
@@ -561,6 +545,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     setupObject.columns = columnObjects.map(obj => obj.object);
     setupObject.returnableIDToTreeID = returnableIDToTreeIDObject;
     setupObject.treeIDToReturnableID = treeIDToReturnableIDObject;
+    setupObject.lastModified = Date.now();
     // yay
 
 
@@ -896,42 +881,43 @@ const initialReturnableMapper = (returnable, statics) => {
 };
 
 
-function sendSetup(req, res) {
+// CALLING SETUP FUNCTION
+// ============================================================
+const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
-    var serverLastModified = Date.now() // for now
+
+// SEND SETUP OBJECT
+// ============================================================
+const sendSetup = (req, res, setupObject = setupObject) => {
 
     let cycleTime = Date.now() - res.locals.cycleTime[0]
     console.log(`Sent setupObject in ${cycleTime} ms`)
     
-    // Check last modified
-    // if(res.locals.parsed['lastModified'] < serverLastModified) { // setup is new
-    if(true) {
+    // if the "If-Modified-Since" header is not included or is newer or the same age as the setupObject's lastModified date
+    if(res.locals.parsed.ifModifiedSince === undefined || res.locals.parsed.ifModifiedSince >= setupObject.lastModified) { // for now
 
-        setupObject.lastModified = serverLastModified
-        return res.status(200).json(setupObject) //send object
+        return res.status(304) // don't send object - not modified
         
-    } else {
+    } else { // then "If-Modified-Since" is older than setupObject's lastModified date or is something else
 
-        setupObject['setupLastModified'] = serverLastModified
-        return res.status(304).json(setupObject) //send object - not modified
-
+        // set "Last-Modified" header
+        res.set('Last-Modified', setupObject.lastModified)
+        // send setupObject
+        return res.status(200).json(setupObject) // send setupObject
     }
 }
 
 
-// CALLING SETUP FUNCTION AND EXPORTING
-// ============================================================
-const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
-
 //console.log(idColumnTableLookup)
 //console.log(returnableIDLookup)
 //console.log(setupObject)
-fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
+//fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
     
 module.exports = {
-    returnableIDLookup: returnableIDLookup,
-    idColumnTableLookup: idColumnTableLookup,
-    featureParents: featureParents,
-    sendSetup: sendSetup
+    returnableIDLookup,
+    idColumnTableLookup,
+    featureParents,
+    sendSetup,
+    setupObject
 }
 
