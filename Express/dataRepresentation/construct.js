@@ -84,7 +84,7 @@ const makeItemReturnablesFeatureQuery = 'SELECT f.feature_id AS featureID FROM m
 
 const makeItemReturnablesSubobservationQuery = 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(subobservationTableName)'
 
-const insert_metadata_returnable = 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject:json), $(isRealGeo)) AS returnableid'
+const insert_metadata_returnable = 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject), $(isRealGeo)) AS returnableid'
     
 // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
 const checkAuditorNameTrigger = 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \

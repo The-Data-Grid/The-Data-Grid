@@ -6,7 +6,9 @@
 // ============================================================
 // pg-promise library for async database queries and promise based wrapper
 // only used in this file for helpers, not querying
-const pgp = require("pg-promise")();
+const pgp = require('pg-promise')();
+const util = require('util');
+const fs = require('fs');
 
 // pg-native for native libpq C library bindings which we need for sync queries
 const Client = require('pg-native')
@@ -756,11 +758,16 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
                 // sanity check
                 if(columnObjectID.length !== 1) throw Error(`Returnable with ID: ${returnable['r__returnable_id']} did not match to one column`);
             // get columnObject index
+            
             let columnObjectIndex = columnOrder.indexOf(columnObjectID[0]);
+            /////////////////////////////////////console.log(columnObjectIndex);
+
             // get item index
             let itemIndex = itemOrder.indexOf(returnable['i__table_name']);
             // get index of columnObject index
             let indexOfColumnObjectIndex = itemNodeObjects[itemIndex].children[0].indexOf(columnObjectIndex);
+            //////////////////////////////////////console.log(itemNodeObjects[itemIndex].children[0][0] + ' >>>>> ' + columnObjectIndex);
+            
             // push index to tree
             treeArray.push(indexOfColumnObjectIndex);
             // finish
@@ -796,6 +803,7 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
     } else { // then returnable is not in item
         let fromItem = currentPath[0];
         let toItem = currentPath[1];
+        //////////////////////////////////////////////console.log(fromItem, toItem)
         // remove item_... -> item_... from path
         currentPath.splice(0, 2);
         // get isID based on the itemM2M
@@ -807,7 +815,7 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
             // add index to tree
             treeArray.push(1);
             // get item index
-            let itemIndex = itemOrder.indexOf(returnable['i__table_name']);
+            let itemIndex = itemOrder.indexOf(fromItem);
             // get referenced item index
             let parentItemIndex = itemOrder.indexOf(toItem);
             // get itemNodeObject
@@ -824,13 +832,13 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
             // add index to tree
             treeArray.push(3);
             // get item index
-            let itemIndex = itemOrder.indexOf(returnable['i__table_name']);
+            let itemIndex = itemOrder.indexOf(fromItem);
             // get referenced item index
             let parentItemIndex = itemOrder.indexOf(toItem);
             // get itemNodeObject
             let itemNodeObject = itemNodeObjects[itemIndex];
-            console.log(itemNodeObject)
-            console.log(returnable)
+            ///////////console.log(itemNodeObject)
+            /////////////console.log(returnable)
             // get itemNodeObject nonID itemChildNodePointerObjects
             let nonIDPointerObjects = itemNodeObject.children[3];
             ////////console.log(nonIDPointerObjects)
@@ -860,7 +868,8 @@ const initialReturnableMapper = (returnable, statics) => {
     let treeArray = [];
     // set current path to joinObject tables
     //console.log(returnable)
-    let currentPath = JSON.parse(returnable['r__join_object']).tables;
+    //console.log(returnable['r__join_object'])
+    let currentPath = returnable['r__join_object'].tables;
 
     // if submission
     if(returnable['f__table_name'] === null) {
@@ -917,6 +926,7 @@ const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = s
 //console.log(idColumnTableLookup)
 //console.log(returnableIDLookup)
 //console.log(setupObject)
+fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
     
 module.exports = {
     returnableIDLookup: returnableIDLookup,

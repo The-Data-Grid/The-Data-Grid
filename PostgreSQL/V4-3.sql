@@ -566,7 +566,7 @@ CREATE TABLE metadata_returnable (
             attributeType: null | 'current' | 'observed'
         }
     */
-    join_object JSON,
+    join_object JSON NOT NULL,
 
     /*
     Specifies if this returnable is the standard geographic location for the feature.
