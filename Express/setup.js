@@ -28,7 +28,7 @@ We impose that:
 
 test: each feature has exactly one returnableID with realGeo === true
 
-either joinSQL and joinObject where joinObject is put through rRS and joinObject as appended
+either appendSQL and joinObject where joinObject is put through rRS and joinObject as appended
     or 
 
 in:
@@ -85,7 +85,7 @@ standard:
                     columnName: col.columnName
                 });
                 // needs custom SQL for join
-                joinSQL = pgp.as.format('INNER JOIN m2m_$(listTableName:raw) \
+                appendSQL = pgp.as.format('INNER JOIN m2m_$(listTableName:raw) \
                                         ON m2m_$(listTableName:raw).item_id = $(alias:raw).item_id \
                                         INNER JOIN $(listTableName:raw) \
                                         ON $(listTableName:raw).list_id = m2m_$(listTableName:raw).list_id', {
@@ -159,6 +159,8 @@ let returnableQuery = client.querySync('SELECT \
                                         LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
                                         LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
 
+//console.log(returnableQuery[50]);
+
 let columnQuery = client.querySync('SELECT \
                                     \
                                     c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
@@ -212,17 +214,17 @@ client.end();
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, ID, columnTree, tableTree, returnType, joinSQL, selectSQL, dataColumn) {
-        this.ID = ID
-        this.feature = feature
-        this.dataColumn = dataColumn
-        this.returnType = returnType
-        this.joinSQL = joinSQL
-        this.selectSQL = selectSQL
+    constructor(feature, ID, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName) {
+        this.ID = ID;
+        this.feature = feature;
+        this.frontendName = frontendName;
+        this.returnType = returnType;
+        this.appendSQL = appendSQL;
+        this.selectSQL = selectSQL;
 
-        this.joinObject = this.makeJoinObject(columnTree, tableTree, ID)
+        this.joinObject = this.makeJoinObject(columnTree, tableTree, ID);
 
-        Object.freeze(this)
+        Object.freeze(this);
     }
 
     makeJoinObject(columnTree, tableTree, ID) {
@@ -263,7 +265,7 @@ class ReturnableID {
 
 function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures) {
 
-    let returnableIDLookup = [];
+    let returnableIDLookup = {};
     let idColumnTableLookup = {};
     let featureParents = {};
     let setupObject = {};
@@ -571,80 +573,119 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         }
     }
 
+
+    */
     // Construct featureParents
     // ============================================================
     allFeatures.map((el) => [el['f__table_name'], el['ff__table_name']]).forEach((el) => {
         featureParents[el[0]] = el[1]
     });
-
-    // Construct returnableIDs
+    
+    // Construct ReturnableIDs
     // ============================================================
-    for(let row of rawQuery) {
+    
+    // init custom aliases
+    let listAlias = ['list_alias_', 0];
+
+
+    for(let row of returnableQuery) {
         
         //  console.log(row)  //
         let selectSQL = null;
-        let joinSQL = null;
+        let appendSQL = null;
 
         // Get feature table as string
-        const feature = row['f__table_name']
+        const feature = row['f__table_name'];
 
         // Get column id as string
-        const ID = row['c__column_id'];
+        const returnableID = row['r__returnable_id'];
 
         // Get column tree
-        const columnTree = row['c__reference_column_name']
+        const columnTree = row['r__join_object'].columns;
         //console.log(columnTree) 
 
         // Get table tree
-        const tableTree = row['c__reference_table_name']
+        const tableTree = row['r__join_object'].tables;
         
         // Get return type
-        const returnType = row['rt__type_name']
+        const returnType = row['rt__type_name'];
 
         // Get data column
-        const dataColumn = row['c__column_name']
+        const frontendName = row['r__frontend_name'];
+
+        // Get column name and table name
+        const columnName = row['c__column_name'];
+        const tableName = row['c__table_name'];
 
         // Writing custom SQL for custom queries
         // Auditor Name coalesce
-        if(row['c__frontend_name'] == 'Auditor Name' && row['rt__type_name'] == 'special') {
+        if(frontendName == 'Auditor Name' && returnType == 'special') {
 
-            joinSQL = 'LEFT JOIN tdg_auditor_m2m ON \
-                            tdg_observation_count.observation_count_id = tdg_auditor_m2m.observation_count_id \
-                            INNER JOIN tdg_users AS tdg_users_auditor_name ON tdg_auditor_m2m.user_id = tdg_users_auditor_nameuser_id';
+            appendSQL = 'LEFT JOIN m2m_auditor ON \
+                            tdg_observation_count.observation_count_id = m2m_auditor.observation_count_id \
+                            INNER JOIN item_user AS user_auditor_name ON m2m_auditor.user_id = user_auditor_name.user_id';
 
-            selectSQL = "COALESCE($(feature:value).data_auditor, concat_ws(' ', tdg_users_auditor_name.data_first_name, tdg_users_auditor_name.data_last_name))";
+            selectSQL = 'COALESCE($(observationTable:name).data_auditor, user_auditor_name.data_full_name)';
 
         // Standard Operating Procedure
-        } else if(row['c__frontend_name'] == 'Standard Operating Procedure' && row['rt__type_name'] == 'special') { 
+        } else if(frontendName == 'Standard Operating Procedure' && returnType == 'special') { 
 
-            joinSQL = 'LEFT JOIN tdg_sop_m2m ON\
-                            tdg_observation_count.observation_count_id = tdg_sop_m2m.observation_count_id \
-                            INNER JOIN tdg_sop ON tdg_sop_m2m.sop_id = tdg_sop.sop_id'
+            appendSQL = 'LEFT JOIN m2m_item_sop ON\
+                            tdg_observation_count.observation_count_id = m2m_item_sop.observation_count_id \
+                            INNER JOIN item_sop ON m2m_item_sop.sop_id = tdg_sop.sop_id'
 
-            selectSQL = 'tdg_sop.data_name'
+            selectSQL = 'item_sop.data_name'
 
-        } else if(row['rt__type_name'] == 'obs-list') {
+        } else if(returnType == 'obs-list') {
 
-            joinSQL= pgp.as.format('INNER JOIN $(tableName:value)_m2m \
-                                    ON $(tableName:value)_m2m.observation_id = $(feature:value).observation_id \
-                                    INNER JOIN $(tableName:value) \
-                                    ON $(tableName:value).list_id = $(tableName:value)_m2m.list_id', {feature: row['f__table_name'], tableName : row['c__table_name']})
-        
-            // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = pgp.as.format('$(table:value).$(column:value)', {table:row['c__table_name'], column: row['c__column_name']})
+            appendSQL= pgp.as.format('LEFT JOIN m2m_$(tableName:raw) \
+                                    ON m2m_$(tableName:raw).observation_id = $(feature:name).observation_id \
+                                    INNER JOIN $(tableName:name) AS $(listAlias:name) \
+                                    ON $(listAlias:name).list_id = m2m_$(tableName:value).list_id', {
+                                        feature: feature, 
+                                        tableName: tableName,
+                                        listAlias: listAlias.join('')
+            });
             
+            // Add STRING_AGG() here? ... yes, Oliver!
+            selectSQL = pgp.as.format('$(listAlias:name).$(columnName:name)', {
+                listAlias: listAlias.join(''), 
+                columnName: columnName
+            });
+            
+            // add 1 to listAlias number to make a new unique alias
+            listAlias[1] += 1;
+
+        } else if(returnType == 'item-list') {
+
+            appendSQL= pgp.as.format('LEFT JOIN m2m_$(tableName:raw) \
+                                    ON m2m_$(tableName:raw).item_id = $(feature:name).item_id \
+                                    INNER JOIN $(tableName:name) AS $(listAlias:name) \
+                                    ON $(listAlias:name).list_id = m2m_$(tableName:value).list_id', {
+                                        feature: feature, 
+                                        tableName: tableName,
+                                        listAlias: listAlias.join('')
+            });
+            
+            // Add STRING_AGG() here? ... yes, Oliver!
+            selectSQL = pgp.as.format('$(listAlias:name).$(columnName:name)', {
+                listAlias: listAlias.join(''), 
+                columnName: columnName
+            });
+            
+            // add 1 to listAlias number to make a new unique alias
+            listAlias[1] += 1;
 
         } else {
             selectSQL = `$(table:value).${row['c__column_name']}`
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup.push(new ReturnableID(feature, ID, columnTree, tableTree, returnType, joinSQL, selectSQL, dataColumn))
+        returnableIDLookup.push(new ReturnableID(feature, returnableID, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName))
 
     }
 
-    */
-
+    
     return({
         setupObject: setupObject,
         idColumnTableLookup: idColumnTableLookup,
@@ -908,6 +949,7 @@ const sendSetup = (req, res, setupObject = setupObject) => {
 }
 
 
+//console.log(featureParents);
 //console.log(idColumnTableLookup)
 //console.log(returnableIDLookup)
 //console.log(setupObject)

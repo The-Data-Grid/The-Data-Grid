@@ -117,7 +117,7 @@ function templateParse(req, res, next) {
 ////// SETUP PARSING //////
 
 function setupParse(req, res, next) {
-    res.locals.parsed.clientLastModified = req.headers['If-Modified-Since'];
+    res.locals.parsed.ifModifiedSince = req.headers['If-Modified-Since'];
     next();
 }
 
