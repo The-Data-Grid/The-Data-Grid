@@ -1,6 +1,11 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from '../../api.service';
+import { SetupObjectService } from '../../setup-object.service';
+import { SetupObject, TableObject } from '../../responses'
+import { environment } from '../../../environments/environment';
+const USE_FAKE_DATA = environment.useFakeData;
+
 
 interface Data {
   name: string,
@@ -15,10 +20,12 @@ interface Data {
 export class GlobalPresetsComponent implements OnInit {
 
   constructor(private apiService: ApiService, public dialogRef: MatDialogRef<GlobalPresetsComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Data) { }
+    @Inject(MAT_DIALOG_DATA) public data: Data, private setupObjectService: SetupObjectService) { }
 
   setupObject;
   globalSelectors;
+  appliedFilterSelections = [];
+  defaultColumns = [];
 
   ngOnInit(): void {
     this.getSetupTableObject();
@@ -26,12 +33,11 @@ export class GlobalPresetsComponent implements OnInit {
 
   getSetupTableObject() {
     this.apiService.getSetupTableObject(null).subscribe((res) => {
-      this.setupObject = res;
-
-      // parse global columns
-      this.globalSelectors = this.setupObject.globalColumns;
-
-      console.log(this.globalSelectors);
+      USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
+      this.globalSelectors = this.setupObjectService.getGlobalSelectors(
+        this.setupObject,
+        this.appliedFilterSelections,
+        this.defaultColumns);
     });
   }
 

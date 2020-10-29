@@ -2,6 +2,10 @@ import { Component, OnInit, Inject, ViewChild, HostListener } from '@angular/cor
 import { ApiService } from '../../api.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatCheckboxModule, MatCheckbox} from '@angular/material/checkbox';
+import { SetupObjectService } from '../../setup-object.service';
+import { SetupObject, TableObject } from '../../responses'
+import { environment } from '../../../environments/environment';
+const USE_FAKE_DATA = environment.useFakeData;
 
 interface Data {
   name: string,
@@ -19,12 +23,12 @@ export class RootFeaturesComponent implements OnInit {
 
   constructor(private apiService: ApiService,
     public dialogRef: MatDialogRef<RootFeaturesComponent>,
-    @Inject(MAT_DIALOG_DATA)public data: Data) {
+    @Inject(MAT_DIALOG_DATA)public data: Data, private setupObjectService: SetupObjectService) {
     }
 
 
   setupObject;
-  all_root_features = [];
+  rootFeatures;
   currentWindowWidth;
 
   ngOnInit(): void {
@@ -37,37 +41,6 @@ export class RootFeaturesComponent implements OnInit {
     console.log(this.currentWindowWidth)
   }
 
-
-
-  hideOrShow(id) {
-    if (document.getElementById(id).style.display != "none") {
-      document.getElementById(id).style.display = "none";
-    }
-    else {
-      document.getElementById(id).style.display = "block";
-    }
-
-    if (document.getElementById(id + ' caret').classList.contains('right')) {
-      document.getElementById(id + ' caret').classList.remove('right');
-      document.getElementById(id + ' caret').classList.add('down');
-    }
-
-    else {
-      document.getElementById(id + ' caret').classList.remove('down');
-      document.getElementById(id + ' caret').classList.add('right');
-    }
-
-    if (document.getElementById(id + ' separator').classList.contains('separators_highlight')) {
-      console.log("removing")
-      document.getElementById(id + ' separator').classList.remove('separators_highlight');
-    }
-
-    else {
-      console.log("adding");
-      document.getElementById(id + ' separator').classList.add('separators_highlight');
-    }
-    
-  }
 
   getFeaturesLength() {
     for (var i = 0;; i++) {
@@ -149,20 +122,29 @@ getSubFeaturesLength(subfeatureList) {
     }
   }
 
-  getSetupObject() {
-    this.apiService.getSetupTableObject(null).subscribe((res) => {
-      this.setupObject = res;
+getSetupObject() {
+  this.apiService.getSetupTableObject(null).subscribe((res) => {
+    USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
+    this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
+    // this.setupObjectService.getRootFeatures(this.setupObject);
+  });
+}
+  
+
+  // getSetupObject() {
+  //   this.apiService.getSetupTableObject(null).subscribe((res) => {
+  //     this.setupObject = res;
 
 
-      for (var i = 0; i < this.setupObject.subfeatureStartIndex; i++) {
-        // if (document.getElementById(this.setupObject.featureColumns[i].frontendName) != null) {
-          if (!this.all_root_features.includes(this.setupObject.featureColumns[i].frontendName))
-            this.all_root_features.push(this.setupObject.featureColumns[i].frontendName)
-        // }
-      }
-      console.log(this.all_root_features)
-    });
-  }
+  //     for (var i = 0; i < this.setupObject.subfeatureStartIndex; i++) {
+  //       // if (document.getElementById(this.setupObject.featureColumns[i].frontendName) != null) {
+  //         if (!this.all_root_features.includes(this.setupObject.featureColumns[i].frontendName))
+  //           this.all_root_features.push(this.setupObject.featureColumns[i].frontendName)
+  //       // }
+  //     }
+  //     console.log(this.all_root_features)
+  //   });
+  // }
 
 
 }

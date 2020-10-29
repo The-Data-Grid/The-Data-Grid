@@ -44,11 +44,11 @@
 
   <div *ngIf="status=='roots'" style="margin-top: 20px; width: 90%; margin-left:25px">
     <mat-accordion>
-      <div *ngFor="let feature of all_root_features">
+      <div *ngFor="let feature of rootFeatures">
         <mat-expansion-panel>
           <mat-expansion-panel-header class="right-aligned-header">
             <mat-panel-title>
-              {{ feature }}
+              {{ feature.frontendName }}
             </mat-panel-title>
             <mat-panel-description>
               <input [id]="feature+ ' root checkbox'" class="checkmark" style="cursor: pointer;" type="checkbox"
