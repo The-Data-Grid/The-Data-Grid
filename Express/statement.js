@@ -235,6 +235,129 @@ let tableNameSQLLookup = {
     }
 }
 
+// Old construct.js
+
+// SQL //
+// ============================================================
+
+// newCreateList: SQL for creating a new list_m2m table
+
+const newCreateListm2m = 'CREATE TABLE $(tableName:value) (\
+    observation_id INTEGER NOT NULL,\
+    list_id INTEGER NOT NULL)'
+
+// newCreateList: SQL for creating a new list table
+
+const newCreateList = 'CREATE TABLE $(tableName:value) (\
+    list_id SERIAL PRIMARY KEY,\
+    $(columnName:value) $(sqlDatatype:value) NOT NULL)'
+
+// newAddColumn: SQL for adding a column to an existing table
+
+const newAddColumn = 'ALTER TABLE $(tableName:value) ADD COLUMN $(columnName:value) $(sqlDatatype:value) $(nullable:value)'
+
+// reference: SQL for making one column reference another
+
+var reference = 'ALTER TABLE $(fkTable:value) \
+                  ADD FOREIGN KEY ($(fkCol:value)) \
+                  REFERENCES $(pkTable:value) ($(pkCol:value))';
+
+// newCreateFeature: SQL for creating new feature table
+
+var newCreateFeature = 
+        'CREATE TABLE $(feature:value) (\
+            observation_id SERIAL PRIMARY KEY,\
+            observation_count_id INTEGER NOT NULL, \
+            submission_id INTEGER NOT NULL,\
+            featureitem_id INTEGER NOT NULL)'
+
+// newCreateSubfeature: SQL for creating new subfeature table
+
+var newCreateSubfeature = {
+    withFeatureItem: 'CREATE TABLE $(feature:value) (\
+        parent_id INTEGER NOT NULL, \
+        observation_id SERIAL PRIMARY KEY,\
+        observation_count_id INTEGER NOT NULL, \
+        featureitem_id INTEGER NOT NULL)',
+    withoutFeatureItem: 'CREATE TABLE $(feature:value) (\
+        parent_id INTEGER NOT NULL, \
+        observation_id SERIAL PRIMARY KEY,\
+        observation_count_id INTEGER NOT NULL)'
+};
+
+// newCreateFeatureItem: SQL for creating new feature item table
+// TODO: add unique constraint to group of ID columns
+
+var newCreateFeatureItem = 
+        'CREATE TABLE $(feature:value) ( \
+            item_id SERIAL PRIMARY KEY, \
+            $(location:value) INTEGER NOT NULL)';
+
+// newMetadataFeature: SQL for inserting one row to
+// the metadata_feature table, representing a feature (which has no parent)
+
+var newMetadataFeature =
+				'INSERT INTO metadata_feature \
+					(feature_id, table_name, parent_id, num_feature_range, information, frontend_name) \
+					VALUES \
+					(DEFAULT, $(tableName), \
+					null, \
+					$(numFeatureRange), \
+					$(information), \
+					$(frontendName));'
+
+// newMetadataSubfeature: SQL for inserting one row to
+// the metadata_feature table, representing a subfeature (which has a parent)
+
+var newMetadataSubfeature =
+				'INSERT INTO metadata_feature \
+					(feature_id, table_name, parent_id, num_feature_range, information, frontend_name) \
+					VALUES \
+					(DEFAULT, $(tableName), \
+					(SELECT feature_id FROM metadata_feature WHERE table_name = $(parentTableName)), \
+					$(numFeatureRange), \
+					$(information), \
+					$(frontendName));'
+
+// select[X]ID: SQL to get ID corresponding to non-null name
+
+var selectFeatureID = '(SELECT feature_id from metadata_feature WHERE table_name = $(featureName:value))'
+var selectSelectorID = '(SELECT selector_id from metadata_selector WHERE selector_name = $(selectorName:value))'
+var selectSqlTypeID = '(SELECT type_id from metadata_sql_type WHERE type_name = $(sqlDatatype:value))'
+var selectRefTypeID = '(SELECT type_id from metadata_reference_type WHERE type_name = $(referenceDatatype:value))'
+var selectFrontendTypeID = '(SELECT type_id from metadata_frontend_type WHERE type_name = $(frontendDatatype:value))'
+
+var initialSelectStatment = {
+    newSelectFeatureID: 'SELECT feature_id, table_name from metadata_feature',
+    newSelectSelectorID: 'SELECT selector_id, selector_name from metadata_selector',
+    newSelectSqlTypeID: 'SELECT type_id, type_name from metadata_sql_type',
+    newSelectRefTypeID: 'SELECT type_id, type_name from metadata_reference_type',
+    newSelectFrontendTypeID: 'SELECT type_id, type_name from metadata_frontend_type'
+}
+
+// newMetadataColumn: SQL for inserting one row to the metadata_column
+// table, representing a feature-associated or global data column
+
+var newMetadataColumn =
+'INSERT INTO metadata_column \
+(column_id, feature_id, rootfeature_id, frontend_name, column_name, table_name, reference_column_name, reference_table_name, information, filter_selector, input_selector, sql_type, reference_type, frontend_type, is_nullable, is_default, is_global, is_ground_truth) \
+VALUES \
+(DEFAULT, \
+(SELECT feature_id from metadata_feature WHERE table_name = $(featureName)), \
+(SELECT feature_id from metadata_feature WHERE table_name = $(rootFeatureName)), \
+$(frontendName), \
+$(columnName), \
+$(tableName), \
+$(referenceColumnName:json), \
+$(referenceTableName:json), \
+$(information), \
+(SELECT selector_id from metadata_selector WHERE selector_name = $(filterSelectorName)), \
+(SELECT selector_id from metadata_selector WHERE selector_name = $(inputSelectorName)), \
+(SELECT type_id from metadata_sql_type WHERE type_name = $(sqlDatatype)), \
+(SELECT type_id from metadata_reference_type WHERE type_name = $(referenceDatatype)), \
+(SELECT type_id from metadata_frontend_type WHERE type_name = $(frontendDatatype)), \
+$(nullable), $(default), $(global), $(groundTruthLocation))'
+
 
 
 

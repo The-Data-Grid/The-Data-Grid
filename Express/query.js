@@ -253,8 +253,6 @@ function featureQuery(req, res) {
             selectClauses.push(pgp.as.format(returnable.selectSQL, {
                 table: alias
             }))
-            // add feature to featureTree
-            featureTree.push(returnable.feature)
             // add table and column to whereLookup
             whereLookup[returnable.ID] = alias + '.' + returnable.dataColumn
         }
@@ -480,7 +478,7 @@ function featureQuery(req, res) {
     let query = [...selectClauses, ...featureClauseArray, ...submissionClauseArray, ...listAndSpecialClauseArray, ...dynamicClauseArray, ...whereClauseArray, ...universalFilterArray]; 
     console.log(query)
     // Concatenating clauses to make final SQL query
-    let finalQuery = query.join(' ') + ';'; 
+    let finalQuery = query.join(' '); 
 
      // DEBUG: Show SQL Query //
      console.log(finalQuery); 
