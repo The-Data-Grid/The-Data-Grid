@@ -3,11 +3,14 @@
     IDs and controller are index matched
 */
 {
-    "IDs": [23], //this is just an example
+    "IDs": [23, 30], //this is just an example
     "controller": [
         {
             "isUsed": false,
             "frontendName": "something"
+        },
+        {
+            "isUsed": false
         }
     ]
 }
