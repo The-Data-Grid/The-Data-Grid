@@ -1,104 +1,21 @@
-// CALLING //
-// ============================================================
-/*
-1. Insert features into metadata_feature,
-    create feature_..., subfeature_..., and item_... tables (auditing tables)
-2. Add foreign key constraints for auditing tables
-
-3. Insert columns into metadata_column and add data_... columns
-4. Add foreign key constraints for data_... columns
-5. Add local-global and special columns into metadata_column for every feature
-
-Proposed New Steps:
-1.  in: featureInput
-        - create item_... tables for root features
-            create_observational_item_table(feature_name TEXT)
-                -> item table name
-        - add foreign key constraints for observational item tables
-            add_item_to_item_reference(item_name TEXT, requiredItem regclass, isID BOOLEAN, isNullable BOOLEAN)
-        - insert observable items into metadata_item
-            insert_metadata_item_observable(item, creationpriv)
-        - insert item to item relations into m2m_metadata_item
-            insert_m2m_metadata_item(item)
-        - create observation_... and subobservation_... tables (obs first!)
-            create_observation_table
-            create_subobservation_table
-        - insert features into metadata_feature
-            insert_metadata_feature
-            insert_metadata_subfeature
-
-*/
-
-/*
-
-3.  in: returnableInput
-
-Problem
-    attributes make there a single metadata_column map to two returnables within a feature
-\
-constraint: no item can reference another item more than once
-            lists are always nullable
-            item cannot reference same location type more than once
-            attributes are always non nullable
-            lists and factors are specific to one item or observation table
-
-
-Finding returnables
-1. start at feature and go to corresponding observable item
-2. find all data columns for that item
-3. go to that item's referenced items and go back to step 2
-
-repeats:
-    attribute
-    data column referenced more than once within a feature tree
-
-
-forEach root + submission {
-
-    let generateReturnables(...)
-
-}
-
-
-npm run construct -- make-schema [water] [--show-computed | -sc] 
-
-    if there is a returnables folder it doesn't remake
-
-npm run construct -- --config-returnables [water] file=[config] [--remove | -r]
-                        command        audit schema     file     remove the file   
-
-npm run construct -- inspect [--feature | -f] [--returnable | -r] [--column | -c]
-
-make the returnables folder and files
-
-
-let ex = {
-    metadataColumnID: 'a',
-    featureName: 'a',
-    rootFeatureName: 'a',
-    joinObject: {
-        columns: 'Array',
-        tables: 'Array',
-        appendSQL: 'String',
-        selectSQL: 'String'
-    },
-    isRealGeo: 'a'
-}
-*/
-
 // ============================================================
 // This script constructs feature/subfeature tables
 // and simultaneously inserts relevant metadata.
 //
-// TODO: referencing items that were specified
-//       everything inside a transaction?
+// TODO: everything inside a transaction?
+//
+//    constraints: - no item can reference another item more than once
+//                 - lists are always nullable
+//                 - item cannot reference the same location type more than once
+//                 - attributes are always non nullable
+//                 - lists and factors are specific to one item or observation table
 //
 // ============================================================
 const pgp = require("pg-promise")(); // Postgres interaction
 const fs = require('fs'); // Import Node.js File System
-const stripJsonComments = require('strip-json-comments');
-const chalk = require('chalk');
-var util = require('util');
+const stripJsonComments = require('strip-json-comments'); // .jsonc handling
+const chalk = require('chalk'); // pretty console.log
+var util = require('util'); // util.inspect()
 
 
 const {} = require('../statement.js');
@@ -121,36 +38,36 @@ const connection = {
 
 // SQL Statements
 
-var insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable))';
+const insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable), $(frontendName), $(information))';
 
-var add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn';
+const add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn';
 
-var insert_metadata_column = 'CALL \
-"insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(sqlType), $(referenceType))';
+const insert_metadata_column = 'CALL \
+"insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(accuracy), $(sqlType), $(referenceType))';
 
-var insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))';
+const insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))';
 
-var insert_metadata_subfeature = 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))';
+const insert_metadata_subfeature = 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))';
 
-var insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(creationPrivilege))';
+const insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(frontendName), $(creationPrivilege))';
 
-var create_observation_table = 'CALL "create_observation_table"($(tableName))';
+const create_observation_table = 'CALL "create_observation_table"($(tableName))';
 
-var create_subobservation_table = 'CALL "create_subobservation_table"($(tableName), $(parentTableName))';
+const create_subobservation_table = 'CALL "create_subobservation_table"($(tableName), $(parentTableName))';
 
-var create_observational_item_table = 'SELECT "create_observational_item_table"($(featureName))';
+const create_observational_item_table = 'SELECT "create_observational_item_table"($(featureName))';
 
-var add_unique_constraint = 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))';
+const add_unique_constraint = 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))';
 
-var add_data_col = 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))';
+const add_data_col = 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))';
 
-var add_list = 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))';
+const add_list = 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))';
 
-var add_location = 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))';
+const add_location = 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))';
 
-var add_factor = 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))';
+const add_factor = 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))';
 
-var add_attribute = 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))';
+const add_attribute = 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))';
 
 const getReturnables = 'SELECT r.returnable_id AS id, f.table_name AS feature, r.frontend_name as frontendName, r.is_used AS isUsed, r.join_object AS joinObject, r.is_real_geo AS isRealGeo \
                         FROM metadata_returnable AS r LEFT JOIN metadata_feature AS f on r.feature_id = f.feature_id ORDER BY id ASC';
@@ -162,9 +79,12 @@ const getItemParents = 'SELECT child.table_name AS child, parent.table_name AS p
                           INNER JOIN metadata_item AS parent ON m2m.referenced_item_id = parent.item_id';
 
 const makeItemReturnablesColumnQuery = 'SELECT c.column_id AS columnID, c.column_name AS columnName, c.table_name AS tableName, c.subobservation_table_name AS subobservationTableName, c.frontend_name AS frontendName, r.type_name AS ReferenceTypeName FROM metadata_column AS c INNER JOIN metadata_reference_type AS r ON c.reference_type = r.type_id WHERE c.metadata_item_id = (SELECT i.item_id FROM metadata_item AS i WHERE i.table_name = $(itemName))'
+
 const makeItemReturnablesFeatureQuery = 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(featureName)'
+
 const makeItemReturnablesSubobservationQuery = 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(subobservationTableName)'
-const insert_metadata_returnable = 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject:json), $(isRealGeo)) AS returnableid'
+
+const insert_metadata_returnable = 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject), $(isRealGeo)) AS returnableid'
     
 // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
 const checkAuditorNameTrigger = 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \
@@ -460,7 +380,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
             {
                 featureName: feature,
                 itemName: featureOutput.featureItemLookup[feature],
-                path: []
+                path: [feature, featureOutput.featureItemLookup[feature]]
             }
         ];
 
@@ -552,6 +472,7 @@ async function constructFeatures2(features) {
         try {
             await db.none(pgp.as.format(insert_metadata_item_observable, {
                 itemName: featureItemLookup[feature.tableName],
+                frontendName: feature.observableItem.frontendName,
                 creationPrivilege: feature.observableItem.creationPrivilege
             }));
 
@@ -586,7 +507,9 @@ async function constructFeatures2(features) {
                     observableItem: featureItemLookup[feature.tableName],
                     referenced: required.name,
                     isID: required.isID,
-                    isNullable: required.isNullable
+                    isNullable: required.isNullable,
+                    frontendName: required.frontendName,
+                    information: required.information
                 })); 
 
                 console.log(chalk.green(`Feature Metadata: Inserted ${featureItemLookup[feature.tableName]} to ${required.name} relation into m2m_metadata_item`));
@@ -701,6 +624,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                     inputSelectorName: column.inputSelectorName,
                     frontendType: column.frontendType,
                     information: column.information,
+                    accuracy: column.accuracy,
                     sqlType: column.sqlType,
                     referenceType: column.referenceType
                 }));
@@ -769,6 +693,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                 inputSelectorName: column.inputSelectorName,
                 frontendType: column.frontendType,
                 information: column.information,
+                accuracy: column.accuracy,
                 sqlType: column.sqlType,
                 referenceType: column.referenceType
             }));
@@ -977,6 +902,11 @@ in: itemArray: Array of items to find returnables for and their paths
     itemRealGeoLookup: item -> realGeo object
 
 out: returnableArray: The complete array of returnableIDs
+
+    Finding returnables
+        1. start at feature and go to corresponding observable item
+        2. find all data columns for that item
+        3. go to that item's referenced items and go back to step 2
 ============================================================ */
 async function generateReturnables(itemArray, returnableArray, itemParentLookup, itemRealGeoLookup, featureItemLookup) {
 
@@ -1063,6 +993,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
     }
 
     // construct joinObject from path
+    // if path exists
     if(itemObject.path.length > 0) {
         // sanity check
         if(itemObject.path.length % 2 !== 0) {
@@ -1072,10 +1003,16 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         joinObject.tables = Array.from(itemObject.path)
         // make columns
         for(let n = 0; n < itemObject.path.length; n += 2) {
-            // push foreign key column
-            joinObject.columns.push(`${itemObject.path[n+1]}_id`);
-            // push primary key column
-            joinObject.columns.push('item_id');
+            if(n == 0 && featureItemLookup[itemObject.featureName] === itemObject.itemName) { // if observable item and first join
+                // push the item_id column (in both the observation_... and item_... table)
+                joinObject.columns.push('item_id');
+                joinObject.columns.push('item_id');
+            } else {
+                // push foreign key column
+                joinObject.columns.push(`${itemObject.path[n+1]}_id`);
+                // push primary key column
+                joinObject.columns.push('item_id');
+            }
         }
     }
 
@@ -1089,12 +1026,23 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         // PK
         let columnID = col.columnid;
         let frontendName = col.frontendname;
+        let insertableJoinObject;
         // this is lowkey kind of dumb. The attributeType is different between cols so we can't
         // mutate the base joinObject. I'm sure there's a better way.
-        let insertableJoinObject = {
-            columns: joinObject.columns,
-            tables: joinObject.tables,
-            attributeType: null
+
+        // if item-... and not obs-... reference type
+        if(['item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'].includes(col.referencetypename)) {
+            insertableJoinObject = {
+                columns: joinObject.columns,
+                tables: joinObject.tables,
+                attributeType: null
+            };
+        } else { // empty columns and tables for obs-... reference types
+            insertableJoinObject = {
+                columns: [],
+                tables: [],
+                attributeType: null
+            }
         };
 
         // if not submission
@@ -1116,8 +1064,6 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 featureID = await db.one(pgp.as.format(makeItemReturnablesSubobservationQuery, {
                     subobservationTableName: col.subobservationtablename
                 }));
-
-                
 
                 featureID = featureID.featureid;
             } else {
@@ -1271,8 +1217,7 @@ async function makeItemParentLookup() {
 function constructjsError(error) {
     console.log(chalk.bgWhite.red(error));
     console.log(chalk.bgWhite.red('CONSTRUCT.JS EXECUTION HALTED'));
-    throw Error('we are throwing I guess!');
-    return {error: true};
+    throw Error('you are literally throwing ~ wtf bro!');
 }
 
 
@@ -1280,6 +1225,7 @@ function constructjsError(error) {
 function readSchema(file) { // Schema read function
     return JSON.parse(stripJsonComments(fs.readFileSync(__dirname + file, 'utf8')))
 }
+
 
 
 async function showComputed(commandLineArgs) {
@@ -1300,358 +1246,3 @@ async function showComputed(commandLineArgs) {
 }
 
    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ============================================================
-// constructFeatures (features)
-// ============================================================
-// Takes a list of metadataFeatureInput objects
-// and returns an object of the form
-// 	{createList:	 [list of SQL create statements],
-// 	 refList:			 [list of SQL ref statements],
-//   metadataList: [list of SQL metadata insert statements]}
-// ============================================================
-
-function constructFeatures(features) {
-    
-		
-	let metadataList = [];
-    let createList = [];
-    let refList = [];
-
-    /* TODO: add validation so subfeature with nonexistent parent cannot be created */
-
-    //For every feature/subfeature
-    features.forEach((element, index) => {
-        
-        // if root feature
-        if (element.parentTableName === null) {
-            
-						// add metadata_feature entry
-						metadataList.push(pgp.as.format(newMetadataFeature, {
-                                tableName: element.tableName,
-								numFeatureRange: (element.numFeatureRange === null ?
-																	null : element.numFeatureRange),
-								information: element.information,
-								frontendName: element.frontendName
-            }));
-
-
-            // add create feature table to stack
-            createList.push(pgp.as.format(newCreateFeature, {
-                feature: element.tableName
-            }));
-
-            // add feature to submission reference to stack
-             refList.push(pgp.as.format(reference, {
-                pkCol: 'submission_id',
-                pkTable: 'tdg_submission',
-                fkCol: 'submission_id',
-                fkTable: element.tableName
-            }));
-            
-            // add feature to observation count reference to stack
-            refList.push(pgp.as.format(reference, {
-                pkCol: 'observation_count_id' ,
-                pkTable: 'tdg_observation_count',
-                fkCol: 'observation_count_id',
-                fkTable: element.tableName
-            }));
-
-            // If room or building we need to do something else because these items already exist
-            if(['item_room', 'item_building'].includes(element.tableName.replace('feature_', 'item_'))) {
-
-                // add feature to feature item reference to stack
-                refList.push(pgp.as.format(reference, {
-                    pkCol: 'item_id',
-                    pkTable: element.tableName.replace('feature_', 'item_'),
-                    fkCol: 'featureitem_id',
-                    fkTable: element.tableName
-                }));
-
-            } else {
-
-                // add create feature item to stack
-                createList.push(pgp.as.format(newCreateFeatureItem, {
-                    feature: element.tableName.replace('feature_', 'item_'),
-                    location: element.location + '_id'  
-                }));
-
-                // add feature to feature item reference to stack
-                refList.push(pgp.as.format(reference, {
-                    pkCol: 'item_id',
-                    pkTable: element.tableName.replace('feature_', 'item_'),
-                    fkCol: 'featureitem_id',
-                    fkTable: element.tableName
-                }));
-
-                // add feature item to location reference to stack
-                if(['item_room', 'item_building'].includes(element.location)) {
-                    refList.push(pgp.as.format(reference, {
-                        pkCol: 'item_id',
-                        pkTable: element.location,
-                        fkCol: element.location + '_id' ,
-                        fkTable: element.tableName.replace('feature_', 'item_')
-                    }));
-                } else {
-                    refList.push(pgp.as.format(reference, {
-                        pkCol: 'location_id',
-                        pkTable: element.location,
-                        fkCol: element.location + '_id' ,
-                        fkTable: element.tableName.replace('feature_', 'item_')
-                    }));
-                }
-                
-            }
-
-        } else { // then a subfeature
-						
-						// add metadata_feature entry
-						metadataList.push(pgp.as.format(newMetadataSubfeature, {
-                                tableName: element.tableName,
-								parentTableName: element.parentTableName,
-								numFeatureRange: (element.numFeatureRange === null ?
-																	null : element.numFeatureRange),
-								information: element.information,
-								frontendName: element.frontendName
-            }));
-
-            // if no feature item
-            if(element.location === null) {
-
-                // add create subfeature to stack
-                createList.push(pgp.as.format(newCreateSubfeature.withoutFeatureItem, {
-                    feature: element.tableName
-                }));
-
-            } else { // then featureitem
-                
-                // add create subfeature to stack
-                createList.push(pgp.as.format(newCreateSubfeature.withFeatureItem, {
-                    feature: element.tableName
-                }));
-
-                // add create feature item to stack
-                createList.push(pgp.as.format(newCreateFeatureItem, {
-                    feature: element.tableName.replace('subfeature_', 'item_'),
-                    location: element.location + '_id'  
-                }));
-
-                // add subfeature to feature item reference to stack
-                refList.push(pgp.as.format(reference, {
-                    pkCol : 'featureitem_id',
-                    pkTable: element.tableName,
-                    fkCol: 'item_id',
-                    fkTable: element.tableName.replace('subfeature_', 'item_')
-                }))
-
-                // add feature item to location reference to stack
-                if(['item_room', 'item_building'].includes(element.location)) {
-                    refList.push(pgp.as.format(reference, {
-                        pkCol: 'item_id',
-                        pkTable: element.location,
-                        fkCol: element.location + '_id' ,
-                        fkTable: element.tableName.replace('feature_', 'item_')
-                    }));
-                } else {
-                    refList.push(pgp.as.format(reference, {
-                        pkCol: 'location_id',
-                        pkTable: element.location,
-                        fkCol: element.location + '_id' ,
-                        fkTable: element.tableName.replace('feature_', 'item_')
-                    }));
-                }
-
-            }
-
-            // add subfeature to observation count reference to stack
-            refList.push(pgp.as.format(reference, {
-                pkCol: 'observation_count_id' ,
-                pkTable: 'tdg_observation_count',
-                fkCol: 'observation_count_id',
-                fkTable: element.tableName
-            }));
-        }
-    })
-
-    return {fCreateList: createList, fRefList: refList, fMetadataList: metadataList}
-}
-
-// ============================================================
-// addDataColumns (columns)
-// ============================================================
-// Takes a list of metadataColumnInput objects
-// and returns an object of the form
-// 	{createList:	 [list of SQL create statements],
-// 	 refList:			 [list of SQL ref statements],
-//   metadataList: [list of SQL metadata insert statements]}
-// ============================================================
-
-function addDataColumns(columns, features) {
-
-    let createList = [];
-    let refList = [];
-	let metadataList = [];
-
-    columns.forEach( column => {
-
-        // INSERTING INTO METADATA_COLUMN //
-
-        if (column.referenceDatatype != 'local-global' && column.referenceDatatype != 'special') {
-
-            // Insert metadata_column entry for all non-globals (except submission)
-            metadataList.push(pgp.as.format(newMetadataColumn, {
-                featureName: column.featureName,
-                rootFeatureName: column.rootFeatureName,
-                frontendName: column.frontendName,
-                columnName: column.columnName,
-                tableName: column.tableName,
-                referenceColumnName: column.referenceColumnName,
-                referenceTableName: column.referenceTableName,
-                information: column.information,
-                filterSelectorName: column.filterSelectorName,
-                inputSelectorName: column.inputSelectorName,
-                sqlDatatype: column.sqlDatatype,
-                referenceDatatype: column.referenceDatatype,
-                frontendDatatype: column.frontendDatatype,
-                nullable: column.nullable,
-                default: column.default,
-                global: column.global,
-                groundTruthLocation: column.groundTruthLocation
-            }))
-
-        } else {
-
-            // Insert metadata_column entry for local-global and special FOR EVERY FEATURE
-            // Note: It's done this way because these are the same for every feature, and thus
-            //       are in globalColumns.json once, but must be included in metadata_column
-            //       for every feature
-
-            for(feature of features) {
-
-                metadataList.push(pgp.as.format(newMetadataColumn, {
-                    featureName: feature.tableName,
-                    rootFeatureName: null,
-                    frontendName: column.frontendName,
-                    columnName: column.columnName,
-                    tableName: feature.tableName,
-                    referenceColumnName: column.referenceColumnName,
-                    referenceTableName: column.referenceTableName,
-                    information: column.information,
-                    filterSelectorName: column.filterSelectorName,
-                    inputSelectorName: column.inputSelectorName,
-                    sqlDatatype: column.sqlDatatype,
-                    referenceDatatype: column.referenceDatatype,
-                    frontendDatatype: column.frontendDatatype,
-                    nullable: column.nullable,
-                    default: column.default,
-                    global: column.global,
-                    groundTruthLocation: column.groundTruthLocation
-                }))
-            }
-            
-        }
-
-        // CREATING LISTS, DATA_... COLUMNS, AND REFERENCES //
-				
-        if (column.referenceDatatype == 'list') {
-
-            // Create List table
-            createList.push(pgp.as.format(newCreateList, {
-                tableName: column.tableName,
-                columnName: column.columnName,
-                sqlDatatype: column.sqlDatatype
-            }))
-
-            // Create List Many to Many
-            createList.push(pgp.as.format(newCreateListm2m, {
-                tableName: column.tableName.replace('list_', 'list_m2m_')
-            }))
-
-            // Create m2m to List reference
-            refList.push(pgp.as.format(reference, {
-                pkCol: 'list_id',
-                pkTable: column.tableName,
-                fkCol: 'list_id',
-                fkTable: column.tableName.replace('list_', 'list_m2m_')
-            }))
-
-            // Create m2m to feature reference
-            refList.push(pgp.as.format(reference, {
-                pkCol: 'observation_id',
-                pkTable: column.featureName,
-                fkCol: 'observation_id',
-                fkTable: column.tableName.replace('list_', 'list_m2m_')
-            }))
-            
-        } else if (column.referenceDatatype == 'local') {
-
-            createList.push(pgp.as.format(newAddColumn, {
-                tableName: column.tableName,
-                columnName: column.columnName,
-                sqlDatatype: column.sqlDatatype,
-                nullable: (column.nullable ? '' : 'NOT NULL')
-            }))
-
-        } else if (column.referenceDatatype == 'item' || column.referenceDatatype == 'location' ) {
-            // For now new columns cannot be created with metadata_column entries!
-
-                /* DEFINING LOCAL-GLOBAL AND SPECIAL FOR EVERY FEATURE
-                1. Adding local-global and special entries to metdata_column for every feature
-                2. Adding local-global columns to every feature
-                3. Adding the data_auditor_name column to every feature
-                4. Adding the Auditor Name trigger for every feature
-                */
-
-        } else if (column.referenceDatatype == 'local-global') { //LOCAL GLOBALS ARE SPECIFIED FOR EVERY FEATURE
-
-            for(feature of features) { // Data column is added for every feature
-                
-                // 2.
-                createList.push(pgp.as.format(newAddColumn, {
-                    tableName: feature.tableName,
-                    columnName: column.columnName,
-                    sqlDatatype: column.sqlDatatype,
-                    nullable: (column.nullable ? '' : 'NOT NULL')
-                }))
-
-            } //for every feature
-        } else if (column.referenceDatatype == 'special' && column.frontendName == 'Auditor Name') {
-            // special case for auditor name
-            for(feature of features) { // for every feature
-                // Data column is added for every feature
-                createList.push(pgp.as.format(newAddColumn, {
-                    tableName: feature.tableName,
-                    columnName: column.columnName,
-                    sqlDatatype: column.sqlDatatype,
-                    nullable: (column.nullable ? '' : 'NOT NULL')
-                }))
-
-                // Auditor Name trigger is added for every feature
-                refList.push(pgp.as.format(checkAuditorNameTrigger, {
-                    tableName: feature.tableName
-                }))
-
-            } 
-        }
-        
-    })
-    
-    return {cCreateList: createList, cRefList: refList, cMetadataList: metadataList};
-};

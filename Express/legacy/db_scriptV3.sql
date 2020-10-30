@@ -471,4 +471,3 @@ ALTER TABLE toilet_stall_condition_m2m ADD FOREIGN KEY (stall_condition_id) REFE
 ALTER TABLE item_community ADD CONSTRAINT community_cant_ref_room CHECK (community_location(location_id));
 ALTER TABLE item_building ADD CONSTRAINT building_cant_ref_room CHECK (building_location(location_id));
 ALTER TABLE audit_room ADD CONSTRAINT room_must_ref_room CHECK (building_location(location_id));
-

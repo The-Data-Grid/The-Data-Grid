@@ -10,13 +10,14 @@
         "information": "A fixed receptacle into which a person may urinate or defecate",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_room", "isID": true, "isNullable": false}
+                {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Toilet", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Toilet",
             "creationPrivilege": 3
         }
     },
@@ -28,13 +29,14 @@
         "information": "A bowl or other receptacle into which men may urinate",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_room", "isID": true, "isNullable": false}
+                {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Urinal", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Urinal",
             "creationPrivilege": 3
         }
     },
@@ -46,13 +48,14 @@
         "information": "A fixed basin with a water supply and a drain",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_room", "isID": true, "isNullable": false}
+                {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Sink", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Sink",
             "creationPrivilege": 3
         }
     },
@@ -64,13 +67,14 @@
         "information": "A reflective surface that reflects a clear image",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_room", "isID": true, "isNullable": false}
+                {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Mirror", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Mirror",
             "creationPrivilege": 3
         }
     },
@@ -82,13 +86,14 @@
         "information": "A part or division of a building enclosed by walls, floor, and ceiling",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_building", "isID": true, "isNullable": false}
+                {"name": "item_building", "isID": true, "isNullable": false, "frontendName": "Building of Room", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
                 "tableName": "location_region",
                 "columnName": "data_region"
             },
+            "frontendName": "Room",
             "creationPrivilege": 4
         }
     },

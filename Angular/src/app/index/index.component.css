@@ -1,0 +1,62 @@
+body, html {
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: center;
+}
+
+.divider {
+    height: 2px;
+    width: 100%;
+    /* background-color: rgba(228, 228, 228); */
+    background-color: rgba(95, 167, 132, 0.2)
+}
+
+h3 {
+    
+    font-weight: 500;
+}
+.stat-card {
+    background-color: inherit;
+    width: 25%;
+    margin-bottom: 10px;
+}
+
+.services-card {
+    position: relative;
+    width: 240px;
+    height: 420px;
+    border-radius: 5px;
+    border: 2px solid rgb(86, 156, 215);
+    box-shadow: 10px 10px rgba(95, 167, 132, 0.2);
+    margin-bottom: 40px;
+}
+
+.services-icon {
+    width: 110px;
+    height: 110px;
+}
+
+.services-card-description {
+    background-color: rgb(86, 156, 215);
+    font-style: italic;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 23px;
+    color: #FBFBFB;
+    text-align: left;
+    position: absolute;
+    bottom: 0;
+    top: 50%;
+    overflow: hidden;
+}
+
+.services-card-description p {
+    padding: 15px;
+    margin: 0px;
+}
+
+.how-it-works-button {
+    background-color: rgb(86, 156, 215);
+    color: white;
+    margin: 30px auto 100px auto;
+}

@@ -1,84 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
- 
+
 <head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <link rel="icon" type="image/x-icon" href="../../favicon.png" />
-       <title>Document</title>
-       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../../favicon.png" />
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+
+
 </head>
-  
- 
- 
-<body>
-       <div id="wrapper">             
- 
-       <header>
-               <nav>
-                       <mat-toolbar>
-                        <a mat-button [routerLink]="'/'" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> Home </a>
-                        <a mat-button [routerLink]="'/audits'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> Data Filtering & Management </a>
-                        <div class="dropdown">
-                                <a mat-button [routerLink]="'/upload'" routerLinkActive="activeButton" style="left: 0%; height: 100%; padding: 14px;">Upload</a>
-                                <div class="dropdown-content">
-                                        <a mat-button [routerLink]="'/upload-files'" > Upload Data </a>
-                                        <br>
-                                        <a mat-button [routerLink]="'/download'">Retrieve Template</a>
-                                </div>
-                        </div>
-                        <a mat-button [routerLink]="'/about'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> About Us </a>
-                        <a mat-button [routerLink]="'/profile'" routerLinkActive="activeButton" style="height: 100%; padding: 14px;"> My Profile (mock) </a>
-                        <span class="example-spacer"></span>
-                        <a mat-button (click)="openDialog()" style="right: 0%; height: 100%; padding: 14px;">Log In</a>
-               </mat-toolbar>
-               </nav>
-       </header>
-       <router-outlet></router-outlet>
-       <footer id="footer">
-               <nav>                           
-                       <mat-toolbar >
-                               <div class="ig">
-                               <a href="https://www.instagram.com">
-                               <img src="assets/instagram.png" alt="Instagram" style="margin-bottom: -2px; width: 15px; height: 15px;">
-                               </a>
-                               <a href="https://www.instagram.com" mat-button style="margin-bottom: 3px; font-size: 18px; padding: 6px;">Instagram</a>
-                               </div>
- 
-                              
-                               <div class="fb">
-                               <a href="https://www.facebook.com">
-                               <img src="assets/facebook.png" alt="Facebook" style="margin-bottom: -3px; height: 20px; width: 20px;">
-                               </a>
-                               <a href="https://www.facebook.com" mat-button style="font-size: 18px; padding: 6px;">Facebook</a>
-                               </div>
- 
- 
-                               <div class="sub">
-                               <a>
-                               <img src="assets/subscribe.png" alt="Subscribe" style="margin-bottom: -1px; height: 15px; width: 20px;">
-                               </a>
-                               <a mat-button class="subscribeButton" style="font-size: 18px; padding: 6px; margin-bottom: -1px;">Subscribe</a>
-                               </div>
- 
-                              
-                               <div class="donate">
-                               <a href="https://www.paypal.com">
-                               <img src="assets/donate.png" alt="Donate" style="height: 20px; margin-bottom: -2px;">
-                               </a>
-                               <a href="https://www.paypal.com" mat-button style="font-size: 18px; padding: 6px;">Donate</a>
-                               </div>
-                                    
- 
-                       </mat-toolbar>
-               </nav>       
-                    
-       </footer>            
-       
- 
-</div>
- 
+
+<body style="background-color: #FBFBFB;">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <div id="wrapper">
+        <header>
+            <!-- green bar that oliver likes: -->
+            <!-- <div style="background-color: rgb(95, 167, 132); width: 100%; height: 1.5px;"></div> -->
+            <nav mat-tab-nav-bar>
+                <a mat-tab-link [routerLink]="'/'" id="logo-button" routerLinkActive="activeButton"
+                    [routerLinkActiveOptions]="{exact: true}" #rla1="routerLinkActive" [active]="rla1.isActive">
+                    <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px;">
+                    <span *ngIf="currentWindowWidth >= 700"> the data grid </span>
+                </a>
+                <a mat-tab-link [routerLink]="'/audits'" routerLinkActive="activeButton"
+                    [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive">
+                    <span *ngIf="currentWindowWidth >= 700"> Data </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
+                </a>
+                <div (mouseenter)="changeHover()" (mouseleave)="changeHover()">
+                    <!-- [routerLink]="'/upload'" -->
+                    <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
+                        #rla3="routerLinkActive" [active]="rla3.isActive">
+                        <span *ngIf="currentWindowWidth >= 700">Upload</span>
+                        <i *ngIf="currentWindowWidth < 700" class="fa fa-cloud-upload" style="font-size: 20px;"></i>
+                    </a>
+                    <div *ngIf="isHover">
+                        <a mat-tab-link routerLinkActive #rla4="routerLinkActive" [active]="rla4.isActive"
+                            class="nav-dropdown-option" [routerLink]="'/upload-files'" fxLayout="column"
+                            fxLayoutAlign="center center">
+                            <span>Upload Template</span>
+                        </a>
+                        <a mat-tab-link routerLinkActive #rla5="routerLinkActive" [active]="rla5.isActive"
+                            class="nav-dropdown-option" [routerLink]="'/download'" fxLayout="column"
+                            fxLayoutAlign="center center">
+                            <span>Download Template</span>
+                        </a>
+                        <a mat-tab-link  routerLinkActive #rla8="routerLinkActive" [active]="rla8.isActive"
+                        class="nav-dropdown-option" [routerLink]="'/upload-audit'" fxLayout="column" fxLayoutAlign="center center">
+                            <span>Online Audit</span>
+                        </a>
+                    </div>
+                </div>
+                <a mat-tab-link [routerLink]="'/about'" routerLinkActive="activeButton"
+                    [routerLinkActiveOptions]="{exact: true}" #rla6="routerLinkActive" [active]="rla6.isActive">
+                    <span *ngIf="currentWindowWidth >= 700"> About Us </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
+                </a>
+                <a mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton"
+                    [routerLinkActiveOptions]="{exact: true}" #rla7="routerLinkActive" [active]="rla7.isActive">
+                    <span *ngIf="currentWindowWidth >= 700"> My Profile </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-address-card" style="font-size: 20px;"></i>
+                </a>
+                <span class="example-spacer"></span>
+                <a mat-tab-link (click)="openDialog()">
+                    <span *ngIf="currentWindowWidth >= 700"> Log In </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
+                </a>
+            </nav>
+        </header>
+        <router-outlet></router-outlet>
+        <footer *ngIf="currentWindowWidth > 700" id="footer">
+            <nav>
+                <hr class="bottom_separator">
+                <mat-toolbar style="height: 32px; position: absolute; overflow: hidden; bottom:-25px; background-color: #FBFBFB; color: gray">
+                    <div class="ig">
+                        <a href="https://www.instagram.com">
+                            <img src="assets/_instagram_.png" alt="Instagram"
+                                style="margin-bottom: -3px; width: 20px; height: 20px;">
+                        </a>
+                        <a href="https://www.instagram.com" mat-button
+                            style="margin-bottom: 3px; font-size: 14px; padding: 6px;">Instagram</a>
+                    </div>
+                    <div class="fb">
+                        <a href="https://www.facebook.com">
+                            <img src="assets/facebook_.png" alt="Facebook"
+                                style="margin-bottom: -3px; height: 20px; width: 20px;">
+                        </a>
+                        <a href="https://www.facebook.com" mat-button
+                            style="font-size: 14px; padding: 6px;">Facebook</a>
+                    </div>
+                    <div class="sub">
+                        <a>
+                            <img src="assets/_subscribe.png" alt="Subscribe"
+                                style="margin-bottom: -2px; height: 15px; width: 20px;">
+                        </a>
+                        <a mat-button class="subscribeButton"
+                            style="font-size: 14px; padding: 6px; margin-bottom: 0px;">Subscribe</a>
+                    </div>
+                    <div class="donate">
+                        <a href="https://www.paypal.com">
+                            <img src="assets/donate_.png" alt="Donate" style="height: 20px; margin-bottom: -3px;">
+                        </a>
+                        <a href="https://www.paypal.com" mat-button style="font-size: 14px; padding: 6px;">Donate</a>
+                    </div>
+                </mat-toolbar>
+            </nav>
+        </footer>
+    </div>
+    <!-- <div *ngIf="currentWindowWidth < 700" id="wrapper">           
+      <header>
+              <nav>
+                      <mat-toolbar style="height: 30px;">
+                              <h1 style="margin-left: 35%;">THE DATA GRID</h1>
+              </mat-toolbar>
+              </nav>
+      </header>
+      <router-outlet></router-outlet>
+      <footer id="footer">
+              <nav>                         
+                      <mat-toolbar style="height: 52px">
+                              <p style="margin-left: 47%;">2020</p>
+                      </mat-toolbar>
+              </nav>     
+                 
+      </footer>          
+    
+</div> -->
 </body>
- 
- 
+
 </html>
