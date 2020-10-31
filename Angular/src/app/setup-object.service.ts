@@ -22,7 +22,7 @@ export class SetupObjectService {
 
      returns: array containing objects with the following format:
         {
-          rootFeatureObject: featureNodeObject,   //object containing feature information
+          name: string,   //feature name
           index: number                           //index in setupObject's 'features' array
         }
   */////////////////////////////////////////
@@ -30,7 +30,7 @@ export class SetupObjectService {
     let rootFeatures = []
     for (let j = 0; j < setupObject.subfeatureStartIndex; j++) {
       rootFeatures.push({
-        rootFeatureObject: setupObject.features[setupObject.children[IDX_OF_FEATURES_ARR][j]],
+        name: setupObject.features[setupObject.children[IDX_OF_FEATURES_ARR][j]].frontendName,
         index: j
       });
     }

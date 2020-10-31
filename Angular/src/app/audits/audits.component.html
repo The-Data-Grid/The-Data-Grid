@@ -60,16 +60,15 @@
                 <mat-label>Features</mat-label>
                 <mat-select [(ngModel)]="selectedFeature">
                     <mat-option *ngFor="let info of rootFeatures" [value]="info">
-                        {{info.rootFeatureObject.frontendName}}
+                        {{info.name}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <!-- {{selectedFeature || "nothing yet"} -->
 
             <mat-accordion *ngIf="selectedFeature">
                 <mat-expansion-panel>
                     <mat-expansion-panel-header>
-                        <mat-panel-title>{{selectedFeature.rootFeatureObject.frontendName}}</mat-panel-title>
+                        <mat-panel-title>{{selectedFeature.name}}</mat-panel-title>
                     </mat-expansion-panel-header>
                     <div *ngFor="let column of featureSelectors[selectedFeature.index].numericChoice">
                         <ng-template *ngTemplateOutlet="numericChoiceTemplate; context: {$implicit: column}">
