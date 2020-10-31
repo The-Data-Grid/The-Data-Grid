@@ -15,12 +15,46 @@ export class SetupObjectService {
 
   constructor() { }
 
+  /* ////////////////////////////////////
+     getRootFeatures(setupObject)
+
+     params: setupObject
+
+     returns: array containing objects with the following format:
+        {
+          rootFeatureObject: featureNodeObject,   //object containing feature information
+          index: number                           //index in setupObject's 'features' array
+        }
+  */////////////////////////////////////////
   getRootFeatures(setupObject) {
     let rootFeatures = []
     for (let j = 0; j < setupObject.subfeatureStartIndex; j++) {
-      rootFeatures.push(setupObject.features[setupObject.children[IDX_OF_FEATURES_ARR][j]]);
+      rootFeatures.push({
+        rootFeatureObject: setupObject.features[setupObject.children[IDX_OF_FEATURES_ARR][j]],
+        index: j
+      });
     }
     return rootFeatures;
+  }
+
+   /* ////////////////////////////////////
+     getFeaturesToChildren(setupObject)
+
+     params: setupObject
+
+     returns: object that maps a feature's index in the setupObject 
+       'features' array to the feature's subfeature indices. example:
+        {
+          1: [2,3,4],   //feature 1 has subfeatures 2, 3, and 4
+        }
+  */////////////////////////////////////////
+  getFeaturesToChildren(setupObject) {
+    let featuresToChildren = {}
+    setupObject.features.forEach((feature, index) => {
+      // map index to the feature's children
+      featuresToChildren[index] = feature.featureChildren;
+    });
+    return featuresToChildren;
   }
 
   getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumns) {
@@ -56,8 +90,9 @@ export class SetupObjectService {
           returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject)
         });
       });
-      allFeatureSelectors[setupObject.features[featureIndex].frontendName] = this.parseColumns(featureColumns,
-        appliedFilterSelections,
+      // allFeatureSelectors[setupObject.features[featureIndex].frontendName] = this.parseColumns(featureColumns,
+        allFeatureSelectors[k] = this.parseColumns(featureColumns,
+          appliedFilterSelections,
         defaultColumns);
     });
     return allFeatureSelectors;

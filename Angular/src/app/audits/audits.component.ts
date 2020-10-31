@@ -33,16 +33,18 @@ export class AuditsComponent implements OnInit {
   defaultColumns = [];
   rootFeatures = [];
   selectedFeature;
+  featuresToChildren = {};
   appliedFilterSelections = {};
+  featureSelectors = {};
+  globalSelectors = {};
   selectorsLoaded: boolean = false;
+
   // the following are for multiselect dropdowns:
   dropdownList = FakeData;
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
 
-  featureSelectors = {};
-  globalSelectors = {};
 
   constructor(private apiService: ApiService, public datepipe: DatePipe, private setupObjectService: SetupObjectService) { }
 
@@ -59,6 +61,7 @@ export class AuditsComponent implements OnInit {
         this.setupObject,
         this.appliedFilterSelections,
         this.defaultColumns);
+
       // get root features
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
 
@@ -67,6 +70,9 @@ export class AuditsComponent implements OnInit {
         this.setupObject,
         this.appliedFilterSelections,
         this.defaultColumns);
+
+      // map features to children
+      this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
 
       // get datatypes array
       this.datatypes = this.setupObject.datatypes;
@@ -77,6 +83,8 @@ export class AuditsComponent implements OnInit {
       console.log(this.featureSelectors);
       console.log("applied filter selections:");
       console.log(this.appliedFilterSelections);
+      console.log("featuresToChildren:");
+      console.log(this.featuresToChildren);
       this.applyFilters();
       this.selectorsLoaded = true
     });
