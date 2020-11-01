@@ -5,7 +5,10 @@ import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableCheckl
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 import { SetupObjectService } from '../setup-object.service';
+import { TableObjectService } from '../table-object.service';
 import { SetupObject, TableObject } from '../responses'
+// import { TableObject } from '../responses';
+// import { SetupObject} from '../setupObjectTry1';
 import { environment } from '../../environments/environment';
 const USE_FAKE_DATA = environment.useFakeData;
 
@@ -29,7 +32,6 @@ export class AuditsComponent implements OnInit {
   // variables for filtering sidebar
   filterBy = "Submission";
   setupObject;
-  datatypes;
   defaultColumns = [];
   rootFeatures = [];
   selectedFeature;
@@ -46,7 +48,10 @@ export class AuditsComponent implements OnInit {
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
 
 
-  constructor(private apiService: ApiService, public datepipe: DatePipe, private setupObjectService: SetupObjectService) { }
+  constructor(private apiService: ApiService, 
+    public datepipe: DatePipe, 
+    private setupObjectService: SetupObjectService,
+    private tableObjectService: TableObjectService) { }
 
   ngOnInit() {
     this.getSetupObject();
@@ -90,97 +95,11 @@ export class AuditsComponent implements OnInit {
   getTableObject() {
     // clear the column headers
     this.dataTableColumns = [];
-    this.rows = [];
-    var i;
 
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
       USE_FAKE_DATA ? this.tableObject = TableObject : this.tableObject = res;
 
-      // construct the column header arrays
-      for (i = 0; i < this.tableObject.columnIndex.length; i++) {
-        // globals
-        if (this.tableObject.columnIndex[i][0] === null) {
-          var idx = this.tableObject.columnIndex[i][1];
-          var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
-
-          this.dataTableColumns.push({
-            prop: this.setupObject.globalColumns[idx].columnFrontendName,
-            type: this.datatypes[datatypeIdx],
-            id: this.setupObject.globalColumns[idx].columnID
-          });
-        }
-        // features
-        else {
-          var idx1 = this.tableObject.columnIndex[i][0];
-          var idx2 = this.tableObject.columnIndex[i][1];
-          var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
-
-          this.dataTableColumns.push({
-            prop: this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName,
-            type: this.datatypes[datatypeIdx],
-            id: this.setupObject.globalColumns[idx].columnID
-          });
-        }
-      }
-
-      //add rows to the table one by one
-      this.tableObject.rowData.forEach(element => {
-        var row = {};
-        row["_hyperlinks"] = {};
-
-        // fill out the row object
-        for (i = 0; i < this.tableObject.columnIndex.length; i++) {
-          // global
-          if (this.tableObject.columnIndex[i][0] === null) {
-            var idx = this.tableObject.columnIndex[i][1];
-            var datatypeIdx = this.setupObject.globalColumns[idx].datatype;
-
-            switch (this.datatypes[datatypeIdx]) {
-              case "string": {
-                row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i]; break;
-              }
-              case "hyperlink": {
-                row[this.setupObject.globalColumns[idx].columnFrontendName] = element[i].displayString;
-                row["_hyperlinks"][this.setupObject.globalColumns[idx].columnFrontendName] = element[i].URL; break;
-              }
-              case "bool": {
-                if (element[i]) {
-                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "True";
-                }
-                else {
-                  row[this.setupObject.globalColumns[idx].columnFrontendName] = "False";
-                } break;
-              }
-            }
-          }
-          // feature
-          else {
-            var idx1 = this.tableObject.columnIndex[i][0];
-            var idx2 = this.tableObject.columnIndex[i][1];
-            var datatypeIdx = this.setupObject.featureColumns[idx1].dataColumns[idx2].datatype;
-
-            switch (this.datatypes[datatypeIdx]) {
-              case "string": {
-                row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i]; break;
-              }
-              case "hyperlink": {
-                row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].displayString;
-                row["_hyperlinks"][this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = element[i].URL; break;
-              }
-              case "bool": {
-                if (element[i]) {
-                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "True";
-                }
-                else {
-                  row[this.setupObject.featureColumns[idx1].dataColumns[idx2].columnFrontendName] = "False";
-                } break;
-              }
-            }
-          }
-        }
-        // console.log(row);
-        this.rows.push(row);
-      });
+      this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
     });
   }
 

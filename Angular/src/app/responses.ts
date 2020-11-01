@@ -246,8 +246,8 @@ export let SetupObject = {
         "10": "1>0>0",  //Date Submitted
         "11": "0>0>0>0",//gpf
         "12": "1>0>1",  //Org
-        "13": "0>0>0>1",//basin brand
-        "14": "0>1>0>1",//psi
+        "13": "0>0>0>2",//basin brand
+        "14": "0>1>0>0",//psi
         "15": "0>2>0>0", //leaking
         "16": "0>2>0>1" //flow rate
     },
@@ -255,8 +255,8 @@ export let SetupObject = {
         "1>0>0": "10",
         "0>0>0>0": "11",
         "1>0>1": "12",
-        "0>0>0>1": "13",
-        "0>1>0>1": "14",
+        "0>0>0>2": "13",
+        "0>1>0>0": "14",
         "0>2>0>0": "15",
         "0>2>0>1": "16"
     },
@@ -268,67 +268,71 @@ export let SetupObject = {
 
 export let TableObject = {
     returnableColumnIDs: [
-        10,
-        11,
-        12,
-        13,
-        14,
-        15
+        // 10, //date submitted
+        13, //basin brand
+        11, //gpf
+        // 12, //Org
+        14, //psi
+        15  //leaking
     ],
     rowData: [
         [
-            {
-                displayString: "Bruin Home Solutions",
-                URL: "https://bruinhomesolutions.com/"
-            },
+            // {
+            //     displayString: "Bruin Home Solutions",
+            //     URL: "https://bruinhomesolutions.com/"
+            // },
+            "Basin Brand 1",
             33.6,
-            1596104069,
-            {
-                displayString: "Restroom SOP v1",
-                URL: "https://agar.io/"
-            },
+            // 1596104069,
+            // {
+            //     displayString: "Restroom SOP v1",
+            //     URL: "https://agar.io/"
+            // },
             0.643,
             0
         ],
         [
-            {
-                displayString: "Renewable Energy Association",
-                URL: "https://rea.seas.ucla.edu/"
-            },
+            // {
+            //     displayString: "Renewable Energy Association",
+            //     URL: "https://rea.seas.ucla.edu/"
+            // },
+            "Basin Brand 2",
             63.4,
-            1596034069,
-            {
-                displayString: "REA BIODIESEL TEAM 1.2",
-                URL: "https://agar.io/"
-            },
+            // 1596034069,
+            // {
+            //     displayString: "REA BIODIESEL TEAM 1.2",
+            //     URL: "https://agar.io/"
+            // },
             2.53,
             1
         ],
         [
-            {
-                displayString: "UCLA Facilities Management",
-                URL: "https://www.facilities.ucla.edu/"
-            },
+            // {
+            //     displayString: "UCLA Facilities Management",
+            //     URL: "https://www.facilities.ucla.edu/"
+            // },
+            "Basin Brand 3",
             34.5,
-            1596030069,
-            {
-                displayString: "FM SOP",
-                URL: "https://agar.io/"
-            },
+            // 1596030069,
+            // {
+            //     displayString: "FM SOP",
+            //     URL: "https://agar.io/"
+            // },
             0.01,
             1
         ],
         [
-            {
-                displayString: "Clean Consulting",
-                URL: "https://cleanconsulting.org/"
-            },
+            // {
+            //     displayString: "Clean Consulting",
+            //     URL: "https://cleanconsulting.org/"
+            // },
+            "Basin Brand 4",
             45.4,
-            1595030069,
-            {
-                displayString: "Aiden’s SOP",
-                URL: "https://agar.io/"
-            },
+            // 1595030069,
+            // {
+            //     displayString: "Aiden’s SOP",
+            //     URL: "https://agar.io/"
+            // },
             0.45,
             0
         ]

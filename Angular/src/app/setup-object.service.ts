@@ -11,8 +11,6 @@ export const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
 })
 export class SetupObjectService {
 
-
-
   constructor() { }
 
   /* ////////////////////////////////////
@@ -37,17 +35,17 @@ export class SetupObjectService {
     return rootFeatures;
   }
 
-   /* ////////////////////////////////////
-     getFeaturesToChildren(setupObject)
+  /* ////////////////////////////////////
+    getFeaturesToChildren(setupObject)
 
-     params: setupObject
+    params: setupObject
 
-     returns: object that maps a feature's index in the setupObject 
-       'features' array to the feature's subfeature indices. example:
-        {
-          1: [2,3,4],   //feature 1 has subfeatures 2, 3, and 4
-        }
-  */////////////////////////////////////////
+    returns: object that maps a feature's index in the setupObject 
+      'features' array to the feature's subfeature indices. example:
+       {
+         1: [2,3,4],   //feature 1 has subfeatures 2, 3, and 4
+       }
+ */////////////////////////////////////////
   getFeaturesToChildren(setupObject) {
     let featuresToChildren = {}
     setupObject.features.forEach((feature, index) => {
@@ -91,8 +89,8 @@ export class SetupObjectService {
         });
       });
       // allFeatureSelectors[setupObject.features[featureIndex].frontendName] = this.parseColumns(featureColumns,
-        allFeatureSelectors[k] = this.parseColumns(featureColumns,
-          appliedFilterSelections,
+      allFeatureSelectors[k] = this.parseColumns(featureColumns,
+        appliedFilterSelections,
         defaultColumns);
     });
     return allFeatureSelectors;

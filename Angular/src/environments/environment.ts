@@ -7,6 +7,7 @@ export const environment = {
   apiUrl: "http://localhost:4001/api", 
   port: "2345",
   useFakeData: true
+  // useFakeData: false
 };
 
 /*

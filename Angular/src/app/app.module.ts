@@ -28,6 +28,8 @@ import { MaterialModule } from './material.module';
 import { RootFeaturesComponent } from './upload-audit/root-features/root-features.component';
 import { GlobalPresetsComponent} from './upload-audit/global-presets/global-presets.component';
 import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audit.component';
+import { SetupObjectService } from './setup-object.service';
+import { TableObjectService } from './table-object.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,7 +63,7 @@ import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audi
     ClickOutsideModule,
     MaterialModule
   ],
-  providers: [ApiService, DatePipe],
+  providers: [ApiService, DatePipe, SetupObjectService, TableObjectService],
   bootstrap: [AppComponent],
   entryComponents: [DialogComponent]
 })
