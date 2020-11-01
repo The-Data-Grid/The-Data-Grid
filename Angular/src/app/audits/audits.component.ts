@@ -74,9 +74,6 @@ export class AuditsComponent implements OnInit {
       // map features to children
       this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
 
-      // get datatypes array
-      this.datatypes = this.setupObject.datatypes;
-
       console.log("global selectors:");
       console.log(this.globalSelectors);
       console.log("feature selectors:");
@@ -97,7 +94,7 @@ export class AuditsComponent implements OnInit {
     var i;
 
     this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
-      // USE_FAKE_DATA ? this.tableObject = tableObject : this.tableObject = res;
+      USE_FAKE_DATA ? this.tableObject = TableObject : this.tableObject = res;
 
       // construct the column header arrays
       for (i = 0; i < this.tableObject.columnIndex.length; i++) {

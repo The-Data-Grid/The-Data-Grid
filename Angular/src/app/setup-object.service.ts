@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 
-const IDX_OF_FEATURES_ARR = 0;
-const IDX_OF_GLOBAL_ITEM_IDX = 1;
-const IDX_OF_ID_COL_IDXS = 0;
-const IDX_OF_OBSERVATION_COL_IDXS = 0;
-const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
+export const IDX_OF_FEATURES_ARR = 0;
+export const IDX_OF_GLOBAL_ITEM_IDX = 1;
+export const IDX_OF_ID_COL_IDXS = 0;
+export const IDX_OF_OBSERVATION_COL_IDXS = 0;
+export const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
 
 @Injectable({
   providedIn: 'root'
