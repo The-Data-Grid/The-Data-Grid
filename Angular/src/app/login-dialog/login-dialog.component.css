@@ -43,3 +43,116 @@ mat-form-field {
     outline-color: white;
     cursor: pointer;
 }
+
+.sign_up_label {
+    font-size:30px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    margin-top:-70px;
+}
+
+/* .sign_up_button:hover {
+    background: none;
+} */
+
+.mat-button.sign_up_button ::ng-deep .mat-button-focus-overlay {
+    background: none;
+  }
+  
+
+.button:hover {
+    background-color: green !important;
+}
+  
+
+mat-label {
+    color: #888888;
+  }
+
+  .wrapper {
+    width: 340px;
+    border: 1px solid lightgray;
+    /* border-radius: 4px; */
+    height: 40px;
+    margin-left: 0px;
+ }
+ 
+ .container {
+    margin-left: -20px;
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    /* margin-bottom: 12px; */
+    margin-top: 11px;
+    cursor: pointer;
+    font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+ 
+    /* Hide the browser's default checkbox */
+ .container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+ 
+   /* On mouse-over, add a grey background color */
+ .container:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
+ 
+   /* When the checkbox is checked, add a blue background */
+   .container input:checked ~ .checkmark {
+    background-color: #2196F3;
+  }
+ 
+    /* Create the checkmark/indicator (hidden when not checked) */
+ .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+ }
+     
+     /* Show the checkmark when checked */
+ .container input:checked ~ .checkmark:after {
+    display: block;
+    }
+   
+   /* Style the checkmark/indicator */
+   .container .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+ 
+ 
+  .checkmarkLocation {
+    margin-top: 80px;
+  }
+ 
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 320px;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+  }
+ 
+
+  
+  
+  
+
+  
+  

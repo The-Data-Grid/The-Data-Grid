@@ -7,8 +7,40 @@
     <title>Document</title>
 </head>
 
-<body>
-    <div class="about-container" fxLayout="row wrap" fxLayoutAlign="space-around start" >
+<body style="background-color: #FBFBFB;">
+
+
+<mat-horizontal-stepper style="background-color: #FBFBFB;" [linear]=false #stepper labelPosition="bottom">
+    <ng-template matStepperIcon="done">
+        <mat-icon></mat-icon>
+      </ng-template>
+   
+      <ng-template matStepperIcon="edit">
+    <mat-icon style="color: pink;"></mat-icon>
+  </ng-template>
+
+  <ng-template matStepperIcon="event">
+      <mat-icon></mat-icon>
+  </ng-template>
+
+  <div *ngFor="let event of events">
+      <mat-step style="font-size: 55px;" label="{{ event.date }}" state="event">
+      <div style="margin-top: 20px; margin-left: 15%; width: 70%; border: 1px solid black; overflow: auto;">
+        <h1 style="text-align: center; font-size: 24px; font-weight: 900;"> {{ event.title }} </h1>
+        <img style="position: relative; height: 100px; margin-left: 10px; margin-top: -20px; padding-bottom: 20px; float: left; padding-right: 20px;" src="assets/powell.jpg">
+        <p style="padding-right: 10px; padding-bottom: 10px;"> {{ event.description }} </p>
+    </div>
+
+</mat-step>
+
+
+  </div>
+
+
+
+</mat-horizontal-stepper>
+
+<div class="about-container" fxLayout="row wrap" fxLayoutAlign="space-around start" >
     <mat-card class="mat-elevation-z4">
         <mat-card-header>
             <mat-card-title>What is The Data Grid?</mat-card-title>

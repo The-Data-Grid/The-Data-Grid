@@ -45,4 +45,3 @@ INSERT INTO mtcars VALUES ('Ford Pantera L', 15.8, 8, 351, 2644.22, 3.17, 14.5, 
 INSERT INTO mtcars VALUES ('Ferrari Dino', 19.7, 6, 145, 1753.62, 2.77, 15.5, 0, 1, 5, 6);
 INSERT INTO mtcars VALUES ('Maserati Bora', 15, 8, 301, 3353.54, 3.57, 14.6, 0, 1, 5, 8);
 INSERT INTO mtcars VALUES ('Volvo 142E', 21.4, 4, 121, 1094.11, 2.78, 18.6, 1, 1, 4, 2);
-

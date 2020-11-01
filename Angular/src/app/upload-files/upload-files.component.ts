@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import { ProfileComponent } from '../profile/profile.component';
 import { Injectable } from '@angular/core';
 import { Inject } from '@angular/core';  
 import { UploadDialogComponent } from '../upload-dialog/upload-dialog.component';
