@@ -15,7 +15,7 @@
     </mat-button-toggle-group>
   </div>
   <div style="margin-top: 20px; width: 90%; margin-left:25px" *ngIf="status=='template'">
-
+    <!-- FROM TEMPLATE -->
     <mat-accordion>
       <div *ngFor="let audit of data">
         <mat-expansion-panel>
@@ -41,14 +41,14 @@
     </mat-accordion>
   </div>
 
-
+  <!-- ALL ROOT FEATURES -->
   <div *ngIf="status=='roots'" style="margin-top: 20px; width: 90%; margin-left:25px">
     <mat-accordion>
       <div *ngFor="let feature of rootFeatures">
         <mat-expansion-panel>
           <mat-expansion-panel-header class="right-aligned-header">
             <mat-panel-title>
-              {{ feature.frontendName }}
+              {{ feature.name }}
             </mat-panel-title>
             <mat-panel-description>
               <input [id]="feature+ ' root checkbox'" class="checkmark" style="cursor: pointer;" type="checkbox"
