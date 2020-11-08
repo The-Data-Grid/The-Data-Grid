@@ -1,0 +1,1994 @@
+{
+    "children": [
+        [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+        ],
+        10
+    ],
+    "subfeatureStartIndex": 5,
+    "items": [
+        {
+            "children": [
+                [
+                    7
+                ],
+                [
+                    {
+                        "index": 2,
+                        "frontendName": "Entity of Building",
+                        "nullable": false
+                    }
+                ],
+                [
+                    23
+                ],
+                []
+            ],
+            "frontendName": "Building"
+        },
+        {
+            "children": [
+                [
+                    16
+                ],
+                [
+                    {
+                        "index": 2,
+                        "frontendName": "Entity of Organization",
+                        "nullable": false
+                    }
+                ],
+                [
+                    17
+                ],
+                []
+            ],
+            "frontendName": "Organization"
+        },
+        {
+            "children": [
+                [
+                    8
+                ],
+                [],
+                [
+                    9
+                ],
+                [
+                    {
+                        "index": 3,
+                        "frontendName": "City of Entity",
+                        "nullable": false
+                    }
+                ]
+            ],
+            "frontendName": "Entity"
+        },
+        {
+            "children": [
+                [
+                    10
+                ],
+                [
+                    {
+                        "index": 4,
+                        "frontendName": "County of City",
+                        "nullable": false
+                    }
+                ],
+                [
+                    1,
+                    24,
+                    25
+                ],
+                []
+            ],
+            "frontendName": "City"
+        },
+        {
+            "children": [
+                [
+                    12
+                ],
+                [
+                    {
+                        "index": 5,
+                        "frontendName": "State of County",
+                        "nullable": false
+                    }
+                ],
+                [
+                    2,
+                    26
+                ],
+                []
+            ],
+            "frontendName": "County"
+        },
+        {
+            "children": [
+                [
+                    14
+                ],
+                [
+                    {
+                        "index": 6,
+                        "frontendName": "Country of State",
+                        "nullable": false
+                    }
+                ],
+                [
+                    27
+                ],
+                []
+            ],
+            "frontendName": "State"
+        },
+        {
+            "children": [
+                [
+                    15
+                ],
+                [],
+                [
+                    28
+                ],
+                []
+            ],
+            "frontendName": "Country"
+        },
+        {
+            "children": [
+                [],
+                [],
+                [
+                    3,
+                    18
+                ],
+                [
+                    {
+                        "index": 1,
+                        "frontendName": "Authoring Organization",
+                        "nullable": false
+                    }
+                ]
+            ],
+            "frontendName": "Standard Operating Procedure"
+        },
+        {
+            "children": [
+                [],
+                [],
+                [
+                    4,
+                    19
+                ],
+                [
+                    {
+                        "index": 9,
+                        "frontendName": "Authoring User",
+                        "nullable": false
+                    },
+                    {
+                        "index": 1,
+                        "frontendName": "Authoring Organization",
+                        "nullable": false
+                    }
+                ]
+            ],
+            "frontendName": "Template"
+        },
+        {
+            "children": [
+                [
+                    22
+                ],
+                [],
+                [
+                    21
+                ],
+                [
+                    {
+                        "index": 1,
+                        "frontendName": "Member of Organization",
+                        "nullable": false
+                    }
+                ]
+            ],
+            "frontendName": "User"
+        },
+        {
+            "children": [
+                [],
+                [],
+                [
+                    5,
+                    11
+                ],
+                [
+                    {
+                        "index": 12,
+                        "frontendName": "Audit of Submission",
+                        "nullable": false
+                    },
+                    {
+                        "index": 9,
+                        "frontendName": "Submitting User",
+                        "nullable": false
+                    },
+                    {
+                        "index": 8,
+                        "frontendName": "Template Used",
+                        "nullable": true
+                    }
+                ]
+            ],
+            "frontendName": "Submission"
+        },
+        {
+            "children": [
+                [],
+                [],
+                [
+                    6,
+                    20
+                ],
+                []
+            ],
+            "frontendName": "Catalog"
+        },
+        {
+            "children": [
+                [],
+                [],
+                [
+                    0,
+                    13
+                ],
+                [
+                    {
+                        "index": 11,
+                        "frontendName": "Catalog of Audit",
+                        "nullable": true
+                    },
+                    {
+                        "index": 9,
+                        "frontendName": "Authoring User",
+                        "nullable": false
+                    }
+                ]
+            ],
+            "frontendName": "Audit"
+        },
+        {
+            "children": [
+                [],
+                [
+                    {
+                        "index": 17,
+                        "frontendName": "Room of Toilet",
+                        "nullable": false
+                    }
+                ],
+                [],
+                []
+            ],
+            "frontendName": "Toilet"
+        },
+        {
+            "children": [
+                [],
+                [
+                    {
+                        "index": 17,
+                        "frontendName": "Room of Urinal",
+                        "nullable": false
+                    }
+                ],
+                [],
+                []
+            ],
+            "frontendName": "Urinal"
+        },
+        {
+            "children": [
+                [],
+                [
+                    {
+                        "index": 17,
+                        "frontendName": "Room of Sink",
+                        "nullable": false
+                    }
+                ],
+                [],
+                []
+            ],
+            "frontendName": "Sink"
+        },
+        {
+            "children": [
+                [],
+                [
+                    {
+                        "index": 17,
+                        "frontendName": "Room of Mirror",
+                        "nullable": false
+                    }
+                ],
+                [],
+                []
+            ],
+            "frontendName": "Mirror"
+        },
+        {
+            "children": [
+                [
+                    56
+                ],
+                [
+                    {
+                        "index": 0,
+                        "frontendName": "Building of Room",
+                        "nullable": false
+                    }
+                ],
+                [
+                    57,
+                    58
+                ],
+                []
+            ],
+            "frontendName": "Room"
+        }
+    ],
+    "features": [
+        {
+            "children": [
+                [
+                    29,
+                    34,
+                    39,
+                    44,
+                    49,
+                    50,
+                    52,
+                    53,
+                    55
+                ],
+                [
+                    51,
+                    54
+                ],
+                13
+            ],
+            "frontendName": "Toilet",
+            "information": "A fixed receptacle into which a person may urinate or defecate",
+            "featureChildren": [
+                5,
+                8
+            ]
+        },
+        {
+            "children": [
+                [
+                    30,
+                    35,
+                    40,
+                    45,
+                    59,
+                    61,
+                    62,
+                    63,
+                    65
+                ],
+                [
+                    60,
+                    64
+                ],
+                14
+            ],
+            "frontendName": "Urinal",
+            "information": "A bowl or other receptacle into which men may urinate",
+            "featureChildren": [
+                6,
+                9
+            ]
+        },
+        {
+            "children": [
+                [
+                    31,
+                    36,
+                    41,
+                    46,
+                    66,
+                    68,
+                    70,
+                    71
+                ],
+                [
+                    67,
+                    69
+                ],
+                15
+            ],
+            "frontendName": "Sink",
+            "information": "A fixed basin with a water supply and a drain",
+            "featureChildren": [
+                7
+            ]
+        },
+        {
+            "children": [
+                [
+                    32,
+                    37,
+                    42,
+                    47,
+                    72
+                ],
+                [],
+                16
+            ],
+            "frontendName": "Mirror",
+            "information": "A reflective surface that reflects a clear image",
+            "featureChildren": []
+        },
+        {
+            "children": [
+                [
+                    33,
+                    38,
+                    43,
+                    48
+                ],
+                [],
+                17
+            ],
+            "frontendName": "Room",
+            "information": "A part or division of a building enclosed by walls, floor, and ceiling",
+            "featureChildren": []
+        },
+        {
+            "children": [
+                [],
+                [],
+                -1
+            ],
+            "frontendName": "Sensor",
+            "information": "A motion/infrared sensor that triggers flush",
+            "featureChildren": []
+        },
+        {
+            "children": [
+                [],
+                [],
+                -1
+            ],
+            "frontendName": "Sensor",
+            "information": "A motion/infrared sensor that triggers flush",
+            "featureChildren": []
+        },
+        {
+            "children": [
+                [],
+                [],
+                -1
+            ],
+            "frontendName": "Sensor",
+            "information": "A motion/infrared sensor that triggers flush",
+            "featureChildren": []
+        },
+        {
+            "children": [
+                [],
+                [],
+                -1
+            ],
+            "frontendName": "Restroom Stall",
+            "information": "Privacy barrier separating toilet from restroom common space",
+            "featureChildren": []
+        },
+        {
+            "children": [
+                [],
+                [],
+                -1
+            ],
+            "frontendName": "Divider",
+            "information": "Privacy barriers between adjacent urinals",
+            "featureChildren": []
+        }
+    ],
+    "columns": [
+        {
+            "default": true,
+            "frontendName": "Time Audit Created",
+            "filterSelector": {
+                "selectorKey": "calendarRange",
+                "selectorValue": null
+            },
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "City Population",
+            "filterSelector": {
+                "selectorKey": "numericEqual",
+                "selectorValue": null
+            },
+            "inputSelector": null,
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "FIPS County Code",
+            "filterSelector": {
+                "selectorKey": "numericEqual",
+                "selectorValue": null
+            },
+            "inputSelector": null,
+            "datatype": 1,
+            "nullable": true,
+            "information": "Five digit number which uniquely identify counties and county equivalents",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Time SOP Uploaded",
+            "filterSelector": {
+                "selectorKey": "calendarRange",
+                "selectorValue": null
+            },
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "Audit Template JSON",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": null,
+            "datatype": 1,
+            "nullable": false,
+            "information": "JSON representation of an audit input template",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Time Audit Submission Submitted",
+            "filterSelector": {
+                "selectorKey": "calendarRange",
+                "selectorValue": null
+            },
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "Audit Description",
+            "filterSelector": null,
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": "A description of the audit which will appear in the catalog",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Building Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Entity Name",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Entity Address",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "City Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Audit Submission Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "County Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Audit Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "State Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Country Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Organization Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Organization Website",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": 0,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Standard Operating Procedure Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Audit Template Name",
+            "filterSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Audit Title",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "User Name",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "User Email",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "Building Geographic Region",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "City Geographic Region",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "City Geographic Point",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "County Geographic Region",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "State Geographic Region",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": false,
+            "frontendName": "Country Geographic Region",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": -1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Date Conducted",
+            "filterSelector": {
+                "selectorKey": "calendarRange",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "calendarEqual",
+                "selectorValue": null
+            },
+            "datatype": -1,
+            "nullable": false,
+            "information": "Date the feature was audited",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Date Conducted",
+            "filterSelector": {
+                "selectorKey": "calendarRange",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "calendarEqual",
+                "selectorValue": null
+            },
+            "datatype": -1,
+            "nullable": false,
+            "information": "Date the feature was audited",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Date Conducted",
+            "filterSelector": {
+                "selectorKey": "calendarRange",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "calendarEqual",
+                "selectorValue": null
+            },
+            "datatype": -1,
+            "nullable": false,
+            "information": "Date the feature was audited",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Date Conducted",
+            "filterSelector": {
+                "selectorKey": "calendarRange",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "calendarEqual",
+                "selectorValue": null
+            },
+            "datatype": -1,
+            "nullable": false,
+            "information": "Date the feature was audited",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Date Conducted",
+            "filterSelector": {
+                "selectorKey": "calendarRange",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "calendarEqual",
+                "selectorValue": null
+            },
+            "datatype": -1,
+            "nullable": false,
+            "information": "Date the feature was audited",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Commentary",
+            "filterSelector": null,
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": "Additional commentary about the observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Commentary",
+            "filterSelector": null,
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": "Additional commentary about the observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Commentary",
+            "filterSelector": null,
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": "Additional commentary about the observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Commentary",
+            "filterSelector": null,
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": "Additional commentary about the observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Commentary",
+            "filterSelector": null,
+            "inputSelector": {
+                "selectorKey": "text",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": "Additional commentary about the observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Auditor Name",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": 1,
+            "nullable": false,
+            "information": "Name of the auditor(s) who conducted this observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Auditor Name",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": 1,
+            "nullable": false,
+            "information": "Name of the auditor(s) who conducted this observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Auditor Name",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": 1,
+            "nullable": false,
+            "information": "Name of the auditor(s) who conducted this observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Auditor Name",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": 1,
+            "nullable": false,
+            "information": "Name of the auditor(s) who conducted this observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Auditor Name",
+            "filterSelector": null,
+            "inputSelector": null,
+            "datatype": 1,
+            "nullable": false,
+            "information": "Name of the auditor(s) who conducted this observation",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Standard Operating Procedure",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": "The standard operating procedure(s) used for the audit on this feature",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Standard Operating Procedure",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": "The standard operating procedure(s) used for the audit on this feature",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Standard Operating Procedure",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": "The standard operating procedure(s) used for the audit on this feature",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Standard Operating Procedure",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": "The standard operating procedure(s) used for the audit on this feature",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Standard Operating Procedure",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": "The standard operating procedure(s) used for the audit on this feature",
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Gallons Per Flush",
+            "filterSelector": {
+                "selectorKey": "numericChoice",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "numericEqual",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Stall Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Basin Brand",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Basin Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Sensor Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Flushometer Brand",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Flushometer Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Room Number",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Exhaust Vent Existence",
+            "filterSelector": {
+                "selectorKey": "dropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "dropdown",
+                "selectorValue": null
+            },
+            "datatype": 2,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Access Panel Existence",
+            "filterSelector": {
+                "selectorKey": "dropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "dropdown",
+                "selectorValue": null
+            },
+            "datatype": 2,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Gallons Per Flush",
+            "filterSelector": {
+                "selectorKey": "numericChoice",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "numericEqual",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Basin Brand",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Basin Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Sensor Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Divider Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Flushometer Brand",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Flushometer Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Gallons Per Minute",
+            "filterSelector": {
+                "selectorKey": "numericChoice",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "numericEqual",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": false,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Basin Brand",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Basin Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Faucet Brand",
+            "filterSelector": {
+                "selectorKey": "searchableChecklistDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Faucet Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Sensor Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        },
+        {
+            "default": true,
+            "frontendName": "Condition",
+            "filterSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "inputSelector": {
+                "selectorKey": "searchableDropdown",
+                "selectorValue": null
+            },
+            "datatype": 1,
+            "nullable": true,
+            "information": null,
+            "accuracy": null
+        }
+    ],
+    "returnableIDToTreeID": {
+        "1": "0>0>0>0",
+        "2": "0>0>0>1",
+        "3": "0>0>0>2",
+        "4": "0>0>0>3",
+        "5": "0>0>0>4",
+        "6": "0>0>0>5",
+        "7": "0>0>1>0",
+        "8": "0>0>1>0",
+        "9": "0>0>0>6",
+        "10": "0>0>0>7",
+        "11": "0>0>1>1",
+        "12": "0>0>1>1",
+        "13": "0>0>0>8",
+        "14": "0>0>2>1>0>0>0",
+        "15": "0>0>2>1>0>2>0",
+        "16": "0>0>2>1>0>2>1",
+        "17": "0>0>2>1>0>1>0>0>0",
+        "18": "0>0>2>1>0>1>0>2>0",
+        "19": "0>0>2>1>0>1>0>1>0>0>0",
+        "20": "0>0>2>1>0>1>0>1>0>2>0",
+        "21": "0>0>2>1>0>1>0>1>0>3>0>2>0",
+        "22": "0>0>2>1>0>1>0>1>0>3>0>0>0",
+        "23": "0>0>2>1>0>1>0>1>0>3>0>2>1",
+        "24": "0>0>2>1>0>1>0>1>0>3>0>2>2",
+        "25": "0>0>2>1>0>1>0>1>0>3>0>1>0>2>0",
+        "26": "0>0>2>1>0>1>0>1>0>3>0>1>0>0>0",
+        "27": "0>0>2>1>0>1>0>1>0>3>0>1>0>2>1",
+        "28": "0>0>2>1>0>1>0>1>0>3>0>1>0>1>0>0>0",
+        "29": "0>0>2>1>0>1>0>1>0>3>0>1>0>1>0>2>0",
+        "30": "0>0>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>0>0",
+        "31": "0>0>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>2>0",
+        "32": "0>1>0>0",
+        "33": "0>1>0>1",
+        "34": "0>1>0>2",
+        "35": "0>1>0>3",
+        "36": "0>1>0>4",
+        "37": "0>1>1>0",
+        "38": "0>1>1>0",
+        "39": "0>1>0>5",
+        "40": "0>1>0>6",
+        "41": "0>1>0>7",
+        "42": "0>1>1>1",
+        "43": "0>1>1>1",
+        "44": "0>1>0>8",
+        "45": "0>1>2>1>0>0>0",
+        "46": "0>1>2>1>0>2>0",
+        "47": "0>1>2>1>0>2>1",
+        "48": "0>1>2>1>0>1>0>0>0",
+        "49": "0>1>2>1>0>1>0>2>0",
+        "50": "0>1>2>1>0>1>0>1>0>0>0",
+        "51": "0>1>2>1>0>1>0>1>0>2>0",
+        "52": "0>1>2>1>0>1>0>1>0>3>0>2>0",
+        "53": "0>1>2>1>0>1>0>1>0>3>0>0>0",
+        "54": "0>1>2>1>0>1>0>1>0>3>0>2>1",
+        "55": "0>1>2>1>0>1>0>1>0>3>0>2>2",
+        "56": "0>1>2>1>0>1>0>1>0>3>0>1>0>2>0",
+        "57": "0>1>2>1>0>1>0>1>0>3>0>1>0>0>0",
+        "58": "0>1>2>1>0>1>0>1>0>3>0>1>0>2>1",
+        "59": "0>1>2>1>0>1>0>1>0>3>0>1>0>1>0>0>0",
+        "60": "0>1>2>1>0>1>0>1>0>3>0>1>0>1>0>2>0",
+        "61": "0>1>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>0>0",
+        "62": "0>1>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>2>0",
+        "63": "0>2>0>0",
+        "64": "0>2>0>1",
+        "65": "0>2>0>2",
+        "66": "0>2>0>3",
+        "67": "0>2>0>4",
+        "68": "0>2>1>0",
+        "69": "0>2>1>0",
+        "70": "0>2>0>5",
+        "71": "0>2>1>1",
+        "72": "0>2>1>1",
+        "73": "0>2>0>6",
+        "74": "0>2>0>7",
+        "75": "0>2>2>1>0>0>0",
+        "76": "0>2>2>1>0>2>0",
+        "77": "0>2>2>1>0>2>1",
+        "78": "0>2>2>1>0>1>0>0>0",
+        "79": "0>2>2>1>0>1>0>2>0",
+        "80": "0>2>2>1>0>1>0>1>0>0>0",
+        "81": "0>2>2>1>0>1>0>1>0>2>0",
+        "82": "0>2>2>1>0>1>0>1>0>3>0>2>0",
+        "83": "0>2>2>1>0>1>0>1>0>3>0>0>0",
+        "84": "0>2>2>1>0>1>0>1>0>3>0>2>1",
+        "85": "0>2>2>1>0>1>0>1>0>3>0>2>2",
+        "86": "0>2>2>1>0>1>0>1>0>3>0>1>0>2>0",
+        "87": "0>2>2>1>0>1>0>1>0>3>0>1>0>0>0",
+        "88": "0>2>2>1>0>1>0>1>0>3>0>1>0>2>1",
+        "89": "0>2>2>1>0>1>0>1>0>3>0>1>0>1>0>0>0",
+        "90": "0>2>2>1>0>1>0>1>0>3>0>1>0>1>0>2>0",
+        "91": "0>2>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>0>0",
+        "92": "0>2>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>2>0",
+        "93": "0>3>0>0",
+        "94": "0>3>0>1",
+        "95": "0>3>0>2",
+        "96": "0>3>0>3",
+        "97": "0>3>0>4",
+        "98": "0>3>2>1>0>0>0",
+        "99": "0>3>2>1>0>2>0",
+        "100": "0>3>2>1>0>2>1",
+        "101": "0>3>2>1>0>1>0>0>0",
+        "102": "0>3>2>1>0>1>0>2>0",
+        "103": "0>3>2>1>0>1>0>1>0>0>0",
+        "104": "0>3>2>1>0>1>0>1>0>2>0",
+        "105": "0>3>2>1>0>1>0>1>0>3>0>2>0",
+        "106": "0>3>2>1>0>1>0>1>0>3>0>0>0",
+        "107": "0>3>2>1>0>1>0>1>0>3>0>2>1",
+        "108": "0>3>2>1>0>1>0>1>0>3>0>2>2",
+        "109": "0>3>2>1>0>1>0>1>0>3>0>1>0>2>0",
+        "110": "0>3>2>1>0>1>0>1>0>3>0>1>0>0>0",
+        "111": "0>3>2>1>0>1>0>1>0>3>0>1>0>2>1",
+        "112": "0>3>2>1>0>1>0>1>0>3>0>1>0>1>0>0>0",
+        "113": "0>3>2>1>0>1>0>1>0>3>0>1>0>1>0>2>0",
+        "114": "0>3>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>0>0",
+        "115": "0>3>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>2>0",
+        "116": "0>4>0>0",
+        "117": "0>4>0>1",
+        "118": "0>4>0>2",
+        "119": "0>4>0>3",
+        "120": "0>4>2>0>0",
+        "121": "0>4>2>2>0",
+        "122": "0>4>2>2>1",
+        "123": "0>4>2>1>0>0>0",
+        "124": "0>4>2>1>0>2>0",
+        "125": "0>4>2>1>0>1>0>0>0",
+        "126": "0>4>2>1>0>1>0>2>0",
+        "127": "0>4>2>1>0>1>0>3>0>2>0",
+        "128": "0>4>2>1>0>1>0>3>0>0>0",
+        "129": "0>4>2>1>0>1>0>3>0>2>1",
+        "130": "0>4>2>1>0>1>0>3>0>2>2",
+        "131": "0>4>2>1>0>1>0>3>0>1>0>2>0",
+        "132": "0>4>2>1>0>1>0>3>0>1>0>0>0",
+        "133": "0>4>2>1>0>1>0>3>0>1>0>2>1",
+        "134": "0>4>2>1>0>1>0>3>0>1>0>1>0>0>0",
+        "135": "0>4>2>1>0>1>0>3>0>1>0>1>0>2>0",
+        "136": "0>4>2>1>0>1>0>3>0>1>0>1>0>1>0>0>0",
+        "137": "0>4>2>1>0>1>0>3>0>1>0>1>0>1>0>2>0",
+        "138": "1>2>0",
+        "139": "1>2>1",
+        "140": "1>3>0>2>0",
+        "141": "1>3>0>2>1",
+        "142": "1>3>1>2>0",
+        "143": "1>3>1>0>0",
+        "144": "1>3>2>2>0",
+        "145": "1>3>2>2>1",
+        "146": "1>3>0>3>0>2>0",
+        "147": "1>3>0>3>0>2>1",
+        "148": "1>3>0>3>1>2>0",
+        "149": "1>3>0>3>1>0>0",
+        "150": "1>3>1>3>0>0>0",
+        "151": "1>3>1>3>0>2>0",
+        "152": "1>3>2>3>0>2>0",
+        "153": "1>3>2>3>0>0>0",
+        "154": "1>3>2>3>1>0>0",
+        "155": "1>3>2>3>1>2>0",
+        "156": "1>3>0>3>1>3>0>0>0",
+        "157": "1>3>0>3>1>3>0>2>0",
+        "158": "1>3>1>3>0>1>0>0>0",
+        "159": "1>3>1>3>0>1>0>2>0",
+        "160": "1>3>2>3>0>3>0>0>0",
+        "161": "1>3>2>3>0>3>0>2>0",
+        "162": "1>3>2>3>1>1>0>0>0",
+        "163": "1>3>2>3>1>1>0>2>0",
+        "164": "1>3>0>3>1>3>0>1>0>0>0",
+        "165": "1>3>0>3>1>3>0>1>0>2>0",
+        "166": "1>3>1>3>0>1>0>3>0>2>0",
+        "167": "1>3>1>3>0>1>0>3>0>0>0",
+        "168": "1>3>1>3>0>1>0>3>0>2>1",
+        "169": "1>3>1>3>0>1>0>3>0>2>2",
+        "170": "1>3>2>3>0>3>0>1>0>0>0",
+        "171": "1>3>2>3>0>3>0>1>0>2>0",
+        "172": "1>3>2>3>1>1>0>3>0>2>0",
+        "173": "1>3>2>3>1>1>0>3>0>0>0",
+        "174": "1>3>2>3>1>1>0>3>0>2>1",
+        "175": "1>3>2>3>1>1>0>3>0>2>2",
+        "176": "1>3>0>3>1>3>0>1>0>3>0>2>0",
+        "177": "1>3>0>3>1>3>0>1>0>3>0>0>0",
+        "178": "1>3>0>3>1>3>0>1>0>3>0>2>1",
+        "179": "1>3>0>3>1>3>0>1>0>3>0>2>2",
+        "180": "1>3>1>3>0>1>0>3>0>1>0>2>0",
+        "181": "1>3>1>3>0>1>0>3>0>1>0>0>0",
+        "182": "1>3>1>3>0>1>0>3>0>1>0>2>1",
+        "183": "1>3>2>3>0>3>0>1>0>3>0>2>0",
+        "184": "1>3>2>3>0>3>0>1>0>3>0>0>0",
+        "185": "1>3>2>3>0>3>0>1>0>3>0>2>1",
+        "186": "1>3>2>3>0>3>0>1>0>3>0>2>2",
+        "187": "1>3>2>3>1>1>0>3>0>1>0>2>0",
+        "188": "1>3>2>3>1>1>0>3>0>1>0>0>0",
+        "189": "1>3>2>3>1>1>0>3>0>1>0>2>1",
+        "190": "1>3>0>3>1>3>0>1>0>3>0>1>0>2>0",
+        "191": "1>3>0>3>1>3>0>1>0>3>0>1>0>0>0",
+        "192": "1>3>0>3>1>3>0>1>0>3>0>1>0>2>1",
+        "193": "1>3>1>3>0>1>0>3>0>1>0>1>0>0>0",
+        "194": "1>3>1>3>0>1>0>3>0>1>0>1>0>2>0",
+        "195": "1>3>2>3>0>3>0>1>0>3>0>1>0>2>0",
+        "196": "1>3>2>3>0>3>0>1>0>3>0>1>0>0>0",
+        "197": "1>3>2>3>0>3>0>1>0>3>0>1>0>2>1",
+        "198": "1>3>2>3>1>1>0>3>0>1>0>1>0>0>0",
+        "199": "1>3>2>3>1>1>0>3>0>1>0>1>0>2>0",
+        "200": "1>3>0>3>1>3>0>1>0>3>0>1>0>1>0>0>0",
+        "201": "1>3>0>3>1>3>0>1>0>3>0>1>0>1>0>2>0",
+        "202": "1>3>1>3>0>1>0>3>0>1>0>1>0>1>0>0>0",
+        "203": "1>3>1>3>0>1>0>3>0>1>0>1>0>1>0>2>0",
+        "204": "1>3>2>3>0>3>0>1>0>3>0>1>0>1>0>0>0",
+        "205": "1>3>2>3>0>3>0>1>0>3>0>1>0>1>0>2>0",
+        "206": "1>3>2>3>1>1>0>3>0>1>0>1>0>1>0>0>0",
+        "207": "1>3>2>3>1>1>0>3>0>1>0>1>0>1>0>2>0",
+        "208": "1>3>0>3>1>3>0>1>0>3>0>1>0>1>0>1>0>0>0",
+        "209": "1>3>0>3>1>3>0>1>0>3>0>1>0>1>0>1>0>2>0",
+        "210": "1>3>2>3>0>3>0>1>0>3>0>1>0>1>0>1>0>0>0",
+        "211": "1>3>2>3>0>3>0>1>0>3>0>1>0>1>0>1>0>2>0"
+    },
+    "treeIDToReturnableID": {
+        "0>0>0>0": 1,
+        "0>0>0>1": 2,
+        "0>0>0>2": 3,
+        "0>0>0>3": 4,
+        "0>0>0>4": 5,
+        "0>0>0>5": 6,
+        "0>0>1>0": 8,
+        "0>0>0>6": 9,
+        "0>0>0>7": 10,
+        "0>0>1>1": 12,
+        "0>0>0>8": 13,
+        "0>0>2>1>0>0>0": 14,
+        "0>0>2>1>0>2>0": 15,
+        "0>0>2>1>0>2>1": 16,
+        "0>0>2>1>0>1>0>0>0": 17,
+        "0>0>2>1>0>1>0>2>0": 18,
+        "0>0>2>1>0>1>0>1>0>0>0": 19,
+        "0>0>2>1>0>1>0>1>0>2>0": 20,
+        "0>0>2>1>0>1>0>1>0>3>0>2>0": 21,
+        "0>0>2>1>0>1>0>1>0>3>0>0>0": 22,
+        "0>0>2>1>0>1>0>1>0>3>0>2>1": 23,
+        "0>0>2>1>0>1>0>1>0>3>0>2>2": 24,
+        "0>0>2>1>0>1>0>1>0>3>0>1>0>2>0": 25,
+        "0>0>2>1>0>1>0>1>0>3>0>1>0>0>0": 26,
+        "0>0>2>1>0>1>0>1>0>3>0>1>0>2>1": 27,
+        "0>0>2>1>0>1>0>1>0>3>0>1>0>1>0>0>0": 28,
+        "0>0>2>1>0>1>0>1>0>3>0>1>0>1>0>2>0": 29,
+        "0>0>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>0>0": 30,
+        "0>0>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>2>0": 31,
+        "0>1>0>0": 32,
+        "0>1>0>1": 33,
+        "0>1>0>2": 34,
+        "0>1>0>3": 35,
+        "0>1>0>4": 36,
+        "0>1>1>0": 38,
+        "0>1>0>5": 39,
+        "0>1>0>6": 40,
+        "0>1>0>7": 41,
+        "0>1>1>1": 43,
+        "0>1>0>8": 44,
+        "0>1>2>1>0>0>0": 45,
+        "0>1>2>1>0>2>0": 46,
+        "0>1>2>1>0>2>1": 47,
+        "0>1>2>1>0>1>0>0>0": 48,
+        "0>1>2>1>0>1>0>2>0": 49,
+        "0>1>2>1>0>1>0>1>0>0>0": 50,
+        "0>1>2>1>0>1>0>1>0>2>0": 51,
+        "0>1>2>1>0>1>0>1>0>3>0>2>0": 52,
+        "0>1>2>1>0>1>0>1>0>3>0>0>0": 53,
+        "0>1>2>1>0>1>0>1>0>3>0>2>1": 54,
+        "0>1>2>1>0>1>0>1>0>3>0>2>2": 55,
+        "0>1>2>1>0>1>0>1>0>3>0>1>0>2>0": 56,
+        "0>1>2>1>0>1>0>1>0>3>0>1>0>0>0": 57,
+        "0>1>2>1>0>1>0>1>0>3>0>1>0>2>1": 58,
+        "0>1>2>1>0>1>0>1>0>3>0>1>0>1>0>0>0": 59,
+        "0>1>2>1>0>1>0>1>0>3>0>1>0>1>0>2>0": 60,
+        "0>1>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>0>0": 61,
+        "0>1>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>2>0": 62,
+        "0>2>0>0": 63,
+        "0>2>0>1": 64,
+        "0>2>0>2": 65,
+        "0>2>0>3": 66,
+        "0>2>0>4": 67,
+        "0>2>1>0": 69,
+        "0>2>0>5": 70,
+        "0>2>1>1": 72,
+        "0>2>0>6": 73,
+        "0>2>0>7": 74,
+        "0>2>2>1>0>0>0": 75,
+        "0>2>2>1>0>2>0": 76,
+        "0>2>2>1>0>2>1": 77,
+        "0>2>2>1>0>1>0>0>0": 78,
+        "0>2>2>1>0>1>0>2>0": 79,
+        "0>2>2>1>0>1>0>1>0>0>0": 80,
+        "0>2>2>1>0>1>0>1>0>2>0": 81,
+        "0>2>2>1>0>1>0>1>0>3>0>2>0": 82,
+        "0>2>2>1>0>1>0>1>0>3>0>0>0": 83,
+        "0>2>2>1>0>1>0>1>0>3>0>2>1": 84,
+        "0>2>2>1>0>1>0>1>0>3>0>2>2": 85,
+        "0>2>2>1>0>1>0>1>0>3>0>1>0>2>0": 86,
+        "0>2>2>1>0>1>0>1>0>3>0>1>0>0>0": 87,
+        "0>2>2>1>0>1>0>1>0>3>0>1>0>2>1": 88,
+        "0>2>2>1>0>1>0>1>0>3>0>1>0>1>0>0>0": 89,
+        "1>3>1>0>0": 143,
+        "0>2>2>1>0>1>0>1>0>3>0>1>0>1>0>2>0": 90,
+        "0>2>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>0>0": 91,
+        "0>2>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>2>0": 92,
+        "0>3>0>0": 93,
+        "0>3>0>1": 94,
+        "0>3>0>2": 95,
+        "0>3>0>3": 96,
+        "0>3>0>4": 97,
+        "0>3>2>1>0>0>0": 98,
+        "0>3>2>1>0>2>0": 99,
+        "0>3>2>1>0>2>1": 100,
+        "0>3>2>1>0>1>0>0>0": 101,
+        "0>3>2>1>0>1>0>2>0": 102,
+        "0>3>2>1>0>1>0>1>0>0>0": 103,
+        "0>3>2>1>0>1>0>1>0>2>0": 104,
+        "0>3>2>1>0>1>0>1>0>3>0>2>0": 105,
+        "0>3>2>1>0>1>0>1>0>3>0>0>0": 106,
+        "0>3>2>1>0>1>0>1>0>3>0>2>1": 107,
+        "0>3>2>1>0>1>0>1>0>3>0>2>2": 108,
+        "0>3>2>1>0>1>0>1>0>3>0>1>0>2>0": 109,
+        "0>3>2>1>0>1>0>1>0>3>0>1>0>0>0": 110,
+        "0>3>2>1>0>1>0>1>0>3>0>1>0>2>1": 111,
+        "0>3>2>1>0>1>0>1>0>3>0>1>0>1>0>0>0": 112,
+        "0>3>2>1>0>1>0>1>0>3>0>1>0>1>0>2>0": 113,
+        "1>3>2>2>0": 144,
+        "0>3>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>0>0": 114,
+        "0>3>2>1>0>1>0>1>0>3>0>1>0>1>0>1>0>2>0": 115,
+        "0>4>0>0": 116,
+        "0>4>0>1": 117,
+        "0>4>0>2": 118,
+        "0>4>0>3": 119,
+        "0>4>2>0>0": 120,
+        "0>4>2>2>0": 121,
+        "0>4>2>2>1": 122,
+        "0>4>2>1>0>0>0": 123,
+        "0>4>2>1>0>2>0": 124,
+        "0>4>2>1>0>1>0>0>0": 125,
+        "0>4>2>1>0>1>0>2>0": 126,
+        "0>4>2>1>0>1>0>3>0>2>0": 127,
+        "0>4>2>1>0>1>0>3>0>0>0": 128,
+        "0>4>2>1>0>1>0>3>0>2>1": 129,
+        "0>4>2>1>0>1>0>3>0>2>2": 130,
+        "0>4>2>1>0>1>0>3>0>1>0>2>0": 131,
+        "0>4>2>1>0>1>0>3>0>1>0>0>0": 132,
+        "0>4>2>1>0>1>0>3>0>1>0>2>1": 133,
+        "0>4>2>1>0>1>0>3>0>1>0>1>0>0>0": 134,
+        "0>4>2>1>0>1>0>3>0>1>0>1>0>2>0": 135,
+        "0>4>2>1>0>1>0>3>0>1>0>1>0>1>0>0>0": 136,
+        "0>4>2>1>0>1>0>3>0>1>0>1>0>1>0>2>0": 137,
+        "1>2>0": 138,
+        "1>2>1": 139,
+        "1>3>0>2>0": 140,
+        "1>3>0>2>1": 141,
+        "1>3>1>2>0": 142,
+        "1>3>2>2>1": 145,
+        "1>3>0>3>0>2>0": 146,
+        "1>3>0>3>0>2>1": 147,
+        "1>3>0>3>1>2>0": 148,
+        "1>3>0>3>1>0>0": 149,
+        "1>3>1>3>0>0>0": 150,
+        "1>3>1>3>0>2>0": 151,
+        "1>3>2>3>0>2>0": 152,
+        "1>3>2>3>0>0>0": 153,
+        "1>3>2>3>1>0>0": 154,
+        "1>3>2>3>1>2>0": 155,
+        "1>3>0>3>1>3>0>0>0": 156,
+        "1>3>0>3>1>3>0>2>0": 157,
+        "1>3>1>3>0>1>0>0>0": 158,
+        "1>3>1>3>0>1>0>2>0": 159,
+        "1>3>2>3>0>3>0>0>0": 160,
+        "1>3>2>3>0>3>0>2>0": 161,
+        "1>3>2>3>1>1>0>0>0": 162,
+        "1>3>2>3>1>1>0>2>0": 163,
+        "1>3>0>3>1>3>0>1>0>0>0": 164,
+        "1>3>0>3>1>3>0>1>0>2>0": 165,
+        "1>3>1>3>0>1>0>3>0>2>0": 166,
+        "1>3>1>3>0>1>0>3>0>0>0": 167,
+        "1>3>1>3>0>1>0>3>0>2>1": 168,
+        "1>3>1>3>0>1>0>3>0>2>2": 169,
+        "1>3>2>3>0>3>0>1>0>0>0": 170,
+        "1>3>2>3>0>3>0>1>0>2>0": 171,
+        "1>3>2>3>1>1>0>3>0>2>0": 172,
+        "1>3>2>3>1>1>0>3>0>0>0": 173,
+        "1>3>2>3>1>1>0>3>0>2>1": 174,
+        "1>3>2>3>1>1>0>3>0>2>2": 175,
+        "1>3>0>3>1>3>0>1>0>3>0>2>0": 176,
+        "1>3>0>3>1>3>0>1>0>3>0>0>0": 177,
+        "1>3>0>3>1>3>0>1>0>3>0>2>1": 178,
+        "1>3>0>3>1>3>0>1>0>3>0>2>2": 179,
+        "1>3>1>3>0>1>0>3>0>1>0>2>0": 180,
+        "1>3>1>3>0>1>0>3>0>1>0>0>0": 181,
+        "1>3>1>3>0>1>0>3>0>1>0>2>1": 182,
+        "1>3>2>3>0>3>0>1>0>3>0>2>0": 183,
+        "1>3>2>3>0>3>0>1>0>3>0>0>0": 184,
+        "1>3>2>3>0>3>0>1>0>3>0>2>1": 185,
+        "1>3>2>3>0>3>0>1>0>3>0>2>2": 186,
+        "1>3>2>3>1>1>0>3>0>1>0>2>0": 187,
+        "1>3>2>3>1>1>0>3>0>1>0>0>0": 188,
+        "1>3>2>3>1>1>0>3>0>1>0>2>1": 189,
+        "1>3>0>3>1>3>0>1>0>3>0>1>0>2>0": 190,
+        "1>3>0>3>1>3>0>1>0>3>0>1>0>0>0": 191,
+        "1>3>0>3>1>3>0>1>0>3>0>1>0>2>1": 192,
+        "1>3>1>3>0>1>0>3>0>1>0>1>0>0>0": 193,
+        "1>3>1>3>0>1>0>3>0>1>0>1>0>2>0": 194,
+        "1>3>2>3>0>3>0>1>0>3>0>1>0>2>0": 195,
+        "1>3>2>3>0>3>0>1>0>3>0>1>0>0>0": 196,
+        "1>3>2>3>0>3>0>1>0>3>0>1>0>2>1": 197,
+        "1>3>2>3>1>1>0>3>0>1>0>1>0>0>0": 198,
+        "1>3>2>3>1>1>0>3>0>1>0>1>0>2>0": 199,
+        "1>3>0>3>1>3>0>1>0>3>0>1>0>1>0>0>0": 200,
+        "1>3>0>3>1>3>0>1>0>3>0>1>0>1>0>2>0": 201,
+        "1>3>1>3>0>1>0>3>0>1>0>1>0>1>0>0>0": 202,
+        "1>3>1>3>0>1>0>3>0>1>0>1>0>1>0>2>0": 203,
+        "1>3>2>3>0>3>0>1>0>3>0>1>0>1>0>0>0": 204,
+        "1>3>2>3>0>3>0>1>0>3>0>1>0>1>0>2>0": 205,
+        "1>3>2>3>1>1>0>3>0>1>0>1>0>1>0>0>0": 206,
+        "1>3>2>3>1>1>0>3>0>1>0>1>0>1>0>2>0": 207,
+        "1>3>0>3>1>3>0>1>0>3>0>1>0>1>0>1>0>0>0": 208,
+        "1>3>0>3>1>3>0>1>0>3>0>1>0>1>0>1>0>2>0": 209,
+        "1>3>2>3>0>3>0>1>0>3>0>1>0>1>0>1>0>0>0": 210,
+        "1>3>2>3>0>3>0>1>0>3>0>1>0>1>0>1>0>2>0": 211
+    }
+}

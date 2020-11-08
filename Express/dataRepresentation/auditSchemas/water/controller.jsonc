@@ -1,0 +1,13 @@
+/*
+    Controller changes frontendName and isUsed for specified returnables.
+    IDs and controller are index matched
+*/
+{
+    "IDs": [23], //this is just an example
+    "controller": [
+        {
+            "isUsed": false,
+            "frontendName": "something"
+        }
+    ]
+}
