@@ -266,7 +266,7 @@ class ReturnableID {
 
 function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures) {
 
-    let returnableIDLookup = {};
+    let returnableIDLookup = [];
     let idValidationLookup = {};
     let featureParents = {};
     let setupObject = {};
@@ -1041,10 +1041,10 @@ const initialReturnableMapper = (returnable, statics) => {
 // ============================================================
 const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
-
+console.log(setupObject)
 // SEND SETUP OBJECT
 // ============================================================
-const sendSetup = (req, res, setupObject = setupObject) => {
+const sendSetup = (req, res) => {
 
     let cycleTime = Date.now() - res.locals.cycleTime[0]
     console.log(`Sent setupObject in ${cycleTime} ms`)

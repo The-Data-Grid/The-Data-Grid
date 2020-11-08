@@ -124,6 +124,8 @@ function uploadParse(req, res, next) {
 ////// TEMPLATE PARSING //////
 
 function templateParse(req, res, next) {
+    // init request parse object
+    res.locals.parsed = {};
     res.locals.parsed = JSON.parse(JSON.stringify(req.body));
     next(); // passing to template.js
 }
@@ -134,6 +136,9 @@ function templateParse(req, res, next) {
 ////// SETUP PARSING //////
 
 function setupParse(req, res, next) {
+    // init request parse object
+    res.locals.parsed = {};
+    // add If-Modified-Since header
     res.locals.parsed.ifModifiedSince = req.headers['If-Modified-Since'];
     next();
 }

@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const validate = require('./validate.js')
 const parse = require('./parse.js');
 const setup = require('./setup.js');
-const query = require('./query.js');
+//const query = require('./query.js');
 const insert = require('./insert.js');
 const template = require('./template.js');
 const cors = require('cors');
@@ -40,7 +40,10 @@ function cycleTimer(req, res, next) {
 }
 
 //** Data Query **//
-app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery); 
+//app.get('/api/audit/data/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.returnData); 
+
+//** Dropdown Query **/
+//app.get('/api/audit/dropdown/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.returnDropdown)
 
 //** Setup Query **//
 app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
@@ -52,7 +55,7 @@ app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
 app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTemplate should be in query.js
 
 // Front Page Stats
-app.get('/api/stats/', parse.statsParse, query.statsQuery);
+//app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
 // Easter Egg
 app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center>&copy TDG API Error Response ${new Date().getFullYear()}<center>`))
