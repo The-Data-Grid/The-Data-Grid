@@ -160,10 +160,10 @@ export class SetupObjectService {
 
         switch (info.column.filterSelector.selectorKey) {
           case "dropdown": { selectors.dropdown.push(info); break; }
-          case "numericChoice": { selectors.numericChoice.push(info); break; }
-          case "numericEqual": {
-            selectors.numericEqual.push(info);
-            appliedFilterSelections[info.returnableID] = { relation: null, input: null }; break;
+          case "numericEqual": { selectors.numericEqual.push(info); break; }
+          case "numericChoice": {
+            selectors.numericChoice.push(info);
+            appliedFilterSelections[info.returnableID] = { relation: null, value: null }; break;
           }
           case "calendarRange": {
             selectors.calendarRange.push(info);

@@ -246,7 +246,7 @@
 <ng-template #numericChoiceTemplate let-info>
     <mat-form-field>
         <mat-label>{{info.column.frontendName}}</mat-label>
-        <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID]'>
+        <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID.value]'>
     </mat-form-field>
 </ng-template>
 

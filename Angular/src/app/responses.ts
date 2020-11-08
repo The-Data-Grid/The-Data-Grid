@@ -62,7 +62,8 @@ export let SetupObject = {
             children: [
                 [
                     7,
-                    8
+                    8,
+                    9
                 ],
                 [],
                 [],
@@ -240,6 +241,22 @@ export let SetupObject = {
             nullable: false,
             information: "The organization that made the measurements",
             accuracy: 76.4
+        },
+        {
+            default: false,
+            frontendName: "Some Numeric Choice Selector",
+            filterSelector: {
+                selectorKey: "numericChoice",
+                selectorValue: "QUERYSTRING"
+            },
+            inputSelector: {
+                selectorKey: "searchableDropdown",
+                selectorValue: "QUERYSTRING"
+            },
+            datatype: 1,
+            nullable: false,
+            information: "The organization that made the measurements",
+            accuracy: 76.4
         }
     ],
     returnableIDToTreeID: {
@@ -249,7 +266,8 @@ export let SetupObject = {
         "13": "0>0>0>2",//basin brand
         "14": "0>1>0>0",//psi
         "15": "0>2>0>0", //leaking
-        "16": "0>2>0>1" //flow rate
+        "16": "0>2>0>1", //flow rate
+        "17": "1>0>2"  //Numeric choice
     },
     treeIDToReturnableID: {
         "1>0>0": "10",
@@ -258,7 +276,8 @@ export let SetupObject = {
         "0>0>0>2": "13",
         "0>1>0>0": "14",
         "0>2>0>0": "15",
-        "0>2>0>1": "16"
+        "0>2>0>1": "16",
+        "1>0>2": "17" 
     },
     setupLastModified: 1596004069
 }

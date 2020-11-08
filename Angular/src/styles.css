@@ -29,8 +29,6 @@ html, body {
 .mat-toolbar {
   background-color: rgb(86, 156, 215);
   color: white;
-  /* background-color: lightgray; */
-  /* color: gray; */
   width: 100%;
   z-index: 9999;
 }
@@ -56,7 +54,6 @@ html, body {
   cursor: pointer;
   transition: 0.3s;
 }
-
 
 #app {
   text-align: center;
