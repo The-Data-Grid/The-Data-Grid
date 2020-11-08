@@ -4,7 +4,9 @@ export let SetupObject = {
         [
             0,
             1,
-            2
+            2, 
+            3, 
+            4
         ],
         3
     ],
@@ -86,7 +88,7 @@ export let SetupObject = {
             ],
             frontendName: "Toilet",
             information: "Use pressurized water to cast away evil",
-            featureChildren: []
+            featureChildren: [3,4]
         },
         {
             children: [
@@ -115,7 +117,27 @@ export let SetupObject = {
             frontendName: "Valve",
             information: "valve valve",
             featureChildren: []
-        }
+        },
+        {
+            children: [
+                [],
+                [],
+                -1
+            ],
+            frontendName: "Sensor",
+            information: "A motion/infrared sensor that triggers flush",
+            featureChildren: []
+        },
+        {
+            children: [
+                [],
+                [],
+                -1
+            ],
+            frontendName: "Restroom Stall",
+            information: "Privacy barrier separating toilet from restroom common space",
+            featureChildren: []
+        },
     ],
     columns: [
         {
