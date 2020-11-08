@@ -64,7 +64,6 @@ export class AboutComponent implements OnInit {
   ]
 
   constructor() { }
-  ngOnit() { }
 
   @ViewChild('stepper') stepper: MatStepper;
 

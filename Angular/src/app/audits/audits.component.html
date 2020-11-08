@@ -283,7 +283,7 @@
 
 <ng-template #calendarEqualTemplate let-info>
     <mat-form-field>
-        <input matInput type="datetime-local" placeholder="info.column.frontendName"
+        <input matInput type="datetime-local" [placeholder]="info.column.frontendName"
             [(ngModel)]="appliedFilterSelections[info.returnableID]">
     </mat-form-field>
 </ng-template>

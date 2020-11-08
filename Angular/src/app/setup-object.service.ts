@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 
 export const IDX_OF_FEATURES_ARR = 0;
 export const IDX_OF_GLOBAL_ITEM_IDX = 1;
+
 export const IDX_OF_ID_COL_IDXS = 0;
+export const IDX_OF_ID_ITEM_IDXS = 1;
+export const IDX_OF_NON_ID_COL_IDXS = 2;
+export const IDX_OF_NON_ID_ITEM_IDXS = 3;
+
 export const IDX_OF_OBSERVATION_COL_IDXS = 0;
 export const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
 
@@ -58,15 +63,46 @@ export class SetupObjectService {
   getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumns) {
     let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
     let globalColumns = [];
-    // look at global IDColumns 
-    setupObject.items[globalItemIndex].children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
-      console.log(setupObject);
-      globalColumns.push({
+    let path = [IDX_OF_GLOBAL_ITEM_IDX];
+    console.log(setupObject);
+
+    this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, setupObject);
+
+    return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumns);
+  }
+
+
+  private getAllItemRelatedColumns(item, columns, path, setupObject) {
+    item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
+      let newPath = Object.assign([], path);
+      newPath.push(IDX_OF_ID_COL_IDXS, i);
+      columns.push({
         column: setupObject.columns[IDColumnIndex],
-        returnableID: this.getReturnableID([IDX_OF_GLOBAL_ITEM_IDX, IDX_OF_ID_COL_IDXS, i], setupObject)
+        returnableID: this.getReturnableID(newPath, setupObject)
       });
     });
-    return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumns);
+    item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let newPath = Object.assign([], path);
+      newPath.push(IDX_OF_ID_ITEM_IDXS, i);
+      console.log(itemPointer.index + " ID " + itemPointer.frontendName)
+      let itemIndex = itemPointer.index;
+      this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
+    });
+    // item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
+    //   let newPath = Object.assign([], path);
+    //   newPath.push(IDX_OF_NON_ID_COL_IDXS, i);
+    //   columns.push({
+    //     column: setupObject.columns[NonIDColumnIndex],
+    //     returnableID: this.getReturnableID(newPath, setupObject)
+    //   });
+    // });
+    // item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+    //   let newPath = Object.assign([], path);
+    //   newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
+    //   console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
+    //   let itemIndex = itemPointer.index;
+    //   this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
+    // });
   }
 
   getFeatureSelectors(setupObject, appliedFilterSelections, defaultColumns) {
@@ -88,7 +124,6 @@ export class SetupObjectService {
           returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject)
         });
       });
-      // allFeatureSelectors[setupObject.features[featureIndex].frontendName] = this.parseColumns(featureColumns,
       allFeatureSelectors[k] = this.parseColumns(featureColumns,
         appliedFilterSelections,
         defaultColumns);
