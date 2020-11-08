@@ -65,7 +65,7 @@ getSubFeaturesLength(subfeatureList) {
   }
 }
 
-
+// keeps track of which features are checked (temporary)
   updateFeatures() {
     if (this.status == 'template') {
     var featuresLength = this.getFeaturesLength();
@@ -114,7 +114,7 @@ getSubFeaturesLength(subfeatureList) {
     this.dialogRef.close();
   }
 
-
+// switch between the toggle options
   changeStatus(toggleOption) {
     this.status = toggleOption;
     if (this.status == 'roots') {
