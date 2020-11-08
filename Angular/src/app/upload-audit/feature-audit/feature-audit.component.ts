@@ -53,7 +53,7 @@ export class FeatureAuditComponent implements OnInit {
     }
   ]
 
-  featureIndex = 1;
+  featureIndex = 0;
 
   ngOnInit(): void {
   }
