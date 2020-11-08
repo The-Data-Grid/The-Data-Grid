@@ -145,7 +145,7 @@ let returnableQuery = client.querySync('SELECT \
                                         ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
                                         \
                                         r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, \
-                                        r.is_real_geo as r__is_real_geo, r.join_object -> \'attributeType\' as r__attribute_type, \
+                                        r.is_real_geo as r__is_real_geo, r.join_object -> \'attributeType\' as r__attribute_type, r.feature_id as r__feature_id, \
                                         \
                                         i.table_name as i__table_name, i.frontend_name as i__frontend_name \
                                         \
@@ -267,7 +267,7 @@ class ReturnableID {
 function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures) {
 
     let returnableIDLookup = {};
-    let idColumnTableLookup = {};
+    let idValidationLookup = {};
     let featureParents = {};
     let setupObject = {};
 
@@ -552,30 +552,34 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // yay
 
 
-    // Construct idColumnTableLookup
+    // Construct idValidationLookup
     // ============================================================
-    /*                      
-    for(let row of rawQuery) {
+                        
+    for(let row of returnableQuery) {
 
-        let id = row['c__column_id'].toString();
+        let id = row['r__returnable_id'].toString();
 
-        let filterable = (row['fs__selector_name'] === null ? false : true)
+        let isFilterable = (row['fs__selector_name'] === null ? false : true);
 
-        idColumnTableLookup[id] = {
-            column: row['c__column_name'],
-            table: row['c__table_name'],
+        let isSubmission = (row['r__feature_id'] === null ? true : false);
+
+        idValidationLookup[id] = {
+            // feature and root feature
             rootfeature: row['rf__table_name'],
             feature: row['f__table_name'],
-            referenceColumn: row['c__reference_column_name'],
-            referenceTable: row['c__reference_table_name'],
-            filterable: filterable,
+            //referenceColumn: row['c__reference_column_name'],
+            //referenceTable: row['c__reference_table_name'],
+
+            isFilterable: isFilterable,
+            isSubmission: isSubmission,
+
             sqlType: row['sql__type_name'],
-            groundTruthLocation: row['c__is_ground_truth']
+            //groundTruthLocation: row['c__is_ground_truth']
         }
     }
 
 
-    */
+    
     // Construct featureParents
     // ============================================================
     allFeatures.map((el) => [el['f__table_name'], el['ff__table_name']]).forEach((el) => {
@@ -799,7 +803,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     
     return({
         setupObject: setupObject,
-        idColumnTableLookup: idColumnTableLookup,
+        idValidationLookup: idValidationLookup,
         featureParents: featureParents,
         returnableIDLookup: returnableIDLookup
     })
@@ -1035,7 +1039,7 @@ const initialReturnableMapper = (returnable, statics) => {
 
 // CALLING SETUP FUNCTION
 // ============================================================
-const {returnableIDLookup, idColumnTableLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
+const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
 
 // SEND SETUP OBJECT
@@ -1061,14 +1065,14 @@ const sendSetup = (req, res, setupObject = setupObject) => {
 
 
 //console.log(featureParents);
-//console.log(idColumnTableLookup)
+//console.log(idValidationLookup)
 //console.log(returnableIDLookup)
 //console.log(setupObject)
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
     
 module.exports = {
     returnableIDLookup,
-    idColumnTableLookup,
+    idValidationLookup,
     featureParents,
     sendSetup,
     setupObject
