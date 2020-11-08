@@ -1,22 +1,28 @@
-const {idColumnTableLookup, returnableIDLookup} = require('./setup.js');
+const {idValidationLookup} = require('./setup.js');
 
 // Generate array of ids that are global
-var globals = [];
+var globals = {
+    filter: [],
+    column: []
+};
 
-for (let id in returnableIDLookup) {
-    if (returnableIDLookup[id].returnType == "global") {
-        globals.push(id);
-    }
-}
+for (let id in idValidationLookup) { //>>>>>>>>>>>>>>>>>>  is_submission
+    if (idValidationLookup[id].isSubmission === true) {
+        globals.column.push(id);
+        if(idValidationLookup[id].isFilterable === true) {
+            globals.filter.push(id);
+        };
+    };
+};
 
 // Dynamically generating the validate object by
-// looping through all ids in idColumnTableLookup
+// looping through all ids in idValidationLookup
 
 var validate = {};
 
-for (let id in idColumnTableLookup) {
+for (let id in idValidationLookup) {
     // Getting the root feature
-    let feature = (idColumnTableLookup[id].rootfeature === null ? idColumnTableLookup[id].feature : idColumnTableLookup[id].rootfeature)
+    let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
 
     // if empty or feature not included yet, initialize column and filter array for new feature
     if(!Object.keys(validate).includes(feature)) {
@@ -30,9 +36,9 @@ for (let id in idColumnTableLookup) {
     let idToInt = parseInt(id); // in case id isn't already an int
     validate[feature]['column'].push(idToInt);
     
-    if (idColumnTableLookup[id].filterable) {
+    if (idValidationLookup[id].isFilterable) {
         validate[feature]['filter'].push(idToInt);
-        validate[feature]['sqlType'].push(idColumnTableLookup[id].sqlType);
+        validate[feature]['sqlType'].push(idValidationLookup[id].sqlType);
     }
 }
 
@@ -52,7 +58,7 @@ function validateAudit(req, res, next) {
     // Validate columns for feature
 
     for(let column of res.locals.parsed.columns) {
-        if(!validate[feature]['column'].includes(parseInt(column)) && !globals.includes(parseInt(column))) {
+        if(!validate[feature]['column'].includes(parseInt(column)) && !globals.column.includes(parseInt(column))) {
             return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
         };
     };
@@ -63,7 +69,8 @@ function validateAudit(req, res, next) {
     let filterIDKeys = Object.keys(res.locals.parsed.filters);
 
     for(let filter of filterIDKeys) {
-        if(!validate[feature]['filter'].includes(parseInt(filter))) { 
+        // if not a valid filter for this feature or not a global filter
+        if(!validate[feature]['filter'].includes(parseInt(filter)) && !globals.filter.includes(parseInt(filter))) { 
             return res.status(400).send(`Bad Request 2203: ${filter} is not a valid filter for the ${feature} feature`);
         } else {
             let operator = res.locals.parsed.filters[filter]['operation'];
