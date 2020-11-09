@@ -316,7 +316,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     
 
 
-    const datatypeArray = ['hyperlink', 'string', 'bool'];
+    const datatypeArray = ['hyperlink', 'string', 'bool', 'date', 'location'];
 
     // Construct columnObjects
     // ==================================================
@@ -1041,7 +1041,6 @@ const initialReturnableMapper = (returnable, statics) => {
 // ============================================================
 const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
-console.log(setupObject)
 // SEND SETUP OBJECT
 // ============================================================
 const sendSetup = (req, res) => {
