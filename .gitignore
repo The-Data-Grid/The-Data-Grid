@@ -12,3 +12,5 @@ PostgreSQL/data/*
 Express/dataRepresentation/auditSchemas/*/returnables/
 
 Express/queryTester.js
+
+PostgreSQL/scratch.txt

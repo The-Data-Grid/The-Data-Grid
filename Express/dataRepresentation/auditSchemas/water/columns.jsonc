@@ -6,7 +6,7 @@
         TOILET
     */
     { // TOILIET CLOCKWISE INTEGER
-        "tableName": "observation_toilet",
+        "tableName": "item_toilet",
         "columnName": "data_clockwise_integer",
         "observationTableName": null,
         "subobservationTableName": null,
