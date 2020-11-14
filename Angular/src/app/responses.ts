@@ -148,7 +148,7 @@ export let SetupObject = {
                 selectorValue: null
             },
             inputSelector: "numericEqual",
-            datatype: 0,
+            datatypeKey: "string",
             nullable: false,
             information: "GPF stands for Gallons Per Flush",
             accuracy: 95.6
@@ -161,7 +161,7 @@ export let SetupObject = {
                 selectorKey: "dropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatype: 1,
+            datatypeKey: "hyperlink",
             nullable: false,
             information: "SOP stands for Standard Operating Procedure",
             accuracy: 100.0
@@ -177,7 +177,7 @@ export let SetupObject = {
                 selectorKey: "dropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatype: 0,
+            datatypeKey: "string",
             nullable: true,
             information: "Company that sold basin end-product",
             accuracy: 100.0
@@ -190,7 +190,7 @@ export let SetupObject = {
                 selectorValue: null
             },
             inputSelector: "numericEqual",
-            datatype: 0,
+            datatypeKey: "string",
             nullable: true,
             information: "PSI stands for pounds per square inch",
             accuracy: 98.3
@@ -203,7 +203,7 @@ export let SetupObject = {
                 selectorKey: "dropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatype: 1,
+            datatypeKey: "hyperlink",
             nullable: false,
             information: "SOP stands for Standard Operating Procedure",
             accuracy: 100.0
@@ -216,7 +216,7 @@ export let SetupObject = {
                 selectorValue: null
             },
             inputSelector: "bool",
-            datatype: 2,
+            datatypeKey: "bool",
             nullable: false,
             information: "Water loss",
             accuracy: 100.00
@@ -229,7 +229,7 @@ export let SetupObject = {
                 selectorValue: null
             },
             inputSelector: "numericEqual",
-            datatype: 0,
+            datatypeKey: "string",
             nullable: true
         },
         {
@@ -243,7 +243,7 @@ export let SetupObject = {
                 selectorKey: "calendarEqual",
                 selectorValue: null
             },
-            datatype: 0,
+            datatypeKey: "string",
             nullable: false,
             information: "The date the audit submission was uploaded",
             accuracy: 92.3
@@ -259,7 +259,7 @@ export let SetupObject = {
                 selectorKey: "searchableDropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatype: 1,
+            datatypeKey: "hyperlink",
             nullable: false,
             information: "The organization that made the measurements",
             accuracy: 76.4
@@ -275,7 +275,7 @@ export let SetupObject = {
                 selectorKey: "searchableDropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatype: 1,
+            datatypeKey: "hyperlink",
             nullable: false,
             information: "The organization that made the measurements",
             accuracy: 76.4
@@ -309,22 +309,22 @@ export let SetupObject = {
 
 export let TableObject = {
     returnableColumnIDs: [
-        // 10, //date submitted
+        12, //Org
         13, //basin brand
         11, //gpf
-        // 12, //Org
+        10, //date submitted
         14, //psi
         15  //leaking
     ],
     rowData: [
         [
-            // {
-            //     displayString: "Bruin Home Solutions",
-            //     URL: "https://bruinhomesolutions.com/"
-            // },
+            {
+                displayString: "Bruin Home Solutions",
+                URL: "https://bruinhomesolutions.com/"
+            },
             "Basin Brand 1",
             33.6,
-            // 1596104069,
+            1596104069,
             // {
             //     displayString: "Restroom SOP v1",
             //     URL: "https://agar.io/"
@@ -333,13 +333,13 @@ export let TableObject = {
             0
         ],
         [
-            // {
-            //     displayString: "Renewable Energy Association",
-            //     URL: "https://rea.seas.ucla.edu/"
-            // },
+            {
+                displayString: "Renewable Energy Association",
+                URL: "https://rea.seas.ucla.edu/"
+            },
             "Basin Brand 2",
             63.4,
-            // 1596034069,
+            1596034069,
             // {
             //     displayString: "REA BIODIESEL TEAM 1.2",
             //     URL: "https://agar.io/"
@@ -348,13 +348,13 @@ export let TableObject = {
             1
         ],
         [
-            // {
-            //     displayString: "UCLA Facilities Management",
-            //     URL: "https://www.facilities.ucla.edu/"
-            // },
+            {
+                displayString: "UCLA Facilities Management",
+                URL: "https://www.facilities.ucla.edu/"
+            },
             "Basin Brand 3",
             34.5,
-            // 1596030069,
+            1596030069,
             // {
             //     displayString: "FM SOP",
             //     URL: "https://agar.io/"
@@ -363,13 +363,13 @@ export let TableObject = {
             1
         ],
         [
-            // {
-            //     displayString: "Clean Consulting",
-            //     URL: "https://cleanconsulting.org/"
-            // },
+            {
+                displayString: "Clean Consulting",
+                URL: "https://cleanconsulting.org/"
+            },
             "Basin Brand 4",
             45.4,
-            // 1595030069,
+            1595030069,
             // {
             //     displayString: "Aiden’s SOP",
             //     URL: "https://agar.io/"

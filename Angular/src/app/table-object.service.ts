@@ -31,11 +31,9 @@ export class TableObjectService {
     // construct the column header arrays
     tableObject.returnableColumnIDs.forEach(columnID => {
       let columnIndex = returnableIDToColumnIndex[columnID];
-
       dataTableColumns.push({
         prop: setupObject.columns[columnIndex].frontendName,
-        // TODO: datatype is hardcoded as string here
-        type: 'string',
+        type: setupObject.columns[columnIndex].datatypeKey,
         index: columnIndex
       });
     });
@@ -45,12 +43,12 @@ export class TableObjectService {
       let row = {};
       row["_hyperlinks"] = {};
 
-      // TODO: DATA tpye is hardecoded as string
-      let datatype = 'string';
 
       // fill out the row object
       tableObject.returnableColumnIDs.forEach((columnID, i) => {
         let columnIndex = returnableIDToColumnIndex[columnID];
+        let datatype = setupObject.columns[columnIndex].datatypeKey;
+
         switch (datatype) {
           case "string": {
             row[setupObject.columns[columnIndex].frontendName] = element[i]; break;

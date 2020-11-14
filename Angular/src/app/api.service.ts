@@ -25,8 +25,8 @@ export class ApiService {
   }
 
   public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
-    var url = API_URL + '/setup';
-    // var url = fakeServerURL + '/setup';
+    // var url = API_URL + '/setup';
+    var url = fakeServerURL + '/setup';
     var lastModifiedObject = {
       lastModified: lastModified
     }
