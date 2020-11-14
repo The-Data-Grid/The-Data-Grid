@@ -185,7 +185,7 @@ let columnQuery = client.querySync('SELECT \
                                     LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
 
 let allItems = client.querySync('SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
-                                 i.creation_privilege as i__creation_privilege \
+                                 i.creation_privilege as i__creation_privilege, i.item_id as i__item_id \
                                  FROM metadata_item AS i \
                                  LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id');
 
@@ -316,7 +316,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     
 
 
-    const datatypeArray = ['hyperlink', 'string', 'bool'];
+    const datatypeArray = ['hyperlink', 'string', 'bool', 'date', 'location'];
 
     // Construct columnObjects
     // ==================================================
@@ -360,20 +360,6 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     });
     // Construct itemNodeObject
     // ==================================================
-    /*
-    {
-        “children”: [[Number,...], [itemChildNodePointerObject,...], [Number,...], \ 
-                    [itemChildNodePointerObject,...]],
-        “frontendName”: String,
-        “information”: String 
-    }
-
-    {
-        “children”: ID columns indexes, ID itemNodeObject indexes,
-                    nonID column indexes, non ID itemNodeObject indexes
-        “frontendName”: 
-        “information”: 
-    } */
 
 // INFO: item information does not exist right now
 
@@ -381,8 +367,6 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
     
     let itemNodeObjects = allItems.map(item => {
-        // getting frontend name
-        let frontendName = item['i__frontend_name'];
 
         // getting non-id columns
         const nonIDColumns = columnObjects.filter(col => col.additionalInfo.item === item['i__table_name'] && ['item-non-id', 'item-list', 'item-location', 'item-factor'].includes(col.additionalInfo.referenceType));
@@ -436,8 +420,9 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         return ({
             children: [IDColumnIndices, IDitemChildNodePointerObjects, nonIDColumnIndices, nonIDitemChildNodePointerObjects],
-            frontendName: item['i__frontend_name']
-        })
+            frontendName: item['i__frontend_name'],
+            information: null
+        });
     });
 
     let submissionItemIndex = itemOrder.indexOf('item_submission');
@@ -1041,7 +1026,6 @@ const initialReturnableMapper = (returnable, statics) => {
 // ============================================================
 const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
-console.log(setupObject)
 // SEND SETUP OBJECT
 // ============================================================
 const sendSetup = (req, res) => {

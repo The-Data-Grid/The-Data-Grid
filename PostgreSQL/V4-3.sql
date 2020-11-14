@@ -363,6 +363,7 @@ INSERT INTO metadata_sql_type
     VALUES
         (DEFAULT, 'TEXT'),
         (DEFAULT, 'NUMERIC'),
+        (DEFAULT, 'INTEGER'),
         (DEFAULT, 'TIMESTAMPTZ'),
         (DEFAULT, 'BOOLEAN'),
         (DEFAULT, 'JSON'),

@@ -5,6 +5,25 @@
     /*
         TOILET
     */
+    { // TOILIET CLOCKWISE INTEGER
+        "tableName": "item_toilet",
+        "columnName": "data_clockwise_integer",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_toilet",
+
+        "sqlType": "INTEGER",
+        "referenceType": "item-id",
+
+        "frontendName": "Clockwise Integer",
+        "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
+        "accuracy": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "numericEqual",
+        "inputSelectorName": "numericEqual",
+        "frontendType": "string"
+    },
     { // TOILIET GALLONS PER FLUSH
         "tableName": "observation_toilet",
         "columnName": "data_gpf",
@@ -28,7 +47,7 @@
         "tableName": "list_toilet_stall_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": null,
+        "subobservationTableName": "subobservation_toilet_stall",
         "itemName": "item_toilet",
 
         "sqlType": "TEXT",
@@ -85,7 +104,7 @@
         "tableName": "list_toilet_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": null,
+        "subobservationTableName": "subobservation_toilet_sensor",
         "itemName": "item_toilet",
 
         "sqlType": "TEXT",
@@ -262,7 +281,7 @@
         "tableName": "list_urinal_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": null,
+        "subobservationTableName": "subobservation_urinal_sensor",
         "itemName": "item_urinal",
 
         "sqlType": "TEXT",
@@ -281,7 +300,7 @@
         "tableName": "list_urinal_divider_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": null,
+        "subobservationTableName": "subobservation_urinal_divider",
         "itemName": "item_urinal",
 
         "sqlType": "TEXT",
@@ -436,7 +455,7 @@
         "tableName": "list_sink_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": null,
+        "subobservationTableName": "subobservation_sink_sensor",
         "itemName": "item_sink",
 
         "sqlType": "TEXT",

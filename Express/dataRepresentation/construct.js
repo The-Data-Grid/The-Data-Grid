@@ -1057,15 +1057,14 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             // if subobservation
             if(col.subobservationtablename !== null) {
                 rootFeatureID = featureID;
-                console.log(chalk.red.bgBlack(pgp.as.format(makeItemReturnablesSubobservationQuery, {
-                    subobservationTableName: col.subobservationtablename
-                })));
 
                 featureID = await db.one(pgp.as.format(makeItemReturnablesSubobservationQuery, {
                     subobservationTableName: col.subobservationtablename
                 }));
 
                 featureID = featureID.featureid;
+
+                //console.log(chalk.red.bgBlack(featureID))
             } else {
                 // else then feature is already root
                 rootFeatureID = null;
