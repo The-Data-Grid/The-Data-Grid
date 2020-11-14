@@ -1,6 +1,9 @@
 <body style="overflow-x: hidden;">
     <div class="top_decoration"></div>
     <h3 style="margin-left:22px;margin-top:25px">Bathroom Audit 1</h3>
+
+    <!-- LOOKS CONVOLUTED AT THE MOMENT BECAUSE ONLY THE SUBFEATURES PANEL GET ITS DATA FROM THE SETUP OBJECT -->
+
     <mat-accordion>
         <mat-expansion-panel *ngFor="let panel of dummy">
             <mat-expansion-panel-header>
@@ -8,10 +11,20 @@
                     {{panel.title}}
                 </mat-panel-title>
             </mat-expansion-panel-header>
+            <div *ngIf="panel.title != 'Subfeature'">
             <div *ngFor="let string of panel.content">
                 <div class="secondary_separator"></div>
-                {{string}}
+                    {{string}}
+                </div>
             </div>
+
+                <div *ngIf="panel.title == 'Subfeature'">
+                    <div *ngFor="let subfeature of subfeatures">
+                        <div class="secondary_separator"></div>
+                        {{ subfeature }}
+                    </div>
+                </div>
+            
         </mat-expansion-panel>
     </mat-accordion>
     <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
