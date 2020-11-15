@@ -154,12 +154,7 @@ export class AuditsComponent implements OnInit {
   }
 
   applyFilters() {
-    // console.log(this.appliedFilterSelections);
-
-    /* get api response */
-    if (!this.selectedFeature) {
-      return;
-    }
+    if (!this.selectedFeature) { return; }
     this.getTableObject();
   }
 

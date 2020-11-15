@@ -246,6 +246,7 @@
 <ng-template #numericChoiceTemplate let-info>
     <div style = "width: 90%; margin-left: auto; margin-right:auto;">
         <mat-label>{{info.column.frontendName}}</mat-label>
+<<<<<<< HEAD
         <mat-form-field style="width: 33%;">
             <mat-label>Select</mat-label>
             <mat-select [(ngModel)] = 'appliedFilterSelections[info.returnableID.relation]'>
@@ -259,6 +260,10 @@
             <input matInput placeholder="ex: 4.5" [(ngModel)] = 'appliedFilterSelections[info.returnableID.value]'>
         </mat-form-field>
     </div>
+=======
+        <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID.value]'>
+    </mat-form-field>
+>>>>>>> 9f571364f9a64aca8f53b0eafe96287c7ba7dbdb
 </ng-template>
 
 <ng-template #numericEqualTemplate let-info>
@@ -294,7 +299,7 @@
 
 <ng-template #calendarEqualTemplate let-info>
     <mat-form-field>
-        <input matInput type="datetime-local" placeholder="info.column.frontendName"
+        <input matInput type="datetime-local" [placeholder]="info.column.frontendName"
             [(ngModel)]="appliedFilterSelections[info.returnableID]">
     </mat-form-field>
 </ng-template>
