@@ -120,6 +120,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "BAP"
+    }
+  },
+  "defaultProject": "BAP",
+  "cli": {
+    "analytics": "93bb5e5f-51eb-4ba0-ac44-cc74f66f670a"
+  }
 }
