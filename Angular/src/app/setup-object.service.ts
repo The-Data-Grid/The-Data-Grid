@@ -125,13 +125,36 @@ export class SetupObjectService {
           returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject)
         });
       });
-      allFeatureSelectors[k] = this.parseColumns(featureColumns,
+      allFeatureSelectors[featureIndex] = this.parseColumns(featureColumns,
         appliedFilterSelections,
         defaultColumns);
     });
     return allFeatureSelectors;
   }
 
+  // returns an array that holds key-value mapping from feature's index in setupObj featrues array to its input selectors
+  getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumns, isObservation: boolean) {
+    let childType;
+    isObservation ? childType = IDX_OF_OBSERVATION_COL_IDXS : childType = IDX_OF_ATTRIBUTE_COL_IDXS;
+
+    let allFeatureInputSelectors = [];
+    // for each feature
+    setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
+      let featureColumns = [];
+      console.log(setupObject.features[featureIndex].frontendName)
+      // find feature's observation or attribute columns
+      setupObject.features[featureIndex].children[childType].forEach((observationColumnIndex, i) => {
+        featureColumns.push({
+          column: setupObject.columns[observationColumnIndex],
+          returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, childType, i], setupObject)
+        });
+      });
+      allFeatureInputSelectors[featureIndex] = this.parseColumns(featureColumns,
+        appliedFilterSelections,
+        defaultColumns);
+    });
+    return allFeatureInputSelectors;
+  }
 
 
   private getReturnableID(tree: any[], setupObject): string {

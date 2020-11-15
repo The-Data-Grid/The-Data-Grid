@@ -1,13 +1,5 @@
-#body {
-    position: relative;
-    left: 0;
-    right: 0;
-    background-color: white;
-    /* top: 50px;
-    bottom: 30px; */
-}
 
-.mat-card {
+/* .mat-card {
     margin-left: auto;
     margin-right: auto;
     border-radius: 0%;
@@ -21,17 +13,16 @@
     margin: 10px;
     background-color: #BFDCCE;
     color: black;
-}
+} */
 
 #save-button {
     background-color: rgb(86, 156, 215);
     color: white;
 }
 
-#name {
-    position: relative;
-    margin-left: 40px;
-    padding-bottom: 20px;
+#open-dialog-buttons .mat-button {
+    background-color: rgba(95, 167, 132, 0.2);
+    margin-right: 10px;
 }
 
 .lower_bound {

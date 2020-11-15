@@ -27,13 +27,9 @@ export class ApiService {
   public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
     // var url = API_URL + '/setup';
     var url = fakeServerURL + '/setup';
-    var lastModifiedObject = {
-      lastModified: lastModified
-    }
 
     return this.http.get<SetupTableObject>(url, {
       observe: 'response',
-      // params: lastModifiedObject
     })
       .pipe(map((response: any) => {
         console.log("Server Status: " + response.status + ":::::" + response.statusText);
