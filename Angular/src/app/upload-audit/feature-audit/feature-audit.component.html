@@ -18,12 +18,21 @@
                 </div>
             </div>
 
-                <div *ngIf="panel.title == 'Subfeature'">
-                    <div *ngFor="let subfeature of subfeatures">
-                        <div class="secondary_separator"></div>
-                        {{ subfeature }}
-                    </div>
+            <div *ngIf="panel.title == 'Subfeature'">
+                <div *ngFor="let subfeature of subfeatures">
+                    <mat-accordion>
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                 {{ subfeature.frontendName }}
+                            </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="secondary_separator"></div>
+                            {{ subfeature.information }}
+                        </mat-expansion-panel>
+                        </mat-accordion>
                 </div>
+            </div>
             
         </mat-expansion-panel>
     </mat-accordion>

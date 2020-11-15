@@ -77,7 +77,7 @@ export class FeatureAuditComponent implements OnInit {
       let features = this.setupObjectService.getFeaturesToChildren(this.setupObject);
       let subfeatureIndices = features[this.featureIndex];
       for (var i = 0; i < subfeatureIndices.length; i++) {
-        this.subfeatures.push(this.setupObject.features[subfeatureIndices[i]].frontendName);
+        this.subfeatures.push(this.setupObject.features[subfeatureIndices[i]]);
       }
       console.log(this.subfeatures);
     });
