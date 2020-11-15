@@ -47,7 +47,10 @@ export class AuditsComponent implements OnInit {
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
   numericRelation: string[][] = [[">=","gte"],["<=","lte"],[">","gt"],["<","lt"],["=","equal"]]
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1864818714a6b27922e0710ad08c82210beab145
 
   constructor(private apiService: ApiService, 
     public datepipe: DatePipe, 
