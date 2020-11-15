@@ -120,14 +120,6 @@
           }
         }
       }
-    }
-  },
-  "defaultProject": "BAP",
-  "cli": {
-<<<<<<< HEAD
-    "analytics": false
-=======
-    "analytics": "93bb5e5f-51eb-4ba0-ac44-cc74f66f670a"
->>>>>>> 1864818714a6b27922e0710ad08c82210beab145
-  }
+    }},
+  "defaultProject": "BAP"
 }
