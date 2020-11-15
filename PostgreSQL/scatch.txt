@@ -1,0 +1,8 @@
+WITH "trying" as (
+	select * from metadata_returnable) 
+		(select null as "dropdowns", * from "trying" limit 10)
+			UNION ALL
+		(select concat(array_agg(distinct frontend_name)::text, array_agg(distinct feature_id)::text), null, null, null, null, null, null, null, null from "trying")
+
+
+        
