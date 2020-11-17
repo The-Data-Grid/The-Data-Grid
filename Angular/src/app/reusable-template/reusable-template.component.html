@@ -1,0 +1,47 @@
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title>{{ _selectedFeature.name}}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].numericChoice">
+        <ng-template *ngTemplateOutlet="_numericChoiceTemplate; context: {$implicit: column}"></ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].numericEqual">
+        <ng-template *ngTemplateOutlet="_numericEqualTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].calendarRange">
+        <ng-template *ngTemplateOutlet="_calendarRangeTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].calendarEqual">
+        <ng-template *ngTemplateOutlet="_calendarEqualTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].dropdown">
+        <ng-template *ngTemplateOutlet="_dropdownTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].searchableDropdown">
+        <ng-template *ngTemplateOutlet="_searchableDropdownTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].checklistDropdown">
+        <ng-template *ngTemplateOutlet="_checklistDropdownTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].searchableChecklistDropdown">
+        <ng-template
+            *ngTemplateOutlet="_searchableChecklistDropdownTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].text">
+        <ng-template *ngTemplateOutlet="_textTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+    <div *ngFor="let column of _featureSelectors[_selectedFeature.index].bool">
+        <ng-template *ngTemplateOutlet="_boolTemplate; context: {$implicit: column}">
+        </ng-template>
+    </div>
+
+
+</mat-expansion-panel>
