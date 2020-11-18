@@ -160,7 +160,6 @@ let returnableQuery = client.querySync('SELECT \
                                         LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
                                         LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
 
-//console.log(returnableQuery[50]);
 
 let columnQuery = client.querySync('SELECT \
                                     \
@@ -215,15 +214,16 @@ client.end();
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, ID, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName) {
+    constructor(feature, ID, columnName, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName) {
         this.ID = ID;
         this.feature = feature;
+        this.columnName = columnName;
         this.frontendName = frontendName;
         this.returnType = returnType;
         this.appendSQL = appendSQL;
         this.selectSQL = selectSQL;
 
-        this.joinObject = this.makeJoinObject(columnTree, tableTree, ID);
+        this.joinObject = this.makeJoinObject(Array.from(columnTree), Array.from(tableTree), ID);
 
         Object.freeze(this);
     }
@@ -594,6 +594,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         // Get returnable id as string
         const returnableID = row['r__returnable_id'];
 
+        // Construct returnable id alias to be used in the select clause
+        //   we have to do this because aliases cannot start with numbers in SQL
+        const returnableIDAlias = 'r' + returnableID
+
         // Get column tree
         const columnTree = row['r__join_object'].columns;
         //console.log(columnTree) 
@@ -623,7 +627,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                             tdg_observation_count.observation_count_id = m2m_auditor.observation_count_id \
                             INNER JOIN item_user AS user_auditor_name ON m2m_auditor.user_id = user_auditor_name.user_id';
 
-            selectSQL = `COALESCE($(observationTable:name).data_auditor, user_auditor_name.data_full_name) AS ${returnableID}`;
+            selectSQL = `COALESCE($(observationTable:name).data_auditor, user_auditor_name.data_full_name) AS ${returnableIDAlias}`;
 
         // Standard Operating Procedure
         } else if(frontendName == 'Standard Operating Procedure' && returnType == 'special') { 
@@ -632,7 +636,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                             tdg_observation_count.observation_count_id = m2m_item_sop.observation_count_id \
                             INNER JOIN item_sop ON m2m_item_sop.sop_id = tdg_sop.sop_id'
 
-            selectSQL = `item_sop.data_name AS ${returnableID}`
+            selectSQL = `item_sop.data_name AS ${returnableIDAlias}`
 
         } else if(returnType == 'obs-list') {
 
@@ -649,7 +653,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \') AS $(returnableID:raw)', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
-                returnableID: returnableID
+                returnableID: returnableIDAlias
             });
             
             // add 1 to listAlias number to make a new unique alias
@@ -670,7 +674,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \') AS $(returnableID:raw)', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
-                returnableID: returnableID
+                returnableID: returnableIDAlias
             });
             
             // add 1 to listAlias number to make a new unique alias
@@ -683,7 +687,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = pgp.as.format('$(featureTable:name).$(columnName:name) AS $(returnableID:raw)', {
                 featureTable: feature,
                 columnName: columnName,
-                returnableID: returnableID
+                returnableID: returnableIDAlias
             });
 
         } else if(['item-id', 'item-non-id'].includes(returnType)) {
@@ -693,7 +697,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = pgp.as.format('$(pgpParam:raw).$(columnName:name) AS $(returnableID:raw)', {
                 pgpParam: '$(alias:name)',
                 columnName: columnName,
-                returnableID: returnableID
+                returnableID: returnableIDAlias
             });
 
         } else if(returnType == 'item-location') {
@@ -711,7 +715,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = pgp.as.format('$(locationAlias:name).$(columnName:name) AS $(returnableID:raw)', {
                 locationAlias: locationAlias.join(''),
                 columnName: columnName,
-                returnableID: returnableID
+                returnableID: returnableIDAlias
             });
 
             // add 1 to locationAlias number to make a new unique alias
@@ -732,7 +736,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name) AS $(returnableID:raw)', {
                 factorAlias: factorAlias.join(''),
                 columnName: columnName,
-                returnableID: returnableID
+                returnableID: returnableIDAlias
             });
 
             // add 1 to factorAlias number to make a new unique alias
@@ -753,7 +757,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name) AS $(returnableID:raw)', {
                 factorAlias: factorAlias.join(''),
                 columnName: columnName,
-                returnableID: returnableID
+                returnableID: returnableIDAlias
             });
 
             // add 1 to factorAlias number to make a new unique alias
@@ -779,7 +783,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = pgp.as.format('$(obsOrItem:name).$(columnName:name) AS $(returnableID:raw)', {
                 obsOrItem: obsOrItem,
                 columnName: columnName,
-                returnableID
+                returnableID: returnableIDAlias
             });
 
             // add 1 to attributeAlias number to make a new unique alias
@@ -790,7 +794,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup.push(new ReturnableID(feature, returnableID, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName))
+        returnableIDLookup.push(new ReturnableID(feature, returnableID, columnName, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName))
 
     }
 
@@ -1004,7 +1008,7 @@ const initialReturnableMapper = (returnable, statics) => {
     // set current path to joinObject tables
     //console.log(returnable)
     //console.log(returnable['r__join_object'])
-    let currentPath = returnable['r__join_object'].tables;
+    let currentPath = Array.from(returnable['r__join_object'].tables);
 
     // if submission
     if(returnable['f__table_name'] === null) {

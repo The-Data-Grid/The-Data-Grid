@@ -8,9 +8,9 @@ var globals = {
 
 for (let id in idValidationLookup) { //>>>>>>>>>>>>>>>>>>  is_submission
     if (idValidationLookup[id].isSubmission === true) {
-        globals.column.push(id);
+        globals.column.push(parseInt(id));
         if(idValidationLookup[id].isFilterable === true) {
-            globals.filter.push(id);
+            globals.filter.push(parseInt(id));
         };
     };
 };

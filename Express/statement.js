@@ -34,7 +34,7 @@ const where = '$(clause:value) ($(condition:raw))'
 
 const whereCondition = '$(select:value) $(operation:value) $(filterValue)';
 
-const submission = 'INNER JOIN tdg_submission ON $(feature:value).submission_id = tdg_submission.submission_id';
+const submission = 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.submission_id AS submission';
 
 
 // STATS //

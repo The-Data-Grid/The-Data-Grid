@@ -82,14 +82,10 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
     // get joinObject - Need to deep copy all the ref arrays to prevent mutation
     let joinObjectArray = [];
     builtArray[depth - 1].forEach(obj => {
-        joinObjectArray.push(new Object())
-        Object.entries(obj).forEach(pair => {
-            if(pair[0] === 'refs') {
-                // The Crucial Array.from() needed to not mutate returnableIDLookup
-                joinObjectArray[0][pair[0]] = Array.from(pair[1])
-            } else {
-                joinObjectArray[0][pair[0]] = pair[1]
-            }
+        joinObjectArray.push({
+            parentAlias: obj.parentAlias,
+            ID: obj.ID,
+            refs: Array.from(obj.refs) // as to not mutate returnableIDLookup
         })
     })
 
@@ -230,12 +226,10 @@ function featureQuery(req, res) {
     let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID)[0]);
 
 
-    console.log(allIDs, allReturnableIDs)
-
 
     // SUBMISSION
     // ==================================================
-    let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'submission');
+    let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.feature === null);
     let submissionClauseArray = [];
     // first push the tdg_submission reference
     submissionClauseArray.push(pgp.as.format(submission, {
@@ -245,26 +239,43 @@ function featureQuery(req, res) {
     // if submission returnables exist
     if(submissionReturnableIDs.length >= 1) {
         // get all join objects in request
-        let joins = submissionReturnableIDs.map(returnable => returnable.joinObject)
+        let joins = submissionReturnableIDs.filter(returnable => returnable.joinObject.refs.length > 0);
+        let joinObjects = joins.map(returnable => returnable.joinObject);
+        let locals = submissionReturnableIDs.filter(returnable => returnable.joinObject.refs.length == 0);
+
+
 
         // perform reference selection to trim join tree and assign aliases
-        let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
+        let joinArray = recursiveReferenceSelection([joinObjects], {}, aliasNumber)
+
+        console.log(joinArray);
+        
 
         // make joins and add to clauseArray
         for(let join of joinArray.builtArray) {
             submissionClauseArray.push(string2Join(join, 's', feature))
         }
-        // add selections to selectClauses
-        for(let returnable of submissionReturnableIDs) {
+
+        // add local selects
+        locals.forEach(returnable => {
+            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+                alias: 'submission'
+            }))
+        });
+
+        // add selections of returnables with joinObjects
+        for(let returnable of joins) {
             // get alias and interpolate into select
             let alias = 's' + joinArray.idAliasLookup[String(returnable.ID)]
             selectClauses.push(pgp.as.format(returnable.selectSQL, {
-                table: alias
+                alias: alias
             }))
             // add table and column to whereLookup
             whereLookup[returnable.ID] = alias + '.' + returnable.dataColumn
         }
     }
+
+    console.log(submissionClauseArray)
 
     // LISTS AND SPECIAL
     // ==================================================
