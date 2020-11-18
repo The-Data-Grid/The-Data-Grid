@@ -57,7 +57,6 @@ function validateAudit(req, res, next) {
     let feature = 'observation_' + res.locals.parsed.features;
     let universalFilters = res.locals.parsed.universalFilters;
 
-    console.log(validate);
 
     if(!validateFeatures.includes(feature)) {
         return res.status(400).send(`Bad Request 2201: ${feature} is not a valid feature`);

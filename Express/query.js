@@ -195,6 +195,11 @@ function string2Join(string, prefix, feature) {
     }))
 }
 
+/**
+ * Performs construction of dynamic SQL with request parameters
+ * 
+ * out: SQL query as a string
+ */
 
 function featureQuery(req, res) {   
     
@@ -205,7 +210,7 @@ function featureQuery(req, res) {
     // array of all features in feature tree (features and subfeatures)
     let featureTree = [];
     // get feature and add to feature tree
-    const feature = 'feature_' + res.locals.parsed.features;
+    const feature = 'observation_' + res.locals.parsed.features;
     featureTree.push(feature);
     // set alias number
     let aliasNumber = 1;
@@ -223,6 +228,10 @@ function featureQuery(req, res) {
     let allIDs = [...new Set(res.locals.parsed.columns.concat(Object.keys(res.locals.parsed.filters)).concat(sortID))];
     // array of returnableID objects from IDs 
     let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID)[0]);
+
+
+    console.log(allIDs, allReturnableIDs)
+
 
     // SUBMISSION
     // ==================================================

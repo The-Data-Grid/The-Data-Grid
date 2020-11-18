@@ -591,7 +591,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         // Get feature table as string
         const feature = row['f__table_name'];
 
-        // Get column id as string
+        // Get returnable id as string
         const returnableID = row['r__returnable_id'];
 
         // Get column tree
@@ -623,7 +623,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                             tdg_observation_count.observation_count_id = m2m_auditor.observation_count_id \
                             INNER JOIN item_user AS user_auditor_name ON m2m_auditor.user_id = user_auditor_name.user_id';
 
-            selectSQL = 'COALESCE($(observationTable:name).data_auditor, user_auditor_name.data_full_name)';
+            selectSQL = `COALESCE($(observationTable:name).data_auditor, user_auditor_name.data_full_name) AS ${returnableID}`;
 
         // Standard Operating Procedure
         } else if(frontendName == 'Standard Operating Procedure' && returnType == 'special') { 
@@ -632,7 +632,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                             tdg_observation_count.observation_count_id = m2m_item_sop.observation_count_id \
                             INNER JOIN item_sop ON m2m_item_sop.sop_id = tdg_sop.sop_id'
 
-            selectSQL = 'item_sop.data_name'
+            selectSQL = `item_sop.data_name AS ${returnableID}`
 
         } else if(returnType == 'obs-list') {
 
@@ -646,9 +646,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             });
             
             // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
+            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \') AS $(returnableID:raw)', {
                 listAlias: listAlias.join(''), 
-                columnName: columnName
+                columnName: columnName,
+                returnableID: returnableID
             });
             
             // add 1 to listAlias number to make a new unique alias
@@ -666,9 +667,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             });
             
             // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
+            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \') AS $(returnableID:raw)', {
                 listAlias: listAlias.join(''), 
-                columnName: columnName
+                columnName: columnName,
+                returnableID: returnableID
             });
             
             // add 1 to listAlias number to make a new unique alias
@@ -678,18 +680,20 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             appendSQL = null;
 
-            selectSQL = pgp.as.format('$(featureTable:name).$(columnName:name)', {
+            selectSQL = pgp.as.format('$(featureTable:name).$(columnName:name) AS $(returnableID:raw)', {
                 featureTable: feature,
-                columnName: columnName
+                columnName: columnName,
+                returnableID: returnableID
             });
 
         } else if(['item-id', 'item-non-id'].includes(returnType)) {
 
             appendSQL = null;
 
-            selectSQL = pgp.as.format('$(pgpParam:raw).$(columnName:name)', {
+            selectSQL = pgp.as.format('$(pgpParam:raw).$(columnName:name) AS $(returnableID:raw)', {
                 pgpParam: '$(alias:name)',
-                columnName: columnName
+                columnName: columnName,
+                returnableID: returnableID
             });
 
         } else if(returnType == 'item-location') {
@@ -704,9 +708,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                             fk: locationForeignKey
                                        });
 
-            joinSQL = pgp.as.format('$(locationAlias:name).$(columnName:name)', {
+            selectSQL = pgp.as.format('$(locationAlias:name).$(columnName:name) AS $(returnableID:raw)', {
                 locationAlias: locationAlias.join(''),
-                columnName: columnName
+                columnName: columnName,
+                returnableID: returnableID
             });
 
             // add 1 to locationAlias number to make a new unique alias
@@ -724,9 +729,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                            fk: factorForeignKey
                                        });
         
-            joinSQL = pgp.as.format('$(factorAlias:name).$(columnName:name)', {
+            selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name) AS $(returnableID:raw)', {
                 factorAlias: factorAlias.join(''),
-                columnName: columnName
+                columnName: columnName,
+                returnableID: returnableID
             });
 
             // add 1 to factorAlias number to make a new unique alias
@@ -744,9 +750,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                            fk: factorForeignKey
                                        });
         
-            joinSQL = pgp.as.format('$(factorAlias:name).$(columnName:name)', {
+            selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name) AS $(returnableID:raw)', {
                 factorAlias: factorAlias.join(''),
-                columnName: columnName
+                columnName: columnName,
+                returnableID: returnableID
             });
 
             // add 1 to factorAlias number to make a new unique alias
@@ -769,9 +776,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                            fk: attributeForeignKey
                                        });
 
-            selectSQL = pgp.as.format('$(obsOrItem:name).$(columnName:name)', {
+            selectSQL = pgp.as.format('$(obsOrItem:name).$(columnName:name) AS $(returnableID:raw)', {
                 obsOrItem: obsOrItem,
-                columnName: columnName
+                columnName: columnName,
+                returnableID
             });
 
             // add 1 to attributeAlias number to make a new unique alias
