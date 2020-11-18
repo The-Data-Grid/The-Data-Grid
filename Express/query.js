@@ -80,7 +80,6 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
     let depth = builtArray.length
 
     // get joinObject - Need to deep copy all the ref arrays to prevent mutation
-    // Finally!
     let joinObjectArray = [];
     builtArray[depth - 1].forEach(obj => {
         joinObjectArray.push(new Object())
@@ -173,7 +172,6 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
 }
 
 
-
 function string2Join(string, prefix, feature) {
     let clauseArray = [];
 
@@ -196,7 +194,8 @@ function string2Join(string, prefix, feature) {
         originalColumn: clauseArray[1]
     }))
 }
- 
+
+
 function featureQuery(req, res) {   
     
     // array of IDs with table name and column name for WHERE clauses
@@ -525,7 +524,9 @@ async function statsQuery(req, res, next) {
     
 }
 
-
+function returnData(req, res) {
+    res.end();
+}
 
 
 module.exports = {
@@ -533,6 +534,7 @@ module.exports = {
     statsQuery,
     auditQuery,
     setupQuery,
-    cycleTime
+    cycleTime,
+    returnData
 };
 

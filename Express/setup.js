@@ -531,6 +531,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     setupObject.items = itemNodeObjects;
     setupObject.features = featureNodeObjects;
     setupObject.columns = columnObjects.map(obj => obj.object);
+    setupObject.datatypes = datatypeArray;
     setupObject.returnableIDToTreeID = returnableIDToTreeIDObject;
     setupObject.treeIDToReturnableID = treeIDToReturnableIDObject;
     setupObject.lastModified = Date.now();
