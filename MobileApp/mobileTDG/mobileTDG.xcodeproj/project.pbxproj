@@ -8,18 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */; };
-		F6A90DC62561C2840067AAA1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC52561C2840067AAA1 /* ContentView.swift */; };
+		F6A90DC62561C2840067AAA1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC52561C2840067AAA1 /* LoginView.swift */; };
 		F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DC72561C2860067AAA1 /* Assets.xcassets */; };
 		F6A90DCB2561C2860067AAA1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */; };
+		F6A90DDB2564ED140067AAA1 /* IBM_Plex_Sans in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */; };
+		F6A90DEC25650C6E0067AAA1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEB25650C6E0067AAA1 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		F6A90DC02561C2840067AAA1 /* mobileTDG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobileTDG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mobileTDGApp.swift; sourceTree = "<group>"; };
-		F6A90DC52561C2840067AAA1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F6A90DC52561C2840067AAA1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		F6A90DC72561C2860067AAA1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F6A90DCC2561C2860067AAA1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */ = {isa = PBXFileReference; lastKnownFileType = folder; name = IBM_Plex_Sans; path = ../../../../../Downloads/IBM_Plex_Sans; sourceTree = "<group>"; };
+		F6A90DEB25650C6E0067AAA1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,9 +57,11 @@
 			isa = PBXGroup;
 			children = (
 				F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */,
-				F6A90DC52561C2840067AAA1 /* ContentView.swift */,
+				F6A90DC52561C2840067AAA1 /* LoginView.swift */,
+				F6A90DEB25650C6E0067AAA1 /* SettingsView.swift */,
 				F6A90DC72561C2860067AAA1 /* Assets.xcassets */,
 				F6A90DCC2561C2860067AAA1 /* Info.plist */,
+				F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */,
 				F6A90DC92561C2860067AAA1 /* Preview Content */,
 			);
 			path = mobileTDG;
@@ -128,6 +134,7 @@
 			files = (
 				F6A90DCB2561C2860067AAA1 /* Preview Assets.xcassets in Resources */,
 				F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */,
+				F6A90DDB2564ED140067AAA1 /* IBM_Plex_Sans in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,7 +145,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6A90DC62561C2840067AAA1 /* ContentView.swift in Sources */,
+				F6A90DEC25650C6E0067AAA1 /* SettingsView.swift in Sources */,
+				F6A90DC62561C2840067AAA1 /* LoginView.swift in Sources */,
 				F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
