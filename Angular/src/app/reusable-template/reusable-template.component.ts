@@ -1,4 +1,16 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { ApiService } from '../api.service';
+import { DatePipe } from '@angular/common';
+import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../dropdown-settings'
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+
+import { SetupObjectService } from '../setup-object.service';
+import { TableObjectService } from '../table-object.service';
+import { SetupObject, TableObject } from '../responses'
+// import { TableObject } from '../responses';
+// import { SetupObject} from '../setupObjectTry1';
+import { environment } from '../../environments/environment';
+const USE_FAKE_DATA = environment.useFakeData;
 
 @Component({
   selector: 'app-reusable-template',
@@ -8,40 +20,35 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ReusableTemplateComponent implements OnInit {
 
-  constructor() { }
+  constructor(private apiService: ApiService, 
+    private setupObjectService: SetupObjectService,
+    private tableObjectService: TableObjectService) { }
+
+  @Input() set selectedFeature(selectedFeature) {this._selectedFeature = selectedFeature;}
+  @Input() set featureSelectors(featureSelectors) {this._featureSelectors = featureSelectors;}  
+
+  setupObject;
+  appliedFilterSelections = {}
+  dropdownList = FakeData;
+  searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
+  checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
+  searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
+  numericRelation: string[][] = [[">=","gte"],["<=","lte"],[">","gt"],["<","lt"],["=","equal"]]
+  selectorsLoaded: boolean = false;
 
   _selectedFeature;
   _featureSelectors = {};
-  _numericChoiceTemplate;
-  _numericEqualTemplate;
-  _calendarRangeTemplate;
-  _calendarEqualTemplate;
-  _dropdownTemplate;
-  _searchableDropdownTemplate;
-  _checklistDropdownTemplate;
-  _searchableChecklistDropdownTemplate;
-  _textTemplate;
-  _boolTemplate;
-
   globalSelectors = []
-  selectorsLoaded = true;
 
-
-  @Input() set selectedFeature(selectedFeature) {this._selectedFeature = selectedFeature;}
-  @Input() set featureSelectors(featureSelectors) {this._featureSelectors = featureSelectors;}
-  @Input() set numericChoiceTemplate(numericChoiceTemplate) {this._numericChoiceTemplate = numericChoiceTemplate}
-  @Input() set numericEqualTemplate(numericEqualTemplate) {this._numericEqualTemplate = numericEqualTemplate}
-  @Input() set calendarRangeTemplate(calendarRangeTemplate) {this._calendarRangeTemplate = calendarRangeTemplate};
-  @Input() set calendarEqualTemplate(calendarEqualTemplate) {this._calendarEqualTemplate = calendarEqualTemplate}
-  @Input() set dropdownTemplate(dropdownTemplate) {this._dropdownTemplate = dropdownTemplate}
-  @Input() set searchableDropdownTemplate(searchableDropdownTemplate) {this._searchableDropdownTemplate = searchableDropdownTemplate}
-  @Input() set checklistDropdownTemplate(checklistDropdownTemplate) {this._checklistDropdownTemplate = checklistDropdownTemplate}
-  @Input() set searchableChecklistDropdownTemplate(searchableChecklistDropdownTemplate) {this._searchableChecklistDropdownTemplate = searchableChecklistDropdownTemplate}
-  @Input() set textTemplate(textTemplate) {this._textTemplate = textTemplate};
-  @Input() set boolTemplate(boolTemplate) {this._boolTemplate = boolTemplate}
   
-  ngOnInit(): void {
+
+  ngOnInit(): void {}
+
+  onItemSelect(item: any) {
   }
+  onSelectAll(items: any) {
+  }
+
   
 
 

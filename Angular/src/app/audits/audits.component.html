@@ -68,17 +68,7 @@
             <mat-accordion *ngIf="selectedFeature">
                 <app-reusable-template 
                 [selectedFeature]="selectedFeature" 
-                [featureSelectors]="featureSelectors" 
-                [numericChoiceTemplate]="numericChoiceTemplate" 
-                [numericEqualTemplate]="numericEqualTemplate" 
-                [calendarRangeTemplate]="calendarRangeTemplate" 
-                [calendarEqualTemplate]="calendarEqualTemplate" 
-                [dropdownTemplate]="dropdownTemplate" 
-                [searchableDropdownTemplate]="searchableDropdownTemplate" 
-                [checklistDropdownTemplate]="checklistDropdownTemplate" 
-                [searchableChecklistDropdownTemplate]="searchableChecklistDropdownTemplate" 
-                [textTemplate]="textTemplate" 
-                [boolTemplate]="boolTemplate">
+                [featureSelectors]="featureSelectors">
             </app-reusable-template>
             
                 <mat-expansion-panel *ngFor="let childIndex of featuresToChildren[selectedFeature.index]">
