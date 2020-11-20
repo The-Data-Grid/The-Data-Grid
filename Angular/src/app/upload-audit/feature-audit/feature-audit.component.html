@@ -11,14 +11,14 @@
                     {{panel.title}}
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <div *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Attributes'">
+            <div *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation'">
             <div *ngFor="let string of panel.content">
                 <div class="secondary_separator"></div>
                     {{string}}
                 </div>
             </div>
 
-            <div *ngIf="panel.title == 'Toilet Attributes' && isLoaded">
+            <div *ngIf="panel.title == 'Toilet Observation'">
     
                 <mat-accordion>
                     <app-reusable-template

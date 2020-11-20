@@ -22,8 +22,6 @@ export class FeatureAuditComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>,private apiService: ApiService, private setupObjectService: SetupObjectService, private tableObjectService: TableObjectService) {
   }
 
-  isLoaded = false;
-
   setupObject;
   subfeatures = [];
   attributeSelectors;
@@ -127,7 +125,6 @@ export class FeatureAuditComponent implements OnInit {
       this.selectedFeature = this.setupObjectService.getFeatureInputSelectors(this.setupObject,[],[],true);
       this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject,[],[],true);
       this.selectedFeature = this.rootFeatures
-      this.isLoaded = true;
 
     });
   }
