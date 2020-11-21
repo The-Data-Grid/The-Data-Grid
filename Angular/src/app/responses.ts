@@ -4,8 +4,8 @@ export let SetupObject = {
         [
             0,
             1,
-            2, 
-            3, 
+            2,
+            3,
             4
         ],
         3
@@ -88,7 +88,7 @@ export let SetupObject = {
             ],
             frontendName: "Toilet",
             information: "Use pressurized water to cast away evil",
-            featureChildren: [3,4]
+            featureChildren: [3, 4]
         },
         {
             children: [
@@ -148,7 +148,7 @@ export let SetupObject = {
                 selectorValue: null
             },
             inputSelector: "numericEqual",
-            datatypeKey: "string",
+            datatypeKey: 0,
             nullable: false,
             information: "GPF stands for Gallons Per Flush",
             accuracy: 95.6
@@ -161,7 +161,7 @@ export let SetupObject = {
                 selectorKey: "dropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatypeKey: "hyperlink",
+            datatypeKey: 1,
             nullable: false,
             information: "SOP stands for Standard Operating Procedure",
             accuracy: 100.0
@@ -177,7 +177,7 @@ export let SetupObject = {
                 selectorKey: "dropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatypeKey: "string",
+            datatypeKey: 0,
             nullable: true,
             information: "Company that sold basin end-product",
             accuracy: 100.0
@@ -190,7 +190,7 @@ export let SetupObject = {
                 selectorValue: null
             },
             inputSelector: "numericEqual",
-            datatypeKey: "string",
+            datatypeKey: 0,
             nullable: true,
             information: "PSI stands for pounds per square inch",
             accuracy: 98.3
@@ -203,7 +203,7 @@ export let SetupObject = {
                 selectorKey: "dropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatypeKey: "hyperlink",
+            datatypeKey: 1,
             nullable: false,
             information: "SOP stands for Standard Operating Procedure",
             accuracy: 100.0
@@ -216,7 +216,7 @@ export let SetupObject = {
                 selectorValue: null
             },
             inputSelector: "bool",
-            datatypeKey: "bool",
+            datatypeKey: 2,
             nullable: false,
             information: "Water loss",
             accuracy: 100.00
@@ -229,7 +229,7 @@ export let SetupObject = {
                 selectorValue: null
             },
             inputSelector: "numericEqual",
-            datatypeKey: "string",
+            datatypeKey: 0,
             nullable: true
         },
         {
@@ -243,7 +243,7 @@ export let SetupObject = {
                 selectorKey: "calendarEqual",
                 selectorValue: null
             },
-            datatypeKey: "string",
+            datatypeKey: 0,
             nullable: false,
             information: "The date the audit submission was uploaded",
             accuracy: 92.3
@@ -259,7 +259,7 @@ export let SetupObject = {
                 selectorKey: "searchableDropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatypeKey: "hyperlink",
+            datatypeKey: 1,
             nullable: false,
             information: "The organization that made the measurements",
             accuracy: 76.4
@@ -275,7 +275,7 @@ export let SetupObject = {
                 selectorKey: "searchableDropdown",
                 selectorValue: "QUERYSTRING"
             },
-            datatypeKey: "hyperlink",
+            datatypeKey: 1,
             nullable: false,
             information: "The organization that made the measurements",
             accuracy: 76.4
@@ -299,9 +299,14 @@ export let SetupObject = {
         "0>1>0>0": "14",
         "0>2>0>0": "15",
         "0>2>0>1": "16",
-        "1>0>2": "17" 
+        "1>0>2": "17"
     },
-    setupLastModified: 1596004069
+    setupLastModified: 1596004069,
+    datatypes: [
+        "string",
+        "hyperlink",
+        "bool"
+    ]
 }
 
 
