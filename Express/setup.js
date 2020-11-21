@@ -251,6 +251,8 @@ class ReturnableID {
                 joinListArray.push(`${join.originalTable}.${join.originalColumn}>${join.joinTable}.${join.joinColumn}`)
             })
 
+            joinListArray.reverse();
+
             // recursiveReferenceSelection input. Note parentAlias is always input as -1 because the function
             // selects references from the feature_... table and builds out. -1 indicates a join to this table
             return {parentAlias: -1, ID: ID, refs: joinListArray}

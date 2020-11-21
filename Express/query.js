@@ -183,12 +183,14 @@ function string2Join(string, prefix, feature) {
 
     let joinAlias = prefix + string[1]
     return(pgp.as.format(referenceSelectionJoin, {
-        joinTable: clauseArray[2],
+        joinTable: clauseArray[0],
         joinAlias: joinAlias,
-        joinColumn: clauseArray[3],
+        joinColumn: clauseArray[1],
         originalAlias: originalAlias,
-        originalColumn: clauseArray[1]
+        originalColumn: clauseArray[3]
     }))
+
+    //'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(joinAlias:value).$(joinColumn:value) = $(originalAlias:value).$(originalColumn:value)'
 }
 
 /**
@@ -249,17 +251,20 @@ function featureQuery(req, res) {
         let joinArray = recursiveReferenceSelection([joinObjects], {}, aliasNumber)
 
         console.log(joinArray);
-        
+
+        console.log(submissionClauseArray)
 
         // make joins and add to clauseArray
         for(let join of joinArray.builtArray) {
-            submissionClauseArray.push(string2Join(join, 's', feature))
+            submissionClauseArray.push(string2Join(join, 's', 'ITEM_SUBMISSION'))
         }
+
+        console.log(submissionClauseArray)
 
         // add local selects
         locals.forEach(returnable => {
             selectClauses.push(pgp.as.format(returnable.selectSQL, {
-                alias: 'submission'
+                alias: 'item_submission'
             }))
         });
 
@@ -275,7 +280,7 @@ function featureQuery(req, res) {
         }
     }
 
-    console.log(submissionClauseArray)
+    
 
     // LISTS AND SPECIAL
     // ==================================================
@@ -346,6 +351,8 @@ function featureQuery(req, res) {
     //console.log(allReturnableIDs)
     // Throw error if the length of the ID set is not equal to the sum of its partitions
     if(submissionReturnableIDs.length + listAndSpecialReturnableIDs.length + dynamicReturnableIDs.length + localReturnableIDs.length != allIDs.length) {
+        console.log(submissionReturnableIDs.length + listAndSpecialReturnableIDs.length + dynamicReturnableIDs.length + localReturnableIDs.length, allIDs.length);
+        
         return res.status(500).send('Internal Server Error 7701: Number of columns found different than number of columns requested')
     }
     

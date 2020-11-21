@@ -1,7 +1,7 @@
 const pgp = require("pg-promise");
 const PS = pgp.PreparedStatement;
 
-const referenceSelectionJoin = 'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(originalAlias:value).$(originalColumn:value) = $(joinAlias:value).$(joinColumn:value)'
+const referenceSelectionJoin = 'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(joinAlias:value).$(joinColumn:value) = $(originalAlias:value).$(originalColumn:value)'
 // joinTable
 // joinAlias
 // joinColumn
