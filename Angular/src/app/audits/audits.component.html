@@ -66,52 +66,11 @@
             </mat-form-field>
 
             <mat-accordion *ngIf="selectedFeature">
-                <mat-expansion-panel>
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>{{selectedFeature.name}}</mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].numericChoice">
-                        <ng-template *ngTemplateOutlet="numericChoiceTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].numericEqual">
-                        <ng-template *ngTemplateOutlet="numericEqualTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].calendarRange">
-                        <ng-template *ngTemplateOutlet="calendarRangeTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].calendarEqual">
-                        <ng-template *ngTemplateOutlet="calendarEqualTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].dropdown">
-                        <ng-template *ngTemplateOutlet="dropdownTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].searchableDropdown">
-                        <ng-template *ngTemplateOutlet="searchableDropdownTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].checklistDropdown">
-                        <ng-template *ngTemplateOutlet="checklistDropdownTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].searchableChecklistDropdown">
-                        <ng-template
-                            *ngTemplateOutlet="searchableChecklistDropdownTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].text">
-                        <ng-template *ngTemplateOutlet="textTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let column of featureSelectors[selectedFeature.index].bool">
-                        <ng-template *ngTemplateOutlet="boolTemplate; context: {$implicit: column}">
-                        </ng-template>
-                    </div>
-                </mat-expansion-panel>
+                <app-reusable-template 
+                [selectedFeature]="selectedFeature" 
+                [featureSelectors]="featureSelectors">
+            </app-reusable-template>
+            
                 <mat-expansion-panel *ngFor="let childIndex of featuresToChildren[selectedFeature.index]">
                     <mat-expansion-panel-header>
                         <mat-panel-title>
@@ -244,10 +203,21 @@
 
 <!-- reusable tempates -->
 <ng-template #numericChoiceTemplate let-info>
-    <mat-form-field>
+    <div style = "width: 90%; margin-left: auto; margin-right:auto;">
         <mat-label>{{info.column.frontendName}}</mat-label>
-        <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID.value]'>
-    </mat-form-field>
+        <mat-form-field style="width: 33%;">
+            <mat-label>Select</mat-label>
+            <mat-select [(ngModel)] = 'appliedFilterSelections[info.returnableID.relation]'>
+                <mat-option *ngFor="let relation of numericRelation" [value] = "relation[1]">
+                    {{relation[0]}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field style="width: 33%;">
+            <mat-label>Input</mat-label>
+            <input matInput placeholder="ex: 4.5" [(ngModel)] = 'appliedFilterSelections[info.returnableID.value]'>
+        </mat-form-field>
+    </div>
 </ng-template>
 
 <ng-template #numericEqualTemplate let-info>

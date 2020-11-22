@@ -25,16 +25,11 @@ export class ApiService {
   }
 
   public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
-    // return this.http.get<FilterConfig>(API_URL + '/s/filter');
     // var url = API_URL + '/setup';
     var url = API_URL + '/setup';
-    var lastModifiedObject = {
-      lastModified: lastModified
-    }
 
     return this.http.get<SetupTableObject>(url, {
       observe: 'response',
-      // params: lastModifiedObject
     })
       .pipe(map((response: any) => {
         console.log("Server Status: " + response.status + ":::::" + response.statusText);

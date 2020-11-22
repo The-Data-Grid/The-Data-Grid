@@ -1,0 +1,84 @@
+This is an example to show how subfeatures and lists are displayed and joined.
+
+===================
+== EXAMPLE SETUP ==
+===================
+
+feature observations [BOILER]
+------------------------------
+PK | Boiler_efficiency
+------------------------------
+1  | 4.56
+2  | 7.89
+
+subfeature observations [VALVE]
+-------------------------------
+PK | parent | Color | Condition
+-------------------------------
+1  |   1    | green | good
+2  |   1    | blue  | bad
+3  |   1    | green | bad
+4  |   2    | red   | good
+5  |   2    | red   | bad
+
+subfeature observations [PLATE]
+--------------------------------------------------
+PK | parent | Subfeature index | Varnish
+--------------------------------------------------
+1  |   1    | 1                | Nice
+1  |   1    | 2                | Meh
+2  |   1    | 1                | Rusty
+
+=============
+== DISPLAY ==
+=============
+
+OPTION 1 - Comma delimit repeats in one column
+
+---------------------------------------------------------------
+PK | Boiler_efficiency | Valve_colors       | Valve_conditions
+---------------------------------------------------------------
+1  | 4.56              | green, blue, green | good, bad, bad
+2  | 7.89              | red, red           | good, bad
+
+
+OPTION 2 - Group subfeature data into tuples and comma delimit repeats in one column
+
+-----------------------------------------------------------------
+PK | Boiler_efficiency | Valve_colors_and_conditions
+-----------------------------------------------------------------
+1  | 4.56              | (green, good), (blue, bad), (green, bad)
+2  | 7.89              | (red, good), (red, bad)
+
+
+OPTION 3 - Display hyperlink that goes to the subfeature
+
+-------------------------------------------
+PK | Boiler_efficiency | Valve_observations
+-------------------------------------------
+1  | 4.56              |   link
+2  | 7.89              |   link
+
+
+OPTION 4 - Pivot Tables 
+-------------------------------------------------------------------------------------------------------
+PK | Boiler_efficiency | Valve_colors-1  | Valve_colors-2 | Valve_colors-3 | Plate_varnish-1 | Plate_varnish-2
+---------------------------------------------------------------------------------------------------------------
+1  | 4.56              | green           | blue           | green          |     Nice        |    Meh
+2  | 7.89              | red             | red            |                |     Rusty       |
+
+
+==============
+== SOLUTION ==
+===============
+
+OPTION 1 for list repeats 
+    string_agg()
+    
+OPTION 4 or OPTION 1 with a different delimiter for subfeature repeats
+    array_agg() and pivot in makeTableObject() if OPTION 4;
+
+If subfeature item has no ID, do OPTION 1 (so it's actually a subfeature)
+If subfeature has ID, make it a separate feature (FAKE subfeature)
+NO subfeature item tables
+
