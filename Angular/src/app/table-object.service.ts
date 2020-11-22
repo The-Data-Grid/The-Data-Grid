@@ -24,6 +24,7 @@ export class TableObjectService {
   */////////////////////////////////////////
   getRows(setupObject, tableObject, dataTableColumns) {
     let rows = []
+    let datatypes = setupObject.datatypes;
 
     // map returnable ID to columns
     let returnableIDToColumnIndex = this.getReturnableIDToColumnIndex(setupObject, tableObject);
@@ -31,9 +32,10 @@ export class TableObjectService {
     // construct the column header arrays
     tableObject.returnableColumnIDs.forEach(columnID => {
       let columnIndex = returnableIDToColumnIndex[columnID];
+
       dataTableColumns.push({
         prop: setupObject.columns[columnIndex].frontendName,
-        type: setupObject.columns[columnIndex].datatypeKey,
+        type: datatypes[setupObject.columns[columnIndex].datatypeKey],
         index: columnIndex
       });
     });
@@ -47,7 +49,8 @@ export class TableObjectService {
       // fill out the row object
       tableObject.returnableColumnIDs.forEach((columnID, i) => {
         let columnIndex = returnableIDToColumnIndex[columnID];
-        let datatype = setupObject.columns[columnIndex].datatypeKey;
+        let datatype = datatypes[setupObject.columns[columnIndex].datatypeKey];
+        console.log(setupObject.columns[columnIndex].frontendName + " " + datatype)
 
         switch (datatype) {
           case "string": {
