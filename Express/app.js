@@ -55,14 +55,11 @@ app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
 app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTemplate should be in query.js
 
 // Front Page Stats
-//app.get('/api/stats/', parse.statsParse, query.statsQuery);
+app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
 // Easter Egg
 app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center>&copy TDG API Error Response ${new Date().getFullYear()}<center>`))
 
-// Incomplete Routes
-//app.get('/api/a/:include', cors());
-//app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
 app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 

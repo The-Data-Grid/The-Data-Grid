@@ -677,21 +677,25 @@ function featureQuery(req, res, next) {
 async function statsQuery(req, res, next) {
 
     try { 
+
+       //statsObservations
+       //statsSubmitted
+       //statsMostRecent
         
-        let observations = await db.one(statsObservations);
-        let submitted = await db.one(statsSubmitted);
-        let mostRecent = await db.one(statsMostRecent);
+        let observations = await db.any('select max(observation_count_id) as obs from tdg_observation_count');  //maybe use a postgres var
+        let submitted = await db.any('select max("s"."submission_id") as subs from item_submission as s');
+        //let mostRecent = await db.one(statsMostRecent);
 
         let statsResponse = {
-            observations,
-            submitted,
-            mostRecent
+            observations: observations[0].obs,
+            submitted: submitted[0].subs
         };
 
         return res.json(statsResponse);
 
     } catch(err) {
 
+        console.log(err);
         res.status(500).send('Internal Server Error: 1703: Stats Query Error')
 
     }
