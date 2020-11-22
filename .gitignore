@@ -4,7 +4,7 @@ PostgreSQL/data/*
 !node_modules/.gitkeep
 !PostgreSQL/data/.gitkeep
 
-.env
+#.env
 
 .DS_Store
 
