@@ -6,7 +6,7 @@ Deployment/Angular/dist/*
 !PostgreSQL/data/.gitkeep
 !Deployment/Angular/dist/.gitkeep
 
-.env
+#.env
 
 .DS_Store
 
