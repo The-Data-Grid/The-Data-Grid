@@ -639,6 +639,9 @@ function featureQuery(req, res, next) {
     // Adding commas to select clauses
     selectClauseArray = selectClauseArray.join(', ')
     selectClauseArray = `SELECT ${selectClauseArray}`
+
+    console.log(featureClauseArray);
+    
     
     // Adding clauses to query in order
     let query = [selectClauseArray, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, ...universalFilterArray]; 
@@ -697,12 +700,15 @@ async function statsQuery(req, res, next) {
 
 function returnData(req, res) {
     let returnableColumnIDs = res.locals.parsed.finalQuery.fields.map(field => field.name);
+
     let rowData = returnableColumnIDs.map(e => null);
 
     // fill the rows
     returnableColumnIDs.forEach((field, i) => {
         rowData[i] = res.locals.parsed.finalQuery.rows.map(row => row[field])
     })
+
+
 
     res.json({
         returnableColumnIDs: returnableColumnIDs,

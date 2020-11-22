@@ -73,7 +73,7 @@ function validateAudit(req, res, next) {
     // Validate filters for feature and operators for filters
 
     let index = 0;
-    let filterIDKeys = Object.keys(res.locals.parsed.filters);
+    let filterIDKeys = Object.keys(res.locals.parsed.filters);    
 
     for(let filter of filterIDKeys) {
         // if not a valid filter for this feature or not a global filter
@@ -83,7 +83,7 @@ function validateAudit(req, res, next) {
             let operator = res.locals.parsed.filters[filter]['operation'];
             let field = res.locals.parsed.filters[filter]['value'];
 
-            if(validate[feature]['sqlType'][index] === 'TEXT') {
+            if(validate[feature]['sqlType'][index] == 'TEXT') {
                 if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
                     return res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`);
                 }
@@ -92,16 +92,16 @@ function validateAudit(req, res, next) {
                         return res.status(400).send(`Bad Request 1604: Field for id: ${filter} must be text`);
                     }
                 });
-            } else if(validate[feature]['sqlType'][index] === 'NUMERIC') {
+            } else if(validate[feature]['sqlType'][index] == 'NUMERIC') {
                 field.forEach(function(item) {
                     if(!isNumber(item)) {
                         return res.status(400).send(`Bad Request 1605: Field for id: ${filter} must be numeric`);
                     }
                 });
-            } else if(validate[feature]['sqlType'[index] === 'DATE']) {
+            } else if(validate[feature]['sqlType'][index] == 'TIMESTAMPTZ') {
                 field.forEach(function(item) {
                     if(!isValidDate(item)) {
-                        return res.status(400).send(`Bad Request 1606: Field for id: ${filter} must be date`);
+                        return res.status(400).send(`Bad Request 1606: Field for id: ${filter} must be a valid date in mm-dd-yyyy format`);
                     }
                 });
             }
@@ -129,7 +129,7 @@ function validateAudit(req, res, next) {
         } else if (filter == 'offset' && !isPositiveInteger(universalFilters[filter])) {
             return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a postiive integer.`);
         } else if (filter == 'sorta' || filter == 'sortd') {
-            if (!validate[feature]['column'].includes(parseInt(universalFilters[filter])) && !globals.includes(parseInt(universalFilters[filter]))) {
+            if (!validate[feature]['column'].includes(parseInt(universalFilters[filter])) && !globals.filter.includes(parseInt(universalFilters[filter]))) {
                 return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer.`);
             }
         }
