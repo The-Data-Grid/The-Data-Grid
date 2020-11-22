@@ -1,10 +1,12 @@
-/*
-    WATER AUDIT SCHEMA DATA COLUMNS
-*/
+/**
+ *  WATER AUDIT SCHEMA DATA COLUMNS
+ *
+ */
 [
-    /*
-        TOILET
-    */
+    /**
+     *  TOILET
+     */
+
     { // TOILIET CLOCKWISE INTEGER
         "tableName": "item_toilet",
         "columnName": "data_clockwise_integer",
@@ -157,9 +159,11 @@
         "inputSelectorName": "searchableDropdown",
         "frontendType": "string"
     },
-    /*
-        ROOM
-    */
+
+    /**
+     *  ROOM
+     */
+
     { // ROOM NUMBER
         "tableName": "item_room",
         "columnName": "data_room_number",
@@ -217,9 +221,30 @@
         "inputSelectorName": "dropdown",
         "frontendType": "bool"
     },
-    /*
-        URINAL
-    */
+
+    /**
+     *  URINAL
+     */
+
+    { // URINAL CLOCKWISE INTEGER
+        "tableName": "item_urinal",
+        "columnName": "data_clockwise_integer",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_urinal",
+
+        "sqlType": "INTEGER",
+        "referenceType": "item-id",
+
+        "frontendName": "Clockwise Integer",
+        "information": "Number of urinal based on a clockwise count looking down on the room starting from the door",
+        "accuracy": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "numericEqual",
+        "inputSelectorName": "numericEqual",
+        "frontendType": "string"
+    },
     { // URINAL GALLONS PER FLUSH
         "tableName": "observation_urinal",
         "columnName": "data_gpf",
@@ -353,9 +378,30 @@
         "inputSelectorName": "searchableDropdown",
         "frontendType": "string"
     },
-    /*
-        SINK
-    */
+
+    /**
+     *  SINK
+     */
+
+    { // TOILIET CLOCKWISE INTEGER
+        "tableName": "item_sink",
+        "columnName": "data_clockwise_integer",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_sink",
+
+        "sqlType": "INTEGER",
+        "referenceType": "item-id",
+
+        "frontendName": "Clockwise Integer",
+        "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
+        "accuracy": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "numericEqual",
+        "inputSelectorName": "numericEqual",
+        "frontendType": "string"
+    },
     { // SINK GALLONS PER MINUTE
         "tableName": "observation_sink",
         "columnName": "data_gpm",
@@ -470,9 +516,30 @@
         "inputSelectorName": "searchableDropdown",
         "frontendType": "string"
     },
-    /*
-        MIRROR
-    */
+
+    /**
+     *  MIRROR
+     */
+
+    { // TOILIET CLOCKWISE INTEGER
+        "tableName": "item_mirror",
+        "columnName": "data_clockwise_integer",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_mirror",
+
+        "sqlType": "INTEGER",
+        "referenceType": "item-id",
+
+        "frontendName": "Clockwise Integer",
+        "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
+        "accuracy": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "numericEqual",
+        "inputSelectorName": "numericEqual",
+        "frontendType": "string"
+    },
     { // MIRROR CONDITION
         "tableName": "list_mirror_condition",
         "columnName": "data_element",

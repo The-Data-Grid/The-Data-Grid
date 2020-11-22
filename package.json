@@ -4,7 +4,7 @@
   "description": "Development management at UCLA Bruin Home Solutions",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./Express/app.js -e *",
+    "dev": "nodemon ./Express/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
     "construct": "node ./Express/dataRepresentation/construct.js"

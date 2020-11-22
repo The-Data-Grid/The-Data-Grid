@@ -1315,6 +1315,11 @@ CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'ite
 CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_country', FALSE, FALSE, 'Country Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
 
 
+-- Column Returnable Lookup
+create materialized view lookup_column_returnable as 
+    select r.returnable_id, c.column_id from metadata_returnable as r left join metadata_column as c on r.column_id = c.column_id;
+
+
 
 -- SET DEFAULTS --
 
