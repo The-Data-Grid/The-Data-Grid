@@ -11,7 +11,14 @@ const template = require('./template.js');
 const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
-const port = process.env.PORT || 4001;
+var path = require("path");
+//const port = process.env.PORT || 4001;
+var tempPort;
+if (process.argv[2] == '-d')
+    tempPort = 80;
+else
+    tempPort = 4001;
+const port = tempPort
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -64,9 +71,14 @@ app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="
 //app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
-// Default to index.html
-app.get('*', function(req, res){
-    res.sendfile('../Deployment/Angular/dist' + req.path);
+// Default to web app paths
+app.all('/', function(req, res){
+    res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
+});
+app.all('*', function(req, res){
+    //console.log('../Deployment/Angular/dist' + req.path);
+    console.log('../Deployment/Angular/dist' + req.path);
+    res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
 });
 	
 app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
