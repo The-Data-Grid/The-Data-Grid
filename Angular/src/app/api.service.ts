@@ -7,8 +7,8 @@ import { ToiletObject, TableObject, SetupTableObject } from './models';
 import { error } from '@angular/compiler/src/util';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-const API_URL = environment.apiUrl;
-const fakeServerURL = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server";
+const API_URL = environment.apiUrl; //this should default to environment.ts in dev and environment.prod.ts in production
+//const fakeServerURL = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server"; //this is not needed due to the above line
 const PORT = environment.port;
 
 @Injectable({
@@ -27,7 +27,7 @@ export class ApiService {
   public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
     // var url = API_URL + '/setup';
-    var url = fakeServerURL + '/setup';
+    var url = API_URL + '/setup';
     var lastModifiedObject = {
       lastModified: lastModified
     }
@@ -52,7 +52,7 @@ export class ApiService {
     // console.log(url);
 
     
-    var url = fakeServerURL + '/table';
+    var url = API_URL + '/table';
     return this.http.get<TableObject>(url);
   }
 
