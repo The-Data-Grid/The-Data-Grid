@@ -64,6 +64,11 @@ app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="
 //app.get('/api/a/:include', cors());
 //app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
+// Default to index.html
+app.get('*', function(req, res){
+    res.sendfile('../Deployment/Angular/dist' + req.path);
+});
+	
 app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 
 ////// LISTEN WITH SSL //////
