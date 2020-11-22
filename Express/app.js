@@ -40,7 +40,7 @@ function cycleTimer(req, res, next) {
 }
 
 //** Data Query **//
-app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.returnData); 
+app.get('/api/audit/observation/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.returnData); 
 
 //** Dropdown Query **/
 //app.get('/api/audit/dropdown/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.returnDropdown)

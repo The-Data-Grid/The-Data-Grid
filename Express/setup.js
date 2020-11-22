@@ -1066,7 +1066,7 @@ const sendSetup = (req, res) => {
 //console.log(featureParents);
 //console.log(idValidationLookup)
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
-console.log(returnableIDLookup.filter(el => el.returnType == 'item-non-id'))
+//console.log(returnableIDLookup.filter(el => el.returnType == 'item-non-id'))
 //console.log(setupObject)
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
     

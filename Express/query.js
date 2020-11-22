@@ -159,7 +159,7 @@ const recursiveReferenceSelection = (builtArray, idAliasLookup, aliasNumber) => 
             idAliasLookup: idAliasLookup
         })
     } else { // then there are more joins
-        console.log('====================iter')
+        console.log('rRS recurse')
         // append the next joinObjectArray to builtArray
         builtArray.push(nextJoinObjectArray)
         // recursively call the function
@@ -371,7 +371,7 @@ function featureQuery(req, res, next) {
         whereLookup
     } = dynamicSQLEngine(allReturnableIDs, featureTree, feature, recursiveReferenceSelection, string2Join, formatSelectAlias);
 
-    console.log(joinClauseArray, featureTreeArray, whereLookup, selectClauseArray)
+    //console.log(joinClauseArray, featureTreeArray, whereLookup, selectClauseArray)
 
     /*
 
@@ -640,12 +640,12 @@ function featureQuery(req, res, next) {
     selectClauseArray = selectClauseArray.join(', ')
     selectClauseArray = `SELECT ${selectClauseArray}`
 
-    console.log(featureClauseArray);
+    //console.log(featureClauseArray);
     
     
     // Adding clauses to query in order
     let query = [selectClauseArray, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, ...universalFilterArray]; 
-    console.log(query)
+    //console.log(query)
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' '); 
 
@@ -659,7 +659,7 @@ function featureQuery(req, res, next) {
             res.locals.parsed.finalQuery = data;
 
             next();
-            console.log(data.fields)
+            //console.log(data.fields)
             // Constructing the tableObject and sending response
             //return res.json(data)
             // will write this soon!
@@ -699,7 +699,7 @@ async function statsQuery(req, res, next) {
 }
 
 function returnData(req, res) {
-    let returnableColumnIDs = res.locals.parsed.finalQuery.fields.map(field => field.name);
+    let returnableColumnIDs = res.locals.parsed.finalQuery.fields.map(field => parseInt(field.name.slice(1)));
 
     let rowData = returnableColumnIDs.map(e => null);
 
