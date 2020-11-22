@@ -19,7 +19,14 @@ export let SetupObject = {
                     1,
                     2
                 ],
-                [],
+                [
+                    {
+                        index: 4,
+                        frontendName: "Toilet Building Location",
+                        nullable: false,
+                        information: "location info"
+                    }
+                ],
                 [],
                 []
             ],
@@ -35,7 +42,6 @@ export let SetupObject = {
                 [
                     {
                         index: 2,
-                        default: true,
                         frontendName: "Valve",
                         nullable: false,
                         information: "valve info"
@@ -73,6 +79,17 @@ export let SetupObject = {
             ],
             frontendName: "Global",
             information: "non feature-specific columns"
+        },
+        {
+            children: [
+                [
+                ],
+                [],
+                [],
+                []
+            ],
+            frontendName: "Building",
+            information: "building!"
         }
     ],
     features: [
@@ -83,7 +100,7 @@ export let SetupObject = {
                     1,
                     2
                 ],
-                [],
+                [10],
                 0
             ],
             frontendName: "Toilet",
@@ -278,6 +295,22 @@ export let SetupObject = {
             datatypeKey: 1,
             nullable: false,
             information: "The organization that made the measurements",
+            accuracy: 76.4
+        },
+        {
+            default: false,
+            frontendName: "Some Toilet Attribute",
+            filterSelector: {
+                selectorKey: "numericEqual",
+                selectorValue: "QUERYSTRING"
+            },
+            inputSelector: {
+                selectorKey: "searchableDropdown",
+                selectorValue: "QUERYSTRING"
+            },
+            datatypeKey: 1,
+            nullable: false,
+            information: "something about the toilet that cannot be observed by audit",
             accuracy: 76.4
         }
     ],

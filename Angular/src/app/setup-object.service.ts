@@ -10,6 +10,7 @@ export const IDX_OF_NON_ID_ITEM_IDXS = 3;
 
 export const IDX_OF_OBSERVATION_COL_IDXS = 0;
 export const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
+export const IDX_OF_ITEM_IDX = 2;
 
 @Injectable({
   providedIn: 'root'
@@ -132,6 +133,8 @@ export class SetupObjectService {
     return allFeatureSelectors;
   }
 
+
+
   // returns an array that holds key-value mapping from feature's index in setupObj featrues array to its input selectors
   getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumns, isObservation: boolean) {
     let childType;
@@ -156,6 +159,19 @@ export class SetupObjectService {
     return allFeatureInputSelectors;
   }
 
+
+  /* ////////////////////////////////////
+    getFeatureItemChildren(setupObject, featureIndex)
+
+    params: setupObject, featureIndex: the feature's index of the setupObject.features array
+
+    returns: array of the feature's item children. each element is an itemChildNodePointerObject
+    see api spec for more info on itemChildNodePointerObject.
+ */////////////////////////////////////////
+  getFeatureItemChildren(setupObject, featureIndex) {
+    let itemIndex = setupObject.features[featureIndex].children[IDX_OF_ITEM_IDX];
+    return setupObject.items[itemIndex].children[IDX_OF_ID_ITEM_IDXS];
+  }
 
   private getReturnableID(tree: any[], setupObject): string {
     let treeID = tree.join('>');
