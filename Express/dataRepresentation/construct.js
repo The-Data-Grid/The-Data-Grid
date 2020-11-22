@@ -1006,13 +1006,13 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         for(let n = 0; n < itemObject.path.length; n += 2) {
             if(n == 0 && featureItemLookup[itemObject.featureName] === itemObject.itemName) { // if observable item and first join
                 // push the item_id column (in both the observation_... and item_... table)
-                joinObject.columns.push('item_id');
-                joinObject.columns.push('item_id');
+                joinObject.columns.push('observableitem_id', 'item_id');
+                //joinObject.columns.push('item_id');
             } else {
                 // push foreign key column
-                joinObject.columns.push(`${itemObject.path[n+1]}_id`);
+                joinObject.columns.push(`${itemObject.path[n+1]}_id`, 'item_id');
                 // push primary key column
-                joinObject.columns.push('item_id');
+                //joinObject.columns.push('item_id');
             }
         }
     }

@@ -214,7 +214,7 @@ client.end();
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, ID, columnName, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName) {
+    constructor(feature, ID, columnName, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName, appendAlias) {
         this.ID = ID;
         this.feature = feature;
         this.columnName = columnName;
@@ -222,6 +222,7 @@ class ReturnableID {
         this.returnType = returnType;
         this.appendSQL = appendSQL;
         this.selectSQL = selectSQL;
+        this.appendAlias = appendAlias;
 
         this.joinObject = this.makeJoinObject(Array.from(columnTree), Array.from(tableTree), ID);
 
@@ -629,7 +630,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                             tdg_observation_count.observation_count_id = m2m_auditor.observation_count_id \
                             INNER JOIN item_user AS user_auditor_name ON m2m_auditor.user_id = user_auditor_name.user_id';
 
-            selectSQL = `COALESCE($(observationTable:name).data_auditor, user_auditor_name.data_full_name) AS ${returnableIDAlias}`;
+            selectSQL = `COALESCE(${feature}.data_auditor, user_auditor_name.data_full_name)`;
 
         // Standard Operating Procedure
         } else if(frontendName == 'Standard Operating Procedure' && returnType == 'special') { 
@@ -638,7 +639,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                             tdg_observation_count.observation_count_id = m2m_item_sop.observation_count_id \
                             INNER JOIN item_sop ON m2m_item_sop.sop_id = tdg_sop.sop_id'
 
-            selectSQL = `item_sop.data_name AS ${returnableIDAlias}`
+            selectSQL = `item_sop.data_name`
 
         } else if(returnType == 'obs-list') {
 
@@ -652,7 +653,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             });
             
             // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \') AS $(returnableID:raw)', {
+            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -673,7 +674,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             });
             
             // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \') AS $(returnableID:raw)', {
+            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -686,7 +687,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             appendSQL = null;
 
-            selectSQL = pgp.as.format('$(featureTable:name).$(columnName:name) AS $(returnableID:raw)', {
+            selectSQL = pgp.as.format('$(featureTable:name).$(columnName:name)', {
                 featureTable: feature,
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -696,8 +697,8 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             appendSQL = null;
 
-            selectSQL = pgp.as.format('$(pgpParam:raw).$(columnName:name) AS $(returnableID:raw)', {
-                pgpParam: '$(alias:name)',
+            selectSQL = pgp.as.format('$(pgpParam:raw).$(columnName:name)', {
+                pgpParam: (tableName == 'item_submission' ? 'item_submission' : '$(alias:name)'),
                 columnName: columnName,
                 returnableID: returnableIDAlias
             });
@@ -714,7 +715,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                             fk: locationForeignKey
                                        });
 
-            selectSQL = pgp.as.format('$(locationAlias:name).$(columnName:name) AS $(returnableID:raw)', {
+            selectSQL = pgp.as.format('$(locationAlias:name).$(columnName:name)', {
                 locationAlias: locationAlias.join(''),
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -735,7 +736,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                            fk: factorForeignKey
                                        });
         
-            selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name) AS $(returnableID:raw)', {
+            selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name)', {
                 factorAlias: factorAlias.join(''),
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -756,7 +757,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                            fk: factorForeignKey
                                        });
         
-            selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name) AS $(returnableID:raw)', {
+            selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name)', {
                 factorAlias: factorAlias.join(''),
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -771,21 +772,20 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             let attributeForeignKey = `${tableName}_id`;
 
             // setting item or obsevation reference depending on attribute type
-            let obsOrItem = (attributeType == 'observed' ? feature : (attributeType == 'current' ? '$(alias:name)' : null));
+            let obsOrItem = (attributeType == 'observed' ? feature : (attributeType == 'current' ? '$(alias:raw)' : null));
             if(obsOrItem === null) throw Error('Invalid attributeType');
 
             appendSQL = pgp.as.format('LEFT JOIN $(attributeTableName:name) AS $(attributeAlias:name) \
-                                       ON $(attributeAlias:name).attribute_id = $(obsOrItem:name).$(fk)', {
+                                       ON $(attributeAlias:name).attribute_id = $(obsOrItem:name).$(fk:name)', {
                                            attributeTableName: tableName,
                                            attributeAlias: attributeAlias.join(''),
                                            obsOrItem: obsOrItem,
                                            fk: attributeForeignKey
                                        });
 
-            selectSQL = pgp.as.format('$(obsOrItem:name).$(columnName:name) AS $(returnableID:raw)', {
-                obsOrItem: obsOrItem,
-                columnName: columnName,
-                returnableID: returnableIDAlias
+            selectSQL = pgp.as.format('$(tableName:raw).$(columnName:name)', {
+                tableName: attributeAlias.join(''),
+                columnName: columnName
             });
 
             // add 1 to attributeAlias number to make a new unique alias
@@ -1065,7 +1065,8 @@ const sendSetup = (req, res) => {
 
 //console.log(featureParents);
 //console.log(idValidationLookup)
-//console.log(returnableIDLookup)
+//console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
+console.log(returnableIDLookup.filter(el => el.returnType == 'item-non-id'))
 //console.log(setupObject)
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
     

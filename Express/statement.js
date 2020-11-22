@@ -1,7 +1,7 @@
 const pgp = require("pg-promise");
 const PS = pgp.PreparedStatement;
 
-const referenceSelectionJoin = 'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(joinAlias:value).$(joinColumn:value) = $(originalAlias:value).$(originalColumn:value)'
+const referenceSelectionJoin = 'LEFT JOIN $(joinTable:name) AS $(joinAlias:name) ON $(joinAlias:name).$(joinColumn:name) = $(originalAlias:name).$(originalColumn:name)'
 // joinTable
 // joinAlias
 // joinColumn
@@ -34,7 +34,7 @@ const where = '$(clause:value) ($(condition:raw))'
 
 const whereCondition = '$(select:value) $(operation:value) $(filterValue)';
 
-const submission = 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.submission_id AS submission';
+const submission = 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.submission_id';
 
 
 // STATS //
