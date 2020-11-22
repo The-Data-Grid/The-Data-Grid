@@ -80,17 +80,12 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
     let depth = builtArray.length
 
     // get joinObject - Need to deep copy all the ref arrays to prevent mutation
-    // Finally!
     let joinObjectArray = [];
     builtArray[depth - 1].forEach(obj => {
-        joinObjectArray.push(new Object())
-        Object.entries(obj).forEach(pair => {
-            if(pair[0] === 'refs') {
-                // The Crucial Array.from() needed to not mutate returnableIDLookup
-                joinObjectArray[0][pair[0]] = Array.from(pair[1])
-            } else {
-                joinObjectArray[0][pair[0]] = pair[1]
-            }
+        joinObjectArray.push({
+            parentAlias: obj.parentAlias,
+            ID: obj.ID,
+            refs: Array.from(obj.refs) // as to not mutate returnableIDLookup
         })
     })
 
@@ -173,7 +168,6 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
 }
 
 
-
 function string2Join(string, prefix, feature) {
     let clauseArray = [];
 
@@ -189,14 +183,22 @@ function string2Join(string, prefix, feature) {
 
     let joinAlias = prefix + string[1]
     return(pgp.as.format(referenceSelectionJoin, {
-        joinTable: clauseArray[2],
+        joinTable: clauseArray[0],
         joinAlias: joinAlias,
-        joinColumn: clauseArray[3],
+        joinColumn: clauseArray[1],
         originalAlias: originalAlias,
-        originalColumn: clauseArray[1]
+        originalColumn: clauseArray[3]
     }))
+
+    //'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(joinAlias:value).$(joinColumn:value) = $(originalAlias:value).$(originalColumn:value)'
 }
- 
+
+/**
+ * Performs construction of dynamic SQL with request parameters
+ * 
+ * out: SQL query as a string
+ */
+
 function featureQuery(req, res) {   
     
     // array of IDs with table name and column name for WHERE clauses
@@ -206,7 +208,7 @@ function featureQuery(req, res) {
     // array of all features in feature tree (features and subfeatures)
     let featureTree = [];
     // get feature and add to feature tree
-    const feature = 'feature_' + res.locals.parsed.features;
+    const feature = 'observation_' + res.locals.parsed.features;
     featureTree.push(feature);
     // set alias number
     let aliasNumber = 1;
@@ -225,9 +227,11 @@ function featureQuery(req, res) {
     // array of returnableID objects from IDs 
     let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID)[0]);
 
+
+
     // SUBMISSION
     // ==================================================
-    let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'submission');
+    let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.feature === null);
     let submissionClauseArray = [];
     // first push the tdg_submission reference
     submissionClauseArray.push(pgp.as.format(submission, {
@@ -237,26 +241,46 @@ function featureQuery(req, res) {
     // if submission returnables exist
     if(submissionReturnableIDs.length >= 1) {
         // get all join objects in request
-        let joins = submissionReturnableIDs.map(returnable => returnable.joinObject)
+        let joins = submissionReturnableIDs.filter(returnable => returnable.joinObject.refs.length > 0);
+        let joinObjects = joins.map(returnable => returnable.joinObject);
+        let locals = submissionReturnableIDs.filter(returnable => returnable.joinObject.refs.length == 0);
+
+
 
         // perform reference selection to trim join tree and assign aliases
-        let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
+        let joinArray = recursiveReferenceSelection([joinObjects], {}, aliasNumber)
+
+        console.log(joinArray);
+
+        console.log(submissionClauseArray)
 
         // make joins and add to clauseArray
         for(let join of joinArray.builtArray) {
-            submissionClauseArray.push(string2Join(join, 's', feature))
+            submissionClauseArray.push(string2Join(join, 's', 'ITEM_SUBMISSION'))
         }
-        // add selections to selectClauses
-        for(let returnable of submissionReturnableIDs) {
+
+        console.log(submissionClauseArray)
+
+        // add local selects
+        locals.forEach(returnable => {
+            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+                alias: 'item_submission'
+            }))
+        });
+
+        // add selections of returnables with joinObjects
+        for(let returnable of joins) {
             // get alias and interpolate into select
             let alias = 's' + joinArray.idAliasLookup[String(returnable.ID)]
             selectClauses.push(pgp.as.format(returnable.selectSQL, {
-                table: alias
+                alias: alias
             }))
             // add table and column to whereLookup
             whereLookup[returnable.ID] = alias + '.' + returnable.dataColumn
         }
     }
+
+    
 
     // LISTS AND SPECIAL
     // ==================================================
@@ -327,6 +351,8 @@ function featureQuery(req, res) {
     //console.log(allReturnableIDs)
     // Throw error if the length of the ID set is not equal to the sum of its partitions
     if(submissionReturnableIDs.length + listAndSpecialReturnableIDs.length + dynamicReturnableIDs.length + localReturnableIDs.length != allIDs.length) {
+        console.log(submissionReturnableIDs.length + listAndSpecialReturnableIDs.length + dynamicReturnableIDs.length + localReturnableIDs.length, allIDs.length);
+        
         return res.status(500).send('Internal Server Error 7701: Number of columns found different than number of columns requested')
     }
     
@@ -525,7 +551,9 @@ async function statsQuery(req, res, next) {
     
 }
 
-
+function returnData(req, res) {
+    res.end();
+}
 
 
 module.exports = {
@@ -533,6 +561,7 @@ module.exports = {
     statsQuery,
     auditQuery,
     setupQuery,
-    cycleTime
+    cycleTime,
+    returnData
 };
 

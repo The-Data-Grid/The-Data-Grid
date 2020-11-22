@@ -1,10 +1,12 @@
 node_modules/*
 PostgreSQL/data/*
+Deployment/Angular/dist/*
 # exclude
 !node_modules/.gitkeep
 !PostgreSQL/data/.gitkeep
+!Deployment/Angular/dist/.gitkeep
 
-.env
+#.env
 
 .DS_Store
 

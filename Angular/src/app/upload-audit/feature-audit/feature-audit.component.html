@@ -2,7 +2,7 @@
     <div class="top_decoration"></div>
     <h3 style="margin-left:22px;margin-top:25px">Bathroom Audit 1</h3>
 
-    <!-- LOOKS CONVOLUTED AT THE MOMENT BECAUSE ONLY THE SUBFEATURES PANEL GET ITS DATA FROM THE SETUP OBJECT -->
+    <!-- LOOKS CONVOLUTED AT THE MOMENT BECAUSE ONLY THE SUBFEATURES AND TOILET ATTRIBUTES PANELS GET THEIR DATA FROM THE SETUP OBJECT -->
 
     <mat-accordion>
         <mat-expansion-panel *ngFor="let panel of dummy">
@@ -11,11 +11,21 @@
                     {{panel.title}}
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <div *ngIf="panel.title != 'Subfeature'">
+            <div *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation'">
             <div *ngFor="let string of panel.content">
                 <div class="secondary_separator"></div>
                     {{string}}
                 </div>
+            </div>
+
+            <div *ngIf="panel.title == 'Toilet Observation'">
+    
+                <mat-accordion>
+                    <app-reusable-template
+                        [selectedFeature]="selectedFeature[featureIndex]"
+                        [featureSelectors]="featureSelectors">
+                    </app-reusable-template>
+                </mat-accordion>
             </div>
 
             <div *ngIf="panel.title == 'Subfeature'">

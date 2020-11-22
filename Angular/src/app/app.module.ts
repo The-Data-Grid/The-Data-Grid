@@ -30,6 +30,7 @@ import { GlobalPresetsComponent} from './upload-audit/global-presets/global-pres
 import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audit.component';
 import { SetupObjectService } from './setup-object.service';
 import { TableObjectService } from './table-object.service';
+import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,7 +49,8 @@ import { TableObjectService } from './table-object.service';
     ViewAuditComponent,
     RootFeaturesComponent,
     GlobalPresetsComponent,
-    FeatureAuditComponent
+    FeatureAuditComponent,
+    ReusableTemplateComponent
   ],
   imports: [
     BrowserModule,

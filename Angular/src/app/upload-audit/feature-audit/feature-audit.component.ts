@@ -5,6 +5,11 @@ import { SetupObjectService } from '../../setup-object.service';
 import { SetupObject, TableObject } from '../../responses'
 import { environment } from '../../../environments/environment';
 const USE_FAKE_DATA = environment.useFakeData;
+import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../../dropdown-settings'
+import { TableObjectService } from '../../table-object.service';
+// import { TableObject } from '../responses';
+// import { SetupObject} from '../setupObjectTry1';
+
 
 
 @Component({
@@ -14,10 +19,27 @@ const USE_FAKE_DATA = environment.useFakeData;
 })
 export class FeatureAuditComponent implements OnInit {
 
-  constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>,private apiService: ApiService, private setupObjectService: SetupObjectService) { }
+  constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>,private apiService: ApiService, private setupObjectService: SetupObjectService, private tableObjectService: TableObjectService) {
+  }
 
   setupObject;
   subfeatures = [];
+  attributeSelectors;
+  observationSelectors;
+  selectedFeature;
+  featureSelectors;
+  appliedFilterSelections = {}
+  defaultColumns = []
+  rootFeatures = []
+  featuresToChildren = {}
+  dataTableColumns = [];
+  // selectedFeature;
+  tableObject;
+  rows = [];
+  dropdownList = FakeData;
+  globalSelectors = {};
+  selectorsLoaded: boolean = false;
+
   dummy = [
     {
       title: "Global Data",
@@ -63,7 +85,7 @@ export class FeatureAuditComponent implements OnInit {
 
   featureIndex = 0;
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.getSetupObject();
   }
 
@@ -74,14 +96,56 @@ export class FeatureAuditComponent implements OnInit {
   getSetupObject() {
     this.apiService.getSetupTableObject(null).subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
+
+      // parse global columns
+      this.globalSelectors = this.setupObjectService.getGlobalSelectors(
+        this.setupObject,
+        this.appliedFilterSelections,
+        this.defaultColumns);
+
+      // get root features
+      this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
+
+      // parse feature columns
+      this.featureSelectors = this.setupObjectService.getFeatureSelectors(
+        this.setupObject,
+        this.appliedFilterSelections,
+        this.defaultColumns);
+
+      // map features to children
+      this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
+
+      this.applyFilters();
+      this.selectorsLoaded = true
       let features = this.setupObjectService.getFeaturesToChildren(this.setupObject);
       let subfeatureIndices = features[this.featureIndex];
       for (var i = 0; i < subfeatureIndices.length; i++) {
         this.subfeatures.push(this.setupObject.features[subfeatureIndices[i]]);
       }
-      console.log(this.subfeatures);
+      this.selectedFeature = this.setupObjectService.getFeatureInputSelectors(this.setupObject,[],[],true);
+      this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject,[],[],true);
+      this.selectedFeature = this.rootFeatures
+
     });
   }
+
+  applyFilters() {
+    if (!this.selectedFeature) { return; }
+    this.getTableObject();
+  }
+
+  getTableObject() {
+    // clear the column headers
+    this.dataTableColumns = [];
+
+    this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+      USE_FAKE_DATA ? this.tableObject = TableObject : this.tableObject = res;
+
+      this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
+    });
+  }
+
+
   
 
 }

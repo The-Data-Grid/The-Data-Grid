@@ -985,6 +985,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
 
     // if not submission get the featureID
     if(itemObject.featureName !== null) {
+        
         featureID = await db.one(pgp.as.format(makeItemReturnablesFeatureQuery, {
             featureName: itemObject.featureName
         }));
@@ -1027,6 +1028,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         let columnID = col.columnid;
         let frontendName = col.frontendname;
         let insertableJoinObject;
+        let insertableFeatureID = featureID;
         // this is lowkey kind of dumb. The attributeType is different between cols so we can't
         // mutate the base joinObject. I'm sure there's a better way.
 
@@ -1055,16 +1057,14 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             }
 
             // if subobservation
-            if(col.subobservationtablename !== null) {
-                rootFeatureID = featureID;
+            if(col.subobservationtablename !== null) {  
 
-                featureID = await db.one(pgp.as.format(makeItemReturnablesSubobservationQuery, {
+                queryFeatureID = await db.one(pgp.as.format(makeItemReturnablesSubobservationQuery, {
                     subobservationTableName: col.subobservationtablename
                 }));
 
-                featureID = featureID.featureid;
+                insertableFeatureID = queryFeatureID.featureid;
 
-                //console.log(chalk.red.bgBlack(featureID))
             } else {
                 // else then feature is already root
                 rootFeatureID = null;
@@ -1072,7 +1072,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
 
         } else { // else then submission and no feature or geo information
             isRealGeo = false;
-            featureID = null;
+            insertableFeatureID = null;
             rootFeatureID = null;
         }
 
@@ -1089,7 +1089,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 // insert returnable into metadata_returnable and get returnableID
                 let returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
                     columnID: columnID,
-                    featureID: featureID,
+                    featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
                     frontendName: 'Current ' + frontendName,
                     isUsed: true,
@@ -1112,7 +1112,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 // insert returnable into metadata_returnable and get returnableID
                 let returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
                     columnID: columnID,
-                    featureID: featureID,
+                    featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
                     frontendName: 'Current ' + frontendName,
                     isUsed: true,
@@ -1134,7 +1134,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 // insert returnable into metadata_returnable and get returnableID
                 returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
                     columnID: columnID,
-                    featureID: featureID,
+                    featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
                     frontendName: 'Observed ' + frontendName,
                     isUsed: true,
@@ -1155,7 +1155,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             // insert returnable into metadata_returnable and get returnableID
             let returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
                 columnID: columnID,
-                featureID: featureID,
+                featureID: insertableFeatureID,
                 rootFeatureID: rootFeatureID,
                 frontendName: frontendName,
                 isUsed: true,
