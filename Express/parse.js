@@ -104,7 +104,7 @@ const queryParse = (req, res, next) => {
         
 
     // attaching parsed object
-    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters, universalFilters: universalFilters};
+    res.locals.parsed = {request: "audit", features: feature, columns: include, filters: filters, universalFilters: universalFilters};
     next(); // passing to validate.js 
 };
 

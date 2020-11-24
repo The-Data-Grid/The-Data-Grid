@@ -8,9 +8,9 @@ var globals = {
 
 for (let id in idValidationLookup) { //>>>>>>>>>>>>>>>>>>  is_submission
     if (idValidationLookup[id].isSubmission === true) {
-        globals.column.push(id);
+        globals.column.push(parseInt(id));
         if(idValidationLookup[id].isFilterable === true) {
-            globals.filter.push(id);
+            globals.filter.push(parseInt(id));
         };
     };
 };
@@ -21,6 +21,12 @@ for (let id in idValidationLookup) { //>>>>>>>>>>>>>>>>>>  is_submission
 var validate = {};
 
 for (let id in idValidationLookup) {
+    
+    // Removing globals
+    if(idValidationLookup[id].feature === null && idValidationLookup[id].rootfeature === null) {
+        continue
+    }
+
     // Getting the root feature
     let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
 
@@ -48,8 +54,9 @@ let validateFeatures = Object.keys(validate);
 
 function validateAudit(req, res, next) {
 
-    let feature = 'feature_' + res.locals.parsed.features;
+    let feature = 'observation_' + res.locals.parsed.features;
     let universalFilters = res.locals.parsed.universalFilters;
+
 
     if(!validateFeatures.includes(feature)) {
         return res.status(400).send(`Bad Request 2201: ${feature} is not a valid feature`);
