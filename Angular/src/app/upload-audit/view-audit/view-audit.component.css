@@ -25,6 +25,15 @@
     margin-right: 10px;
 }
 
+.mat-icon-button.add-button {
+    color: #E8E8E8;
+    transform: scale(.75);
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+    line-height: 20px;
+}
+
 .lower_bound {
     width: 100%;
     background-color: #E8E8E8;

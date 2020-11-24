@@ -7,7 +7,7 @@
 </head>
 
 <div style="width: 90%; margin-left: auto; margin-right: auto">
-  <div id="top-buttons" fxLayoutAlign="end center">
+  <div id="top-buttons" fxLayoutAlign="end center" style="margin-top: 10px;;">
     <button mat-button [routerLink]="'/upload-audit'">
       Cancel
     </button>
@@ -42,6 +42,11 @@
                   {{ feature.name }}
                 </span>
               </mat-panel-title>
+              <mat-panel-description>
+                <button mat-icon-button class="add-button" aria-label= "Add feature" (click)="openFeatureAudit()">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </mat-panel-description>
             </mat-expansion-panel-header>
             <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"
               [footerHeight]="50" rowHeight="auto" [scrollbarH]="false" [limit]="5">
