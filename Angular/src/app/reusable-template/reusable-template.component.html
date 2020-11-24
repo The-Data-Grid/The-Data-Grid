@@ -1,8 +1,4 @@
 <div>
-    <mat-expansion-panel>
-        <mat-expansion-panel-header>
-            <mat-panel-title>{{ _selectedFeature.name}}</mat-panel-title>
-        </mat-expansion-panel-header>
         <div *ngFor="let column of _featureSelectors[_selectedFeature.index].numericChoice">
             <ng-template *ngTemplateOutlet="numericChoiceTemplate; context: {$implicit: column}"></ng-template>
         </div>
@@ -45,7 +41,6 @@
         </div>
     
     
-    </mat-expansion-panel>
     
 </div>
 

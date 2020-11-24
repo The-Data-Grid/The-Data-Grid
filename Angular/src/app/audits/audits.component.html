@@ -66,10 +66,17 @@
             </mat-form-field>
 
             <mat-accordion *ngIf="selectedFeature">
-                <app-reusable-template 
-                [selectedFeature]="selectedFeature" 
-                [featureSelectors]="featureSelectors">
-            </app-reusable-template>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            {{ selectedFeature.name }}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-reusable-template 
+                    [selectedFeature]="selectedFeature" 
+                    [featureSelectors]="featureSelectors">
+                </app-reusable-template>    
+                </mat-expansion-panel>
             
                 <mat-expansion-panel *ngFor="let childIndex of featuresToChildren[selectedFeature.index]">
                     <mat-expansion-panel-header>

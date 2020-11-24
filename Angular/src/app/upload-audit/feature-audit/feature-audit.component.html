@@ -20,12 +20,10 @@
 
             <div *ngIf="panel.title == 'Toilet Observation'">
     
-                <mat-accordion>
                     <app-reusable-template
                         [selectedFeature]="selectedFeature[featureIndex]"
                         [featureSelectors]="featureSelectors">
                     </app-reusable-template>
-                </mat-accordion>
             </div>
 
             <div *ngIf="panel.title == 'Subfeature'">
