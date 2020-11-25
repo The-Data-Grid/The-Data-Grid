@@ -724,6 +724,8 @@ ALTER TABLE tdg_role ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE m2m_user_organization ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE m2m_user_organization ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
 
+ALTER TABLE item_user ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
+
 
                                                                                 
 /* ----------------------------------------------------------------------------------------------------------
