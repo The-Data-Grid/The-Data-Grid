@@ -36,6 +36,11 @@
 }
 
 
+.custom ::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple, ::ng-deep .mat-form-field-label {
+  color: black !important;
+}
+
+
 /* .cdk-global-overlay-wrapper {
   display: flex;
   position: absolute;

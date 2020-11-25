@@ -16,7 +16,7 @@ const USE_FAKE_DATA = environment.useFakeData;
   selector: 'app-reusable-template',
   templateUrl: './reusable-template.component.html',
   // styleUrls: ['./reusable-template.component.css']
-  styleUrls: ['../audits/audits.component.css']
+  // styleUrls: ['../audits/audits.component.css']
 })
 export class ReusableTemplateComponent implements OnInit {
 
