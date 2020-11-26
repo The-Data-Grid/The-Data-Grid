@@ -20,11 +20,12 @@ const {
     } = require('./statement.js').query;
 
 // Internal setup objects
-const {returnableIDLookup, featureParents} = require('./setup.js')
+const {returnableIDLookup, featureParents, setupObject} = require('./setup.js')
 
 // Database connection and SQL formatter
-const {db} = require('./db/pg.js');
-const {formatSQL} = require('./db/pg.js');
+const postgresClient = require('./db/pg.js');
+const db = postgresClient.connect('main')
+const formatSQL = postgresClient.format;
 
 // Testing request response cycle time (for dev only)
 var cycleTime = [];
@@ -713,7 +714,7 @@ async function statsQuery(req, res, next) {
     
 }
 
-function returnData(req, res) {
+function sendData(req, res) {
     let returnableColumnIDs = res.locals.parsed.finalQuery.fields.map(field => parseInt(field.name.slice(1)));
 
     let rowData = returnableColumnIDs.map(e => null);
@@ -721,7 +722,7 @@ function returnData(req, res) {
     // fill the rows
     returnableColumnIDs.forEach((field, i) => {
         rowData[i] = res.locals.parsed.finalQuery.rows.map(row => row[field])
-    })
+    });
 
 
 
@@ -732,11 +733,36 @@ function returnData(req, res) {
 };
 
 
+
+// SEND SETUP OBJECT
+// ============================================================
+function sendSetup(req, res) {
+
+    let cycleTime = Date.now() - res.locals.cycleTime[0]
+    console.log(`Sent setupObject in ${cycleTime} ms`)
+    
+    // if the "If-Modified-Since" header is not included or is newer or the same age as the setupObject's lastModified date
+    if(res.locals.parsed.ifModifiedSince >= setupObject.lastModified) {
+
+        return res.status(304) // don't send object - not modified
+        
+    } else { // then "If-Modified-Since" is older than setupObject's lastModified date or is something else
+
+        // set "Last-Modified" header
+        res.set('Last-Modified', setupObject.lastModified)
+        // send setupObject
+        return res.status(200).json(setupObject) // send setupObject
+    };
+};
+
+
+
 module.exports = {
     featureQuery,
     statsQuery,
     auditQuery,
     setupQuery,
     cycleTime,
-    returnData
+    sendData,
+    sendSetup
 };

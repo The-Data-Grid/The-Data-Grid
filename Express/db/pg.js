@@ -1,5 +1,5 @@
 // Postgres connection, query execution, query formatting
-var pgp = require('pg-promise')();
+const pgp = require('pg-promise')();
 // pg-native for native libpq C library bindings which we need for sync queries
 const SyncClient = require('pg-native');
 
@@ -10,27 +10,38 @@ pgp.pg.types.setTypeParser(1184, require('../parse.js').timestamptzParse) //Pars
 var tdgdbname = 'v4';
 var tdgdbuser = 'postgres';
 
-
-// Setup database connection (single connection when server starts)
-const syncdb = new SyncClient();
-syncdb.connectSync(`host=localhost port=5432 dbname=${tdgdbname} connect_timeout=5 user=${tdgdbuser}`);
-console.log(`Connected to database ${tdgdbname} as user ${tdgdbuser} for backend setup`)
-
-
-// Default runtime database connection
-const defaultConnection = { //connection info
-    host: 'localhost',
-    port: 5432,
-    database: tdgdbname,
-    user: tdgdbuser,
-    password: null,
-    max: 30 // use up to 30 connections
+const postgresClient = {
+    connect: type => {
+        switch(type) {
+            case 'setup':
+                let syncdb = new SyncClient;
+                syncdb.connectSync(`host=localhost port=5432 dbname=${tdgdbname} connect_timeout=5 user=${tdgdbuser}`);
+                return syncdb;
+            case 'main':
+                // Default runtime database connection
+                const defaultConnection = { //connection info
+                    host: 'localhost',
+                    port: 5432,
+                    database: tdgdbname,
+                    user: tdgdbuser,
+                    password: null,
+                    max: 30 // use up to 30 connections
+                };
+                return pgp(defaultConnection);
+            case 'construct':
+                // Schema construction CLI database connection
+                const constructionConnection = { 
+                    host: 'localhost',
+                    port: 5432,
+                    database: tdgdbname,
+                    user: tdgdbuser,
+                    password: null,
+                    max: 1 // use only one connection
+                };
+                return pgp(constructionConnection);
+        };
+    },
+    format: pgp.as.format
 };
-const db = pgp(defaultConnection);
 
-
-module.exports = {
-    db,
-    syncdb,
-    formatSQL: pgp.as.format
-}
+module.exports = postgresClient;

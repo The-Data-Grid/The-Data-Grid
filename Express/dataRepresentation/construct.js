@@ -15,23 +15,10 @@ const fs = require('fs'); // Import Node.js File System
 const stripJsonComments = require('strip-json-comments'); // .jsonc handling
 const chalk = require('chalk'); // pretty console.log
 var util = require('util'); // util.inspect()
-const pgp = require('pg-promise')();
 
-
-// Database connection and SQL formatter //
-// ============================================================
-// Schema construction CLI database connection
-const constructionConnection = { 
-    host: 'localhost',
-    port: 5432,
-    database: 'v4',
-    user: 'postgres',
-    password: null,
-    max: 1 // use only one connection
-};
-const db = pgp(constructionConnection);
-const formatSQL = pgp.as.format
-
+const postgresClient = require('../db/pg.js');
+const db = postgresClient.connect('construct')
+const formatSQL = postgresClient.format;
 
 // Importing SQL //
 // ============================================================

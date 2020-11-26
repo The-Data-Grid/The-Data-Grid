@@ -4,11 +4,11 @@
 // querying, upload, and more. Everything that queries the metadata tables to recieve this information
 // should go here and then the other files can import the information
 // ============================================================
-const util = require('util');
-const fs = require('fs');
 
-const {formatSQL} = require('./db/pg.js');
-const {syncdb} = require('./db/pg.js');
+// Database connection and SQL formatter
+const postgresClient = require('./db/pg.js');
+const syncdb = postgresClient.connect('setup')
+const formatSQL = postgresClient.format;
 
 // QUERIES //
 // ==================================================
@@ -864,29 +864,6 @@ const initialReturnableMapper = (returnable, statics) => {
 const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
 
-
-// SEND SETUP OBJECT
-// ============================================================
-const sendSetup = (req, res) => {
-
-    let cycleTime = Date.now() - res.locals.cycleTime[0]
-    console.log(`Sent setupObject in ${cycleTime} ms`)
-    
-    // if the "If-Modified-Since" header is not included or is newer or the same age as the setupObject's lastModified date
-    if(res.locals.parsed.ifModifiedSince >= setupObject.lastModified) {
-
-        return res.status(304) // don't send object - not modified
-        
-    } else { // then "If-Modified-Since" is older than setupObject's lastModified date or is something else
-
-        // set "Last-Modified" header
-        res.set('Last-Modified', setupObject.lastModified)
-        // send setupObject
-        return res.status(200).json(setupObject) // send setupObject
-    }
-}
-
-
 //console.log(featureParents);
 //console.log(idValidationLookup)
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
@@ -898,7 +875,6 @@ module.exports = {
     returnableIDLookup,
     idValidationLookup,
     featureParents,
-    sendSetup,
     setupObject
 }
 
