@@ -25,8 +25,6 @@ const {returnableIDLookup, featureParents} = require('./setup.js')
 // Database connection and SQL formatter
 const {db} = require('./db/pg.js');
 const {formatSQL} = require('./db/pg.js');
-const { groupBy } = require('rxjs/internal/operators/groupBy');
-const { ɵALLOW_MULTIPLE_PLATFORMS } = require('@angular/core');
 
 // Testing request response cycle time (for dev only)
 var cycleTime = [];
