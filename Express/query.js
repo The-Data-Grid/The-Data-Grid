@@ -425,7 +425,7 @@ function featureQuery(req, res, next) {
 
     // LISTS AND SPECIAL
     // ==================================================
-    let listAndSpecialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'list' || returnable.returnType == 'special')
+    let listAndSpecialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'list' || returnable.referenceType == 'special')
     let listAndSpecialClauseArray = []
     if(listAndSpecialReturnableIDs.length >= 1) {
         for(let returnable of listAndSpecialReturnableIDs) {
@@ -442,7 +442,7 @@ function featureQuery(req, res, next) {
 
     // ITEM AND LOCATION
     // ==================================================
-    let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'location' || returnable.returnType == 'item')
+    let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'location' || returnable.referenceType == 'item')
     let dynamicClauseArray = [];
     if(dynamicReturnableIDs.length >= 1) {
         // get all join objects in request
@@ -475,7 +475,7 @@ function featureQuery(req, res, next) {
 
     // LOCAL AND LOCAL-GLOBAL
     // ==================================================
-    let localReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'local' || returnable.returnType == 'local-global')
+    let localReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'local' || returnable.referenceType == 'local-global')
     if(localReturnableIDs.length >= 1) {
         for(let returnable of localReturnableIDs) {
             // Adding the select clause
@@ -642,7 +642,7 @@ function featureQuery(req, res, next) {
     // ==================================================
     let groupByClause = '';
 
-    let nonListReturnables = allReturnableIDs.map(returnable => [returnable.ID, returnable.returnType]).filter(returnable => !['obs-list', 'item-list'].includes(returnable[1]));
+    let nonListReturnables = allReturnableIDs.map(returnable => [returnable.ID, returnable.referenceType]).filter(returnable => !['obs-list', 'item-list'].includes(returnable[1]));
 
     if(nonListReturnables.length < allReturnableIDs.length) {
         groupByClause = `GROUP BY ${nonListReturnables.map(el => `r${el[0]}`).join(', ')}`;

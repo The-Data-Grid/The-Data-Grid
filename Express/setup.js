@@ -36,12 +36,12 @@ console.log('Setup database queries complete, disconnected from database');
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, ID, columnName, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName, appendAlias) {
+    constructor(feature, ID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, appendAlias) {
         this.ID = ID;
         this.feature = feature;
         this.columnName = columnName;
         this.frontendName = frontendName;
-        this.returnType = returnType;
+        this.referenceType = referenceType;
         this.appendSQL = appendSQL;
         this.selectSQL = selectSQL;
         this.appendAlias = appendAlias;
@@ -431,7 +431,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         const tableTree = row['r__join_object'].tables;
         
         // Get return type
-        const returnType = row['rt__type_name'];
+        const referenceType = row['rt__type_name'];
 
         // Get data column
         const frontendName = row['r__frontend_name'];
@@ -440,13 +440,13 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         const columnName = row['c__column_name'];
         const tableName = row['c__table_name'];
 
-        // Get attribute type (null if returnType != 'attribute')
+        // Get attribute type (null if referenceType != 'attribute')
         const attributeType = row['r__attribute_type'];
 
         // Writing custom SQL for all of the reference types
 
         // Auditor Name coalesce
-        if(frontendName == 'Auditor Name' && returnType == 'special') {
+        if(frontendName == 'Auditor Name' && referenceType == 'special') {
 
             appendSQL = 'LEFT JOIN m2m_auditor ON \
                             tdg_observation_count.observation_count_id = m2m_auditor.observation_count_id \
@@ -455,7 +455,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             selectSQL = `COALESCE(${feature}.data_auditor, user_auditor_name.data_full_name)`;
 
         // Standard Operating Procedure
-        } else if(frontendName == 'Standard Operating Procedure' && returnType == 'special') { 
+        } else if(frontendName == 'Standard Operating Procedure' && referenceType == 'special') { 
 
             appendSQL = 'LEFT JOIN m2m_item_sop ON\
                             tdg_observation_count.observation_count_id = m2m_item_sop.observation_count_id \
@@ -463,7 +463,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             selectSQL = `item_sop.data_name`
 
-        } else if(returnType == 'obs-list') {
+        } else if(referenceType == 'obs-list') {
 
             appendSQL = formatSQL('LEFT JOIN m2m_$(tableName:raw) \
                                     ON m2m_$(tableName:raw).observation_id = $(feature:name).observation_id \
@@ -484,7 +484,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             // add 1 to listAlias number to make a new unique alias
             listAlias[1] += 1;
 
-        } else if(returnType == 'item-list') {
+        } else if(referenceType == 'item-list') {
 
             appendSQL = formatSQL('LEFT JOIN m2m_$(tableName:raw) \
                                     ON m2m_$(tableName:raw).item_id = $(pgpParam:raw).item_id \
@@ -505,7 +505,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             // add 1 to listAlias number to make a new unique alias
             listAlias[1] += 1;
 
-        } else if(['obs', 'obs-global'].includes(returnType)) {
+        } else if(['obs', 'obs-global'].includes(referenceType)) {
 
             appendSQL = null;
 
@@ -515,7 +515,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                 returnableID: returnableIDAlias
             });
 
-        } else if(['item-id', 'item-non-id'].includes(returnType)) {
+        } else if(['item-id', 'item-non-id'].includes(referenceType)) {
 
             appendSQL = null;
 
@@ -525,7 +525,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                 returnableID: returnableIDAlias
             });
 
-        } else if(returnType == 'item-location') {
+        } else if(referenceType == 'item-location') {
 
             let locationForeignKey = `${tableName}_id`;
 
@@ -546,7 +546,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             // add 1 to locationAlias number to make a new unique alias
             locationAlias[1] += 1;
 
-        } else if(returnType == 'item-factor') {
+        } else if(referenceType == 'item-factor') {
 
             let factorForeignKey = `${tableName}_id`;
 
@@ -567,7 +567,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             // add 1 to factorAlias number to make a new unique alias
             factorAlias[1] += 1;
 
-        } else if(returnType == 'obs-factor') {
+        } else if(referenceType == 'obs-factor') {
 
             let factorForeignKey = `${tableName}_id`;
 
@@ -588,7 +588,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             // add 1 to factorAlias number to make a new unique alias
             factorAlias[1] += 1;
 
-        } else if(returnType == 'attribute') {
+        } else if(referenceType == 'attribute') {
             // current means the attribute is referenced by the item
 
             let attributeForeignKey = `${tableName}_id`;
@@ -618,7 +618,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup.push(new ReturnableID(feature, returnableID, columnName, columnTree, tableTree, returnType, appendSQL, selectSQL, frontendName))
+        returnableIDLookup.push(new ReturnableID(feature, returnableID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName))
 
     }
 
@@ -890,7 +890,7 @@ const sendSetup = (req, res) => {
 //console.log(featureParents);
 //console.log(idValidationLookup)
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
-//console.log(returnableIDLookup.filter(el => el.returnType == 'item-non-id'))
+//console.log(returnableIDLookup.filter(el => el.referenceType == 'item-non-id'))
 //console.log(setupObject)
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
     
