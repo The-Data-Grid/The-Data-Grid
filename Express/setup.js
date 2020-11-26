@@ -4,211 +4,33 @@
 // querying, upload, and more. Everything that queries the metadata tables to recieve this information
 // should go here and then the other files can import the information
 // ============================================================
-// pg-promise library for async database queries and promise based wrapper
-// only used in this file for helpers, not querying
-const pgp = require('pg-promise')();
 const util = require('util');
 const fs = require('fs');
 
-// pg-native for native libpq C library bindings which we need for sync queries
-const Client = require('pg-native')
-const client = new Client()
-// sync connecting to the database
-client.connectSync('host=localhost port=5432 dbname=v4 connect_timeout=5')
-
-/* TO DO
-close the db connection!
-
-joinPath Generation
-
-add alias to selectSQL 
-
-We impose that:
-    no item can reference a location type more than once
-
-test: each feature has exactly one returnableID with realGeo === true
-
-either appendSQL and joinObject where joinObject is put through rRS and joinObject as appended
-    or 
-
-in:
-    column, table, and item (to get metadata_column)
-    feature to query
-
-if location:
-    columnArray.push('location_id', `${tableName}_id`)
-    tableArray.push(tableName, itemTableName)
-
-if item-list:
-    samika's code
-
-So, what do we have to do?
-joinCols and joinTabs stay the same
-
-appendSQL 
-'$(inputAlias:name) <some SQL> $(outputAlias:name)'
-standard:
-null
-
-selectSQL
-'<some SQL> $(joinAlias:name).columnName'
-standard:
-'$(joinAlias:name).columnName'
-
-
-// construct the joinObject based on the reference type
-        {
-            columns: Array,
-            tables: Array,
-            appendSQL: String,
-            selectSQL: String
-        }
-        switch (col.ReferenceTypeName) {
-            case 'item-id':
-                // in item
-                joinObject.selectSQL = pgp.as.format('a$(alias:raw).$(columnName:raw) AS $(returnableAlias:raw)', {
-                    returnableAlias: returnableID,
-                    columnName: col.columnName
-                });
-                break;
-            case 'item-non-id':
-                // in item 
-                joinObject.selectSQL = pgp.as.format('a$(alias:raw).$(columnName:raw)', {
-                    alias: returnableID,
-                    columnName: col.columnName
-                });
-                break;
-            case 'item-list':
-                // list
-                joinObject.selectSQL = pgp.as.format('a$(listTableName:raw).$(columnName:raw)', {
-                    listTableName: col.tableName,
-                    columnName: col.columnName
-                });
-                // needs custom SQL for join
-                appendSQL = pgp.as.format('INNER JOIN m2m_$(listTableName:raw) \
-                                        ON m2m_$(listTableName:raw).item_id = $(alias:raw).item_id \
-                                        INNER JOIN $(listTableName:raw) \
-                                        ON $(listTableName:raw).list_id = m2m_$(listTableName:raw).list_id', {
-                    listTableName: col.tableName, 
-                    alias: returnableID
-                })
-                break;
-            case 'item-location':
-                joinObject.selectSQL = pgp.as.format('a$(locationTableName:raw).$(columnName:raw)', {
-                    locationTableName: ,
-                    columnName: col.columnName
-                });
-                break;
-            case 'item-factor':
-                break;
-            case 'obs':
-                break;
-            case 'obs-global':
-                break;
-            case 'obs-list':
-                break;
-            case 'obs-factor':
-                break;
-            case 'special':
-                break;
-            case 'attribute':
-                break;
-        }
-
-
-
-
-
-
-
-*/
-
+const {formatSQL} = require('./db/pg.js');
+const {syncdb} = require('./db/pg.js');
 
 // QUERIES //
 // ==================================================
 
-let returnableQuery = client.querySync('SELECT \
-                                        \
-                                        f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
-                                        f.frontend_name as f__frontend_name, \
-                                        \
-                                        rf.table_name as rf__table_name, \
-                                        \
-                                        c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
-                                        c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
-                                        c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, \
-                                        \
-                                        fs.selector_name as fs__selector_name, \
-                                        ins.selector_name as ins__selector_name, \
-                                        sql.type_name as sql__type_name, \
-                                        rt.type_name as rt__type_name, \
-                                        ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
-                                        \
-                                        r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, \
-                                        r.is_real_geo as r__is_real_geo, r.join_object -> \'attributeType\' as r__attribute_type, r.feature_id as r__feature_id, \
-                                        \
-                                        i.table_name as i__table_name, i.frontend_name as i__frontend_name \
-                                        \
-                                        FROM metadata_returnable as r \
-                                        LEFT JOIN metadata_column AS c ON c.column_id = r.column_id \
-                                        LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id \
-                                        LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id \
-                                        LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
-                                        LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
-                                        LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
-                                        LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
-                                        LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
-                                        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
+let {returnableQuery, 
+       columnQuery, 
+       allItems, 
+       itemM2M, 
+       frontendTypes, 
+       allFeatures} = require('./statement.js').setup
 
 
-let columnQuery = client.querySync('SELECT \
-                                    \
-                                    c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
-                                    c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
-                                    c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, \
-                                    \
-                                    fs.selector_name as fs__selector_name, \
-                                    ins.selector_name as ins__selector_name, \
-                                    sql.type_name as sql__type_name, \
-                                    rt.type_name as rt__type_name, \
-                                    ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
-                                    \
-                                    i.table_name as i__table_name, i.frontend_name as i__frontend_name \
-                                    \
-                                    FROM metadata_column as c \
-                                    LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
-                                    LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
-                                    LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
-                                    LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
-                                    LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
-                                    LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id');
-
-let allItems = client.querySync('SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
-                                 i.creation_privilege as i__creation_privilege, i.item_id as i__item_id \
-                                 FROM metadata_item AS i \
-                                 LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id');
-
-let itemM2M = client.querySync('SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
-                                i.creation_privilege as i__creation_privilege, \
-                                m2m.is_id as m2m__is_id, m2m.is_nullable as m2m__is_nullable, m2m.frontend_name as m2m__frontend_name, \
-                                ri.table_name as ri__table_name \
-                                FROM metadata_item AS i \
-                                LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id \
-                                INNER JOIN m2m_metadata_item AS m2m ON m2m.item_id = i.item_id \
-                                INNER JOIN metadata_item AS ri ON m2m.referenced_item_id = ri.item_id');
-
-let frontendTypes = client.querySync('SELECT type_name FROM metadata_frontend_type');
-
-let allFeatures = client.querySync('SELECT f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
-                                    f.frontend_name as f__frontend_name, ff.table_name as ff__table_name, \
-                                    i.table_name as i__table_name, i.frontend_name as i__frontend_name \
-                                    FROM metadata_feature AS f \
-                                    LEFT JOIN metadata_feature as ff ON f.parent_id = ff.feature_id \
-                                    LEFT JOIN metadata_item as i ON f.observable_item_id = i.item_id');
-
+returnableQuery = syncdb.querySync(returnableQuery);
+columnQuery = syncdb.querySync(columnQuery);
+allItems = syncdb.querySync(allItems);
+itemM2M = syncdb.querySync(itemM2M);
+frontendTypes = syncdb.querySync(frontendTypes);
+allFeatures = syncdb.querySync(allFeatures);
 
 // close the database connection
-client.end();
+syncdb.end();
+console.log('Setup database queries complete, disconnected from database');
 
 
 // RETURNABLE ID CLASS
@@ -643,7 +465,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         } else if(returnType == 'obs-list') {
 
-            appendSQL = pgp.as.format('LEFT JOIN m2m_$(tableName:raw) \
+            appendSQL = formatSQL('LEFT JOIN m2m_$(tableName:raw) \
                                     ON m2m_$(tableName:raw).observation_id = $(feature:name).observation_id \
                                     INNER JOIN $(tableName:name) AS $(listAlias:name) \
                                     ON $(listAlias:name).list_id = m2m_$(tableName:value).list_id', {
@@ -653,7 +475,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             });
             
             // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
+            selectSQL = formatSQL('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -664,7 +486,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         } else if(returnType == 'item-list') {
 
-            appendSQL = pgp.as.format('LEFT JOIN m2m_$(tableName:raw) \
+            appendSQL = formatSQL('LEFT JOIN m2m_$(tableName:raw) \
                                     ON m2m_$(tableName:raw).item_id = $(pgpParam:raw).item_id \
                                     INNER JOIN $(tableName:name) AS $(listAlias:name) \
                                     ON $(listAlias:name).list_id = m2m_$(tableName:value).list_id', {
@@ -674,7 +496,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             });
             
             // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = pgp.as.format('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
+            selectSQL = formatSQL('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -687,7 +509,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             appendSQL = null;
 
-            selectSQL = pgp.as.format('$(featureTable:name).$(columnName:name)', {
+            selectSQL = formatSQL('$(featureTable:name).$(columnName:name)', {
                 featureTable: feature,
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -697,7 +519,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             appendSQL = null;
 
-            selectSQL = pgp.as.format('$(pgpParam:raw).$(columnName:name)', {
+            selectSQL = formatSQL('$(pgpParam:raw).$(columnName:name)', {
                 pgpParam: (tableName == 'item_submission' ? 'item_submission' : '$(alias:name)'),
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -707,7 +529,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             let locationForeignKey = `${tableName}_id`;
 
-            appendSQL = pgp.as.format('LEFT JOIN $(locationTable:name) AS $(locationAlias:name) \
+            appendSQL = formatSQL('LEFT JOIN $(locationTable:name) AS $(locationAlias:name) \
                                        ON $(locationAlias:name).location_id = $(pgpParam:raw).$(fk:name)', {
                                             locationTable: tableName,
                                             locationAlias: locationAlias.join(''),
@@ -715,7 +537,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                             fk: locationForeignKey
                                        });
 
-            selectSQL = pgp.as.format('$(locationAlias:name).$(columnName:name)', {
+            selectSQL = formatSQL('$(locationAlias:name).$(columnName:name)', {
                 locationAlias: locationAlias.join(''),
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -728,7 +550,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             let factorForeignKey = `${tableName}_id`;
 
-            appendSQL = pgp.as.format('LEFT JOIN $(factorTableName:name) AS $(factorAlias:name) \
+            appendSQL = formatSQL('LEFT JOIN $(factorTableName:name) AS $(factorAlias:name) \
                                        ON $(factorAlias:name).factor_id = $(pgpParam:raw).$(fk:name)', {
                                            factorTableName: tableName,
                                            factorAlias: factorAlias.join(''),
@@ -736,7 +558,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                            fk: factorForeignKey
                                        });
         
-            selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name)', {
+            selectSQL = formatSQL('$(factorAlias:name).$(columnName:name)', {
                 factorAlias: factorAlias.join(''),
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -749,7 +571,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             let factorForeignKey = `${tableName}_id`;
 
-            appendSQL = pgp.as.format('LEFT JOIN $(factorTableName:name) AS $(factorAlias:name) \
+            appendSQL = formatSQL('LEFT JOIN $(factorTableName:name) AS $(factorAlias:name) \
                                        ON $(factorAlias:name).factor_id = $(feature:name).$(fk:name)', {
                                            factorTableName: tableName,
                                            factorAlias: factorAlias.join(''),
@@ -757,7 +579,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                            fk: factorForeignKey
                                        });
         
-            selectSQL = pgp.as.format('$(factorAlias:name).$(columnName:name)', {
+            selectSQL = formatSQL('$(factorAlias:name).$(columnName:name)', {
                 factorAlias: factorAlias.join(''),
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -775,7 +597,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             let obsOrItem = (attributeType == 'observed' ? feature : (attributeType == 'current' ? '$(alias:raw)' : null));
             if(obsOrItem === null) throw Error('Invalid attributeType');
 
-            appendSQL = pgp.as.format('LEFT JOIN $(attributeTableName:name) AS $(attributeAlias:name) \
+            appendSQL = formatSQL('LEFT JOIN $(attributeTableName:name) AS $(attributeAlias:name) \
                                        ON $(attributeAlias:name).attribute_id = $(obsOrItem:name).$(fk:name)', {
                                            attributeTableName: tableName,
                                            attributeAlias: attributeAlias.join(''),
@@ -783,7 +605,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                            fk: attributeForeignKey
                                        });
 
-            selectSQL = pgp.as.format('$(tableName:raw).$(columnName:name)', {
+            selectSQL = formatSQL('$(tableName:raw).$(columnName:name)', {
                 tableName: attributeAlias.join(''),
                 columnName: columnName
             });

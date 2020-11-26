@@ -1,7 +1,8 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const { // will import from statement.js as single 'statement' object 
+// SQL statements
+const {
         select, 
         where, 
         whereCondition, 
@@ -16,38 +17,20 @@ const { // will import from statement.js as single 'statement' object
         sortd,
         limit,
         offset
-    } = require('./statement.js');
+    } = require('./statement.js').query;
 
+// Internal setup objects
 const {returnableIDLookup, featureParents} = require('./setup.js')
 
-const {timestamptzParse} = require('./parse')
+// Database connection and SQL formatter
+const {db} = require('./db/pg.js');
+const {formatSQL} = require('./db/pg.js');
 
-// Database info
-const pgp = require('pg-promise')();
-pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
-pgp.pg.types.setTypeParser(1184, timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
-
-const cn = { //connection info
-    host: 'localhost',
-    port: 5432,
-    database: 'v4',
-    user: 'postgres',
-    password: null,
-    max: 30 // use up to 30 connections
-};
-const db = pgp(cn); //db.function is used for pg-promise PostgreSQL queries
-
-////// SETUP //////
-
-//** Testing request response cycle time (for dev only) **//
+// Testing request response cycle time (for dev only)
 var cycleTime = [];
 
 
-////// END OF SETUP //////
-
 ////// QUERY ENGINE //////
-
-
 
 let setupQuery = (req, res) => {
     res.json(app.locals.setup);
@@ -72,6 +55,17 @@ if (nextJoinObject.length == 0)
 
 */
 
+/** 
+ * Trims unneeded joins, generates and assigns aliases to returnables
+ * 
+ * Recursive
+ * 
+ * @param {Array} builtArray 
+ * @param {Object} idAliasLookup 
+ * @param {Number} aliasNumber 
+ * 
+ * @returns {Object} {builtArray, idAliasLookup}
+ */
 const recursiveReferenceSelection = (builtArray, idAliasLookup, aliasNumber) => {
     'use strict';
     //console.log('join object:', builtArray)
@@ -167,7 +161,14 @@ const recursiveReferenceSelection = (builtArray, idAliasLookup, aliasNumber) => 
     }
 };
 
-
+/**
+ * Converts rRS array with aliases into a valid SQL join clause
+ * 
+ * @param {Array} string named poorly!
+ * @param {String} prefix should be one character
+ * 
+ * @returns {String} valid SQL join clause
+ */
 const string2Join = (string, prefix) => {
     let clauseArray = [];
     // string[0] = parent alias number
@@ -185,7 +186,7 @@ const string2Join = (string, prefix) => {
     (string[0] === -1 ? originalAlias = clauseArray[2] : originalAlias = prefix + string[0])
 
     let joinAlias = prefix + string[1]
-    return(pgp.as.format(referenceSelectionJoin, {
+    return(formatSQL(referenceSelectionJoin, {
         joinTable: clauseArray[0],
         joinAlias: joinAlias,
         joinColumn: clauseArray[1],
@@ -193,33 +194,34 @@ const string2Join = (string, prefix) => {
         originalColumn: clauseArray[3]
     }))
 
-    //'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(joinAlias:value).$(joinColumn:value) = $(originalAlias:value).$(originalColumn:value)'
-}
+};
 
-// select clause helper
+/** SELECT clause alias assignment helper */ 
 const formatSelectAlias = (select, id) => {
     return `${select} AS r${id.toString()}`
 };
 
-/**   small query rewrite
-  * 
+/**  
   * dynamicSQLEngine
   * 
   * Calls:
   *     recursiveReferenceSelection
   *     string2Join
+  *     formatSelectAlias
   * 
-  * @param {returnableIDLookup, featureTreeArray, feature, ...}
-  * @returns {selectClauseArray, joinClauseArray, featureTreeArray, whereLookup}
+  * @param {Array} returnableIDs
+  * @param {Array} featureTreeArray
+  * @param {String} feature
+  * @returns {Object} {selectClauseArray, joinClauseArray, featureTreeArray, whereLookup}
   */
-const dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, recursiveReferenceSelection, string2Join, formatSelectAlias) => {
+const dynamicSQLEngine = (returnableIDs, featureTreeArray, feature) => {
     // Initialize Output
     let selectClauseArray = [];
     let joinClauseArray = [];
     let whereLookup = {};
 
     // push the item_submission reference
-    joinClauseArray.push(pgp.as.format(submission, {
+    joinClauseArray.push(formatSQL(submission, {
         feature: feature
     }));
     
@@ -294,7 +296,7 @@ const dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, recursiveRef
         if(returnable.appendSQL !== null) {
 
             // interpolate and push
-            let append = pgp.as.format(returnable.appendSQL, {
+            let append = formatSQL(returnable.appendSQL, {
                 alias: alias
             });
 
@@ -309,7 +311,7 @@ const dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, recursiveRef
         } else { // then no appendSQL and alias must be interpolated into select and where clauses
 
             // interpolate join alias into select
-            let select = pgp.as.format(returnable.selectSQL, {
+            let select = formatSQL(returnable.selectSQL, {
                 alias: alias
             });
 
@@ -380,7 +382,7 @@ function featureQuery(req, res, next) {
     let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.feature === null);
     let submissionClauseArray = [];
     // first push the tdg_submission reference
-    submissionClauseArray.push(pgp.as.format(submission, {
+    submissionClauseArray.push(formatSQL(submission, {
         feature: feature
     }))
 
@@ -409,7 +411,7 @@ function featureQuery(req, res, next) {
 
         // add local selects
         locals.forEach(returnable => {
-            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+            selectClauses.push(formatSQL(returnable.selectSQL, {
                 alias: 'item_submission'
             }))
         });
@@ -459,7 +461,7 @@ function featureQuery(req, res, next) {
         for(let returnable of dynamicReturnableIDs) {
             // get alias and interpolate into select
             let alias = 'd' + joinArray.idAliasLookup[String(returnable.ID)]
-            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+            selectClauses.push(formatSQL(returnable.selectSQL, {
                 table: alias
             }))
             // add feature to featureTree
@@ -475,7 +477,7 @@ function featureQuery(req, res, next) {
     if(localReturnableIDs.length >= 1) {
         for(let returnable of localReturnableIDs) {
             // Adding the select clause
-            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+            selectClauses.push(formatSQL(returnable.selectSQL, {
                 table: feature
             }))
             // Adding the feature dependency
@@ -505,7 +507,7 @@ function featureQuery(req, res, next) {
     let rootFeature = feature
 
     // Add root feature join
-    featureClauseArray.push(pgp.as.format(rootFeatureJoin, {
+    featureClauseArray.push(formatSQL(rootFeatureJoin, {
         rootFeature: rootFeature
     }))
 
@@ -532,7 +534,7 @@ function featureQuery(req, res, next) {
                     nextCurrentFeature.push(child)
 
                     // join the feature
-                    featureClauseArray.push(pgp.as.format(subfeatureJoin, {
+                    featureClauseArray.push(formatSQL(subfeatureJoin, {
                         feature: parent,
                         subfeature: child
                     }))
@@ -571,7 +573,7 @@ function featureQuery(req, res, next) {
         if(Array.isArray(res.locals.parsed.filters[ID].value)) {
             let condition = [];
             res.locals.parsed.filters[ID].value.forEach(value => {
-                condition.push(pgp.as.format(whereCondition, {
+                condition.push(formatSQL(whereCondition, {
                     select: whereLookup[String(ID)],
                     operation: res.locals.parsed.filters[ID].operation,
                     filterValue: value
@@ -579,13 +581,13 @@ function featureQuery(req, res, next) {
             })
             out.condition = condition.join(' OR ')
         } else {
-            out.condition = pgp.as.format(whereCondition, {
+            out.condition = formatSQL(whereCondition, {
                 select: whereLookup[String(ID)],
                 operation: res.locals.parsed.filters[ID].operation,
                 filterValue: res.locals.parsed.filters[ID].value
             })
         }
-        whereClauseArray.push(pgp.as.format(where, out));
+        whereClauseArray.push(formatSQL(where, out));
     }
 
     // UNIVERSAL FILTERS
@@ -594,36 +596,36 @@ function featureQuery(req, res, next) {
     let universalFilterArray = [];
 
     // default limit of 100 rows
-    let universalLimit = pgp.as.format(limit, {
+    let universalLimit = formatSQL(limit, {
         limit: 100
     });
 
     // default no offset
-    let universalOffset = pgp.as.format(offset, {
+    let universalOffset = formatSQL(offset, {
         offset: 0
     });
 
     // default sort by time submitted
-    let universalSort = pgp.as.format(sorta, {
+    let universalSort = formatSQL(sorta, {
         columnName: 'item_submission.data_time_submitted'
     });
 
     if(Object.keys(res.locals.parsed.universalFilters).length > 0) {
         for(universal in res.locals.parsed.universalFilters) {
             if(universal === 'sorta') {
-                universalSort = pgp.as.format(sorta, {
+                universalSort = formatSQL(sorta, {
                     columnName: whereLookup[res.locals.parsed.universalFilters[universal]]
                 })
             } else if(universal === 'sortd') {
-                universalSort = pgp.as.format(sortd, {
+                universalSort = formatSQL(sortd, {
                     columnName: whereLookup[res.locals.parsed.universalFilters[universal]]
                 })
             } else if(universal === 'limit') {
-                universalLimit = pgp.as.format(limit, {
+                universalLimit = formatSQL(limit, {
                     limit: res.locals.parsed.universalFilters[universal]
                 })
             } else if(universal === 'offset') {
-                universalOffset = pgp.as.format(offset, {
+                universalOffset = formatSQL(offset, {
                     offset: res.locals.parsed.universalFilters[universal]
                 })
             }
@@ -729,4 +731,3 @@ module.exports = {
     cycleTime,
     returnData
 };
-

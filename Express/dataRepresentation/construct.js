@@ -11,85 +11,52 @@
 //                 - lists and factors are specific to one item or observation table
 //
 // ============================================================
-const pgp = require("pg-promise")(); // Postgres interaction
 const fs = require('fs'); // Import Node.js File System
 const stripJsonComments = require('strip-json-comments'); // .jsonc handling
 const chalk = require('chalk'); // pretty console.log
 var util = require('util'); // util.inspect()
+const pgp = require('pg-promise')();
 
 
-const {} = require('../statement.js');
-const { utils } = require("pg-promise");
-
-// Database Connection Setup
-// connection info
-const connection = { 
+// Database connection and SQL formatter //
+// ============================================================
+// Schema construction CLI database connection
+const constructionConnection = { 
     host: 'localhost',
     port: 5432,
     database: 'v4',
     user: 'postgres',
     password: null,
-    max: 5 // use up to 5 connections
-    };
-
-    // connect to postgres
-    var db = pgp(connection);
-
-
-// SQL Statements
-
-const insert_m2m_metadata_item = 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable), $(frontendName), $(information))';
-
-const add_item_to_item_reference = 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn';
-
-const insert_metadata_column = 'CALL \
-"insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(accuracy), $(sqlType), $(referenceType))';
-
-const insert_metadata_feature = 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))';
-
-const insert_metadata_subfeature = 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))';
-
-const insert_metadata_item_observable = 'CALL "insert_metadata_item_observable"($(itemName), $(frontendName), $(creationPrivilege))';
-
-const create_observation_table = 'CALL "create_observation_table"($(tableName))';
-
-const create_subobservation_table = 'CALL "create_subobservation_table"($(tableName), $(parentTableName))';
-
-const create_observational_item_table = 'SELECT "create_observational_item_table"($(featureName))';
-
-const add_unique_constraint = 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))';
-
-const add_data_col = 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))';
-
-const add_list = 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))';
-
-const add_location = 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))';
-
-const add_factor = 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))';
-
-const add_attribute = 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))';
-
-const getReturnables = 'SELECT r.returnable_id AS id, f.table_name AS feature, r.frontend_name as frontendName, r.is_used AS isUsed, r.join_object AS joinObject, r.is_real_geo AS isRealGeo \
-                        FROM metadata_returnable AS r LEFT JOIN metadata_feature AS f on r.feature_id = f.feature_id ORDER BY id ASC';
+    max: 1 // use only one connection
+};
+const db = pgp(constructionConnection);
+const formatSQL = pgp.as.format
 
 
-const getItemParents = 'SELECT child.table_name AS child, parent.table_name AS parent_, m2m.is_id AS isID \
-                          FROM metadata_item AS child \
-                          INNER JOIN m2m_metadata_item AS m2m ON child.item_id = m2m.item_id \
-                          INNER JOIN metadata_item AS parent ON m2m.referenced_item_id = parent.item_id';
-
-const makeItemReturnablesColumnQuery = 'SELECT c.column_id AS columnID, c.column_name AS columnName, c.table_name AS tableName, c.subobservation_table_name AS subobservationTableName, c.frontend_name AS frontendName, r.type_name AS ReferenceTypeName FROM metadata_column AS c INNER JOIN metadata_reference_type AS r ON c.reference_type = r.type_id WHERE c.metadata_item_id = (SELECT i.item_id FROM metadata_item AS i WHERE i.table_name = $(itemName))'
-
-const makeItemReturnablesFeatureQuery = 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(featureName)'
-
-const makeItemReturnablesSubobservationQuery = 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(subobservationTableName)'
-
-const insert_metadata_returnable = 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject), $(isRealGeo)) AS returnableid'
-    
-// use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
-const checkAuditorNameTrigger = 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \
-FOR EACH ROW EXECUTE FUNCTION check_auditor_name()'
-
+// Importing SQL //
+// ============================================================
+const {insert_m2m_metadata_item, 
+       add_item_to_item_reference, 
+       insert_metadata_column, 
+       insert_metadata_feature, 
+       insert_metadata_subfeature, 
+       insert_metadata_item_observable, 
+       create_observation_table, 
+       create_subobservation_table, 
+       create_observational_item_table, 
+       add_unique_constraint, 
+       add_data_col, 
+       add_list, 
+       add_location, 
+       add_factor, 
+       add_attribute, 
+       getReturnables, 
+       getItemParents, 
+       makeItemReturnablesColumnQuery, 
+       makeItemReturnablesFeatureQuery, 
+       makeItemReturnablesSubobservationQuery, 
+       insert_metadata_returnable, 
+       checkAuditorNameTrigger} = require('../statement.js').construct
 
 // Construction CLI //
 // ============================================================
@@ -190,7 +157,7 @@ async function configSchema(commandLineArgs) {
         let change = controller.controller[controller.IDs.indexOf(id)]
         // if isUsed exists db.none
         if('isUsed' in change) {
-            db.none(pgp.as.format('UPDATE metadata_returnable SET is_used = $(isUsed) WHERE returnable_id = $(id)', {
+            db.none(formatSQL('UPDATE metadata_returnable SET is_used = $(isUsed) WHERE returnable_id = $(id)', {
                 isUsed: change.isUsed,
                 id: id
             }));
@@ -199,7 +166,7 @@ async function configSchema(commandLineArgs) {
         }
         // if frontendName exists db.none
         if('frontendName' in change) {
-            db.none(pgp.as.format('UPDATE metadata_returnable SET frontend_name = $(frontendName) WHERE returnable_id = $(id)', {
+            db.none(formatSQL('UPDATE metadata_returnable SET frontend_name = $(frontendName) WHERE returnable_id = $(id)', {
                 frontendName: change.frontendName,
                 id: id
             }));
@@ -225,7 +192,7 @@ async function inspectSchema(commandLineArgs) {
                 if(commandLineArgs.filter === 'submission') {
                     out = await db.any('SELECT * FROM metadata_returnable AS r WHERE r.feature_id IS NULL AND r.is_used = true')
                 } else {
-                    out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter)) AND r.is_used = true', {
+                    out = await db.any(formatSQL('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter)) AND r.is_used = true', {
                         filter: commandLineArgs.filter
                     }));
                 }
@@ -239,7 +206,7 @@ async function inspectSchema(commandLineArgs) {
                 if(commandLineArgs.filter === 'submission') {
                     out = await db.any('SELECT * FROM metadata_returnable AS r WHERE r.feature_id IS NULL')
                 } else {
-                    out = await db.any(pgp.as.format('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter))', {
+                    out = await db.any(formatSQL('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter))', {
                         filter: commandLineArgs.filter
                     }));
                 }
@@ -449,7 +416,7 @@ async function constructFeatures2(features) {
     for(let feature of rootFeatures) {
         try {
             // Wait for item table creation and return item table name
-            let item = await db.one(pgp.as.format(create_observational_item_table, {
+            let item = await db.one(formatSQL(create_observational_item_table, {
                 featureName: feature.tableName
             }));
 
@@ -470,7 +437,7 @@ async function constructFeatures2(features) {
     // b. Insert observable items into metadata_item
     for(let feature of rootFeatures) {
         try {
-            await db.none(pgp.as.format(insert_metadata_item_observable, {
+            await db.none(formatSQL(insert_metadata_item_observable, {
                 itemName: featureItemLookup[feature.tableName],
                 frontendName: feature.observableItem.frontendName,
                 creationPrivilege: feature.observableItem.creationPrivilege
@@ -489,7 +456,7 @@ async function constructFeatures2(features) {
         for(let required of feature.observableItem.requiredItem) {
             try {
                 // c.
-                let idColumn = await db.one(pgp.as.format(add_item_to_item_reference, {
+                let idColumn = await db.one(formatSQL(add_item_to_item_reference, {
                     observableItem: featureItemLookup[feature.tableName],
                     referenced: required.name,
                     isID: required.isID,
@@ -503,7 +470,7 @@ async function constructFeatures2(features) {
                 console.log(chalk.green(`Feature Construction: ${featureItemLookup[feature.tableName]} to ${required.name} relation created`));
 
                 // d.
-                await db.none(pgp.as.format(insert_m2m_metadata_item, {
+                await db.none(formatSQL(insert_m2m_metadata_item, {
                     observableItem: featureItemLookup[feature.tableName],
                     referenced: required.name,
                     isID: required.isID,
@@ -525,14 +492,14 @@ async function constructFeatures2(features) {
     for(let rootFeature of rootFeatures) {
         try {
             // e.
-            await db.none(pgp.as.format(create_observation_table, {
+            await db.none(formatSQL(create_observation_table, {
                 tableName: rootFeature.tableName
             }));
 
             console.log(chalk.green(`Feature Construction: Created ${rootFeature.tableName} table`));
 
             //f. 
-            await db.none(pgp.as.format(insert_metadata_feature, {
+            await db.none(formatSQL(insert_metadata_feature, {
                 tableName: rootFeature.tableName,
                 itemTableName: featureItemLookup[rootFeature.tableName],
                 information: rootFeature.information,
@@ -552,7 +519,7 @@ async function constructFeatures2(features) {
     for(let subfeature of subfeatures) {
         try {
             // g.
-            await db.none(pgp.as.format(create_subobservation_table, {
+            await db.none(formatSQL(create_subobservation_table, {
                 tableName: subfeature.tableName,
                 parentTableName: subfeature.parentTableName
             }));
@@ -560,7 +527,7 @@ async function constructFeatures2(features) {
             console.log(chalk.green(`Feature Construction: Created ${subfeature.tableName} table`));
 
             // h.
-            await db.none(pgp.as.format(insert_metadata_subfeature, {
+            await db.none(formatSQL(insert_metadata_subfeature, {
                 tableName: subfeature.tableName,
                 parentTableName: subfeature.parentTableName,
                 numFeatureRange: subfeature.numFeatureRange,
@@ -611,7 +578,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
             }
             // insert into metadata_column
             try {
-                await db.none(pgp.as.format(insert_metadata_column, {
+                await db.none(formatSQL(insert_metadata_column, {
                     columnName: column.columnName,
                     tableName: (column.tableName === null ? feature.tableName : column.tableName),
                     observationTableName: column.observationTableName,
@@ -637,7 +604,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
             // if observation-global add the data column for all features
             if(column.referenceType === 'obs-global') {
                 try {
-                    await db.none(pgp.as.format(add_data_col, {
+                    await db.none(formatSQL(add_data_col, {
                         tableName: feature.tableName,
                         columnName: column.columnName,
                         sqlType: column.sqlType,
@@ -652,7 +619,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
 
             // Auditor Name Special Case
             if(column.referenceType === 'special' && column.frontendName === 'Auditor Name') {
-                await db.none(pgp.as.format(add_data_col, {
+                await db.none(formatSQL(add_data_col, {
                     tableName: feature.tableName,
                     columnName: column.columnName,
                     sqlType: column.sqlType,
@@ -662,7 +629,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                 console.log(chalk.green(`Column Construction: Added special column ${column.columnName} to ${feature.tableName}`));
 
                 // Auditor Name trigger is added for every feature
-                await db.none(pgp.as.format(checkAuditorNameTrigger, {
+                await db.none(formatSQL(checkAuditorNameTrigger, {
                     tableName: feature.tableName
                 }))
 
@@ -680,7 +647,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
 
         // insert into metadata_column
         try {
-            await db.none(pgp.as.format(insert_metadata_column, {
+            await db.none(formatSQL(insert_metadata_column, {
                 columnName: column.columnName,
                 tableName: column.tableName,
                 observationTableName: column.observationTableName,
@@ -715,7 +682,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                     itemIDColumnLookup[column.itemName].push(column.columnName);
     
                     // schema generation
-                    await db.none(pgp.as.format(add_data_col, {
+                    await db.none(formatSQL(add_data_col, {
                         tableName: column.tableName, // same as itemName
                         columnName: column.columnName,
                         sqlType: column.sqlType,
@@ -731,7 +698,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         throw 'item-non-id returnables must have matching table name and item name';
                     };
 
-                    await db.none(pgp.as.format(add_data_col, {
+                    await db.none(formatSQL(add_data_col, {
                         tableName: column.tableName, // same as itemName
                         columnName: column.columnName,
                         sqlType: column.sqlType,
@@ -747,7 +714,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         throw 'item-list returnables must be within a list_... table';
                     };
                     
-                    await db.none(pgp.as.format(add_list, {
+                    await db.none(formatSQL(add_list, {
                         itemTableName: column.itemName,
                         tableName: column.tableName,
                         columnName: column.columnName,
@@ -764,7 +731,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         throw 'item-location returnables must be within a location_... table';
                     };
 
-                    await db.none(pgp.as.format(add_location, {
+                    await db.none(formatSQL(add_location, {
                         itemTableName: column.itemName,
                         locationTableName: column.tableName,
                         isNullable: column.isNullable
@@ -779,7 +746,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         throw 'item-factor returnables must be within a factor_... table';
                     };
                     
-                    await db.none(pgp.as.format(add_factor, {
+                    await db.none(formatSQL(add_factor, {
                         itemTableName: column.itemName,
                         tableName: column.tableName,
                         columnName: column.columnName,
@@ -793,7 +760,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
 
                 case 'obs':
                     
-                    await db.none(pgp.as.format(add_data_col, {
+                    await db.none(formatSQL(add_data_col, {
                         tableName: column.tableName,
                         columnName: column.columnName,
                         sqlType: column.sqlType,
@@ -814,7 +781,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         throw 'obs-list returnables must be within a list_... table';
                     };
                     
-                    await db.none(pgp.as.format(add_list, {
+                    await db.none(formatSQL(add_list, {
                         itemTableName: column.itemName,
                         tableName: column.tableName,
                         columnName: column.columnName,
@@ -831,7 +798,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         throw 'obs-factor returnables must be within a factor_... table';
                     };
                     
-                    await db.none(pgp.as.format(add_factor, {
+                    await db.none(formatSQL(add_factor, {
                         itemTableName: column.itemName,
                         tableName: column.tableName,
                         columnName: column.columnName,
@@ -854,7 +821,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
                         throw 'attribute returnables must be within an attribute_... table';
                     };
                     
-                    await db.none(pgp.as.format(add_attribute, {
+                    await db.none(formatSQL(add_attribute, {
                         itemTableName: column.itemName,
                         tableName: column.tableName,
                         columnName: column.columnName,
@@ -877,7 +844,7 @@ async function addDataColumns2(columns, features, itemIDColumnLookup, featureIte
 
         let uniqueOver = itemIDColumnLookup[item].join(', ');
         try {
-            await db.none(pgp.as.format(add_unique_constraint, {
+            await db.none(formatSQL(add_unique_constraint, {
                 tableName: item,
                 uniqueOver: uniqueOver
             }));   
@@ -979,14 +946,14 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
     let rootFeatureID;
 
     // go to metadata_column and find all columns for said item
-    let columns = await db.any(pgp.as.format(makeItemReturnablesColumnQuery, {
+    let columns = await db.any(formatSQL(makeItemReturnablesColumnQuery, {
         itemName: itemObject.itemName
     }));
 
     // if not submission get the featureID
     if(itemObject.featureName !== null) {
         
-        featureID = await db.one(pgp.as.format(makeItemReturnablesFeatureQuery, {
+        featureID = await db.one(formatSQL(makeItemReturnablesFeatureQuery, {
             featureName: itemObject.featureName
         }));
 
@@ -1059,7 +1026,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             // if subobservation
             if(col.subobservationtablename !== null) {  
 
-                queryFeatureID = await db.one(pgp.as.format(makeItemReturnablesSubobservationQuery, {
+                queryFeatureID = await db.one(formatSQL(makeItemReturnablesSubobservationQuery, {
                     subobservationTableName: col.subobservationtablename
                 }));
 
@@ -1087,7 +1054,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 let insertableJoinObject_ = JSON.stringify(insertableJoinObject);
 
                 // insert returnable into metadata_returnable and get returnableID
-                let returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
+                let returnableID = await db.one(formatSQL(insert_metadata_returnable, {
                     columnID: columnID,
                     featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
@@ -1110,7 +1077,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 let insertableJoinObject_ = JSON.stringify(insertableJoinObject);
 
                 // insert returnable into metadata_returnable and get returnableID
-                let returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
+                let returnableID = await db.one(formatSQL(insert_metadata_returnable, {
                     columnID: columnID,
                     featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
@@ -1132,7 +1099,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 insertableJoinObject_ = JSON.stringify(insertableJoinObject);
 
                 // insert returnable into metadata_returnable and get returnableID
-                returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
+                returnableID = await db.one(formatSQL(insert_metadata_returnable, {
                     columnID: columnID,
                     featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
@@ -1153,7 +1120,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             let insertableJoinObject_ = JSON.stringify(insertableJoinObject);
 
             // insert returnable into metadata_returnable and get returnableID
-            let returnableID = await db.one(pgp.as.format(insert_metadata_returnable, {
+            let returnableID = await db.one(formatSQL(insert_metadata_returnable, {
                 columnID: columnID,
                 featureID: insertableFeatureID,
                 rootFeatureID: rootFeatureID,

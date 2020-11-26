@@ -1,230 +1,199 @@
-const pgp = require("pg-promise");
-const PS = pgp.PreparedStatement;
-
-const referenceSelectionJoin = 'LEFT JOIN $(joinTable:name) AS $(joinAlias:name) ON $(joinAlias:name).$(joinColumn:name) = $(originalAlias:name).$(originalColumn:name)'
-// joinTable
-// joinAlias
-// joinColumn
-// originalAlias
-// originalColumn
-
-const sorta = 'ORDER BY $(columnName:value) ASC'
-
-const sortd = 'ORDER BY $(columnName:value) DESC'
-
-const limit = 'LIMIT $(limit)'
-
-const offset = 'OFFSET $(offset)'
+/**
+ * @file Contains SQL statements that may or may not contain 
+ *       pg-promise parametrization for use in generating
+ *       dynamic SQL. 
+ */
 
 
- // NEW CODE
-//const {idColumnTableLookup, tableParents} = require('./setup.js');
+/**
+ * SQL statements specific to query.js
+ */
+const query = {
 
-////////////////////////////////////////////////////////////
-// Query column to database table lookup table generation //
-////////////////////////////////////////////////////////////
+    referenceSelectionJoin: 'LEFT JOIN $(joinTable:name) AS $(joinAlias:name) ON $(joinAlias:name).$(joinColumn:name) = $(originalAlias:name).$(originalColumn:name)',
 
-// Serves the functionality of tableLookup and setupTableLookup
+    sorta: 'ORDER BY $(columnName:value) ASC',
 
-// Select and Where clauses //
-const select = 'SELECT $(returnColumns:raw) FROM $(feature:name)'
+    sortd: 'ORDER BY $(columnName:value) DESC',
 
-// ex: {clause: 'AND', select: "item_sop.sop_name", operation: "=", filterValue: "Example SOP #1"}
-const where = '$(clause:value) ($(condition:raw))'
+    limit: 'LIMIT $(limit)',
 
-const whereCondition = '$(select:value) $(operation:value) $(filterValue)';
+    offset: 'OFFSET $(offset)',
 
-const submission = 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.submission_id';
+    select: 'SELECT $(returnColumns:raw) FROM $(feature:name)',
 
+    where: '$(clause:value) ($(condition:raw))',
 
-// STATS //
+    whereCondition: '$(select:value) $(operation:value) $(filterValue)',
 
-/*************
-* Approach 1 *
-*************/
-var feature;
-var subfeature;
-var feature_item;
-var list;
-var list_m2m;
+    submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.submission_id',
 
-'SELECT list.data_elementname FROM list INNER JOIN list_m2m ON list_m2m.list_id = list.list_id'
-'INNER JOIN subfeature ON subfeature.observation_id = list_m2m.observation_id;'
+    subfeatureJoin: 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id',
 
-/*************
-* Approach 2 *
-**************/
-var metadata_table;
-var metadata_col;
-var metadata_datatype;
-var metadata_selector;
+    rootFeatureJoin: 'FROM $(rootFeature:value)'
 
-// How do we connect different metadata_tables? Still a little confused on how the metadata stuff works.
-'SELECT metadata_col.information FROM metadata_col INNER JOIN metadata_table ON metadata_col.table_id = metadata_table.table_id;'
-
-/////////////////////////////////
-// Generate table join clauses //
-/////////////////////////////////
-
-// Serves functionality of statement.js. We can use the format from statement.js
-// of ```tablename: {query: 'INNER JOIN...', dependencies: [] }```
-
-/*
-module.exports = {
-    idColumnTableLookup,
-    tableParents
-};
-*/
-
-
-
-// Inputs //
-
-let idColumnTableLookup = {
-    id: {
-            column: 'column name',
-            table: 'table name', 
-            feature: 'feature name',
-            referenceColumn: 'column name', 
-            referenceTable: 'table name', //null if type_name == local
-            filterable: true, //BOOLEAN
-            sqlType: 'NUMERIC'|'TEXT',
-            refType: 'list'
-        }
-        //note that id is a string such as '3'
-}; // if idColumnTableLookup.feature == null, it is a global table
-
-let tableParents = {
-/*  feature_toilet: null,
-    subfeature_toilet_flushometer: 'feature_toilet',
-    feature_urinal: 'null',
-    subfeature_toilet_sensor: 'feature_toilet',
-    subfeature_urinal_sensor: 'feature_urinal'
-    ...
-*/
-    table_name: 'parent_table_name', //if root feature parent_table_name is NULL
 };
 
-let subfeatures = Object.keys(tableParents).filter(key => tableParents[key] !== null).map(key => [key, tableParents[key]]);
+/**
+ * SQL statements specific to construct.js
+ */
+const construct = {
 
+    insert_m2m_metadata_item: 'CALL "insert_m2m_metadata_item"($(observableItem), $(referenced), $(isID), $(isNullable), $(frontendName), $(information))',
 
-const subfeatureJoin = 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id';
-const rootFeatureJoin = 'FROM $(rootFeature:value)';
-
-// iterate through subfeatures and create query for each one
-// Javascript template literal syntax
-/*
-
-let subfeatureJoin = {
-    subfeatures[0]: {
-        query: 'INNER JOIN $(subfeature[1]:value) ON $(subfeature[1]:value).table_id = $(subfeature[0]:value).parent_id',
-        dependencies: [subfeature[1]]
-    }
-};
-
-// every feature has a feature item, but not every subfeature has a feature item
-let featureItemJoin = {
-    feature: {
-        if (subfeatures.map(subfeature => subfeature[0]).includes($(feature))) { // if feature is actually a subfeature
-            query: 'INNER JOIN featureitem_$(feature) ON featureitem_$(feature).featureitem_id = subfeature_$(feature).featureitem_id'
-        } else { // if feature is already top-level feature; every feature has a feature item, so this is the default
-            query: 'INNER JOIN featureitem_$(feature) ON featureitem_$(feature).featureitem_id = feature_$(feature).featureitem_id'
-        }
-    }
-};
-
-*/
-
-// get all unique tables and features (if not null) from idColumnTableLookup
-// not sure if the syntax for this is correct, particularly due to the part inside the brackets
-//var tablesAndFeatures = new Set(idColumnTableLookup[id]);
-
-// Feature //
-/*
-
-!!!
-Feature, subfeature, and featureitem tables are joined only with the table name information. So a lookup
-that inputs only the names of backend tables
-
->Within feature or subfeature
-    subfeature_... -> ... -> feature_...
-    feature_... (no join)
-
->Featureitem
-    featureitem_... -> subfeature_... (or directly) -> feature_... 
-
-!!! Location, item, and list tables are joined with table name, reference column name, 
-    and reference table name information
-
->Location (??)
-    location_... -> featureitem_... (sometimes)
-
-*/
-let makeLocation = (locationTableName, referenceTableName, referenceColumnName) => `INNER JOIN ${locationTableName} ON ${referenceTableName}.${referenceColumnName} = ${locationTableName}.location_id`
-/*
->List
-    list_... -> list_m2m_... -> feature_...
-*/
-
-// pgp.as.format('SELECT + FROM $(referenceTable:value)', {myTable: 'referenceColumn'});
-
-//pgp.as.format() , two parameter, takes a statement like 'select + from $(myTable:value)', (myTable:'feature_toliet')
-
-/*
-    let listJoin = {
-        //change feature 
-        featureName: {
-            listName : { //Join m2m to audit table then join 
-                //use id column lookup to construct array of queries
-                //given 9 tables, generate 9 statements
-                query: pgp.as.format('SELECT + FROM $(referenceTable:value)', 
-                {referenceTable: idColumnTableLookup.referenceTable, referenceColumn: idColumnTableLookup.referenceColumn}),
-
-                //many to many to the list and  many to many to the feature table
-                // query: 'INNER JOIN $(listName:value)_m2m \
-                //         ON $(listName:value)_m2m.observation_id = $(referenceTable:value).$(referenceColumn:value) \
-                //         INNER JOIN $(listName:value) \
-                //         ON $(listName:value).list_id = $(listName:value)_m2m.list_id'
-                
-                dependencies: ['referenceTable']
-            }
-        }
-    }
+    add_item_to_item_reference: 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn',
     
-*/
+    insert_metadata_column: 'CALL \
+    "insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(accuracy), $(sqlType), $(referenceType))',
+    
+    insert_metadata_feature: 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))',
+    
+    insert_metadata_subfeature: 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))',
+    
+    insert_metadata_item_observable: 'CALL "insert_metadata_item_observable"($(itemName), $(frontendName), $(creationPrivilege))',
+    
+    create_observation_table: 'CALL "create_observation_table"($(tableName))',
+    
+    create_subobservation_table: 'CALL "create_subobservation_table"($(tableName), $(parentTableName))',
+    
+    create_observational_item_table: 'SELECT "create_observational_item_table"($(featureName))',
+    
+    add_unique_constraint: 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))',
+    
+    add_data_col: 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))',
+    
+    add_list: 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))',
+    
+    add_location: 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))',
+    
+    add_factor: 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))',
+    
+    add_attribute: 'CALL "add_attribute"($(itemTableName), $(tableName), $(columnName), $(sqlType))',
+    
+    getReturnables: 'SELECT r.returnable_id AS id, f.table_name AS feature, r.frontend_name as frontendName, r.is_used AS isUsed, r.join_object AS joinObject, r.is_real_geo AS isRealGeo \
+                            FROM metadata_returnable AS r LEFT JOIN metadata_feature AS f on r.feature_id = f.feature_id ORDER BY id ASC',
+    
+    getItemParents: 'SELECT child.table_name AS child, parent.table_name AS parent_, m2m.is_id AS isID \
+                              FROM metadata_item AS child \
+                              INNER JOIN m2m_metadata_item AS m2m ON child.item_id = m2m.item_id \
+                              INNER JOIN metadata_item AS parent ON m2m.referenced_item_id = parent.item_id',
+    
+    makeItemReturnablesColumnQuery: 'SELECT c.column_id AS columnID, c.column_name AS columnName, c.table_name AS tableName, c.subobservation_table_name AS subobservationTableName, c.frontend_name AS frontendName, r.type_name AS ReferenceTypeName FROM metadata_column AS c INNER JOIN metadata_reference_type AS r ON c.reference_type = r.type_id WHERE c.metadata_item_id = (SELECT i.item_id FROM metadata_item AS i WHERE i.table_name = $(itemName))',
+    
+    makeItemReturnablesFeatureQuery: 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(featureName)',
+    
+    makeItemReturnablesSubobservationQuery: 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(subobservationTableName)',
+    
+    insert_metadata_returnable: 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject), $(isRealGeo)) AS returnableid',
+        
+    // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
+    checkAuditorNameTrigger: 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \
+    FOR EACH ROW EXECUTE FUNCTION check_auditor_name()'
+
+};
+
+/**
+ * SQL statements specific to setup.js
+ */
+const setup = {
+
+    returnableQuery: 'SELECT \
+        \
+        f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
+        f.frontend_name as f__frontend_name, \
+        \
+        rf.table_name as rf__table_name, \
+        \
+        c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
+        c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
+        c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, \
+        \
+        fs.selector_name as fs__selector_name, \
+        ins.selector_name as ins__selector_name, \
+        sql.type_name as sql__type_name, \
+        rt.type_name as rt__type_name, \
+        ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
+        \
+        r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, \
+        r.is_real_geo as r__is_real_geo, r.join_object -> \'attributeType\' as r__attribute_type, r.feature_id as r__feature_id, \
+        \
+        i.table_name as i__table_name, i.frontend_name as i__frontend_name \
+        \
+        FROM metadata_returnable as r \
+        LEFT JOIN metadata_column AS c ON c.column_id = r.column_id \
+        LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id \
+        LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id \
+        LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
+        LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
+        LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
+        LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
+        LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
+        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id',
+
+    columnQuery: 'SELECT \
+        \
+        c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
+        c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
+        c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, \
+        \
+        fs.selector_name as fs__selector_name, \
+        ins.selector_name as ins__selector_name, \
+        sql.type_name as sql__type_name, \
+        rt.type_name as rt__type_name, \
+        ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
+        \
+        i.table_name as i__table_name, i.frontend_name as i__frontend_name \
+        \
+        FROM metadata_column as c \
+        LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
+        LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
+        LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
+        LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
+        LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
+        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id',
+
+    allItems: 'SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
+        i.creation_privilege as i__creation_privilege, i.item_id as i__item_id \
+        FROM metadata_item AS i \
+        LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id',
+
+    itemM2M: 'SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
+        i.creation_privilege as i__creation_privilege, \
+        m2m.is_id as m2m__is_id, m2m.is_nullable as m2m__is_nullable, m2m.frontend_name as m2m__frontend_name, \
+        ri.table_name as ri__table_name \
+        FROM metadata_item AS i \
+        LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id \
+        INNER JOIN m2m_metadata_item AS m2m ON m2m.item_id = i.item_id \
+        INNER JOIN metadata_item AS ri ON m2m.referenced_item_id = ri.item_id',
+
+    frontendTypes: 'SELECT type_name FROM metadata_frontend_type',
+
+    allFeatures: 'SELECT f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
+        f.frontend_name as f__frontend_name, ff.table_name as ff__table_name, \
+        i.table_name as i__table_name, i.frontend_name as i__frontend_name \
+        FROM metadata_feature AS f \
+        LEFT JOIN metadata_feature as ff ON f.parent_id = ff.feature_id \
+        LEFT JOIN metadata_item as i ON f.observable_item_id = i.item_id'
+
+};
 
 
-// let listJoin = {
-//     feature: {
-//         listName_referenceTableName_referenceColumnName : { //Join m2m to audit table then join 
-//             query: 'INNER JOIN $(listName:value)_m2m \
-//                     ON $(listName:value)_m2m.observation_id = $(referenceTableName:value).$(referenceColumnName:value) \
-//                     INNER JOIN $(listName:value) \
-//                     ON $(listName:value).list_id = $(listName:value)_m2m.list_id',
-//             dependencies: ['referenceTableName']
-//         }
-//     }
-// }
-
-/*
->Item
-    item_... -> subfeature_... -> feature
 
 
-*/
-// Global //
+module.exports = {
+    query,
+    construct,
+    setup
+};
 
-// need to know foreign key and primary key 
 
-// need to know which table references which
 
-// Also know: What feature a table comes from or if it is global
 
-// get all globalClauseObjects and all featureClauseObjects
 
-// make tableNameSQLLookup from clauseObjects
 
-//toilet: {...globalClauseObjects, ...toiletClauseObjects}
+// OLD construct.js
+// Subject to move to legacy.js or deletion
+// ============================================================
 
 
 // Output
@@ -235,10 +204,6 @@ let tableNameSQLLookup = {
     }
 }
 
-// Old construct.js
-
-// SQL //
-// ============================================================
 
 // newCreateList: SQL for creating a new list_m2m table
 
@@ -360,20 +325,3 @@ $(nullable), $(default), $(global), $(groundTruthLocation))'
 
 
 
-
-
-
-
-module.exports = {
-    subfeatureJoin,
-    rootFeatureJoin,
-    select,
-    where,
-    whereCondition,
-    referenceSelectionJoin,
-    submission,
-    sorta,
-    sortd,
-    limit,
-    offset
-}; //this will export everything to the query engine 

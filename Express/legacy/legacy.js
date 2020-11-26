@@ -1333,6 +1333,29 @@ function makeJoinStrings(idArray) {
 // STATEMENT.JS //
 // ==================================================
 
+/*************
+* Approach 1 *
+*************/
+var feature;
+var subfeature;
+var feature_item;
+var list;
+var list_m2m;
+
+'SELECT list.data_elementname FROM list INNER JOIN list_m2m ON list_m2m.list_id = list.list_id'
+'INNER JOIN subfeature ON subfeature.observation_id = list_m2m.observation_id;'
+
+/*************
+* Approach 2 *
+**************/
+var metadata_table;
+var metadata_col;
+var metadata_datatype;
+var metadata_selector;
+
+// How do we connect different metadata_tables? Still a little confused on how the metadata stuff works.
+'SELECT metadata_col.information FROM metadata_col INNER JOIN metadata_table ON metadata_col.table_id = metadata_table.table_id;'
+
 
 const commonJoin = { //JOINS THAT ARE SHARED BETWEEN FEATURES
 
