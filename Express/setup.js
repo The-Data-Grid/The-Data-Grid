@@ -475,7 +475,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             });
             
             // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = formatSQL('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
+            selectSQL = formatSQL('STRING_AGG($(listAlias:name).$(columnName:name)::TEXT, \', \')', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -496,7 +496,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             });
             
             // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = formatSQL('STRING_AGG($(listAlias:name).$(columnName:name), \', \')', {
+            selectSQL = formatSQL('STRING_AGG($(listAlias:name).$(columnName:name)::TEXT, \', \')', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -862,6 +862,8 @@ const initialReturnableMapper = (returnable, statics) => {
 // CALLING SETUP FUNCTION
 // ============================================================
 const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
+
+
 
 // SEND SETUP OBJECT
 // ============================================================

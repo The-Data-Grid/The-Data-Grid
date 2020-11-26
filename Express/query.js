@@ -25,6 +25,8 @@ const {returnableIDLookup, featureParents} = require('./setup.js')
 // Database connection and SQL formatter
 const {db} = require('./db/pg.js');
 const {formatSQL} = require('./db/pg.js');
+const { groupBy } = require('rxjs/internal/operators/groupBy');
+const { ɵALLOW_MULTIPLE_PLATFORMS } = require('@angular/core');
 
 // Testing request response cycle time (for dev only)
 var cycleTime = [];
@@ -511,7 +513,7 @@ function featureQuery(req, res, next) {
         rootFeature: rootFeature
     }))
 
-    featureTree = [...new Set(featureTree)]
+    featureTree = [...new Set(featureTreeArray)]
 
     // remove root feature from feature tree after join
     featureTree.splice(featureTree.indexOf(rootFeature), 1)
@@ -636,17 +638,26 @@ function featureQuery(req, res, next) {
     universalFilterArray.push(universalLimit)
     universalFilterArray.push(universalOffset)
 
+    // GROUP BY
+    // ==================================================
+    let groupByClause = '';
+
+    let nonListReturnables = allReturnableIDs.map(returnable => [returnable.ID, returnable.returnType]).filter(returnable => !['obs-list', 'item-list'].includes(returnable[1]));
+
+    if(nonListReturnables.length < allReturnableIDs.length) {
+        groupByClause = `GROUP BY ${nonListReturnables.map(el => `r${el[0]}`).join(', ')}`;
+    };
+
     // EXECUTING QUERY
     // ==================================================
     // Adding commas to select clauses
     selectClauseArray = selectClauseArray.join(', ')
     selectClauseArray = `SELECT ${selectClauseArray}`
 
-    //console.log(featureClauseArray);
     
-    
+
     // Adding clauses to query in order
-    let query = [selectClauseArray, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, ...universalFilterArray]; 
+    let query = [selectClauseArray, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, groupByClause, ...universalFilterArray]; 
     //console.log(query)
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' '); 
