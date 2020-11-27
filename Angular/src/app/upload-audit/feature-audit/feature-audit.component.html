@@ -11,12 +11,20 @@
                     {{panel.title}}
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <div *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation'">
+            <div *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation' && panel.title != 'Toilet ID'">
             <div *ngFor="let string of panel.content">
                 <div class="secondary_separator"></div>
                     {{string}}
                 </div>
             </div>
+
+            <div *ngIf="panel.title == 'Toilet ID'">
+                <div *ngFor="let itemChild of idInfo">
+                    <div class="secondary_separator"></div>
+                        {{ itemChild.frontendName }}: {{ itemChild.information }}
+                </div>
+            </div>
+
 
             <div *ngIf="panel.title == 'Toilet Observation'">
     
