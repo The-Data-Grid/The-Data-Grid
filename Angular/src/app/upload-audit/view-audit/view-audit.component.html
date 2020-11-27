@@ -37,16 +37,14 @@
         <div *ngIf="feature.included">
           <mat-expansion-panel>
             <mat-expansion-panel-header>
-              <mat-panel-title>
-                <span style="margin-left: 15px;">
+              <mat-panel-title style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
+                <span>
                   {{ feature.name }}
                 </span>
-              </mat-panel-title>
-              <mat-panel-description>
-                <button mat-icon-button class="add-button" aria-label= "Add feature" (click)="openFeatureAudit()">
-                  <mat-icon>add</mat-icon>
+                <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit()">
+                  <mat-icon style="font-size: small;">add</mat-icon>
                 </button>
-              </mat-panel-description>
+              </mat-panel-title>
             </mat-expansion-panel-header>
             <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"
               [footerHeight]="50" rowHeight="auto" [scrollbarH]="false" [limit]="5">
