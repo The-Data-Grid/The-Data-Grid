@@ -61,14 +61,18 @@ const queryParse = (req, res, next) => {
         }
 
         // setting up custom operator
+
         if (typeof(filter[key]) === 'object') {
             let content = Object.keys(filter[key])
+            let returnvalueofstring = filter[key][content[0]].split('|');
+            let value = returnvalueofstring.map(e => {
+                if(!isNaN(e)) { //if number parseInt
+                    return parseFloat(e);
+                } else {
+                   return e; //else keep as string
+                }
 
-            if(!isNaN(filter[key][content[0]])) { //if number parseInt
-                value = parseFloat(filter[key][content[0]]);
-            } else {
-                value = filter[key][content[0]] //else keep as string
-            }
+             })
             
             let operation = operation_map(content[0])
             if(operation === null) {
@@ -76,18 +80,31 @@ const queryParse = (req, res, next) => {
             } else {
                 filters[key] = {
                     operation: operation_map(content[0], res),
-                    value: value
+                   value: value
                 }
             }
         } else { // if no operator is given use = operator
+            let returnvalueofstring = filter[key].split('|');
+
+            //let value = filter[key][content[0]]
+            let value = returnvalueofstring.map(e => {
+                if(!isNaN(e)) { //if number parseInt
+                    return parseFloat(e);
+                } else {
+                    return e;
+                }
+            })
+
             filters[key] = {
                 operation: '=', 
-                value: filter[key]} 
+                value: value} 
         }
     }
 
+        
+
     // attaching parsed object
-    res.locals.parsed = {request: "a", features: feature, columns: include, filters: filters, universalFilters: universalFilters};
+    res.locals.parsed = {request: "audit", features: feature, columns: include, filters: filters, universalFilters: universalFilters};
     next(); // passing to validate.js 
 };
 
@@ -107,6 +124,8 @@ function uploadParse(req, res, next) {
 ////// TEMPLATE PARSING //////
 
 function templateParse(req, res, next) {
+    // init request parse object
+    res.locals.parsed = {};
     res.locals.parsed = JSON.parse(JSON.stringify(req.body));
     next(); // passing to template.js
 }
@@ -117,7 +136,10 @@ function templateParse(req, res, next) {
 ////// SETUP PARSING //////
 
 function setupParse(req, res, next) {
-    res.locals.parsed = JSON.parse(JSON.stringify(req.body));
+    // init request parse object
+    res.locals.parsed = {};
+    // add If-Modified-Since header
+    res.locals.parsed.ifModifiedSince = req.headers['If-Modified-Since'];
     next();
 }
 

@@ -1,0 +1,262 @@
+{
+    "table": {
+        "columnIndex": [
+            [
+                null,
+                1
+            ],
+            [
+                1,
+                0
+            ],
+            [
+                null,
+                0
+            ],
+            [
+                1,
+                1
+            ],
+            [
+                2,
+                1
+            ],
+            [
+                2,
+                0
+            ]
+        ],
+        "rowData": [
+            [
+                {
+                    "displayString": "Bruin Home Solutions",
+                    "URL": "https://bruinhomesolutions.com/"
+                },
+                33.6,
+                1596104069,
+                {
+                    "displayString": "Restroom SOP v1",
+                    "URL": "https://agar.io/"
+                },
+                0.643,
+                0
+            ],
+            [
+                {
+                    "displayString": "Renewable Energy Association",
+                    "URL": "https://rea.seas.ucla.edu/"
+                },
+                63.4,
+                1596034069,
+                {
+                    "displayString": "REA BIODIESEL TEAM 1.2",
+                    "URL": "https://agar.io/"
+                },
+                2.53,
+                1
+            ],
+            [
+                {
+                    "displayString": "UCLA Facilities Management",
+                    "URL": "https://www.facilities.ucla.edu/"
+                },
+                34.5,
+                1596030069,
+                {
+                    "displayString": "FM SOP",
+                    "URL": "https://agar.io/"
+                },
+                0.01,
+                1
+            ],
+            [
+                {
+                    "displayString": "Clean Consulting",
+                    "URL": "https://cleanconsulting.org/"
+                },
+                45.4,
+                1595030069,
+                {
+                    "displayString": "Aiden’s SOP",
+                    "URL": "https://agar.io/"
+                },
+                0.45,
+                0
+            ]
+        ]
+    },
+    "setup": {
+        "globalColumns": [
+            {
+                "default": true,
+                "columnFrontendName": "Date Submitted",
+                "columnBackendID": 29,
+                "filterSelector": {
+                    "selectorKey": "calendarRange",
+                    "selectorValue": null
+                },
+                "inputSelector": {
+                    "selectorKey": "calendarEqual",
+                    "selectorValue": null
+                },
+                "datatype": 0,
+                "nullable": false,
+                "information": "The date the audit submission was uploaded",
+                "accuracy": 92.3
+            },
+            {
+                "default": true,
+                "columnFrontendName": "Organization",
+                "columnBackendID": 29,
+                "filterSelector": {
+                    "selectorKey": "searchableDropdown",
+                    "selectorValue": "QUERYSTRING"
+                },
+                "inputSelector": {
+                    "selectorKey": "searchableDropdown",
+                    "selectorValue": "QUERYSTRING"
+                },
+                "datatype": 1,
+                "nullable": false,
+                "information": "The organization that made the measurements",
+                "accuracy": 76.4
+            }
+        ],
+        "featureColumns": [
+            {
+                "frontendName": "Toilet",
+                "information": "Use pressurized water to cast away evil",
+                "numFeatureRange": null,
+                "dataColumns": [
+                    {
+                        "default": true,
+                        "columnFrontendName": "GPF",
+                        "columnBackendID": 45,
+                        "filterSelector": {
+                            "selectorKey": "numericChoice",
+                            "selectorValue": null
+                        },
+                        "inputSelector": "numericEqual",
+                        "datatype": 0,
+                        "nullable": false,
+                        "information": "GPF stands for Gallons Per Flush",
+                        "accuracy": 95.6
+                    },
+                    {
+                        "default": true,
+                        "columnFrontendName": "SOP",
+                        "columnBackendID": 35,
+                        "filterSelector": null,
+                        "inputSelector": {
+                            "selectorKey": "dropdown",
+                            "selectorValue": "QUERYSTRING"
+                        },
+                        "datatype": 1,
+                        "nullable": false,
+                        "information": "SOP stands for Standard Operating Procedure",
+                        "accuracy": 100.0
+                    },
+                    {
+                        "default": true,
+                        "columnFrontendName": "Basin Brand",
+                        "columnBackendID": 84,
+                        "filterSelector": {
+                            "selectorKey": "dropdown",
+                            "selectorValue": "QUERYSTRING"
+                        },
+                        "inputSelector": {
+                            "selectorKey": "dropdown",
+                            "selectorValue": "QUERYSTRING"
+                        },
+                        "datatype": 0,
+                        "nullable": true,
+                        "information": "Company that sold basin end-product",
+                        "accuracy": 100.0
+                    }
+                ],
+                "directChildren": []
+            },
+            {
+                "frontendName": "Boiler",
+                "information": "Heats water using electricity",
+                "numFeatureRange": null,
+                "dataColumns": [
+                    {
+                        "default": true,
+                        "columnFrontendName": "PSI",
+                        "columnBackendID": 46,
+                        "filterSelector": {
+                            "selectorKey": "numericChoice",
+                            "selectorValue": null
+                        },
+                        "inputSelector": "numericEqual",
+                        "datatype": 0,
+                        "nullable": true,
+                        "information": "PSI stands for pounds per square inch",
+                        "accuracy": 98.3
+                    },
+                    {
+                        "default": true,
+                        "columnFrontendName": "SOP",
+                        "columnBackendID": 35,
+                        "filterSelector": null,
+                        "inputSelector": {
+                            "selectorKey": "dropdown",
+                            "selectorValue": "QUERYSTRING"
+                        },
+                        "datatype": 1,
+                        "nullable": false,
+                        "information": "SOP stands for Standard Operating Procedure",
+                        "accuracy": 100.0
+                    }
+                ],
+                "directChildren": [
+                    2
+                ]
+            },
+            {
+                "frontendName": "Valve",
+                "information": "Regulates flow rate of fluid",
+                "numFeatureRange": null,
+                "dataColumns": [
+                    {
+                        "default": true,
+                        "columnFrontendName": "Leaking",
+                        "columnBackendID": 49,
+                        "filterSelector": {
+                            "selectorKey": "bool",
+                            "selectorValue": null
+                        },
+                        "inputSelector": "bool",
+                        "datatype": 2,
+                        "nullable": false,
+                        "information": "Water loss",
+                        "accuracy": 100.00
+                    },
+                    {
+                        "default": true,
+                        "columnFrontendName": "Flow Rate",
+                        "columnBackendID": 33,
+                        "filterSelector": {
+                            "selectorKey": "numericChoice",
+                            "selectorValue": null
+                        },
+                        "inputSelector": "numericEqual",
+                        "datatype": 0,
+                        "nullable": true,
+                        "information": "SI units (m^3/s)",
+                        "accuracy": 75.7
+                    }
+                ],
+                "directChildren": []
+            }
+        ],
+        "subfeatureStartIndex": 2,
+        "datatypes": [
+            "string",
+            "hyperlink",
+            "bool"
+        ],
+        "setupLastModified": 1596004069
+    }
+}

@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpResponse } from '@angular/common/http'
 import { environment } from '../environments/environment';
-import { Observable } from 'rxjs';
-import { ToiletObject, FilterConfig, TableConfig } from './models';
+import { Observable, observable, Subscribable } from 'rxjs';
+import { map, catchError, filter, switchMap } from 'rxjs/operators';
+import { ToiletObject, TableObject, SetupTableObject } from './models';
+import { error } from '@angular/compiler/src/util';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
+import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 const API_URL = environment.apiUrl;
-const temp_url = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server";
+const fakeServerURL = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server";
 const PORT = environment.port;
 
 @Injectable({
@@ -15,45 +19,41 @@ export class ApiService {
 
   suffix: string;
   columnsString;
-  temp;
 
   makeColumnsString(array): string {
     return array.join('&');
   }
 
-  public sendHttps(cmd: string, obj: string = ""): Observable<ToiletObject[]> {
-    var dataObj = {
-      "command": cmd,
-      "dataObject": obj
-    }
-    var encoded = btoa(JSON.stringify(dataObj));
-
-    if (cmd == "getAllToiletObjects") {
-      return this.getAllToilets();
-    }
-  }
-
-  public getAllToilets(): Observable<ToiletObject[]> {
-    return this.http.get<ToiletObject[]>(API_URL + '/toilet');
-  }
-
-  public getFilterConfig(): Observable<FilterConfig> {
+  public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
     // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-    // return this.http.get<FilterConfig>(API_URL + '/setup');
-    return this.http.get<FilterConfig>(temp_url + '/setup');
+    // var url = API_URL + '/setup';
+    var url = fakeServerURL + '/setup';
+    var lastModifiedObject = {
+      lastModified: lastModified
+    }
+
+    return this.http.get<SetupTableObject>(url, {
+      observe: 'response',
+      // params: lastModifiedObject
+    })
+      .pipe(map((response: any) => {
+        console.log("Server Status: " + response.status + ":::::" + response.statusText);
+        return response.body;
+      }));
   }
 
-  // public getTableConfig(feature: string, columns: any):Observable<TableConfig> {
-  public getTableConfig(feature: string, columns: any, qsparams: any): any {
-    // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-
-
+  public getTableObject(feature: string, columns: any, qsparams: any): any {
+    // var url = API_URL + "/audit/" + feature;
     this.columnsString = this.makeColumnsString(columns);
-    this.temp = API_URL + "/a/" + feature;
     if (this.columnsString) {
-      this.temp = this.temp + "/" + this.columnsString;
+      url = url + "/" + this.columnsString;
     }
-    return this.http.get<TableConfig>(this.temp, { params: qsparams });
+    // return this.http.get<TableObject>(url, { params: qsparams });
+    // console.log(url);
+
+    
+    var url = fakeServerURL + '/table';
+    return this.http.get<TableObject>(url);
   }
 
 

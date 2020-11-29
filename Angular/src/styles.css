@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=Rubik:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500;600&display=swap');
 @import '~@swimlane/ngx-datatable/index.css';
 @import '~@swimlane/ngx-datatable/themes/material.css';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
@@ -9,14 +9,16 @@
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 400;
-  
-  /* font-family: 'Rubik', sans-serif;
-  font-weight: 400;  */
 }
 
 html, body {
   height: 100%;
   margin: 0;
+}
+
+#logo-button span {
+  font-family: 'IBM Plex Mono' !important; 
+  font-weight: 500 !important;
 }
 
 #logo {
@@ -27,17 +29,10 @@ html, body {
 .mat-toolbar {
   background-color: rgb(86, 156, 215);
   color: white;
+  /* background-color: lightgray; */
+  /* color: gray; */
   width: 100%;
   z-index: 9999;
-}
-
-.dropdown {
-  z-index: 9999;
-}
-
-.mat-button {
-  color: white;
-  font-weight: 500;
 }
 
 .example-spacer {
@@ -51,11 +46,9 @@ html, body {
   font-weight: 500;
 }
 
-
-
 .close {
   margin-left: 15px;
-  color:white;
+  color: white;
   font-weight: bold;
   float: right;
   font-size: 22px;
@@ -64,16 +57,9 @@ html, body {
   transition: 0.3s;
 }
 
-#index {
-  text-align: center;
-}
 
 #app {
   text-align: center;
-}
-
-#audits {
-    text-align: left;
 }
 
 #upload-button {
@@ -83,14 +69,14 @@ html, body {
   margin-bottom: 10px;
 }
 
-#table-paginator{
+#table-paginator {
   display: flex;
   justify-content: center;
   font-size: x-small;
   padding-top: 7px;
 }
 
- .mat-header-cell, .mat-cell {
+.mat-header-cell, .mat-cell {
   font-size: x-small;
   font-weight: 500;
   min-height: auto;
@@ -98,34 +84,114 @@ html, body {
   text-align: left;
 }
 
-.about-container mat-card {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 3rem;
-  margin-bottom: 3rem;
-  text-align: left;
-  width: 24rem;
-  border-radius: 4px;
-  background-color: white;
-}
-
 .mat-card-content {
   padding: 1rem 1.2rem 1rem 1.2rem;
 }
 
 .mat-divider {
-  border-top-color:  rgb(95,167,132);
+  border-top-color: rgb(95, 167, 132);
 }
 
-.mat-form-field {
-  width: 80%;
+/* the following selectors are for ng multiselect */
+
+.multi .multiselect-dropdown {
+  outline: none !important;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: rgb(228, 228, 228) !important;
 }
 
-.about-container {
-  width: 70%;
-  margin-left: auto;
-  margin-right: auto;
+.multi .multiselect-dropdown .dropdown-btn {
+  display: inline-block;
+  width: 85% !important;
+  text-align: left !important;
+  font-size: small !important;
+  border-radius: 0px !important;
+  border-left: transparent !important;
+  border-top: transparent !important;
+  border-right: transparent !important;
+  border-width: 1.25px !important;
+  border-color: rgba(228, 228, 228, 0.5) !important;
+  padding-bottom: 4px !important;
+  padding-left: 1px !important;
+  padding-right: 1px !important;
+  outline: none !important;
+}
+
+.multi .dropdown-list {
+  width: 90% !important;
+  margin-left: 5% !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  font-size: small !important;
+  border-radius: 0 !important;
+  z-index: 9999 !important;
+
+}
+
+.multi .filter-textbox {
+  padding-left: 0 !important;
+  width: auto !important;
+  text-align: left !important;
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+}
+
+.multi .filter-textbox input {
+  padding-left: 10px !important;
+}
+
+.multi .multiselect-dropdown .dropdown-btn span {
+  height: 100% !important;
+  padding-right: 5px !important;
+  float: none !important;
+  font-size: small !important;
+}
+
+/* the little arrow symbol when pointing down */
+.multi .multiselect-dropdown .dropdown-btn .dropdown-down {
+  padding: 0 !important;
+  margin: 0 !important;
+  border-top: 5px solid rgb(228, 228, 228) !important;
+  border-left: 5px solid transparent !important;
+  border-right: 5px solid transparent !important;
+}
+
+/* the little arrow symbol when pointing up */
+.multi .multiselect-dropdown .dropdown-btn .dropdown-up {
+  padding: 0 !important;
+  margin: 0 !important;
+  border-bottom: 5px solid rgb(228, 228, 228) !important;
+  border-left: 5px solid transparent !important;
+  border-right: 5px solid transparent !important;
 }
 
 
+/* radio button */
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: rgb(95, 167, 132);
+}
 
+.mat-radio-button.mat-accent .mat-radio-outer-circle {
+  border-color: rgba(228, 228, 228, 0.8)
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  color: rgb(95, 167, 132);
+  background-color: rgb(95, 167, 132);
+}
+
+
+/* expansion panel indicator */
+.mat-expansion-panel-header .mat-expansion-indicator::after {
+  color: rgb(228, 228, 228) !important;
+}
+
+
+/* the bar at the bottom of a tab on the nav bar */
+.mat-ink-bar {
+  color: rgb(86, 156, 215) !important;
+  background-color: rgb(86, 156, 215) !important;
+  visibility: visible !important;
+  display: block;
+}

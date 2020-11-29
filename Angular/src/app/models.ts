@@ -59,7 +59,7 @@ export class SinkObject {
 }
 
 
-export class FilterConfig {
+export class SetupTableObject {
     globalSelectors: FilterSelector[];
     featureFilters: {
         Sink: FilterSelector[];
@@ -71,7 +71,7 @@ export class FilterConfig {
     };
 }
 
-export class TableConfig {
+export class TableObject {
     columnViewValue: string[];
     columnDataTypeKey: string[];
     columnData: any[];

@@ -2,17 +2,17 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const validate = require('./validate.js')
-const parse = require('./parse.js');
-const setup = require('./setup.js');
-const query = require('./query.js');
-const insert = require('./insert.js');
-const template = require('./template.js');
 const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
 const port = process.env.PORT || 4001;
 const insertTry = require('./insert/try.js');
+
+const parse = require('./parse.js');
+const validate = require('./validate.js')
+const query = require('./query.js');
+const insert = require('./insert.js');
+const template = require('./template.js');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -41,13 +41,16 @@ function cycleTimer(req, res, next) {
 }
 
 //** Data Query **//
-app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery); 
+app.get('/api/audit/observation/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.sendData); 
+
+//** Dropdown Query **/
+//app.get('/api/audit/dropdown/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.returnDropdown)
 
 //** Setup Query **//
-app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
+app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);
 
 // Audit Upload
-app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
+//app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
 
 // Template Query
 app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTemplate should be in query.js
@@ -55,9 +58,9 @@ app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTe
 // Front Page Stats
 app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
-// Incomplete Routes
-//app.get('/api/a/:include', cors());
-//app.get('/api/s/filter', cors(), query.setupQuery(req, res));
+// Easter Egg
+app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
+
 
 app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 
