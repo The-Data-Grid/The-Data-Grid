@@ -32,7 +32,7 @@ export class GlobalPresetsComponent implements OnInit {
   }
 
   getSetupTableObject() {
-    this.apiService.getSetupTableObject(null).subscribe((res) => {
+    this.apiService.getSetupTableObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(
         this.setupObject,

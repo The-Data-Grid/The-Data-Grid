@@ -146,9 +146,9 @@ export class SetupObjectService {
       let featureColumns = [];
       console.log(setupObject.features[featureIndex].frontendName)
       // find feature's observation or attribute columns
-      setupObject.features[featureIndex].children[childType].forEach((observationColumnIndex, i) => {
+      setupObject.features[featureIndex].children[childType].forEach((columnIndex, i) => {
         featureColumns.push({
-          column: setupObject.columns[observationColumnIndex],
+          column: setupObject.columns[columnIndex],
           returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, childType, i], setupObject)
         });
       });

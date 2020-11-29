@@ -94,7 +94,7 @@ export class FeatureAuditComponent implements OnInit {
   }
 
   getSetupObject() {
-    this.apiService.getSetupTableObject(null).subscribe((res) => {
+    this.apiService.getSetupTableObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
 
       // parse global columns

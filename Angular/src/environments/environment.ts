@@ -7,8 +7,8 @@ export const environment = {
   //apiUrl: "http://localhost:4001/api",
   apiUrl: "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server",
   port: "2345",
-  useFakeData: true
-  // useFakeData: false
+  // useFakeData: true
+  useFakeData: false
 };
 
 /*
