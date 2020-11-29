@@ -31,6 +31,7 @@ export class ApiService {
     })
       .pipe(map((response: any) => {
         console.log("Server Status: " + response.status + ":::::" + response.statusText);
+        console.log(response.body);
         return response.body;
       }));
   }

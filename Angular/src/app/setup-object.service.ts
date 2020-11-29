@@ -65,7 +65,6 @@ export class SetupObjectService {
     let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
     let globalColumns = [];
     let path = [IDX_OF_GLOBAL_ITEM_IDX];
-    console.log(setupObject);
 
     this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, setupObject);
 
@@ -89,21 +88,21 @@ export class SetupObjectService {
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
     });
-    // item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
-    //   let newPath = Object.assign([], path);
-    //   newPath.push(IDX_OF_NON_ID_COL_IDXS, i);
-    //   columns.push({
-    //     column: setupObject.columns[NonIDColumnIndex],
-    //     returnableID: this.getReturnableID(newPath, setupObject)
-    //   });
-    // });
-    // item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
-    //   let newPath = Object.assign([], path);
-    //   newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
-    //   console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
-    //   let itemIndex = itemPointer.index;
-    //   this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
-    // });
+    item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
+      let newPath = Object.assign([], path);
+      newPath.push(IDX_OF_NON_ID_COL_IDXS, i);
+      columns.push({
+        column: setupObject.columns[NonIDColumnIndex],
+        returnableID: this.getReturnableID(newPath, setupObject)
+      });
+    });
+    item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let newPath = Object.assign([], path);
+      newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
+      console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
+      let itemIndex = itemPointer.index;
+      this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
+    });
   }
 
   getFeatureSelectors(setupObject, appliedFilterSelections, defaultColumns) {
@@ -163,7 +162,9 @@ export class SetupObjectService {
   /* ////////////////////////////////////
     getFeatureItemChildren(setupObject, featureIndex)
 
-    params: setupObject, featureIndex: the feature's index of the setupObject.features array
+    params: 
+      setupObject, 
+      featureIndex: the feature's index of the setupObject.features array
 
     returns: array of the feature's item children. each element is an itemChildNodePointerObject
     see api spec for more info on itemChildNodePointerObject.
@@ -189,7 +190,8 @@ export class SetupObjectService {
       checklistDropdown: [],
       searchableChecklistDropdown: [],
       text: [],
-      bool: []
+      bool: [],
+      _placeholder: "placeholder"
     };
 
     infos.forEach(info => {

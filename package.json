@@ -32,6 +32,7 @@
     "excel4node": "^1.7.2",
     "exceljs": "^4.1.1",
     "express": "^4.17.1",
+    "libpq": "^1.8.9",
     "ng-click-outside": "^7.0.0",
     "ng-multiselect-dropdown": "^0.2.10",
     "ngx-horizontal-timeline": "0.0.6",

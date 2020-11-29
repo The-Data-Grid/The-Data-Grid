@@ -20,12 +20,12 @@ const USE_FAKE_DATA = environment.useFakeData;
 })
 export class ReusableTemplateComponent implements OnInit {
 
-  constructor(private apiService: ApiService, 
+  constructor(private apiService: ApiService,
     private setupObjectService: SetupObjectService,
     private tableObjectService: TableObjectService) { }
 
-  @Input() set selectedFeature(selectedFeature) {this._selectedFeature = selectedFeature;}
-  @Input() set featureSelectors(featureSelectors) {this._featureSelectors = featureSelectors;}  
+  @Input() featureSelectors: any[]
+  @Input() featureIndex: Number
 
   setupObject;
   appliedFilterSelections = {}
@@ -33,23 +33,20 @@ export class ReusableTemplateComponent implements OnInit {
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
-  numericRelation: string[][] = [[">=","gte"],["<=","lte"],[">","gt"],["<","lt"],["=","equal"]]
+  numericRelation: string[][] = [[">=", "gte"], ["<=", "lte"], [">", "gt"], ["<", "lt"], ["=", "equal"]]
   selectorsLoaded: boolean = false;
 
-  _selectedFeature;
-  _featureSelectors = {};
-  globalSelectors = []
 
-  
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   onItemSelect(item: any) {
   }
   onSelectAll(items: any) {
   }
 
-  
+
 
 
 }

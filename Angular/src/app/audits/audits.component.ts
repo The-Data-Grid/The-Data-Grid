@@ -95,12 +95,18 @@ export class AuditsComponent implements OnInit {
   getTableObject() {
     // clear the column headers
     this.dataTableColumns = [];
-
-    this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
-      USE_FAKE_DATA ? this.tableObject = TableObject : this.tableObject = res;
-
+    if (USE_FAKE_DATA) {
+      this.tableObject = TableObject;
       this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
-    });
+    }
+    else {
+      this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+        this.tableObject = res;
+        this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
+      });
+
+    }
+
   }
 
   updateValue(event, columnName, rowIndex) {
