@@ -12,6 +12,7 @@ const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
 const port = process.env.PORT || 4001;
+const insertTry = require('./insert/try.js');
 
 app.use(cors());
 app.use(bodyParser.json());
