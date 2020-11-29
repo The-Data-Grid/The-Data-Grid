@@ -126,20 +126,20 @@ CREATE TABLE item_sop (
 
 CREATE TABLE m2m_item_sop (
     observation_count_id INTEGER NOT NULL, --fk **
-    sop_id INTEGER NOT NULL --fk **
+    item_sop_id INTEGER NOT NULL --fk **
 );
 
 CREATE TABLE item_template (
     item_id SERIAL PRIMARY KEY,
     item_organization_id INTEGER NOT NULL, --fk **
-    user_id INTEGER NOT NULL, --fk **
+    item_user_id INTEGER NOT NULL, --fk **
     data_template_name TEXT,
     data_template_json JSONB NOT NULL
 );
 
 CREATE TABLE m2m_auditor (
     observation_count_id INTEGER NOT NULL, --fk **
-    user_id INTEGER NOT NULL --fk **
+    item_user_id INTEGER NOT NULL --fk **
 );
 
 CREATE TABLE item_user (
@@ -152,7 +152,7 @@ CREATE TABLE item_user (
 );
 
 CREATE TABLE m2m_user_organization (
-    user_id INTEGER NOT NULL, --fk **
+    item_user_id INTEGER NOT NULL, --fk **
     organization_id INTEGER NOT NULL --fk **
 );
 
@@ -161,9 +161,9 @@ CREATE TABLE m2m_user_organization (
 
 CREATE TABLE item_submission (
     submission_id SERIAL PRIMARY KEY,
-    audit_id INTEGER NOT NULL, --fk **
+    item_audit_id INTEGER NOT NULL, --fk **
     item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
-    user_id INTEGER NOT NULL, --fk **
+    item_user_id INTEGER NOT NULL, --fk **
     item_template_id INTEGER, --fk ** ???
     data_time_submitted TIMESTAMPTZ NOT NULL,
     data_submission_name TEXT
@@ -171,8 +171,8 @@ CREATE TABLE item_submission (
 
 CREATE TABLE tdg_submission_edit (
     submission_edit_id SERIAL PRIMARY KEY,
-    submission_id INTEGER NOT NULL, --fk **
-    user_id INTEGER NOT NULL, --fk **
+    item_submission_id INTEGER NOT NULL, --fk **
+    item_user_id INTEGER NOT NULL, --fk **
     data_time_edited TIMESTAMPTZ NOT NULL
 );
 
@@ -184,23 +184,23 @@ CREATE TABLE tdg_observation_edit (
 );
 
 CREATE TABLE m2m_tdg_assigned_auditor (
-    audit_id SERIAL PRIMARY KEY, --fk **
-    user_id INTEGER NOT NULL, --fk **
+    item_audit_id SERIAL PRIMARY KEY, --fk **
+    item_user_id INTEGER NOT NULL, --fk **
     user_instructions TEXT
 );
 
 CREATE TABLE item_catalog (
-    catalog_id SERIAL PRIMARY KEY,
+    item_id SERIAL PRIMARY KEY,
     data_title TEXT NOT NULL,
     data_description TEXT,
     is_discoverable BOOLEAN NOT NULL
 );
 
 CREATE TABLE item_audit (
-    audit_id SERIAL PRIMARY KEY,
-    catalog_id INTEGER, --fk **
+    item_id SERIAL PRIMARY KEY,
+    item_catalog_id INTEGER, --fk **
     data_audit_name TEXT,
-    user_id INTEGER NOT NULL, --fk **
+    item_user_id INTEGER NOT NULL, --fk **
     data_time_created TIMESTAMPTZ NOT NULL
 );
 
@@ -239,11 +239,11 @@ INSERT INTO tdg_privilege
 CREATE TABLE tdg_role (
     role_id SERIAL PRIMARY KEY,
     privilege_id INTEGER NOT NULL, --fk **
-    organization_id INTEGER NOT NULL, --fk **
-    user_id INTEGER NOT NULL --fk **
+    item_organization_id INTEGER NOT NULL, --fk **
+    item_user_id INTEGER NOT NULL --fk **
     -- Constraint: privilege 'superuser' must only be associated with TDG org
     -- Note: TDG must be the first organization added in the database for now! (must have PK = 1)
-    CHECK((privilege_id = 5 AND organization_id = 1) OR (privilege_id != 5))
+    CHECK((privilege_id = 5 AND item_organization_id = 1) OR (privilege_id != 5))
 );
 
 
@@ -682,11 +682,11 @@ ALTER TABLE item_country ADD FOREIGN KEY (location_region_id) REFERENCES locatio
 -- Submission
 ALTER TABLE item_submission ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 ALTER TABLE item_submission ADD FOREIGN KEY (item_template_id) REFERENCES item_template;
-ALTER TABLE item_submission ADD FOREIGN KEY (user_id) REFERENCES item_user;
-ALTER TABLE item_submission ADD FOREIGN KEY (audit_id) REFERENCES item_audit;
+ALTER TABLE item_submission ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+ALTER TABLE item_submission ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit (item_id);
 
-ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (submission_id) REFERENCES item_submission;
-ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (user_id) REFERENCES item_user;
+ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_submission_id) REFERENCES item_submission;
+ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
 ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
 ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (submission_edit_id) REFERENCES tdg_submission_edit;
@@ -694,35 +694,37 @@ ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (submission_edit_id) REFERENCES
 
 -- SOP
 ALTER TABLE m2m_item_sop ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
-ALTER TABLE m2m_item_sop ADD FOREIGN KEY (sop_id) REFERENCES item_sop;
+ALTER TABLE m2m_item_sop ADD FOREIGN KEY (item_sop_id) REFERENCES item_sop;
 ALTER TABLE item_sop ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
 
 -- Template
 ALTER TABLE item_template ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
-ALTER TABLE item_template ADD FOREIGN KEY (user_id) REFERENCES item_user;
+ALTER TABLE item_template ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
 
 -- Auditor
-ALTER TABLE m2m_auditor ADD FOREIGN KEY (user_id) REFERENCES item_user;
+ALTER TABLE m2m_auditor ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE m2m_auditor ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
 
 
 -- Audit
-ALTER TABLE m2m_tdg_assigned_auditor ADD FOREIGN KEY (user_id) REFERENCES item_user;
-ALTER TABLE m2m_tdg_assigned_auditor ADD FOREIGN KEY (audit_id) REFERENCES item_audit;
+ALTER TABLE m2m_tdg_assigned_auditor ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+ALTER TABLE m2m_tdg_assigned_auditor ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit;
 
-ALTER TABLE item_audit ADD FOREIGN KEY (catalog_id) REFERENCES item_catalog;
-ALTER TABLE item_audit ADD FOREIGN KEY (user_id) REFERENCES item_user;
+ALTER TABLE item_audit ADD FOREIGN KEY (item_catalog_id) REFERENCES item_catalog;
+ALTER TABLE item_audit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
 
 -- Users, Privilege, Organization
 ALTER TABLE tdg_role ADD FOREIGN KEY (privilege_id) REFERENCES tdg_privilege;
-ALTER TABLE tdg_role ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
-ALTER TABLE tdg_role ADD FOREIGN KEY (user_id) REFERENCES item_user;
+ALTER TABLE tdg_role ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
+ALTER TABLE tdg_role ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
-ALTER TABLE m2m_user_organization ADD FOREIGN KEY (user_id) REFERENCES item_user;
+ALTER TABLE m2m_user_organization ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE m2m_user_organization ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
+
+ALTER TABLE item_user ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
 
                                                                                 

@@ -1,7 +1,8 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const { // will import from statement.js as single 'statement' object 
+// SQL statements
+const {
         select, 
         where, 
         whereCondition, 
@@ -16,38 +17,21 @@ const { // will import from statement.js as single 'statement' object
         sortd,
         limit,
         offset
-    } = require('./statement.js');
+    } = require('./statement.js').query;
 
-const {returnableIDLookup, featureParents} = require('./setup.js')
+// Internal setup objects
+const {returnableIDLookup, featureParents, setupObject} = require('./setup.js')
 
-const {timestamptzParse} = require('./parse')
+// Database connection and SQL formatter
+const postgresClient = require('./db/pg.js');
+const db = postgresClient.connect('main')
+const formatSQL = postgresClient.format;
 
-// Database info
-const pgp = require('pg-promise')();
-pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
-pgp.pg.types.setTypeParser(1184, timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
-
-const cn = { //connection info
-    host: 'localhost',
-    port: 5432,
-    database: 'meta',
-    user: 'postgres',
-    password: null,
-    max: 30 // use up to 30 connections
-};
-const db = pgp(cn); //db.function is used for pg-promise PostgreSQL queries
-
-////// SETUP //////
-
-//** Testing request response cycle time (for dev only) **//
+// Testing request response cycle time (for dev only)
 var cycleTime = [];
 
 
-////// END OF SETUP //////
-
 ////// QUERY ENGINE //////
-
-
 
 let setupQuery = (req, res) => {
     res.json(app.locals.setup);
@@ -72,7 +56,18 @@ if (nextJoinObject.length == 0)
 
 */
 
-function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
+/** 
+ * Trims unneeded joins, generates and assigns aliases to returnables
+ * 
+ * Recursive
+ * 
+ * @param {Array} builtArray 
+ * @param {Object} idAliasLookup 
+ * @param {Number} aliasNumber 
+ * 
+ * @returns {Object} {builtArray, idAliasLookup}
+ */
+const recursiveReferenceSelection = (builtArray, idAliasLookup, aliasNumber) => {
     'use strict';
     //console.log('join object:', builtArray)
 
@@ -159,18 +154,28 @@ function recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber) {
             idAliasLookup: idAliasLookup
         })
     } else { // then there are more joins
-        console.log('====================iter')
+        console.log('rRS recurse')
         // append the next joinObjectArray to builtArray
         builtArray.push(nextJoinObjectArray)
         // recursively call the function
         return recursiveReferenceSelection(builtArray, idAliasLookup, aliasNumber)
     }
-}
+};
 
-
-function string2Join(string, prefix, feature) {
+/**
+ * Converts rRS array with aliases into a valid SQL join clause
+ * 
+ * @param {Array} string named poorly!
+ * @param {String} prefix should be one character
+ * 
+ * @returns {String} valid SQL join clause
+ */
+const string2Join = (string, prefix) => {
     let clauseArray = [];
-
+    // string[0] = parent alias number
+    //       [1] = self alias number
+    //       [2] = join string itself
+ 
     // 0: originalTable, 1: originalColumn, 2: joinTable, 3: joinColumn
     string[2].split('>').forEach(el => {
         clauseArray.push(el.split('.')[0])
@@ -179,10 +184,10 @@ function string2Join(string, prefix, feature) {
     
     // if parentAlias is the root feature join to the feature rather than an alias
     let originalAlias;
-    (string[0] === -1 ? originalAlias = feature : originalAlias = prefix + string[0])
+    (string[0] === -1 ? originalAlias = clauseArray[2] : originalAlias = prefix + string[0])
 
     let joinAlias = prefix + string[1]
-    return(pgp.as.format(referenceSelectionJoin, {
+    return(formatSQL(referenceSelectionJoin, {
         joinTable: clauseArray[0],
         joinAlias: joinAlias,
         joinColumn: clauseArray[1],
@@ -190,8 +195,142 @@ function string2Join(string, prefix, feature) {
         originalColumn: clauseArray[3]
     }))
 
-    //'LEFT JOIN $(joinTable:value) AS $(joinAlias:value) ON $(joinAlias:value).$(joinColumn:value) = $(originalAlias:value).$(originalColumn:value)'
-}
+};
+
+/** SELECT clause alias assignment helper */ 
+const formatSelectAlias = (select, id) => {
+    return `${select} AS r${id.toString()}`
+};
+
+/**  
+  * dynamicSQLEngine
+  * 
+  * Calls:
+  *     recursiveReferenceSelection
+  *     string2Join
+  *     formatSelectAlias
+  * 
+  * @param {Array} returnableIDs
+  * @param {Array} featureTreeArray
+  * @param {String} feature
+  * @returns {Object} {selectClauseArray, joinClauseArray, featureTreeArray, whereLookup}
+  */
+const dynamicSQLEngine = (returnableIDs, featureTreeArray, feature) => {
+    // Initialize Output
+    let selectClauseArray = [];
+    let joinClauseArray = [];
+    let whereLookup = {};
+
+    // push the item_submission reference
+    joinClauseArray.push(formatSQL(submission, {
+        feature: feature
+    }));
+    
+    // Handle returnables that do not have references
+    let localReturnables = returnableIDs.filter(returnable => returnable.joinObject.refs.length == 0);
+    localReturnables.forEach(returnable => {
+
+        // push feature to featureTree if not a submission returnable
+        if(returnable.feature !== null) {
+            featureTreeArray.push(returnable.feature);
+        };
+
+        // if no sql needs to appended
+        if(returnable.appendSQL === null) {
+            /*  
+                1. add select clause and no join, since select references either 
+                item_submission or observation_..., which are joined by default'
+            */
+            selectClauseArray.push(formatSelectAlias(returnable.selectSQL, returnable.ID));
+
+            /*
+                2. add table.column clause to whereLookup
+            */
+            whereLookup[returnable.ID] = returnable.selectSQL;
+
+        } else { // then SQL needs to be appended
+            /*
+                appendSQL should not have any parameters since it is joined to either the feature
+                or the submission, and not a request specific alias. 
+
+                1. add select clause
+            */
+            selectClauseArray.push(formatSelectAlias(returnable.selectSQL, returnable.ID));
+
+            //  2. add join clause (from appendSQL)
+            joinClauseArray.push(returnable.appendSQL);
+
+            //  3. add table.column clause to whereLookup
+            whereLookup[returnable.ID] = returnable.selectSQL;
+        };
+    });
+
+    // Handle returnables with references
+    let referencedReturnables = returnableIDs.filter(returnable => returnable.joinObject.refs.length != 0)
+
+    // get all join objects for reference selection
+    let joinObjects = referencedReturnables.map(returnable => returnable.joinObject);
+
+    // perform reference selection to trim join tree and assign aliases
+    // @call recursiveReferenceSelection
+    let joinSelectionObject = recursiveReferenceSelection([joinObjects], {}, 1)
+
+    let builtArray = joinSelectionObject.builtArray;
+    let idAliasLookup = joinSelectionObject.idAliasLookup;
+
+    // Convert join strings into valid SQL with assigned alias
+    builtArray.forEach(join => {
+        joinClauseArray.push(string2Join(join, 'a'))
+    });
+
+    referencedReturnables.forEach(returnable => {
+
+        // push feature to featureTree if not a submission returnable
+        if(returnable.feature !== null) {
+            featureTreeArray.push(returnable.feature);
+        };
+        
+        // get alias from rRS output
+        let alias = 'a' + idAliasLookup[returnable.ID.toString()];
+
+        // if appendSQL get alias from idAliasLookup and interpolate into appendSQL. Then add select and where based on known value
+        if(returnable.appendSQL !== null) {
+
+            // interpolate and push
+            let append = formatSQL(returnable.appendSQL, {
+                alias: alias
+            });
+
+            joinClauseArray.push(append)
+
+            // add select
+            selectClauseArray.push(formatSelectAlias(returnable.selectSQL, returnable.ID));
+
+            // add table.column clause to whereLookup
+            whereLookup[returnable.ID] = returnable.selectSQL;
+
+        } else { // then no appendSQL and alias must be interpolated into select and where clauses
+
+            // interpolate join alias into select
+            let select = formatSQL(returnable.selectSQL, {
+                alias: alias
+            });
+
+            // add select
+            selectClauseArray.push(formatSelectAlias(select, returnable.ID));
+
+            // add table.column clause to whereLookup
+            whereLookup[returnable.ID] = select;
+        };
+    });
+
+    return({
+        selectClauseArray,
+        joinClauseArray,
+        featureTreeArray,
+        whereLookup
+    });
+};
 
 /**
  * Performs construction of dynamic SQL with request parameters
@@ -199,10 +338,10 @@ function string2Join(string, prefix, feature) {
  * out: SQL query as a string
  */
 
-function featureQuery(req, res) {   
+function featureQuery(req, res, next) {   
     
     // array of IDs with table name and column name for WHERE clauses
-    let whereLookup = {};
+    /////////let whereLookup = {};
     // array of select clauses
     let selectClauses = [];
     // array of all features in feature tree (features and subfeatures)
@@ -228,13 +367,23 @@ function featureQuery(req, res) {
     let allReturnableIDs = allIDs.map((ID) => returnableIDLookup.filter(returnable => returnable.ID == ID)[0]);
 
 
+    let {
+        selectClauseArray,
+        joinClauseArray,
+        featureTreeArray,
+        whereLookup
+    } = dynamicSQLEngine(allReturnableIDs, featureTree, feature, recursiveReferenceSelection, string2Join, formatSelectAlias);
+
+    //console.log(joinClauseArray, featureTreeArray, whereLookup, selectClauseArray)
+
+    /*
 
     // SUBMISSION
     // ==================================================
     let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.feature === null);
     let submissionClauseArray = [];
     // first push the tdg_submission reference
-    submissionClauseArray.push(pgp.as.format(submission, {
+    submissionClauseArray.push(formatSQL(submission, {
         feature: feature
     }))
 
@@ -256,35 +405,26 @@ function featureQuery(req, res) {
 
         // make joins and add to clauseArray
         for(let join of joinArray.builtArray) {
-            submissionClauseArray.push(string2Join(join, 's', 'ITEM_SUBMISSION'))
+            submissionClauseArray.push(string2Join(join, 's', ('ITEM_SUBMISSION')))
         }
 
         console.log(submissionClauseArray)
 
         // add local selects
         locals.forEach(returnable => {
-            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+            selectClauses.push(formatSQL(returnable.selectSQL, {
                 alias: 'item_submission'
             }))
         });
 
-        // add selections of returnables with joinObjects
-        for(let returnable of joins) {
-            // get alias and interpolate into select
-            let alias = 's' + joinArray.idAliasLookup[String(returnable.ID)]
-            selectClauses.push(pgp.as.format(returnable.selectSQL, {
-                alias: alias
-            }))
-            // add table and column to whereLookup
-            whereLookup[returnable.ID] = alias + '.' + returnable.dataColumn
-        }
+        
     }
 
-    
+
 
     // LISTS AND SPECIAL
     // ==================================================
-    let listAndSpecialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'list' || returnable.returnType == 'special')
+    let listAndSpecialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'list' || returnable.referenceType == 'special')
     let listAndSpecialClauseArray = []
     if(listAndSpecialReturnableIDs.length >= 1) {
         for(let returnable of listAndSpecialReturnableIDs) {
@@ -301,7 +441,7 @@ function featureQuery(req, res) {
 
     // ITEM AND LOCATION
     // ==================================================
-    let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'location' || returnable.returnType == 'item')
+    let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'location' || returnable.referenceType == 'item')
     let dynamicClauseArray = [];
     if(dynamicReturnableIDs.length >= 1) {
         // get all join objects in request
@@ -322,7 +462,7 @@ function featureQuery(req, res) {
         for(let returnable of dynamicReturnableIDs) {
             // get alias and interpolate into select
             let alias = 'd' + joinArray.idAliasLookup[String(returnable.ID)]
-            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+            selectClauses.push(formatSQL(returnable.selectSQL, {
                 table: alias
             }))
             // add feature to featureTree
@@ -334,11 +474,11 @@ function featureQuery(req, res) {
 
     // LOCAL AND LOCAL-GLOBAL
     // ==================================================
-    let localReturnableIDs = allReturnableIDs.filter((returnable) => returnable.returnType == 'local' || returnable.returnType == 'local-global')
+    let localReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'local' || returnable.referenceType == 'local-global')
     if(localReturnableIDs.length >= 1) {
         for(let returnable of localReturnableIDs) {
             // Adding the select clause
-            selectClauses.push(pgp.as.format(returnable.selectSQL, {
+            selectClauses.push(formatSQL(returnable.selectSQL, {
                 table: feature
             }))
             // Adding the feature dependency
@@ -348,11 +488,11 @@ function featureQuery(req, res) {
         }
     }
 
-    //console.log(allReturnableIDs)
+    */
+
+
     // Throw error if the length of the ID set is not equal to the sum of its partitions
-    if(submissionReturnableIDs.length + listAndSpecialReturnableIDs.length + dynamicReturnableIDs.length + localReturnableIDs.length != allIDs.length) {
-        console.log(submissionReturnableIDs.length + listAndSpecialReturnableIDs.length + dynamicReturnableIDs.length + localReturnableIDs.length, allIDs.length);
-        
+    if(Object.keys(whereLookup).length != allIDs.length) {        
         return res.status(500).send('Internal Server Error 7701: Number of columns found different than number of columns requested')
     }
     
@@ -368,11 +508,11 @@ function featureQuery(req, res) {
     let rootFeature = feature
 
     // Add root feature join
-    featureClauseArray.push(pgp.as.format(rootFeatureJoin, {
+    featureClauseArray.push(formatSQL(rootFeatureJoin, {
         rootFeature: rootFeature
     }))
 
-    featureTree = [...new Set(featureTree)]
+    featureTree = [...new Set(featureTreeArray)]
 
     // remove root feature from feature tree after join
     featureTree.splice(featureTree.indexOf(rootFeature), 1)
@@ -395,7 +535,7 @@ function featureQuery(req, res) {
                     nextCurrentFeature.push(child)
 
                     // join the feature
-                    featureClauseArray.push(pgp.as.format(subfeatureJoin, {
+                    featureClauseArray.push(formatSQL(subfeatureJoin, {
                         feature: parent,
                         subfeature: child
                     }))
@@ -434,7 +574,7 @@ function featureQuery(req, res) {
         if(Array.isArray(res.locals.parsed.filters[ID].value)) {
             let condition = [];
             res.locals.parsed.filters[ID].value.forEach(value => {
-                condition.push(pgp.as.format(whereCondition, {
+                condition.push(formatSQL(whereCondition, {
                     select: whereLookup[String(ID)],
                     operation: res.locals.parsed.filters[ID].operation,
                     filterValue: value
@@ -442,13 +582,13 @@ function featureQuery(req, res) {
             })
             out.condition = condition.join(' OR ')
         } else {
-            out.condition = pgp.as.format(whereCondition, {
+            out.condition = formatSQL(whereCondition, {
                 select: whereLookup[String(ID)],
                 operation: res.locals.parsed.filters[ID].operation,
                 filterValue: res.locals.parsed.filters[ID].value
             })
         }
-        whereClauseArray.push(pgp.as.format(where, out));
+        whereClauseArray.push(formatSQL(where, out));
     }
 
     // UNIVERSAL FILTERS
@@ -457,34 +597,36 @@ function featureQuery(req, res) {
     let universalFilterArray = [];
 
     // default limit of 100 rows
-    let universalLimit = pgp.as.format(limit, {
+    let universalLimit = formatSQL(limit, {
         limit: 100
     });
+
     // default no offset
-    let universalOffset = pgp.as.format(offset, {
+    let universalOffset = formatSQL(offset, {
         offset: 0
-    })
+    });
+
     // default sort by time submitted
-    let universalSort = pgp.as.format(sorta, {
-        columnName: 'tdg_submission.data_time_submitted'
-    })
+    let universalSort = formatSQL(sorta, {
+        columnName: 'item_submission.data_time_submitted'
+    });
 
     if(Object.keys(res.locals.parsed.universalFilters).length > 0) {
         for(universal in res.locals.parsed.universalFilters) {
             if(universal === 'sorta') {
-                universalSort = pgp.as.format(sorta, {
+                universalSort = formatSQL(sorta, {
                     columnName: whereLookup[res.locals.parsed.universalFilters[universal]]
                 })
             } else if(universal === 'sortd') {
-                universalSort = pgp.as.format(sortd, {
+                universalSort = formatSQL(sortd, {
                     columnName: whereLookup[res.locals.parsed.universalFilters[universal]]
                 })
             } else if(universal === 'limit') {
-                universalLimit = pgp.as.format(limit, {
+                universalLimit = formatSQL(limit, {
                     limit: res.locals.parsed.universalFilters[universal]
                 })
             } else if(universal === 'offset') {
-                universalOffset = pgp.as.format(offset, {
+                universalOffset = formatSQL(offset, {
                     offset: res.locals.parsed.universalFilters[universal]
                 })
             }
@@ -495,14 +637,27 @@ function featureQuery(req, res) {
     universalFilterArray.push(universalLimit)
     universalFilterArray.push(universalOffset)
 
+    // GROUP BY
+    // ==================================================
+    let groupByClause = '';
+
+    let nonListReturnables = allReturnableIDs.map(returnable => [returnable.ID, returnable.referenceType]).filter(returnable => !['obs-list', 'item-list'].includes(returnable[1]));
+
+    if(nonListReturnables.length < allReturnableIDs.length) {
+        groupByClause = `GROUP BY ${nonListReturnables.map(el => `r${el[0]}`).join(', ')}`;
+    };
+
     // EXECUTING QUERY
     // ==================================================
     // Adding commas to select clauses
-    selectClauses = ['SELECT ', selectClauses.join(', ')]
+    selectClauseArray = selectClauseArray.join(', ')
+    selectClauseArray = `SELECT ${selectClauseArray}`
+
+    
 
     // Adding clauses to query in order
-    let query = [...selectClauses, ...featureClauseArray, ...submissionClauseArray, ...listAndSpecialClauseArray, ...dynamicClauseArray, ...whereClauseArray, ...universalFilterArray]; 
-    console.log(query)
+    let query = [selectClauseArray, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, groupByClause, ...universalFilterArray]; 
+    //console.log(query)
     // Concatenating clauses to make final SQL query
     let finalQuery = query.join(' '); 
 
@@ -510,13 +665,17 @@ function featureQuery(req, res) {
      console.log(finalQuery); 
 
     // Finally querying the database
-    db.any(finalQuery)  
+    db.result(finalQuery)  
         .then(data => {
 
+            res.locals.parsed.finalQuery = data;
+
+            next();
+            //console.log(data.fields)
             // Constructing the tableObject and sending response
-            return res.json(data)
+            //return res.json(data)
             // will write this soon!
-            return res.json(makeTableObject(data));
+            //return res.json(makeTableObject(data));
 
         }).catch(err => {
 
@@ -530,30 +689,72 @@ function featureQuery(req, res) {
 async function statsQuery(req, res, next) {
 
     try { 
+
+       //statsObservations
+       //statsSubmitted
+       //statsMostRecent
         
-        let observations = await db.one(statsObservations);
-        let submitted = await db.one(statsSubmitted);
-        let mostRecent = await db.one(statsMostRecent);
+        let observations = await db.any('select max(observation_count_id) as obs from tdg_observation_count');  //maybe use a postgres var
+        let submitted = await db.any('select max("s"."submission_id") as subs from item_submission as s');
+        //let mostRecent = await db.one(statsMostRecent);
 
         let statsResponse = {
-            observations,
-            submitted,
-            mostRecent
+            observations: observations[0].obs,
+            submitted: submitted[0].subs
         };
 
         return res.json(statsResponse);
 
     } catch(err) {
 
+        console.log(err);
         res.status(500).send('Internal Server Error: 1703: Stats Query Error')
 
     }
     
 }
 
-function returnData(req, res) {
-    res.end();
-}
+function sendData(req, res) {
+    let returnableColumnIDs = res.locals.parsed.finalQuery.fields.map(field => parseInt(field.name.slice(1)));
+
+    let rowData = returnableColumnIDs.map(e => null);
+
+    // fill the rows
+    returnableColumnIDs.forEach((field, i) => {
+        rowData[i] = res.locals.parsed.finalQuery.rows.map(row => row[field])
+    });
+
+
+
+    res.json({
+        returnableColumnIDs: returnableColumnIDs,
+        rowData: rowData
+    });
+};
+
+
+
+// SEND SETUP OBJECT
+// ============================================================
+function sendSetup(req, res) {
+
+    let cycleTime = Date.now() - res.locals.cycleTime[0]
+    console.log(`Sent setupObject in ${cycleTime} ms`)
+    
+    // if the "If-Modified-Since" header is not included or is newer or the same age as the setupObject's lastModified date
+    if(res.locals.parsed.ifModifiedSince >= setupObject.lastModified) {
+
+        return res.status(304) // don't send object - not modified
+        
+    } else { // then "If-Modified-Since" is older than setupObject's lastModified date or is something else
+
+        // set "Last-Modified" header
+        res.set('Last-Modified', setupObject.lastModified)
+        // send setupObject
+        return res.status(200).json(setupObject) // send setupObject
+    };
+};
+
 
 
 module.exports = {
@@ -562,6 +763,6 @@ module.exports = {
     auditQuery,
     setupQuery,
     cycleTime,
-    returnData
+    sendData,
+    sendSetup
 };
-
