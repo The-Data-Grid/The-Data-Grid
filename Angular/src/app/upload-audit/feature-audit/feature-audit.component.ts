@@ -39,6 +39,7 @@ export class FeatureAuditComponent implements OnInit {
   dropdownList = FakeData;
   globalSelectors = {};
   selectorsLoaded: boolean = false;
+  idInfo;
 
   dummy = [
     {
@@ -96,6 +97,10 @@ export class FeatureAuditComponent implements OnInit {
   getSetupObject() {
     this.apiService.getSetupTableObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
+
+      this.idInfo = this.setupObjectService.getFeatureItemChildren(this.setupObject,this.featureIndex);
+      console.log(this.idInfo)
+      // console.log(this.id[this.featureIndex].frontendName)
 
       // parse global columns
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(
