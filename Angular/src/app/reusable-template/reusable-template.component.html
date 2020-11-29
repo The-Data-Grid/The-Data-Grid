@@ -1,4 +1,4 @@
-<div *ngIf="featureSelectors[featureIndex]"> 
+<div *ngIf="featureSelectors"> 
     <div *ngFor="let column of featureSelectors[featureIndex].numericChoice">
         <ng-template *ngTemplateOutlet="numericChoiceTemplate; context: {$implicit: column}"></ng-template>
     </div>
@@ -53,33 +53,39 @@
         </mat-form-field>
         <mat-form-field style="width: 45%;">
             <mat-label>{{info.column.frontendName}}</mat-label>
+            <mat-label>Input</mat-label>
             <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID.value]'>
         </mat-form-field>
     </div>
 </ng-template>
 
 <ng-template #numericEqualTemplate let-info>
-    <mat-form-field>
+    <mat-form-field class="selector">
         <mat-label>{{info.column.frontendName}}</mat-label>
         <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID]'>
     </mat-form-field>
 </ng-template>
 
 <ng-template #dropdownTemplate let-info>
-    <mat-form-field>
+    <mat-form-field class="selector">
         <mat-label>{{info.column.frontendName}}</mat-label>
         <mat-select [(ngModel)]="appliedFilterSelections[info.returnableID]">
+            <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
+                {{val}}
+            </mat-option> -->
         </mat-select>
     </mat-form-field>
 </ng-template>
 
 <ng-template #calendarRangeTemplate let-info>
-    <div style="width: 85%; margin-left: auto; margin-right: auto;" *ngIf="appliedFilterSelections[info.returnableID]">
-        <mat-form-field style="width: 50%;">
+    <div class="selector" fxLayout="row" fxLayoutAlign="space-between center"
+        *ngIf="appliedFilterSelections[info.returnableID]">
+        <mat-form-field style="width: 45%;">
             <input matInput class="datetime-picker" type="datetime-local" placeholder={{info.column.frontendName}}
                 [(ngModel)]="appliedFilterSelections[info.returnableID].start">
         </mat-form-field>
-        <mat-form-field style="width: 50%;">
+        <span> to </span>
+        <mat-form-field style="width: 45%;">
             <input matInput class="datetime-picker" type="datetime-local"
                 [(ngModel)]="appliedFilterSelections[info.returnableID].end">
         </mat-form-field>
@@ -87,42 +93,42 @@
 </ng-template>
 
 <ng-template #calendarEqualTemplate let-info>
-    <mat-form-field>
+    <mat-form-field class="selector">
         <input matInput type="datetime-local" [placeholder]="info.column.frontendName"
             [(ngModel)]="appliedFilterSelections[info.returnableID]">
     </mat-form-field>
 </ng-template>
 
 <ng-template #searchableDropdownTemplate let-info>
-    <ng-multiselect-dropdown class="multi" [placeholder]="info.column.frontendName"
+    <ng-multiselect-dropdown class="selector" class="multi" [placeholder]="info.column.frontendName"
         [(ngModel)]="appliedFilterSelections[info.returnableID]" [settings]="searchableDropdownSettings"
         [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
     </ng-multiselect-dropdown>
 </ng-template>
 
 <ng-template #checklistDropdownTemplate let-info>
-    <ng-multiselect-dropdown class="multi" [placeholder]="info.column.frontendName"
+    <ng-multiselect-dropdown class="multi" class="selector" [placeholder]="info.column.frontendName"
         [(ngModel)]="appliedFilterSelections[info.returnableID]" [settings]="checklistDropdownSettings"
         [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
     </ng-multiselect-dropdown>
 </ng-template>
 
 <ng-template #searchableChecklistDropdownTemplate let-info>
-    <ng-multiselect-dropdown class="multi" [placeholder]="info.column.frontendName"
+    <ng-multiselect-dropdown class="multi" class="selector" [placeholder]="info.column.frontendName"
         [(ngModel)]="appliedFilterSelections[info.returnableID]" [settings]="searchableChecklistDropdownSettings"
         [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
     </ng-multiselect-dropdown>
 </ng-template>
 
 <ng-template #textTemplate let-info>
-    <mat-form-field>
+    <mat-form-field class="selector">
         <mat-label>{{info.column.frontendName}}</mat-label>
         <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID]'>
     </mat-form-field>
 </ng-template>
 
 <ng-template #boolTemplate let-info>
-    <mat-form-field>
+    <mat-form-field class="selector">
         <mat-label>{{info.column.frontendName}}</mat-label>
         <mat-select [(ngModel)]="appliedFilterSelections[info.returnableID]">
             <mat-option [value]=true>True</mat-option>

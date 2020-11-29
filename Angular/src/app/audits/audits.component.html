@@ -58,7 +58,7 @@
             <!-- feature filters -->
             <div class="features-filters" *ngIf="filterBy!='Submission'">
                 <h3>Feature Filters</h3>
-                <mat-form-field>
+                <mat-form-field class="selector">
                     <mat-label>Features</mat-label>
                     <mat-select [(ngModel)]="selectedFeature">
                         <mat-option *ngFor="let info of rootFeatures" [value]="info">

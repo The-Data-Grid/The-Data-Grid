@@ -79,8 +79,8 @@ export class AuditsComponent implements OnInit {
       // map features to children
       this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
 
-      // console.log("global selectors:");
-      // console.log(this.globalSelectors);
+      console.log("global selectors:");
+      console.log(this.globalSelectors);
       console.log("feature selectors:");
       console.log(this.featureSelectors);
       // console.log("applied filter selections:");
