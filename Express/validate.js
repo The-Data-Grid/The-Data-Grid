@@ -16,7 +16,7 @@ var validate = {};
 
 for (let id in idColumnTableLookup) {
     // Getting the root feature
-    let feature = (idColumnTableLookup[id].rootfeature === null ? idColumnTableLookup[id].feature : idColumnTableLookup[id].rootfeature)
+    let feature = (!idColumnTableLookup[id].rootfeature ? idColumnTableLookup[id].feature : idColumnTableLookup[id].rootfeature) // was === null (not correct)
 
     // if empty or feature not included yet, initialize column and filter array for new feature
     if(!Object.keys(validate).includes(feature)) {
@@ -73,6 +73,7 @@ function validateAudit(req, res, next) {
                 if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
                     return res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`);
                 }
+                // IMPORTANT: make sure field is an array (even if only 1 element)
                 field.forEach(function(item) {
                     if(!isText(item)) {
                         return res.status(400).send(`Bad Request 1604: Field for id: ${filter} must be text`);

@@ -258,6 +258,26 @@ class ReturnableID {
 }
 
 
+<<<<<<< HEAD
+=======
+// ...
+
+
+// CALLING SETUP FUNCTION AND EXPORTING
+// ============================================================
+const {returnableIDLookup,idColumnTableLookup, featureParents, setupObject} = setupQuery(rawQuery, frontendTypes, allFeatures)
+
+console.log(idColumnTableLookup)
+module.exports = {
+    returnableIDLookup: returnableIDLookup,
+    idColumnTableLookup: idColumnTableLookup,
+    featureParents: featureParents,
+    sendSetup: sendSetup
+}
+
+
+// ...
+>>>>>>> fee284f847b3a02341ac0f9f7b7715531de5c646
 
 
 // HOISTED FUNCTIONS //
@@ -948,6 +968,7 @@ const sendSetup = (req, res, setupObject = setupObject) => {
     }
 }
 
+<<<<<<< HEAD
 
 //console.log(featureParents);
 //console.log(idColumnTableLookup)
@@ -963,3 +984,9 @@ module.exports = {
     setupObject
 }
 
+=======
+module.exports = {
+    setupQuery,
+    sendSetup
+}
+>>>>>>> fee284f847b3a02341ac0f9f7b7715531de5c646
