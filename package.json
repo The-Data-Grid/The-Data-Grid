@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "dev": "nodemon ./Express/app.js -e *",
+=======
+    "dev": "nodemon ./Express/app.js",
+>>>>>>> bf56749d8f777b6a8cedd04c883ac2e5c3bd1c5e
     "test": "echo \"Error: no test specified\" && exit 1",
 =======
     "dev": "nodemon ./Express/app.js",
