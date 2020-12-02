@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct mobileTDGApp: App {
+    @StateObject var viewRouter = ViewRouter()
+    
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            motherView().environmentObject(viewRouter)
         }
     }
 }
+
