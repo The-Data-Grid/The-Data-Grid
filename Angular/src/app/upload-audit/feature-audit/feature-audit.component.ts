@@ -88,6 +88,7 @@ export class FeatureAuditComponent implements OnInit {
 
   ngOnInit() {
     this.getSetupObject();
+
   }
 
   close() {
@@ -99,8 +100,6 @@ export class FeatureAuditComponent implements OnInit {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
 
       this.idInfo = this.setupObjectService.getFeatureItemChildren(this.setupObject,this.featureIndex);
-      console.log(this.idInfo)
-      // console.log(this.id[this.featureIndex].frontendName)
 
       // parse global columns
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(

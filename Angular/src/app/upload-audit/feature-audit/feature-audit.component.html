@@ -29,7 +29,8 @@
             <div *ngIf="panel.title == 'Toilet Observation'">
     
                     <app-reusable-template class="custom"
-                        [featureIndex]="featureIndex"
+                        [featureIndex]="0"
+                        [feature]="featureSelectors[featureIndex]"
                         [featureSelectors]="featureSelectors">
                     </app-reusable-template>
             </div>

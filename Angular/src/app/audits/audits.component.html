@@ -11,47 +11,11 @@
             <div class="global-filters" style="padding-top: 10px;">
                 <h3>Global Filters</h3>
                 <div *ngIf="selectorsLoaded">
-                    <div *ngFor="let info of globalSelectors['numericChoice']">
-                        <ng-template *ngTemplateOutlet="numericChoiceTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['numericEqual']">
-                        <ng-template *ngTemplateOutlet="numericEqualTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['calendarRange']">
-                        <ng-template *ngTemplateOutlet="calendarRangeTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['calendarEqual']">
-                        <ng-template *ngTemplateOutlet="calendarEqualTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['dropdown']">
-                        <ng-template *ngTemplateOutlet="dropdownTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['searchableDropdown']">
-                        <ng-template *ngTemplateOutlet="searchableDropdownTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['checklistDropdown']">
-                        <ng-template *ngTemplateOutlet="checklistDropdownTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['searchableChecklistDropdown']">
-                        <ng-template
-                            *ngTemplateOutlet="searchableChecklistDropdownTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['text']">
-                        <ng-template *ngTemplateOutlet="textTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
-                    <div *ngFor="let info of globalSelectors['bool']">
-                        <ng-template *ngTemplateOutlet="boolTemplate; context: {$implicit: info}">
-                        </ng-template>
-                    </div>
+                    <app-reusable-template
+                        [feature]="globalSelectors"
+                        [appliedFilterSelections]="appliedFilterSelections"
+                    >
+                    </app-reusable-template>
                 </div>
             </div>
 
@@ -74,8 +38,9 @@
                                 {{ selectedFeature.name }}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
-                        <app-reusable-template [featureIndex]="selectedFeature.index"
-                            [featureSelectors]="featureSelectors">
+                        <app-reusable-template
+                            [feature]="featureSelectors[selectedFeature.index]"
+                            >
                         </app-reusable-template>
                     </mat-expansion-panel>
 
@@ -85,7 +50,9 @@
                                 {{setupObject.features[childIndex].frontendName}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
-                        <app-reusable-template [featureIndex]="childIndex" [featureSelectors]="featureSelectors">
+                        <app-reusable-template
+                         [feature]="featureSelectors[childIndex]"
+                         >
                         </app-reusable-template>
                     </mat-expansion-panel>
                 </mat-accordion>
@@ -171,101 +138,3 @@
     </mat-sidenav-container>
 
 </div>
-
-<!-- reusable tempates -->
-<ng-template #numericChoiceTemplate let-info>
-    <!-- <div style="width: 90%; margin-left: auto; margin-right:auto;"> -->
-    <div class="selector" fxLayout="row" fxLayoutAlign="space-between center">
-        <mat-form-field style="width: 45%;">
-            <mat-label>Select</mat-label>
-            <mat-select [(ngModel)]='appliedFilterSelections[info.returnableID.relation]'>
-                <mat-option *ngFor="let relation of numericRelation" [value]="relation[1]">
-                    {{relation[0]}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field style="width: 45%;">
-            <mat-label>{{info.column.frontendName}}</mat-label>
-            <mat-label>Input</mat-label>
-            <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID.value]'>
-        </mat-form-field>
-    </div>
-</ng-template>
-
-<ng-template #numericEqualTemplate let-info>
-    <mat-form-field class="selector">
-        <mat-label>{{info.column.frontendName}}</mat-label>
-        <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID]'>
-    </mat-form-field>
-</ng-template>
-
-<ng-template #dropdownTemplate let-info>
-    <mat-form-field class="selector">
-        <mat-label>{{info.column.frontendName}}</mat-label>
-        <mat-select [(ngModel)]="appliedFilterSelections[info.returnableID]">
-            <!-- <mat-option *ngFor="let val of column.columnObject.selector.selectorValues" [value]=val>
-                {{val}}
-            </mat-option> -->
-        </mat-select>
-    </mat-form-field>
-</ng-template>
-
-<ng-template #calendarRangeTemplate let-info>
-    <div class="selector" fxLayout="row" fxLayoutAlign="space-between center"
-        *ngIf="appliedFilterSelections[info.returnableID]">
-        <mat-form-field style="width: 45%;">
-            <input matInput class="datetime-picker" type="datetime-local" placeholder={{info.column.frontendName}}
-                [(ngModel)]="appliedFilterSelections[info.returnableID].start">
-        </mat-form-field>
-        <span> to </span>
-        <mat-form-field style="width: 45%;">
-            <input matInput class="datetime-picker" type="datetime-local"
-                [(ngModel)]="appliedFilterSelections[info.returnableID].end">
-        </mat-form-field>
-    </div>
-</ng-template>
-
-<ng-template #calendarEqualTemplate let-info>
-    <mat-form-field class="selector">
-        <input matInput type="datetime-local" [placeholder]="info.column.frontendName"
-            [(ngModel)]="appliedFilterSelections[info.returnableID]">
-    </mat-form-field>
-</ng-template>
-
-<ng-template #searchableDropdownTemplate let-info>
-    <ng-multiselect-dropdown class="selector" class="multi" [placeholder]="info.column.frontendName"
-        [(ngModel)]="appliedFilterSelections[info.returnableID]" [settings]="searchableDropdownSettings"
-        [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
-    </ng-multiselect-dropdown>
-</ng-template>
-
-<ng-template #checklistDropdownTemplate let-info>
-    <ng-multiselect-dropdown class="multi" class="selector" [placeholder]="info.column.frontendName"
-        [(ngModel)]="appliedFilterSelections[info.returnableID]" [settings]="checklistDropdownSettings"
-        [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
-    </ng-multiselect-dropdown>
-</ng-template>
-
-<ng-template #searchableChecklistDropdownTemplate let-info>
-    <ng-multiselect-dropdown class="multi" class="selector" [placeholder]="info.column.frontendName"
-        [(ngModel)]="appliedFilterSelections[info.returnableID]" [settings]="searchableChecklistDropdownSettings"
-        [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
-    </ng-multiselect-dropdown>
-</ng-template>
-
-<ng-template #textTemplate let-info>
-    <mat-form-field class="selector">
-        <mat-label>{{info.column.frontendName}}</mat-label>
-        <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections[info.returnableID]'>
-    </mat-form-field>
-</ng-template>
-
-<ng-template #boolTemplate let-info>
-    <mat-form-field class="selector">
-        <mat-label>{{info.column.frontendName}}</mat-label>
-        <mat-select [(ngModel)]="appliedFilterSelections[info.returnableID]">
-            <mat-option [value]=true>True</mat-option>
-            <mat-option [value]=false>False</mat-option>
-        </mat-select>
-    </mat-form-field>
-</ng-template>
