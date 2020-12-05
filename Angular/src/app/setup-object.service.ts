@@ -110,7 +110,7 @@ export class SetupObjectService {
     // for each feature
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
-      console.log(setupObject.features[featureIndex].frontendName)
+      // console.log(setupObject.features[featureIndex].frontendName)
       // find feature's observation columns
       setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
         featureColumns.push({
@@ -143,7 +143,7 @@ export class SetupObjectService {
     // for each feature
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
-      // console.log(childType + " " + setupObject.features[featureIndex].frontendName)
+      console.log(childType + " " + setupObject.features[featureIndex].frontendName)
       // find feature's observation or attribute columns
       setupObject.features[featureIndex].children[childType].forEach((columnIndex, i) => {
         featureColumns.push({
