@@ -1,63 +1,65 @@
 <body style="overflow-x: hidden;">
-    <div class="top_decoration"></div>
-    <h3 style="margin-left:22px;margin-top:25px">Bathroom Audit 1</h3>
+  <div class="top_decoration"></div>
+  <h3 style="margin-left:22px;margin-top:25px">New {{title}} Submission</h3>
 
-    <!-- LOOKS CONVOLUTED AT THE MOMENT BECAUSE ONLY THE SUBFEATURES AND TOILET ATTRIBUTES PANELS GET THEIR DATA FROM THE SETUP OBJECT -->
+  <!-- LOOKS CONVOLUTED AT THE MOMENT BECAUSE ONLY THE SUBFEATURES AND TOILET ATTRIBUTES PANELS GET THEIR DATA FROM THE SETUP OBJECT -->
 
-    <mat-accordion>
-        <mat-expansion-panel *ngFor="let panel of dummy">
-            <mat-expansion-panel-header>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let panel of dummy">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{panel.title}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div
+        *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation'  && panel.title != 'Toilet Attributes' && panel.title != 'Toilet ID'">
+        <div *ngFor="let string of panel.content">
+          <div class="secondary_separator"></div>
+          {{string}}
+        </div>
+      </div>
+
+      <div *ngIf="panel.title == 'Toilet ID'">
+        <div *ngFor="let itemChild of idInfo">
+          <div class="secondary_separator"></div>
+          {{ itemChild.frontendName }}: {{ itemChild.information }}
+        </div>
+      </div>
+
+      <div *ngIf="panel.title == 'Toilet Attributes'">
+        <app-reusable-template class="custom" [featureIndex]="0" [feature]="attributeSelectors[featureIndex]">
+        </app-reusable-template>
+      </div>
+
+      <div *ngIf="panel.title == 'Toilet Observation'">
+        <app-reusable-template class="custom" [featureIndex]="0" [feature]="observationSelectors[featureIndex]">
+        </app-reusable-template>
+      </div>
+
+      <div *ngIf="panel.title == 'Subfeature'">
+        <div *ngFor="let subfeature of subfeatures">
+          <mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
                 <mat-panel-title>
-                    {{panel.title}}
+                  {{ subfeature.frontendName }}
                 </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation' && panel.title != 'Toilet ID'">
-            <div *ngFor="let string of panel.content">
-                <div class="secondary_separator"></div>
-                    {{string}}
-                </div>
-            </div>
+              </mat-expansion-panel-header>
+              <div class="secondary_separator"></div>
+              {{ subfeature.information }}
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </div>
 
-            <div *ngIf="panel.title == 'Toilet ID'">
-                <div *ngFor="let itemChild of idInfo">
-                    <div class="secondary_separator"></div>
-                        {{ itemChild.frontendName }}: {{ itemChild.information }}
-                </div>
-            </div>
-
-
-            <div *ngIf="panel.title == 'Toilet Observation'">
-    
-                    <app-reusable-template class="custom"
-                        [featureIndex]="featureIndex"
-                        [featureSelectors]="featureSelectors">
-                    </app-reusable-template>
-            </div>
-
-            <div *ngIf="panel.title == 'Subfeature'">
-                <div *ngFor="let subfeature of subfeatures">
-                    <mat-accordion>
-                        <mat-expansion-panel>
-                            <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                 {{ subfeature.frontendName }}
-                            </mat-panel-title>
-                            </mat-expansion-panel-header>
-                            <div class="secondary_separator"></div>
-                            {{ subfeature.information }}
-                        </mat-expansion-panel>
-                        </mat-accordion>
-                </div>
-            </div>
-            
-        </mat-expansion-panel>
-    </mat-accordion>
-    <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
-        <button mat-button (click)="close()" style="margin-right: 10px;">
-            Cancel Changes
-        </button>
-        <button mat-button (click)="close()" style="background-color: #569CD7; color: white;">
-            Save & Back
-        </button>
-    </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
+    <button mat-button (click)="close()" style="margin-right: 10px;">
+      Cancel Changes
+    </button>
+    <button mat-button (click)="close()" style="background-color: #569CD7; color: white;">
+      Save & Back
+    </button>
+  </div>
 </body>

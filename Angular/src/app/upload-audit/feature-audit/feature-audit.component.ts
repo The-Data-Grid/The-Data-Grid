@@ -19,9 +19,10 @@ import { TableObjectService } from '../../table-object.service';
 })
 export class FeatureAuditComponent implements OnInit {
 
-  constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>,private apiService: ApiService, private setupObjectService: SetupObjectService, private tableObjectService: TableObjectService) {
+  constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>, private apiService: ApiService, private setupObjectService: SetupObjectService, private tableObjectService: TableObjectService) {
   }
 
+  title;
   setupObject;
   subfeatures = [];
   attributeSelectors;
@@ -88,6 +89,7 @@ export class FeatureAuditComponent implements OnInit {
 
   ngOnInit() {
     this.getSetupObject();
+
   }
 
   close() {
@@ -95,66 +97,66 @@ export class FeatureAuditComponent implements OnInit {
   }
 
   getSetupObject() {
-    if(USE_FAKE_DATA){
+    if (USE_FAKE_DATA) {
       this.setupObject = SetupObject;
-    } 
+      this.getFeatureID();
+      this.getGlobalSelectors();
+      this.getRootFeatures();
+      this.getFeatureSelectors();
+      this.getFeatureChildren();
+      this.getAttributeAndObservationColumns()
+    }
     else {
       this.apiService.getSetupTableObject().subscribe((res) => {
-        USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
-  
-        this.idInfo = this.setupObjectService.getFeatureItemChildren(this.setupObject,this.featureIndex);
-        console.log(this.idInfo)
-        // console.log(this.id[this.featureIndex].frontendName)
-  
-        // parse global columns
-        this.globalSelectors = this.setupObjectService.getGlobalSelectors(
-          this.setupObject,
-          this.appliedFilterSelections,
-          this.defaultColumns);
-  
-        // get root features
-        this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
-  
-        // parse feature columns
-        this.featureSelectors = this.setupObjectService.getFeatureSelectors(
-          this.setupObject,
-          this.appliedFilterSelections,
-          this.defaultColumns);
-  
-        // map features to children
-        this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
-  
-        this.applyFilters();
-        this.selectorsLoaded = true
-        let features = this.setupObjectService.getFeaturesToChildren(this.setupObject);
-        let subfeatureIndices = features[this.featureIndex];
-        for (var i = 0; i < subfeatureIndices.length; i++) {
-          this.subfeatures.push(this.setupObject.features[subfeatureIndices[i]]);
-        }
-        this.selectedFeature = this.setupObjectService.getFeatureInputSelectors(this.setupObject,[],[],true);
-        this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject,[],[],true);
-        this.selectedFeature = this.rootFeatures
+        this.setupObject = res;
+        this.getFeatureID();
+        this.getGlobalSelectors();
+        this.getRootFeatures();
+        this.getFeatureSelectors();
+        this.getFeatureChildren();
+        this.getAttributeAndObservationColumns()
       });
     }
   }
 
-  applyFilters() {
-    if (!this.selectedFeature) { return; }
-    this.getTableObject();
+  getFeatureID() {
+    this.idInfo = this.setupObjectService.getFeatureItemChildren(this.setupObject, this.featureIndex);
   }
 
-  getTableObject() {
-    // clear the column headers
-    this.dataTableColumns = [];
-
-    this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
-      USE_FAKE_DATA ? this.tableObject = TableObject : this.tableObject = res;
-
-      this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
-    });
+  getGlobalSelectors() {
+    // parse global columns
+    this.globalSelectors = this.setupObjectService.getGlobalSelectors(
+      this.setupObject,
+      this.appliedFilterSelections,
+      this.defaultColumns);
   }
 
+  getRootFeatures() {
+    this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
+  }
 
-  
+  getFeatureSelectors() {
+    // parse feature columns
+    this.featureSelectors = this.setupObjectService.getFeatureSelectors(
+      this.setupObject,
+      this.appliedFilterSelections,
+      this.defaultColumns);
+  }
+
+  getFeatureChildren() {
+    // map features to children
+    this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
+    this.selectorsLoaded = true
+    let features = this.setupObjectService.getFeaturesToChildren(this.setupObject);
+    let subfeatureIndices = features[this.featureIndex];
+    for (var i = 0; i < subfeatureIndices.length; i++) {
+      this.subfeatures.push(this.setupObject.features[subfeatureIndices[i]]);
+    }
+  }
+
+  getAttributeAndObservationColumns() {
+    this.attributeSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, [], [], false);
+    this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, [], [], true);
+  }
 
 }

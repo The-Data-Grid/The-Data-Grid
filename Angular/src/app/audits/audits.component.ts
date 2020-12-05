@@ -46,10 +46,10 @@ export class AuditsComponent implements OnInit {
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
-  numericRelation: string[][] = [[">=","gte"],["<=","lte"],[">","gt"],["<","lt"],["=","equal"]]
-  
-  constructor(private apiService: ApiService, 
-    public datepipe: DatePipe, 
+  numericRelation: string[][] = [[">=", "gte"], ["<=", "lte"], [">", "gt"], ["<", "lt"], ["=", "equal"]]
+
+  constructor(private apiService: ApiService,
+    public datepipe: DatePipe,
     private setupObjectService: SetupObjectService,
     private tableObjectService: TableObjectService) { }
 
@@ -58,38 +58,47 @@ export class AuditsComponent implements OnInit {
   }
 
   getSetupObject() {
-    this.apiService.getSetupTableObject().subscribe((res) => {
-      USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
+    if (USE_FAKE_DATA) {
+      this.setupObject = SetupObject;
+      this.parseSetupObject();
+    }
+    else {
+      this.apiService.getSetupTableObject().subscribe((res) => {
+        this.setupObject = res;
+        this.parseSetupObject();
+      });
+    }
+  }
 
-      // parse global columns
-      this.globalSelectors = this.setupObjectService.getGlobalSelectors(
-        this.setupObject,
-        this.appliedFilterSelections,
-        this.defaultColumns);
+  parseSetupObject() {
+    // parse global columns
+    this.globalSelectors = this.setupObjectService.getGlobalSelectors(
+      this.setupObject,
+      this.appliedFilterSelections,
+      this.defaultColumns);
 
-      // get root features
-      this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
+    // get root features
+    this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
 
-      // parse feature columns
-      this.featureSelectors = this.setupObjectService.getFeatureSelectors(
-        this.setupObject,
-        this.appliedFilterSelections,
-        this.defaultColumns);
+    // parse feature columns
+    this.featureSelectors = this.setupObjectService.getFeatureSelectors(
+      this.setupObject,
+      this.appliedFilterSelections,
+      this.defaultColumns);
 
-      // map features to children
-      this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
+    // map features to children
+    this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
 
-      console.log("global selectors:");
-      console.log(this.globalSelectors);
-      console.log("feature selectors:");
-      console.log(this.featureSelectors);
-      // console.log("applied filter selections:");
-      // console.log(this.appliedFilterSelections);
-      // console.log("featuresToChildren:");
-      // console.log(this.featuresToChildren);
-      this.applyFilters();
-      this.selectorsLoaded = true
-    });
+    console.log("global selectors:");
+    console.log(this.globalSelectors);
+    console.log("feature selectors:");
+    console.log(this.featureSelectors);
+    // console.log("applied filter selections:");
+    // console.log(this.appliedFilterSelections);
+    // console.log("featuresToChildren:");
+    // console.log(this.featuresToChildren);
+    this.applyFilters();
+    this.selectorsLoaded = true
   }
 
   getTableObject() {
@@ -104,9 +113,7 @@ export class AuditsComponent implements OnInit {
         this.tableObject = res;
         this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
       });
-
     }
-
   }
 
   updateValue(event, columnName, rowIndex) {

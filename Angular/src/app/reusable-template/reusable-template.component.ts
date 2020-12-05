@@ -15,7 +15,7 @@ const USE_FAKE_DATA = environment.useFakeData;
 @Component({
   selector: 'app-reusable-template',
   templateUrl: './reusable-template.component.html',
-  // styleUrls: ['./reusable-template.component.css']
+  styleUrls: ['./reusable-template.component.css']
   // styleUrls: ['../audits/audits.component.css']
 })
 export class ReusableTemplateComponent implements OnInit {
@@ -23,12 +23,13 @@ export class ReusableTemplateComponent implements OnInit {
   constructor(private apiService: ApiService,
     private setupObjectService: SetupObjectService,
     private tableObjectService: TableObjectService) { }
-
+  
+  @Input() feature: any
   @Input() featureSelectors: any[]
-  @Input() featureIndex: Number
+  @Input() featureIndex: number
+  @Input() appliedFilterSelections: any
 
   setupObject;
-  appliedFilterSelections = {}
   dropdownList = FakeData;
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
@@ -38,7 +39,10 @@ export class ReusableTemplateComponent implements OnInit {
 
 
 
-  ngOnInit(): void {
+  ngOnInit() {
+    if (this.appliedFilterSelections == undefined) {
+      this.appliedFilterSelections = {}
+    }
   }
 
   onItemSelect(item: any) {

@@ -1,40 +1,40 @@
-<div *ngIf="featureSelectors"> 
-    <div *ngFor="let column of featureSelectors[featureIndex].numericChoice">
+<div *ngIf="feature"> 
+    <div *ngFor="let column of feature.numericChoice">
         <ng-template *ngTemplateOutlet="numericChoiceTemplate; context: {$implicit: column}"></ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].numericEqual">
+    <div *ngFor="let column of feature.numericEqual">
         <ng-template *ngTemplateOutlet="numericEqualTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].calendarRange">
+    <div *ngFor="let column of feature.calendarRange">
         <ng-template *ngTemplateOutlet="calendarRangeTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].calendarEqual">
+    <div *ngFor="let column of feature.calendarEqual">
         <ng-template *ngTemplateOutlet="calendarEqualTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].dropdown">
+    <div *ngFor="let column of feature.dropdown">
         <ng-template *ngTemplateOutlet="dropdownTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].searchableDropdown">
+    <div *ngFor="let column of feature.searchableDropdown">
         <ng-template *ngTemplateOutlet="searchableDropdownTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].checklistDropdown">
+    <div *ngFor="let column of feature.checklistDropdown">
         <ng-template *ngTemplateOutlet="checklistDropdownTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].searchableChecklistDropdown">
+    <div *ngFor="let column of feature.searchableChecklistDropdown">
         <ng-template *ngTemplateOutlet="searchableChecklistDropdownTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].text">
+    <div *ngFor="let column of feature.text">
         <ng-template *ngTemplateOutlet="textTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-    <div *ngFor="let column of featureSelectors[featureIndex].bool">
+    <div *ngFor="let column of feature.bool">
         <ng-template *ngTemplateOutlet="boolTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
