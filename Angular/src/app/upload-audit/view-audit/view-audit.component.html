@@ -25,9 +25,6 @@
     <button mat-button (click)="openRootFeatures()">
       Add Root Features
     </button>
-    <button mat-button (click)="openFeatureAudit()">
-      see feature audit component (temp)
-    </button>
   </div>
 
 
@@ -35,13 +32,13 @@
     <div *ngFor="let audit of audits">
       <div *ngFor="let feature of audit.features">
         <div *ngIf="feature.included">
-          <mat-expansion-panel>
+          <mat-expansion-panel [disabled] = 'auditOpened'>
             <mat-expansion-panel-header>
               <mat-panel-title style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
                 <span>
                   {{ feature.name }}
                 </span>
-                <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit()">
+                <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit(feature.name)">
                   <mat-icon style="font-size: small;">add</mat-icon>
                 </button>
               </mat-panel-title>

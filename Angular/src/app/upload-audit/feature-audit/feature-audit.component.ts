@@ -22,6 +22,7 @@ export class FeatureAuditComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>,private apiService: ApiService, private setupObjectService: SetupObjectService, private tableObjectService: TableObjectService) {
   }
 
+  title;
   setupObject;
   subfeatures = [];
   attributeSelectors;
@@ -98,7 +99,6 @@ export class FeatureAuditComponent implements OnInit {
   getSetupObject() {
     this.apiService.getSetupTableObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
-
       this.idInfo = this.setupObjectService.getFeatureItemChildren(this.setupObject,this.featureIndex);
 
       // parse global columns
@@ -148,8 +148,4 @@ export class FeatureAuditComponent implements OnInit {
       this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
     });
   }
-
-
-  
-
 }

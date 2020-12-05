@@ -12,7 +12,8 @@ import { DatePipe } from '@angular/common';
   providers: [DatePipe]
 })
 export class ViewAuditComponent implements OnInit {
-
+  expanded = false;
+  auditOpened = false;
   myDate = new Date();
   columns = ["Action","Last Updated","Room ID","Clockwise Number"]
 
@@ -72,17 +73,19 @@ export class ViewAuditComponent implements OnInit {
     return true;
   }
   
-  openFeatureAudit(): void {
+  openFeatureAudit(event, title): void {
+    //event.preventDefault();
+    this.auditOpened = true;
     const dialogRef = this.dialog.open(FeatureAuditComponent, {
       width: '801px',
       maxHeight: '500px',
       data: this.audits
     })
+    dialogRef.componentInstance.title = title
+    dialogRef.afterClosed().subscribe((e) => this.auditOpened = false)
   }
-
 
   ngOnInit(): void {
   }
-
 
 }
