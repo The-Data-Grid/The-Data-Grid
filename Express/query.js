@@ -23,9 +23,12 @@ const {
 const {returnableIDLookup, featureParents, setupObject} = require('./setup.js')
 
 // Database connection and SQL formatter
-const postgresClient = require('./db/pg.js');
-const db = postgresClient.connect('main')
+const {postgresClient} = require('./db/pg.js');
+// get connection object
+const db = postgresClient.getConnection.db
+// get SQL formatter
 const formatSQL = postgresClient.format;
+
 
 // Testing request response cycle time (for dev only)
 var cycleTime = [];
@@ -764,5 +767,6 @@ module.exports = {
     setupQuery,
     cycleTime,
     sendData,
-    sendSetup
+    sendSetup,
+    recursiveReferenceSelection // for insert
 };

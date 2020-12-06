@@ -6,8 +6,12 @@ const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
 const port = process.env.PORT || 4001;
-const insertTry = require('./insert/try.js');
 
+// start the main connection pool
+const {connectPostgreSQL} = require('./db/pg.js');
+connectPostgreSQL('default');
+
+const insertTry = require('./insert/try.js');
 const parse = require('./parse.js');
 const validate = require('./validate.js')
 const query = require('./query.js');

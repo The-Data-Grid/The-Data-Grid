@@ -1,6 +1,7 @@
 // Database connection and SQL formatter
-const postgresClient = require('../db/pg.js');
-const db = postgresClient.connect('main')
+const {postgresClient} = require('../db/pg.js');
+//const db = postgresClient.connect('main')
+const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;
 
 /*
@@ -21,7 +22,7 @@ go through all the columns
 insertSQLEngine
 need table name and column names
 
-*/
+
 async function getColumns(referenceType, itemTableName) {
     console.log(formatSQL('select * from metadata_column as m join metadata_item as i on m.metadata_item_id = i.item_id join metadata_reference_type as r on m.reference_type = r.type_id where r.type_name = $(referenceType) AND i.table_name = $(itemTableName)', { 
         referenceType,
@@ -39,5 +40,5 @@ console.log(getColumns('obs', 'item_toilet'))
 
 let items = require('../setup.js').allItems;
 let m2m = require('../setup.js').itemM2M;
-
+*/
 //console.log(items)
