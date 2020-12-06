@@ -16,8 +16,14 @@ const stripJsonComments = require('strip-json-comments'); // .jsonc handling
 const chalk = require('chalk'); // pretty console.log
 var util = require('util'); // util.inspect()
 
-const postgresClient = require('../db/pg.js');
-const db = postgresClient.connect('construct')
+
+// Database connection and SQL formatter
+const {postgresClient, connectPostgreSQL} = require('../db/pg.js');
+// Establish an new connection pool
+connectPostgreSQL('construct')
+// get connection object
+const db = postgresClient.getConnection.cdb;
+// get SQL formatter
 const formatSQL = postgresClient.format;
 
 // Importing SQL //
@@ -123,7 +129,8 @@ async function makeSchema(commandLineArgs) {
     await asyncConstructAuditingTables(features, [...columns, ...globalColumns], commandLineArgs);
 
     // Closing the database connection
-    db.$pool.end();
+    db.$pool.end
+    console.log('Closed PostgreSQL Connection: construct')
 }
 
 async function configSchema(commandLineArgs) {
@@ -165,7 +172,8 @@ async function configSchema(commandLineArgs) {
     await showComputed(commandLineArgs);
 
     // Closing the database connection
-    db.$pool.end();
+    db.$pool.end
+    console.log('Closed PostgreSQL Connection: construct')
 }
 
 async function inspectSchema(commandLineArgs) {
@@ -214,7 +222,8 @@ async function inspectSchema(commandLineArgs) {
     console.log(chalk.cyanBright.underline(`Count: ${count}`))
 
     // Closing the database connection
-    db.$pool.end();
+    db.$pool.end
+    console.log('Closed PostgreSQL Connection: construct')
 }
 
 
