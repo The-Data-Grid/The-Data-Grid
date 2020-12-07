@@ -1,9 +1,9 @@
 
 const express = require('express'); 
-const app = express(); 
+const router = express.Router(); //use router instead of app
 const session = require('express-session'); 
 
-const postgresClient = require('./db/pg.js'); 
+const {postgresClient} = require('../db/pg.js'); 
 const db = postgresClient.connect('main'); 
 //const util = require
 
@@ -11,7 +11,7 @@ const db = postgresClient.connect('main');
 let Store = require('memorystore')(session); 
 let MyStore = new Store({checkPeriod: 1000000});
 
-app.use(session({
+router.use(session({
     store: MyStore, 
     secret: 'shhhhh',
     resave: false,
@@ -22,14 +22,15 @@ app.use(session({
     }
 }));
 
-app.post('/login/', (req, res) => {
+router.post('/login/', (req, res) => {
     let combo = [req.body.user, req.body.pass];
+    //console.log(req.body); 
 
-    db.one('SELECT * FROM users WHERE name = $1 AND password = $2', req.body.user, req.body.pass)
+    db.one('SELECT * FROM users WHERE name = $1 AND password = $2', [req.body.user, req.body.pass])
     .then(data => {
         console.log('DATA:', data); 
         req.session.loggedIn = true;
-        req.session.userName = req.params.user;
+        req.session.userName = req.body.user;
         res.send('you logged in');
     })
     .catch(error => {
@@ -38,3 +39,20 @@ app.post('/login/', (req, res) => {
         res.send('not a valid login');
     })
 });
+
+router.get('/secure', (req, res) => {
+    // if the session store shows that the user is logged in
+    if(req.session.loggedIn) {
+        res.send(`Here is your confidential data, ${req.session.userName}`);
+
+        // logging the contents of the entire session store
+        MyStore.all((err, session) => {
+            console.log(session)
+        });
+        
+    } else {
+        res.send('Permission Denied');
+    };
+});
+
+module.exports = router; 
