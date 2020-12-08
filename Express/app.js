@@ -8,6 +8,11 @@ const fs = require('fs');
 const login = require('./auth/login.js');
 const port = process.env.PORT || 4001;
 
+// start the main connection pool
+const {connectPostgreSQL} = require('./db/pg.js');
+connectPostgreSQL('default');
+
+const insertTry = require('./insert/try.js');
 const parse = require('./parse.js');
 const validate = require('./validate.js')
 const query = require('./query.js');
