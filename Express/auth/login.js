@@ -3,16 +3,14 @@ const express = require('express');
 const router = express.Router(); //use router instead of app
 const session = require('express-session'); 
 
-const {postgresClient} = require('../db/pg.js'); 
-<<<<<<< HEAD
-const db = postgresClient.connect('main'); 
-//const util = require
-=======
+const {postgresClient, connectPostgreSQL} = require('../db/pg.js'); 
+
 // get connection object
-const db = postgresClient.getConnection.db
+connectPostgreSQL('default');
+console.log(postgresClient); 
+const db = postgresClient.getConnection.db;
 // get SQL formatter
 const formatSQL = postgresClient.format;
->>>>>>> 5ef2de5920a99b783bd3b2e1f19547838dcd26af
 
 // session store init
 let Store = require('memorystore')(session); 
@@ -33,14 +31,10 @@ router.post('/login/', (req, res) => {
     let combo = [req.body.user, req.body.pass];
     //console.log(req.body); 
 
-<<<<<<< HEAD
-    db.one('SELECT * FROM users WHERE name = $1 AND password = $2', [req.body.user, req.body.pass])
-=======
     db.one(formatSQL('SELECT item_id FROM item_users WHERE name = $(user) AND password = $(password)', {
         user: combo[0], 
         password: combo[1]
     }))
->>>>>>> 5ef2de5920a99b783bd3b2e1f19547838dcd26af
     .then(data => {
         console.log('DATA:', data); 
         req.session.loggedIn = true;
