@@ -20,7 +20,7 @@ const insert = require('./insert.js');
 const template = require('./template.js');
 
 app.use(cors());
-app.use(bodyParser.json());
+// app.use(bodyParser.json()); shouldn't need
 
 // middleware
 app.use(express.json()); 

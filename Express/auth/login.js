@@ -31,7 +31,7 @@ router.post('/login/', (req, res) => {
     let combo = [req.body.user, req.body.pass];
     //console.log(req.body); 
 
-    db.one(formatSQL('SELECT item_id FROM item_users WHERE name = $(user) AND password = $(password)', {
+    db.one(formatSQL('SELECT * FROM users WHERE name = $(user) AND password = $(password)', {
         user: combo[0], 
         password: combo[1]
     }))
