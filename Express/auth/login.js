@@ -58,9 +58,12 @@ router.get('/secure', (req, res) => {
             console.log(session)
         });
         
-    } else {
+    } else {    
         res.send('Permission Denied');
     };
 });
 
-module.exports = router; 
+module.exports = {
+    router,
+    startSession
+}; 
