@@ -41,6 +41,7 @@ export class FeatureAuditComponent implements OnInit {
   globalSelectors = {};
   selectorsLoaded: boolean = false;
   idInfo;
+  page = "FeaturesAuditPage"
 
   dummy = [
     {

@@ -78,7 +78,7 @@
 </ng-template>
 
 <ng-template #calendarRangeTemplate let-info>
-    <div class="selector" fxLayout="row" fxLayoutAlign="space-between center"
+    <div class="selector" [class.auditsPageColorScheme]="page === 'AuditsPage'" [class.featuresPageColorScheme]="page === 'FeaturesAuditPage'" fxLayout="row" fxLayoutAlign="space-between center"
         *ngIf="appliedFilterSelections[info.returnableID]">
         <mat-form-field style="width: 45%;">
             <input matInput class="datetime-picker" type="datetime-local" placeholder={{info.column.frontendName}}

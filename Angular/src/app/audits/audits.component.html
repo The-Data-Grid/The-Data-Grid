@@ -12,7 +12,9 @@
                 <h3>Global Filters</h3>
                 <div *ngIf="selectorsLoaded">
                     <app-reusable-template [feature]="globalSelectors"
-                        [appliedFilterSelections]="appliedFilterSelections">
+                        [appliedFilterSelections]="appliedFilterSelections"
+                        [page]="page"
+                        >
                     </app-reusable-template>
                 </div>
             </div>

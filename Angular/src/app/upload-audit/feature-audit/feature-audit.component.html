@@ -12,12 +12,20 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div
-        *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation'  && panel.title != 'Toilet Attributes' && panel.title != 'Toilet ID'">
+        *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation'  && panel.title != 'Toilet Attributes' && panel.title != 'Toilet ID' && panel.title != 'Global Data'">
         <div *ngFor="let string of panel.content">
           <div class="secondary_separator"></div>
           {{string}}
         </div>
       </div>
+
+      <div *ngIf="panel.title == 'Global Data'" style="overflow: auto;">
+      <app-reusable-template [feature]="globalSelectors"
+        [appliedFilterSelections]="appliedFilterSelections"
+        [page]="page">
+    </app-reusable-template>
+</div>
+
 
       <div *ngIf="panel.title == 'Toilet ID'">
         <div *ngFor="let itemChild of idInfo">
