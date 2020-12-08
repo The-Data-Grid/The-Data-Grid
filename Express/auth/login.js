@@ -6,7 +6,6 @@ const session = require('express-session');
 const {postgresClient, connectPostgreSQL} = require('../db/pg.js'); 
 
 // get connection object
-connectPostgreSQL('default');
 console.log(postgresClient); 
 const db = postgresClient.getConnection.db;
 // get SQL formatter
@@ -39,12 +38,13 @@ router.post('/login/', (req, res) => {
         console.log('DATA:', data); 
         req.session.loggedIn = true;
         req.session.userName = req.body.user;
+        req.session.role = data.role
         res.send('you logged in');
     })
     .catch(error => {
         console.log('ERROR:', error);
         // req.session.destroy(); 
-        res.send('not a valid login');
+        res.status(401).send('not a valid login');
     })
 });
 
@@ -63,7 +63,61 @@ router.get('/secure', (req, res) => {
     };
 });
 
-module.exports = {
-    router,
-    startSession
-}; 
+function authorize(path) {
+    return((req, res, next) => {
+            // if the session store shows that the user is logged in
+        
+        console.log(req.session);
+
+        if(pathAuthLookup[path].role === 'guest') {
+            next();
+        }
+        
+        else if(req.session.loggedIn) {
+
+            let isAuthorizedOnPath = (
+                pathAuthLookup[path].role == 'superuser' ? 
+                    (req.session.role != 'superuser' ? 
+                        false :
+                        true
+                    ) :
+                    true
+            );
+
+            if(!isAuthorizedOnPath) {
+                res.status(403).send('Unauthorized Resource')
+                res.end()
+            } else {
+                // logging the contents of the entire session store
+                MyStore.all((err, session) => {
+                    console.log(session)
+                });
+    
+                next();
+            }
+
+        } else {
+            res.status(403).send('Unauthorized Resource');
+        };
+    })
+    
+}
+
+// specify which paths have user or superuser authorization
+let pathAuthLookup = {
+    observation: {
+        role: 'guest'
+    },
+    coffee: {
+        role: 'superuser'
+    }
+};
+
+// so it's kind of like I'm repeating the routes
+//     - if valid: next()
+//     - if not: res.status(403)
+router.get('/api/audit/observation/:feature/:include', authorize('observation'));
+
+router.get('/api/coffee', authorize('coffee'));
+
+module.exports = router
