@@ -6,7 +6,6 @@ const session = require('express-session');
 const {postgresClient, connectPostgreSQL} = require('../db/pg.js'); 
 
 // get connection object
-console.log(postgresClient); 
 const db = postgresClient.getConnection.db;
 // get SQL formatter
 const formatSQL = postgresClient.format;
@@ -66,8 +65,7 @@ router.get('/secure', (req, res) => {
 function authorize(path) {
     return((req, res, next) => {
             // if the session store shows that the user is logged in
-        
-        console.log(req.session);
+
 
         if(pathAuthLookup[path].role === 'guest') {
             next();

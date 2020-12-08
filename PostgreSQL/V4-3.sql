@@ -627,6 +627,18 @@ CREATE TABLE users (
     role TEXT NOT NULL
 );
 
+insert into users 
+    (
+        id,
+        name,
+        email,
+        password,
+        role
+    )
+    values 
+        (default, 'veronica', 'veronica@gmail.com', 'example', 'user'),
+        (default, 'edward', 'ed@gmail.com', 'example', 'superuser');
+
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                          
                                          ,,                                                                     

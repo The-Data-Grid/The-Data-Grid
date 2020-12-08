@@ -51,7 +51,8 @@ function connectPostgreSQL(config) {
             database: tdgdbname,
             user: tdgdbuser,
             password: null,
-            max: 1 // use only one connection
+            max: 1, // use only one connection
+            idleTimeoutMillis: 1 // disconnect right after
         };
         const cdb = pgp(constructionConnection);
         console.log(`New PostgreSQL Connection: construct`)
