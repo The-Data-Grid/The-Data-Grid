@@ -73,8 +73,7 @@ export class ViewAuditComponent implements OnInit {
     return true;
   }
   
-  openFeatureAudit(event, title): void {
-    //event.preventDefault();
+  openFeatureAudit(title): void {
     this.auditOpened = true;
     const dialogRef = this.dialog.open(FeatureAuditComponent, {
       width: '801px',
