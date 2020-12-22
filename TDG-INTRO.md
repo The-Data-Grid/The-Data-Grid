@@ -7,19 +7,19 @@ This document discusses the capabilities of TDG’s architecture, including how 
 ### Table of Contents
 
 1. [Introduction](#introduction)
-1. [Overview](#overview)
+   1. [Overview](#overview)
    2. [Design Goals](#design-goals)
    3. [Scope](#scope)
    
 2. [TDG data representation model](#tdg-data-representation-model)
-   2. [Overview](#overview-1)
+   1. [Overview](#overview-1)
    2. [Abstract Data Type Prototypes](#abstract-data-type-prototypes)
    3. [Complexities](#complexities)
    4. [Creating a new schema](#creating-a-new-schema)
 
 3. [Data Management](#data-management)
-   2. [Query](#query)
-   3. [Insert, Update, and Delete](#insert-update-and-delete)
+   1. [Query](#query)
+   2. [Insert, Update, and Delete](#insert-update-and-delete)
 
 
 ---
