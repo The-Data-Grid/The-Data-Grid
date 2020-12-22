@@ -74,7 +74,7 @@ A type which represents an arbitrary structure that may have data associated wit
 **Requirements**
 
 1. Must be uniquely identifiable by data columns within it, or data columns within it's item requirement tree 
-2. All **`data column`** ADTs in the array must have an *item related* reference type
+2. All **`data column`** ADTs in the array must have an *item related* or *special* reference type
 
 **Properties**
 
@@ -121,7 +121,7 @@ A type whose domain is the observations of a specific instance of an **`item`** 
 
 1. Must be associated with an **`item`** ADT, and must be the only **`observation`** ADT associated with it.
 2. Instances must have a many to one relationship with instances of its accompanying item.
-3. All **`data column`** ADTs in the array must have an *observation related* reference type
+3. All **`data column`** ADTs in the array must have an *observation related* or *special* reference type
 
 **Properties**
 
