@@ -7,19 +7,19 @@ This document discusses the capabilities of TDG’s architecture, including how 
 ### Table of Contents
 
 1. [Introduction](#introduction)
-1. [Overview](#overview)
+   1. [Overview](#overview)
    2. [Design Goals](#design-goals)
    3. [Scope](#scope)
    
 2. [TDG data representation model](#tdg-data-representation-model)
-   2. [Overview](#overview-1)
+   1. [Overview](#overview-1)
    2. [Abstract Data Type Prototypes](#abstract-data-type-prototypes)
    3. [Complexities](#complexities)
    4. [Creating a new schema](#creating-a-new-schema)
 
 3. [Data Management](#data-management)
-   2. [Query](#query)
-   3. [Insert, Update, and Delete](#insert-update-and-delete)
+   1. [Query](#query)
+   2. [Insert, Update, and Delete](#insert-update-and-delete)
 
 
 ---
@@ -74,7 +74,7 @@ A type which represents an arbitrary structure that may have data associated wit
 **Requirements**
 
 1. Must be uniquely identifiable by data columns within it, or data columns within it's item requirement tree 
-2. All **`data column`** ADTs in the array must have an *item related* reference type
+2. All **`data column`** ADTs in the array must have an *item related* or *special* reference type
 
 **Properties**
 
@@ -121,7 +121,7 @@ A type whose domain is the observations of a specific instance of an **`item`** 
 
 1. Must be associated with an **`item`** ADT, and must be the only **`observation`** ADT associated with it.
 2. Instances must have a many to one relationship with instances of its accompanying item.
-3. All **`data column`** ADTs in the array must have an *observation related* reference type
+3. All **`data column`** ADTs in the array must have an *observation related* or *special* reference type
 
 **Properties**
 
@@ -268,8 +268,8 @@ There are two main query types, which were described as operations for **`item`*
 
 | ADT Prototype     | Query Type | Description                                                  |
 | ----------------- | ---------- | ------------------------------------------------------------ |
-| **`item`**        | Data       | Get specified **`data column`** array values associated with a specific **`item`**, may be filtered by custom input and specified **`data column`**s, may be sorted by custom input and specified **`data column`**s. Rows in output correspond to **`item`** instances. Columns in output correspond to **`data column`**s. All columns have the same length. |
-| **`observation`** | Data       | Get specified **`data column`** array values associated with a specific **`observation`**, may be filtered by custom input and specified **`data column`**s, may be sorted by custom input and specified **`data column`**s. Rows in output correspond to **`observation`** instances. Columns in output correspond to **`data column`**s. All columns have the same length. |
+| **`item`**        | Data       | Get specified **`data column`** array values associated with a specific **`item`**, may be filtered by custom input and specified **`data columns`**, may be sorted by custom input and specified **`data columns`**. Rows in output correspond to **`item`** instances. Columns in output correspond to **`data columns`**. All columns have the same length. |
+| **`observation`** | Data       | Get specified **`data column`** array values associated with a specific **`observation`**, may be filtered by custom input and specified **`data columns`**, may be sorted by custom input and specified **`data columns`**. Rows in output correspond to **`observation`** instances. Columns in output correspond to **`data columns`**. All columns have the same length. |
 | **`item`**        | Distinct   | Perform the data query, and then return the distinct values of each requested **`data column`**. Columns may have different lengths. |
 | **`observation`** | Distinct   | Perform the data query, and then return the distinct values of each requested **`data column`**. Columns may have different lengths. |
 
