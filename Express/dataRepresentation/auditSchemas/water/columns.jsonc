@@ -8,23 +8,23 @@
      */
 
     { // TOILIET CLOCKWISE INTEGER
-        "tableName": "item_toilet",
-        "columnName": "data_clockwise_integer",
-        "observationTableName": null,
-        "subobservationTableName": null,
-        "itemName": "item_toilet",
+        "tableName": "item_toilet", // should be able to infer
+        "columnName": "data_clockwise_integer", // optional, inferred from frontendName
+        "observationTableName": null, // should be able to infer
+        "subobservationTableName": null, // should be able to infer
+        "itemName": "item_toilet", // required
 
-        "sqlType": "INTEGER",
-        "referenceType": "item-id",
+        "sqlType": "INTEGER", // required
+        "referenceType": "item-id", // required
 
-        "frontendName": "Clockwise Integer",
-        "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
-        "accuracy": null,
-        "isNullable": false,
-        "isDefault": true,
-        "filterSelectorName": "numericEqual",
-        "inputSelectorName": "numericEqual",
-        "frontendType": "string"
+        "frontendName": "Clockwise Integer", // required
+        "information": "Number of toilet based on a clockwise count looking down on the room starting from the door", // optional, defaults to null
+        "accuracy": null, // optional, defaults to null
+        "isNullable": false, // required
+        "isDefault": true, // optional, defaults to yes
+        "filterSelectorName": "numericEqual", // optional, infer from sqlType and referenceType
+        "inputSelectorName": "numericEqual", // optional, infer from sqlType and referenceType
+        "frontendType": "string" //infer from sqlType
     },
     { // TOILIET GALLONS PER FLUSH
         "tableName": "observation_toilet",
