@@ -25,9 +25,9 @@ We want to observe ice-water ratios of ice cube trays. The ice cube tray has cha
     "name": "ice cube tray cell",
 	"required items": [
         {
-            name: "ice cube tray",
-            id: true,
-            nullable: false
+            "name": "ice cube tray",
+            "id": true,
+            "nullable": false
         }
     ]
 }
@@ -73,7 +73,7 @@ We want to observe ice-water ratios of ice cube trays. The ice cube tray has cha
             "data": "text"
         }
     },
-    ...
+    "..."
 ]
 ```
 
