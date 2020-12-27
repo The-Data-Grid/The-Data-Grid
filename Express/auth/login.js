@@ -118,4 +118,14 @@ router.get('/api/audit/observation/:feature/:include', authorize('observation'))
 
 router.get('/api/coffee', authorize('coffee'));
 
+router.post('/logout/', (req, res) => {
+    if (typeof req.session.loggedIn == 'undefined') {
+        res.send('you already logged out.');
+    } 
+    else {
+        req.session.destroy();
+        res.send('you just logged out!'); 
+    }
+});
+
 module.exports = router
