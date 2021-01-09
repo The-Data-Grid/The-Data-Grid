@@ -25,6 +25,7 @@ export class ReusableTemplateComponent implements OnInit {
     private tableObjectService: TableObjectService) { }
   
   @Input() feature: any
+  @Input() page: any
   @Input() featureSelectors: any[]
   @Input() featureIndex: number
   @Input() appliedFilterSelections: any

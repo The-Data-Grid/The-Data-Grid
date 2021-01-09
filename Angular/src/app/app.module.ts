@@ -31,6 +31,7 @@ import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audi
 import { SetupObjectService } from './setup-object.service';
 import { TableObjectService } from './table-object.service';
 import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
+import { TeamComponent } from './team/team.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -50,7 +51,8 @@ import { ReusableTemplateComponent } from './reusable-template/reusable-template
     RootFeaturesComponent,
     GlobalPresetsComponent,
     FeatureAuditComponent,
-    ReusableTemplateComponent
+    ReusableTemplateComponent,
+    TeamComponent
   ],
   imports: [
     BrowserModule,

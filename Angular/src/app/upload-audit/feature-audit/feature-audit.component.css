@@ -36,10 +36,14 @@
 }
 
 
-.custom ::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple, ::ng-deep .mat-form-field-label {
+.custom ::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple, ::ng-deep .mat-form-field-label, ::ng-deep .mat-focused .mat-form-field-placeholder, ::ng-deep .multiselect-dropdown .dropdown-btn, ::ng-deep .multiselect-dropdown-ripple {
   color: black !important;
 }
 
+.custom ::ng-deep .mat-focused .mat-form-field-label {
+  /*change color of label*/
+  color: green !important;
+ }
 
 /* .cdk-global-overlay-wrapper {
   display: flex;

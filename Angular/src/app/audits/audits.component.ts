@@ -28,6 +28,7 @@ export class AuditsComponent implements OnInit {
   editingMode: boolean = false;
   oldRowInfo = [];
   oldCellEdited = {};
+  page = "AuditsPage"
 
   // variables for filtering sidebar
   filterBy = "Submission";
