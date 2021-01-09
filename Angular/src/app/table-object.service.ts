@@ -50,7 +50,7 @@ export class TableObjectService {
       tableObject.returnableColumnIDs.forEach((columnID, i) => {
         let columnIndex = returnableIDToColumnIndex[columnID];
         let datatype = datatypes[setupObject.columns[columnIndex].datatypeKey];
-        console.log(setupObject.columns[columnIndex].frontendName + " " + datatype)
+        // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype)
 
         switch (datatype) {
           case "string": {
@@ -74,7 +74,7 @@ export class TableObjectService {
       rows.push(row);
     });
 
-    console.log(dataTableColumns)
+    // console.log(dataTableColumns)
     return rows;
   }
 
@@ -102,7 +102,7 @@ export class TableObjectService {
         returnableIDToColumnIndex[columnID] = columnIndex;
       }
     });
-    console.log(returnableIDToColumnIndex)
+    // console.log(returnableIDToColumnIndex)
     return returnableIDToColumnIndex;
   }
 

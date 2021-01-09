@@ -168,6 +168,7 @@ export class AuditsComponent implements OnInit {
 
   applyFilters() {
     if (!this.selectedFeature) { return; }
+    console.log(this.appliedFilterSelections);
     this.getTableObject();
   }
 
