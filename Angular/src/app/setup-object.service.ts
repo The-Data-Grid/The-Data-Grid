@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AppliedFilterSelections} from './models'
 
 export const IDX_OF_FEATURES_ARR = 0;
 export const IDX_OF_GLOBAL_ITEM_IDX = 1;
@@ -61,17 +62,9 @@ export class SetupObjectService {
     return featuresToChildren;
   }
 
-  getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumns) {
-    let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
-    let globalColumns = [];
-    let path = [IDX_OF_GLOBAL_ITEM_IDX];
-
-    this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, setupObject);
-
-    return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumns);
-  }
 
 
+//recursively find all the columns belonging to an item or a child of that item
   private getAllItemRelatedColumns(item, columns, path, setupObject) {
     item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
       let newPath = Object.assign([], path);
@@ -105,7 +98,57 @@ export class SetupObjectService {
     });
   }
 
-  getFeatureSelectors(setupObject, appliedFilterSelections, defaultColumns) {
+   /* ////////////////////////////////////
+    getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+
+    params: -setupObject
+            -appliedFilterSelections: an object that will hold's a user's input for each selector
+            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+
+    returns: selector object that maps selector type to column information. example selector object:
+    {
+      numericChoice: [],
+      numericEqual: [],
+      calendarRange: [],
+      calendarEqual: [],
+      dropdown: [],
+      searchableDropdown: [],
+      checklistDropdown: [],
+      searchableChecklistDropdown: [],
+      text: [],
+      bool: []
+    };
+
+    where each element inside the arrays have the form:
+    {
+        column: columnObject
+        returnableID: column's returnableID
+    }
+ */////////////////////////////////////////
+ getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs) {
+  let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
+  let globalColumns = [];
+  let path = [IDX_OF_GLOBAL_ITEM_IDX];
+
+  this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, setupObject);
+
+  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs);
+}
+
+
+   /* ////////////////////////////////////
+    getFeatureSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+
+    params: -setupObject
+            -appliedFilterSelections: an object that will hold's a user's input for each selector
+            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+
+    returns: an array of selector objects. each element of this array contains the selectors belonging to
+             one feature, and its index is the same as the index of that feature in the setupObject features array. 
+             see getGlobalSelectors for an example of a selector object.
+
+ */////////////////////////////////////////
+  getFeatureSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs) {
     let allFeatureSelectors = [];
     // for each feature
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
@@ -127,7 +170,7 @@ export class SetupObjectService {
       });
       allFeatureSelectors[featureIndex] = this.parseColumns(featureColumns,
         appliedFilterSelections,
-        defaultColumns);
+        defaultColumnIDs);
     });
     return allFeatureSelectors;
   }
@@ -135,7 +178,7 @@ export class SetupObjectService {
 
 
   // returns an array that holds key-value mapping from feature's index in setupObj featrues array to its input selectors
-  getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumns, isObservation: boolean) {
+  getFeatureInputSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, isObservation: boolean) {
     let childType;
     isObservation ? childType = IDX_OF_OBSERVATION_COL_IDXS : childType = IDX_OF_ATTRIBUTE_COL_IDXS;
 
@@ -143,7 +186,7 @@ export class SetupObjectService {
     // for each feature
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
-      console.log(childType + " " + setupObject.features[featureIndex].frontendName)
+      // console.log(childType + " " + setupObject.features[featureIndex].frontendName)
       // find feature's observation or attribute columns
       setupObject.features[featureIndex].children[childType].forEach((columnIndex, i) => {
         featureColumns.push({
@@ -153,7 +196,7 @@ export class SetupObjectService {
       });
       allFeatureInputSelectors[featureIndex] = this.parseColumns(featureColumns,
         appliedFilterSelections,
-        defaultColumns);
+        defaultColumnIDs);
     });
     return allFeatureInputSelectors;
   }
@@ -179,7 +222,10 @@ export class SetupObjectService {
     return setupObject.treeIDToReturnableID[treeID];
   }
 
-  private parseColumns(infos, appliedFilterSelections, defaultColumns): any {
+
+  // create the appliedFilterSelections object by finding all selectors. 
+  // also find all columns that have default marked true
+  private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],
@@ -196,40 +242,52 @@ export class SetupObjectService {
 
     infos.forEach(info => {
       if (info.column.filterSelector) {
-        //by default, returnableID to user's input
-        //range and multiselect selectors have different format for recording 
-        appliedFilterSelections[info.returnableID] = null;
 
         switch (info.column.filterSelector.selectorKey) {
-          case "dropdown": { selectors.dropdown.push(info); break; }
-          case "numericEqual": { selectors.numericEqual.push(info); break; }
+          case "dropdown": {
+            selectors.dropdown.push(info);
+            appliedFilterSelections.dropdown[info.returnableID] = null; break;
+          }
+          case "numericEqual": {
+            selectors.numericEqual.push(info);
+            appliedFilterSelections.numericEqual[info.returnableID] = null; break;
+          }
           case "numericChoice": {
             selectors.numericChoice.push(info);
-            appliedFilterSelections[info.returnableID] = { relation: null, value: null }; break;
+            appliedFilterSelections.numericChoice[info.returnableID] = { relation: null, value: null }; break;
           }
           case "calendarRange": {
             selectors.calendarRange.push(info);
-            appliedFilterSelections[info.returnableID] = { start: null, end: null }; break;
+            appliedFilterSelections.calendarRange[info.returnableID] = { start: null, end: null }; break;
           }
-          case "calendarEqual": { selectors.calendarEqual.push(info); break; }
-          case "searchableDropdown": {
+          case "calendarEqual": {
+            selectors.calendarEqual.push(info);
+            appliedFilterSelections.calendarEqual[info.returnableID] = null; break;
+          }
+          case "searchablenumericEqual": {
             selectors.searchableDropdown.push(info);
-            appliedFilterSelections[info.returnableID] = []; break;
+            appliedFilterSelections.searchableDropdown[info.returnableID] = []; break;
           }
           case "checklistDropdown": {
             selectors.checklistDropdown.push(info);
-            appliedFilterSelections[info.returnableID] = []; break;
+            appliedFilterSelections.checklistDropdown[info.returnableID] = []; break;
           }
           case "searchableChecklistDropdown": {
             selectors.searchableChecklistDropdown.push(info);
-            appliedFilterSelections[info.returnableID] = []; break;
+            appliedFilterSelections.searchableChecklistDropdown[info.returnableID] = []; break;
           }
-          case "text": { selectors.text.push(info); break; }
-          case "bool": { selectors.bool.push(info); break; }
+          case "text": {
+            selectors.text.push(info);
+            appliedFilterSelections.text[info.returnableID] = null; break;
+          }
+          case "bool": {
+            selectors.bool.push(info);
+            appliedFilterSelections.bool[info.returnableID] = null; break;
+          }
         }
       }
       if (info.column.default) {
-        defaultColumns.push(info.column.returnableID);
+        defaultColumnIDs.push(info.column.returnableID);
       }
     });
     return selectors;

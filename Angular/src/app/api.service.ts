@@ -3,7 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http'
 import { environment } from '../environments/environment';
 import { Observable, observable, Subscribable } from 'rxjs';
 import { map, catchError, filter, switchMap } from 'rxjs/operators';
-import { ToiletObject, TableObject, SetupTableObject } from './models';
+import {  TableObject, SetupTableObject } from './models';
 import { error } from '@angular/compiler/src/util';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';

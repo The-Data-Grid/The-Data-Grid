@@ -38,7 +38,8 @@
                                 {{ selectedFeature.name }}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
-                        <app-reusable-template [feature]="featureSelectors[selectedFeature.index]">
+                        <app-reusable-template [feature]="featureSelectors[selectedFeature.index]"
+                        [appliedFilterSelections]="appliedFilterSelections">
                         </app-reusable-template>
                     </mat-expansion-panel>
 
@@ -48,7 +49,7 @@
                                 {{setupObject.features[childIndex].frontendName}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
-                        <app-reusable-template [feature]="featureSelectors[childIndex]">
+                        <app-reusable-template [feature]="featureSelectors[childIndex]" [appliedFilterSelections]="appliedFilterSelections">
                         </app-reusable-template>
                     </mat-expansion-panel>
                 </mat-accordion>

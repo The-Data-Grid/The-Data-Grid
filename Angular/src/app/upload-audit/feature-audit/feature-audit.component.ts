@@ -9,6 +9,7 @@ import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableCheckl
 import { TableObjectService } from '../../table-object.service';
 // import { TableObject } from '../responses';
 // import { SetupObject} from '../setupObjectTry1';
+import { AppliedFilterSelections } from '../../models'
 
 
 
@@ -29,7 +30,19 @@ export class FeatureAuditComponent implements OnInit {
   observationSelectors;
   selectedFeature;
   featureSelectors;
-  appliedFilterSelections = {}
+  appliedFilterSelections: AppliedFilterSelections = {
+    numericChoice: {},
+    numericEqual: {},
+    calendarRange: {},
+    calendarEqual: {},
+    dropdown: {},
+    searchableDropdown: {},
+    checklistDropdown: {},
+    searchableChecklistDropdown: {},
+    text: {},
+    bool: {},
+    _placeholder: "placeholder"
+  };
   defaultColumns = []
   rootFeatures = []
   featuresToChildren = {}
@@ -156,8 +169,8 @@ export class FeatureAuditComponent implements OnInit {
   }
 
   getAttributeAndObservationColumns() {
-    this.attributeSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, [], [], false);
-    this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, [], [], true);
+    this.attributeSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, this.appliedFilterSelections, [], false);
+    this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, this.appliedFilterSelections, [], true);
   }
 
 }

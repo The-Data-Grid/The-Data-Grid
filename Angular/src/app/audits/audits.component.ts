@@ -3,6 +3,7 @@ import { ApiService } from '../api.service';
 import { DatePipe } from '@angular/common';
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../dropdown-settings'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { AppliedFilterSelections} from '../models'
 
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
@@ -33,13 +34,25 @@ export class AuditsComponent implements OnInit {
   // variables for filtering sidebar
   filterBy = "Submission";
   setupObject;
-  defaultColumns = [];
+  defaultColumnIDs = []; //default denotes which return columns are to be included in queries by default
   rootFeatures = [];
   selectedFeature;
   featuresToChildren = {};
-  appliedFilterSelections = {};
-  featureSelectors = {};
-  globalSelectors = {};
+  appliedFilterSelections: AppliedFilterSelections = {
+    numericChoice: {},
+    numericEqual: {},
+    calendarRange: {},
+    calendarEqual: {},
+    dropdown: {},
+    searchableDropdown: {},
+    checklistDropdown: {},
+    searchableChecklistDropdown: {},
+    text: {},
+    bool: {},
+    _placeholder: "placeholder"
+  };
+  featureSelectors = {  };
+  globalSelectors = {  };
   selectorsLoaded: boolean = false;
 
   // the following are for multiselect dropdowns:
@@ -76,7 +89,7 @@ export class AuditsComponent implements OnInit {
     this.globalSelectors = this.setupObjectService.getGlobalSelectors(
       this.setupObject,
       this.appliedFilterSelections,
-      this.defaultColumns);
+      this.defaultColumnIDs);
 
     // get root features
     this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
@@ -85,7 +98,7 @@ export class AuditsComponent implements OnInit {
     this.featureSelectors = this.setupObjectService.getFeatureSelectors(
       this.setupObject,
       this.appliedFilterSelections,
-      this.defaultColumns);
+      this.defaultColumnIDs);
 
     // map features to children
     this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
@@ -94,8 +107,9 @@ export class AuditsComponent implements OnInit {
     console.log(this.globalSelectors);
     console.log("feature selectors:");
     console.log(this.featureSelectors);
-    // console.log("applied filter selections:");
-    // console.log(this.appliedFilterSelections);
+    console.log("applied filter selections:");
+    console.log(this.appliedFilterSelections);
+
     // console.log("featuresToChildren:");
     // console.log(this.featuresToChildren);
     this.applyFilters();
@@ -110,7 +124,7 @@ export class AuditsComponent implements OnInit {
       this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
     }
     else {
-      this.apiService.getTableObject(this.selectedFeature, this.defaultColumns, this.appliedFilterSelections).subscribe((res) => {
+      this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections).subscribe((res) => {
         this.tableObject = res;
         this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
       });
@@ -173,6 +187,32 @@ export class AuditsComponent implements OnInit {
     this.getTableObject();
   }
 
+  formQueryURL() {
+    // create the "columns" part of the query by joining the default column IDS with '&'
+    let columnsString = this.defaultColumnIDs.join('&');
+    let filterString = "?"
+
+
+    for (const [ID, input] of Object.entries(this.appliedFilterSelections.dropdown)) {
+      if (input) {filterString += ID + "=" + input}
+    }
+    for (const [ID, input] of Object.entries(this.appliedFilterSelections.numericEqual)) {
+      if (input) {filterString += ID + "=" + input}
+    }
+    for (const [ID, inputObject] of Object.entries(this.appliedFilterSelections.numericChoice)) {
+      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
+    }
+    for (const [ID, input] of Object.entries(this.appliedFilterSelections.calendarEqual)) {
+      if (input) {filterString += ID + "=" + input}
+    }
+    for (const [ID, input] of Object.entries(this.appliedFilterSelections.text)) {
+      if (input) {filterString += ID + "=" + input}
+    }
+    for (const [ID, input] of Object.entries(this.appliedFilterSelections.bool)) {
+      if (input) {filterString += ID + "=" + input}
+    }
+
+  }
 
   applyDateFilter = (val: string) => {
     val = this.datepipe.transform(val, 'MM-dd-yyyy');

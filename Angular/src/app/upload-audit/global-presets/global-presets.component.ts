@@ -5,6 +5,7 @@ import { SetupObjectService } from '../../setup-object.service';
 import { SetupObject, TableObject } from '../../responses'
 import { environment } from '../../../environments/environment';
 const USE_FAKE_DATA = environment.useFakeData;
+import { AppliedFilterSelections } from '../../models'
 
 
 interface Data {
@@ -24,7 +25,19 @@ export class GlobalPresetsComponent implements OnInit {
 
   setupObject;
   globalSelectors;
-  appliedFilterSelections = [];
+  appliedFilterSelections: AppliedFilterSelections = {
+    numericChoice: {},
+    numericEqual: {},
+    calendarRange: {},
+    calendarEqual: {},
+    dropdown: {},
+    searchableDropdown: {},
+    checklistDropdown: {},
+    searchableChecklistDropdown: {},
+    text: {},
+    bool: {},
+    _placeholder: "placeholder"
+  };
   defaultColumns = [];
 
   ngOnInit(): void {

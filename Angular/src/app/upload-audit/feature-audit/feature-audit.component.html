@@ -35,12 +35,12 @@
       </div>
 
       <div *ngIf="panel.title == 'Toilet Attributes'">
-        <app-reusable-template class="custom" [featureIndex]="0" [feature]="attributeSelectors[featureIndex]">
+        <app-reusable-template class="custom" [featureIndex]="0" [feature]="attributeSelectors[featureIndex]" [appliedFilterSelections]="appliedFilterSelections">
         </app-reusable-template>
       </div>
 
       <div *ngIf="panel.title == 'Toilet Observation'">
-        <app-reusable-template class="custom" [featureIndex]="0" [feature]="observationSelectors[featureIndex]">
+        <app-reusable-template class="custom" [featureIndex]="0" [feature]="observationSelectors[featureIndex]" [appliedFilterSelections]="appliedFilterSelections">
         </app-reusable-template>
       </div>
 
