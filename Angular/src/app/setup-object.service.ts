@@ -105,7 +105,8 @@ export class SetupObjectService {
             -appliedFilterSelections: an object that will hold's a user's input for each selector
             -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
 
-    returns: selector object that maps selector type to column information. example selector object:
+    returns: selector object that maps selector type to column information. 
+    selector object format:
     {
       numericChoice: [],
       numericEqual: [],
@@ -176,9 +177,25 @@ export class SetupObjectService {
   }
 
 
+ /* ////////////////////////////////////
+    getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumnIDs, isObservation: boolean)
 
-  // returns an array that holds key-value mapping from feature's index in setupObj featrues array to its input selectors
-  getFeatureInputSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, isObservation: boolean) {
+    params: -setupObject
+            -appliedFilterSelections: an object that will hold's a user's input for each selector
+            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+            -isObservation: set to true to get observation selectors, false to get attribute selectors
+
+    returns: an array of selector objects. 
+             each element of this array contains the observation selectors or attribute selectors belonging to
+             one feature, and its index is the same as the index of that feature in the setupObject features array. 
+             see getGlobalSelectors for an example of a selector object.
+
+ */////////////////////////////////////////
+
+  // returns an array that holds key-value mapping from feature's index in setupObj features array 
+  // to its input selectors
+  getFeatureInputSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, 
+    defaultColumnIDs, isObservation: boolean) {
     let childType;
     isObservation ? childType = IDX_OF_OBSERVATION_COL_IDXS : childType = IDX_OF_ATTRIBUTE_COL_IDXS;
 
