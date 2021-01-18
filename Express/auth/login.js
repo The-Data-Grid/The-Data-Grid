@@ -4,7 +4,7 @@ const router = express.Router(); //use router instead of app
 const session = require('express-session'); 
 const bcrypt = require('bcrypt');
 
-const {postgresClient, connectPostgreSQL} = require('../db/pg.js'); 
+const {postgresClient} = require('../db/pg.js'); 
 
 // get connection object
 const db = postgresClient.getConnection.db;
