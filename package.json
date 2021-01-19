@@ -39,6 +39,7 @@
     "ng-click-outside": "^7.0.0",
     "ng-multiselect-dropdown": "^0.2.10",
     "ngx-horizontal-timeline": "0.0.6",
+    "node-gyp": "^7.1.2",
     "nodemon": "^2.0.4",
     "pg": "^8.3.3",
     "pg-native": "^3.0.0",
