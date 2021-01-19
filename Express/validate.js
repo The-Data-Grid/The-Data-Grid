@@ -28,7 +28,11 @@ for (let id in idValidationLookup) {
     }
 
     // Getting the root feature
+<<<<<<< HEAD
+    let feature = (!idColumnTableLookup[id].rootfeature ? idColumnTableLookup[id].feature : idColumnTableLookup[id].rootfeature) // was === null (not correct)
+=======
     let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
+>>>>>>> bf56749d8f777b6a8cedd04c883ac2e5c3bd1c5e
 
     // if empty or feature not included yet, initialize column and filter array for new feature
     if(!Object.keys(validate).includes(feature)) {
