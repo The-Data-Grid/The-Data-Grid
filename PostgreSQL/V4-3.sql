@@ -148,6 +148,8 @@ CREATE TABLE item_user (
     data_full_name TEXT NOT NULL,
     data_email TEXT NOT NULL,
     tdg_p_hash TEXT NOT NULL,
+    data_is_email_public BOOLEAN NOT NULL,
+    data_is_quarterly_updates BOOLEAN NOT NULL,
     UNIQUE(data_email)
 );
 
@@ -618,6 +620,26 @@ CREATE TABLE metadata_feature (
     frontend_name TEXT NOT NULL
 );
 
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL
+);
+
+insert into users 
+    (
+        id,
+        name,
+        email,
+        password,
+        role
+    )
+    values 
+        (default, 'veronica', 'veronica@gmail.com', 'example', 'user'),
+        (default, 'edward', 'ed@gmail.com', 'example', 'superuser');
 
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                          
@@ -1258,21 +1280,24 @@ INSERT INTO metadata_item
 -- potential-observable
 CALL "insert_m2m_metadata_item"('item_building', 'item_entity', TRUE, FALSE, 'Entity of Building', NULL);
 CALL "insert_m2m_metadata_item"('item_organization', 'item_entity', TRUE, FALSE, 'Entity of Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_entity', 'item_city', FALSE, FALSE, 'City of Entity', NULL);
+CALL "insert_m2m_metadata_item"('item_entity', 'item_city', FALSE, TRUE, 'City of Entity', NULL);
 CALL "insert_m2m_metadata_item"('item_city', 'item_county', TRUE, FALSE, 'County of City', NULL);
 CALL "insert_m2m_metadata_item"('item_county', 'item_state', TRUE, FALSE, 'State of County', NULL);
 CALL "insert_m2m_metadata_item"('item_state', 'item_country', TRUE, FALSE, 'Country of State', NULL);
 
 -- non-observable
-CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', FALSE, FALSE, 'Authoring Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_template', 'item_user', FALSE, FALSE, 'Authoring User', NULL);
-CALL "insert_m2m_metadata_item"('item_template', 'item_organization', FALSE, FALSE, 'Authoring Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_user', 'item_organization', FALSE, FALSE, 'Member of Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_submission', 'item_audit', FALSE, FALSE, 'Audit of Submission', NULL);
-CALL "insert_m2m_metadata_item"('item_submission', 'item_user', FALSE, FALSE, 'Submitting User', NULL);
+CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
+CALL "insert_m2m_metadata_item"('item_template', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
+CALL "insert_m2m_metadata_item"('item_template', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
+CALL "insert_m2m_metadata_item"('item_user', 'item_organization', TRUE, FALSE, 'Member of Organization', NULL);
+--     submission
+CALL "insert_m2m_metadata_item"('item_submission', 'item_audit', TRUE, FALSE, 'Audit of Submission', NULL);
+CALL "insert_m2m_metadata_item"('item_submission', 'item_organization', TRUE, FALSE, 'Submitting Organization', NULL);
+CALL "insert_m2m_metadata_item"('item_submission', 'item_user', TRUE, FALSE, 'Submitting User', NULL);
 CALL "insert_m2m_metadata_item"('item_submission', 'item_template', FALSE, TRUE, 'Template Used', NULL);
+--     audit
 CALL "insert_m2m_metadata_item"('item_audit', 'item_catalog', FALSE, TRUE, 'Catalog of Audit', NULL);
-CALL "insert_m2m_metadata_item"('item_audit', 'item_user', FALSE, FALSE, 'Authoring User', NULL);
+CALL "insert_m2m_metadata_item"('item_audit', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
 
 
 
@@ -1300,8 +1325,12 @@ CALL "insert_metadata_column"('data_organization_name_link', 'item_organization'
 CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_template_name', 'item_template', NULL, NULL, 'item_template', TRUE, TRUE, 'Audit Template Name', 'text', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_title', 'item_catalog', NULL, NULL, 'item_catalog', TRUE, FALSE, 'Audit Title', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+--     user
+CALL "insert_metadata_column"('data_is_email_public', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Email visible to Public', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');
+CALL "insert_metadata_column"('data_is_quarterly_updates', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Receive Quarterly Updates', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');
 CALL "insert_metadata_column"('data_full_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+
 
 -- Locations
 -- Building
