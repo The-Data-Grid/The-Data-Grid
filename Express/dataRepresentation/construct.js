@@ -382,10 +382,11 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     
     // Creating the computed file and returnables folder 
     await showComputed(commandLineArgs);
-    
 
-    // Done!
+    // Creating schema assets
+    makeAssets(featureOutput);
     
+    // Done!
     console.log(chalk.blueBright.bgWhiteBright('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'));
     console.log(chalk.blueBright.bgWhiteBright('                             '));
     console.log(chalk.green.bgWhiteBright('   Successful Construction   '));
@@ -1205,7 +1206,19 @@ function readSchema(file) { // Schema read function
     return JSON.parse(stripJsonComments(fs.readFileSync(__dirname + file, 'utf8')))
 }
 
+function makeAssets(featureOutput) {
+    const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup} = featureOutput;
+    
+    // Adding files to ./Express/dataRepresentation/schemaAssets
+    fs.writeFileSync(`${__dirname}/schemaAssets/itemIDColumnLookup.json`, JSON.stringify(itemIDColumnLookup))
+    console.log(chalk.whiteBright.bold(`Wrote itemIDColumnLookup.json to schemaAssets`));
 
+    fs.writeFileSync(`${__dirname}/schemaAssets/featureItemLookup.json`, JSON.stringify(featureItemLookup));
+    console.log(chalk.whiteBright.bold(`Wrote featireItemLookup.json to schemaAssets`));
+
+    fs.writeFileSync(`${__dirname}/schemaAssets/itemRealGeoLookup.json`, JSON.stringify(itemRealGeoLookup));
+    console.log(chalk.whiteBright.bold(`Wrote itemRealGeoLookup.json to schemaAssets`));
+}
 
 async function showComputed(commandLineArgs) {
     // Creating the computed file and returnables folder 

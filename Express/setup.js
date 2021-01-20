@@ -381,7 +381,8 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             feature: row['f__table_name'],
             //referenceColumn: row['c__reference_column_name'],
             //referenceTable: row['c__reference_table_name'],
-
+            item: row['i__table_name'],
+            referenceType: row['rt__type_name'],
             isFilterable: isFilterable,
             isSubmission: isSubmission,
 

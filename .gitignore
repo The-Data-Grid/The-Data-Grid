@@ -11,6 +11,10 @@ PostgreSQL/data/*
 # computed returnables
 Express/dataRepresentation/auditSchemas/*/returnables/
 
-Express/queryTester.js
+# schema dependent assets
+Express/dataRepresentation/schemaAssets/*
+!Express/dataRepresentation/schemaAssets/.gitkeep
 
+# helpers
+Express/queryTester.js
 PostgreSQL/scratch.txt

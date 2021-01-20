@@ -34,6 +34,9 @@ const queryEngine = require('./queryEngine.js');
 var lodashArray = require('lodash/array');
 var lodashLang = require('lodash/lang');
 
+// csv parser
+const {writeToBuffer} = require('@fast-csv/format');
+
 
 // Testing request response cycle time (for dev only)
 var cycleTime = [];
@@ -114,8 +117,8 @@ async function featureQuery(req, res, next) {
         // Concatenating clauses to make final SQL query
         let finalQuery = query.join(' '); 
         
-         // DEBUG: Show SQL Query //
-          console.log(finalQuery); 
+        // DEBUG: Show SQL Query //
+        // console.log(finalQuery); 
 
         // Finally querying the database and attaching the result
         res.locals.parsed.finalQuery = await db.result(finalQuery)
@@ -346,11 +349,45 @@ function sendDefault(req, res) {
         }  
     });
 
-    res.json({
-        returnableIDs,
-        rowData,
-        primaryKey
-    });
+    if(res.locals.parsed.download.status) {
+        if(res.locals.parsed.download.type == 'csv') {
+            // add header
+            let csvData = [['Observation Primary Key', ...returnableIDs]]
+            // format rows with primary keys
+            rowData.forEach((row, i) => row.unshift(primaryKey[i]))
+            // add rows to csv
+            rowData.forEach(row => csvData.push(row))
+            
+            // write to buffer and send
+            writeToBuffer(csvData).then(data => {
+                res.writeHead(200, {
+                    'Content-Disposition': `attachment; filename="TDG-Download.csv"`,
+                    'Content-Type': 'text/csv',
+                })
+
+                res.end(data)
+            })
+        } else if(res.locals.parsed.download.type == 'json') {
+            res.writeHead(200, {
+                'Content-Disposition': `attachment; filename="TDG-Download.json"`,
+                'Content-Type': 'application/json',
+            })
+
+            res.end(JSON.stringify({
+                returnableIDs,
+                rowData,
+                primaryKey
+            }))
+        } else {
+            res.status(500).send('Download Parse Error')
+        }
+    } else {
+        res.json({
+            returnableIDs,
+            rowData,
+            primaryKey
+        });
+    }
 };
 
 
