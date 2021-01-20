@@ -2,6 +2,7 @@
 const express = require('express'); 
 const router = express.Router(); //use router instead of app
 const session = require('express-session'); 
+const bcrypt = require('bcrypt');
 
 const {postgresClient} = require('../db/pg.js'); 
 
@@ -31,16 +32,23 @@ router.post('/login/', (req, res) => {
     let combo = [req.body.user, req.body.pass];
     //console.log(req.body); 
 
-    db.one(formatSQL('SELECT * FROM users WHERE name = $(user) AND password = $(password)', {
-        user: combo[0], 
-        password: combo[1]
+    db.one(formatSQL('SELECT password FROM users WHERE name = $(user)', {
+        user: combo[0]
     }))
     .then(data => {
-        console.log('DATA:', data); 
-        req.session.loggedIn = true;
-        req.session.userName = req.body.user;
-        req.session.role = data.role
-        res.send('you logged in');
+        //console.log('password = ' + data.password);
+        //console.log('combo[1] = ' + combo[1]); 
+        let result = bcrypt.compareSync(combo[1], data.password); 
+        //compare the unhashed password with the hashed password in the database using the bcrypt compareSync function
+        if (result) {
+            req.session.loggedIn = true;
+            req.session.userName = req.body.user;
+            req.session.role = data.role
+            res.send('password matched and you logged in');
+        }
+        else {
+            res.status(401).send('password did not match');
+        }
     })
     .catch(error => {
         console.log('ERROR:', error);
