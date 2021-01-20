@@ -160,7 +160,7 @@ function timestamptzParse(s) {
     let b = s.split(/\D/);
     --b[1];                  // Adjust month number
     b[6] = b[6].substr(0,3); // Microseconds to milliseconds
-    return new Date(Date.UTC(...b));
+    return new Date(Date.UTC(...b)).toUTCString();
 }
 ////// END OF TIMESTAMPTZ PARSING  //////
 

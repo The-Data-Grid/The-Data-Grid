@@ -46,10 +46,10 @@ function cycleTimer(req, res, next) {
 }
 
 //** Data Query **//
-app.get('/api/audit/observation/:feature/:include', router, cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.sendData); 
+app.get('/api/audit/observation/:feature/:include', router, parse.queryParse, validate.validateAudit, query.featureQuery, query.sendDefault); 
 
 //** Dropdown Query **/
-//app.get('/api/audit/dropdown/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery, query.returnDropdown)
+app.get('/api/audit/observation/dropdown/:feature/:include', router, parse.queryParse, validate.validateAudit, query.featureQuery, query.sendDropdown)
 
 //** Setup Query **//
 app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);

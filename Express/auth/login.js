@@ -22,6 +22,8 @@ router.use(session({
     name: 'sessionID',
     cookie: {
         maxAge: 60000, 
+        // make sure this is secure in prod
+        secure: (process.env.NODE_ENV == 'development' ? false : true)
     }
 }));
 
