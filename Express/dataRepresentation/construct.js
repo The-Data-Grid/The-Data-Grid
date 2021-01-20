@@ -234,7 +234,7 @@ async function inspectSchema(commandLineArgs) {
         out = await db.any('SELECT * FROM metadata_column');
     }
 
-    let count = (commandLineArgs.isSummary ? Object.keys(out).length : out.length)
+    let count = (commandLineArgs.isSummary || commandLineArgs.isTree ? Object.keys(out).length : out.length)
     console.log(out)
     console.log(chalk.cyanBright.underline(`Count: ${count}`))
 
