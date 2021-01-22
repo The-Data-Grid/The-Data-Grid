@@ -294,4 +294,59 @@
     margin-top: 80px;
  }
 
+ .divider {
+    width: 130%;
+    height: 1px;
+    background-color: #cccccc;
+    margin-left: -50px;
+ }
+
+ .indivDivider {
+    width: 2px;
+    height:50px;
+    background-color: black;
+    position: absolute;
+    z-index: 5;
+ }
+
+ .mainDivider {
+   width: 2px;
+   height:500px;
+   background-color: black;
+   position: absolute;
+   z-index: 5;
+   /* margin-left: 40%; */
+
+ }
+
+ngx-datatable.material .datatable-header .datatable-header-cell {
+   font-size: 10px !important;
+}
+
+ :host ::ng-deep .datatable-header-cell-label-draggable  {
+   padding-bottom: 100px !important;
+ }
+
+ .datatable-header-cell-template {
+   vertical-align: bottom;
+   border-bottom: 2px solid #ddd;
+   padding: 800px;
+   line-height: 1.42857143;
+   font-weight: bold;
+   color: rgb(51, 51, 51);
+   }
+
+:host ::ng-deep .datatable-header-cell-label-draggable {
+   font-size: 500px;
+}
+
+
+table {
+   width: 100%;
+ }
  
+ th.mat-header-cell, td.mat-cell {
+     text-align: center;
+     border: 1px solid #CCC;
+     padding: 0 !important;
+ }
