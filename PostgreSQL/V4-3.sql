@@ -63,7 +63,7 @@ CREATE TABLE item_entity (
     item_id SERIAL PRIMARY KEY,
     data_entity_name TEXT NOT NULL,
     data_entity_address TEXT NOT NULL,
-    item_city_id INTEGER NOT NULL, --fk **
+    item_city_id INTEGER, --fk **
     UNIQUE(data_entity_name)
 );
 
@@ -150,14 +150,16 @@ CREATE TABLE item_user (
     tdg_p_hash TEXT NOT NULL,
     data_is_email_public BOOLEAN NOT NULL,
     data_is_quarterly_updates BOOLEAN NOT NULL,
+    is_superuser BOOLEAN NOT NULL,
     UNIQUE(data_email)
 );
 
+/*
 CREATE TABLE m2m_user_organization (
     item_user_id INTEGER NOT NULL, --fk **
     organization_id INTEGER NOT NULL --fk **
 );
-
+*/
 
 -- Submission
 
@@ -233,11 +235,12 @@ INSERT INTO tdg_privilege
     (privilege_id, privilege_name)
         VALUES 
             (DEFAULT, 'guest'),
-            (DEFAULT, 'user'),
+            --(DEFAULT, 'user'),
             (DEFAULT, 'auditor'),
-            (DEFAULT, 'admin'),
-            (DEFAULT, 'superuser');
+            (DEFAULT, 'admin');
+            --(DEFAULT, 'superuser');
 
+-- many to many to many
 CREATE TABLE tdg_role (
     role_id SERIAL PRIMARY KEY,
     privilege_id INTEGER NOT NULL, --fk **
@@ -642,6 +645,40 @@ insert into users
         (default, 'edward', 'ed@gmail.com', 'example', 'superuser');
 
 
+CREATE VIEW returnable_view AS (SELECT 
+        
+        f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, 
+        f.frontend_name as f__frontend_name, 
+        
+        rf.table_name as rf__table_name, 
+        
+        c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, 
+        c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, 
+        c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, 
+        
+        fs.selector_name as fs__selector_name, 
+        ins.selector_name as ins__selector_name, 
+        sql.type_name as sql__type_name, 
+        rt.type_name as rt__type_name, 
+        ft.type_name as ft__type_name, ft.type_description as ft__type_description, 
+        
+        r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, 
+        r.is_real_geo as r__is_real_geo, r.join_object -> 'attributeType' as r__attribute_type, r.feature_id as r__feature_id, 
+        
+        i.table_name as i__table_name, i.frontend_name as i__frontend_name 
+        
+        FROM metadata_returnable as r 
+        LEFT JOIN metadata_column AS c ON c.column_id = r.column_id 
+        LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id 
+        LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id 
+        LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id 
+        LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id 
+        LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id 
+        LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id 
+        LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id 
+        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id);
+
+
 /* ----------------------------------------------------------------------------------------------------------                                                                                                          
                                          ,,                                                                     
 `7MM"""YMM                               db                            `7MMF' `YMM'                             
@@ -743,8 +780,8 @@ ALTER TABLE tdg_role ADD FOREIGN KEY (privilege_id) REFERENCES tdg_privilege;
 ALTER TABLE tdg_role ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 ALTER TABLE tdg_role ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
-ALTER TABLE m2m_user_organization ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
-ALTER TABLE m2m_user_organization ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
+-- ALTER TABLE m2m_user_organization ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+-- ALTER TABLE m2m_user_organization ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
 
 ALTER TABLE item_user ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
@@ -1051,6 +1088,12 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("observation_count_id")
                             REFERENCES "tdg_observation_count" ("observation_count_id")', table_name);
+
+            -- Observation Count Trigger
+            EXECUTE FORMAT('CREATE TRIGGER trig_copy
+                            BEFORE INSERT ON %I
+                            FOR EACH ROW
+                            EXECUTE PROCEDURE update_observation_count()', table_name);
         
             -- Submission reference
             EXECUTE FORMAT('ALTER TABLE %I 
@@ -1253,6 +1296,25 @@ CREATE FUNCTION check_auditor_name() RETURNS TRIGGER AS $check_auditor_name$
         RETURN NEW;
     END;
     $check_auditor_name$ LANGUAGE plpgsql;
+
+
+-- tdg_observation_count updation trigger
+
+CREATE FUNCTION update_observation_count() RETURNS TRIGGER AS
+$$
+    BEGIN
+        INSERT INTO tdg_observation_count
+            (observation_count_id) 
+                VALUES
+                    (currval('tdg_observation_count_observation_count_id_seq') - 1); -- honestly wtf
+        RETURN NEW;
+    END;
+$$
+LANGUAGE plpgsql;
+
+-- this is weird
+select nextval('tdg_observation_count_observation_count_id_seq');
+
 
 -- Inserting into metadata
 

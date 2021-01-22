@@ -20,7 +20,7 @@ const query = {
 
     offset: 'OFFSET $(offset)',
 
-    select: 'SELECT $(returnColumns:raw) FROM $(feature:name)',
+    select: 'SELECT $(feature:name)."observation_id" AS obspkey, $(selectClauses:raw)',
 
     where: '$(clause:value) ($(condition:raw))',
 
@@ -30,7 +30,9 @@ const query = {
 
     subfeatureJoin: 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id',
 
-    rootFeatureJoin: 'FROM $(rootFeature:value)'
+    rootFeatureJoin: 'FROM $(rootFeature:value)',
+
+    groupBy: 'GROUP BY $(nonListReturnables:raw), $(feature:name).observation_id, item_submission.data_time_submitted'
 
 };
 
@@ -97,38 +99,38 @@ const construct = {
  */
 const setup = {
 
-    returnableQuery: 'SELECT \
-        \
-        f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, \
-        f.frontend_name as f__frontend_name, \
-        \
-        rf.table_name as rf__table_name, \
-        \
-        c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, \
-        c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, \
-        c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, \
-        \
-        fs.selector_name as fs__selector_name, \
-        ins.selector_name as ins__selector_name, \
-        sql.type_name as sql__type_name, \
-        rt.type_name as rt__type_name, \
-        ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
-        \
-        r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, \
-        r.is_real_geo as r__is_real_geo, r.join_object -> \'attributeType\' as r__attribute_type, r.feature_id as r__feature_id, \
-        \
-        i.table_name as i__table_name, i.frontend_name as i__frontend_name \
-        \
-        FROM metadata_returnable as r \
-        LEFT JOIN metadata_column AS c ON c.column_id = r.column_id \
-        LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id \
-        LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id \
-        LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id \
-        LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id \
-        LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
-        LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
-        LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
-        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id',
+    returnableQuery: `SELECT 
+        
+        f.table_name as f__table_name, f.num_feature_range as f__num_feature_range, f.information as f__information, 
+        f.frontend_name as f__frontend_name, 
+        
+        rf.table_name as rf__table_name, 
+        
+        c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, 
+        c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, 
+        c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, 
+        
+        fs.selector_name as fs__selector_name, 
+        ins.selector_name as ins__selector_name, 
+        sql.type_name as sql__type_name, 
+        rt.type_name as rt__type_name, 
+        ft.type_name as ft__type_name, ft.type_description as ft__type_description, 
+        
+        r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, 
+        r.is_real_geo as r__is_real_geo, r.join_object -> 'attributeType' as r__attribute_type, r.feature_id as r__feature_id, 
+        
+        i.table_name as i__table_name, i.frontend_name as i__frontend_name 
+        
+        FROM metadata_returnable as r 
+        LEFT JOIN metadata_column AS c ON c.column_id = r.column_id 
+        LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id 
+        LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id 
+        LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id 
+        LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id 
+        LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id 
+        LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id 
+        LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id 
+        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id`,
 
     columnQuery: 'SELECT \
         \
