@@ -23,16 +23,11 @@ router.use(session({
     name: 'sessionID',
     cookie: {
         maxAge: 60000, 
-        // make sure this is secure in prod
-        secure: (process.env.NODE_ENV == 'development' ? false : true)
     }
 }));
 
 
 router.post('/login/', async (req, res) => {
-
-    //console.log(req.body.pass);
-    //console.log(bcrypt.hashSync(req.body.pass, 10));
 
     let data = null;
     try {
@@ -42,7 +37,6 @@ router.post('/login/', async (req, res) => {
     }
     catch(error) {
         console.log('ERROR:', error);
-        // req.session.destroy(); 
         res.status(401).send('not a valid login');
     }
     
@@ -59,37 +53,6 @@ router.post('/login/', async (req, res) => {
     }
 });
 
-
-/*
-router.post('/login/', (req, res) => {
-    let combo = [req.body.user, req.body.pass];
-    //console.log(req.body); 
-
-    db.one(formatSQL('SELECT password FROM users WHERE name = $(user)', {
-        user: combo[0]
-    }))
-    .then(data => {
-        //console.log('password = ' + data.password);
-        //console.log('combo[1] = ' + combo[1]); 
-        let result = bcrypt.compareSync(combo[1], data.password); 
-        //compare the unhashed password with the hashed password in the database using the bcrypt compareSync function
-        if (result) {
-            req.session.loggedIn = true;
-            req.session.userName = req.body.user;
-            req.session.role = data.role
-            res.send('password matched and you logged in');
-        }
-        else {
-            res.status(401).send('password did not match');
-        }
-    })
-    .catch(error => {
-        console.log('ERROR:', error);
-        // req.session.destroy(); 
-        res.status(401).send('not a valid login');
-    })
-});
-*/
 
 
 router.get('/secure', (req, res) => {
