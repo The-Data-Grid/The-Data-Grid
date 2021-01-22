@@ -26,6 +26,39 @@ router.use(session({
     }
 }));
 
+
+router.post('/login/', async (req, res) => {
+
+    //console.log(req.body.pass);
+    //console.log(bcrypt.hashSync(req.body.pass, 10));
+
+    let data = null;
+    try {
+        data = await db.one(formatSQL('SELECT password FROM users WHERE name = $(user)', {
+            user: req.body.user
+        }));
+    }
+    catch(error) {
+        console.log('ERROR:', error);
+        // req.session.destroy(); 
+        res.status(401).send('not a valid login');
+    }
+    
+    let result = await bcrypt.compare(req.body.pass, data.password); 
+
+    if (result) {
+        req.session.loggedIn = true;
+        req.session.userName = req.body.user;
+        req.session.role = data.role
+        res.send('password matched and you logged in');
+    }
+    else {
+        res.status(401).send('password did not match');
+    }
+});
+
+
+/*
 router.post('/login/', (req, res) => {
     let combo = [req.body.user, req.body.pass];
     //console.log(req.body); 
@@ -54,6 +87,8 @@ router.post('/login/', (req, res) => {
         res.status(401).send('not a valid login');
     })
 });
+*/
+
 
 router.get('/secure', (req, res) => {
     // if the session store shows that the user is logged in
@@ -69,6 +104,7 @@ router.get('/secure', (req, res) => {
         res.send('Permission Denied');
     };
 });
+
 
 function authorize(path) {
     return((req, res, next) => {
