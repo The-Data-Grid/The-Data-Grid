@@ -23,6 +23,8 @@ router.use(session({
     name: 'sessionID',
     cookie: {
         maxAge: 60000, 
+        // make sure this is secure in prod
+        secure: (process.env.NODE_ENV == 'development' ? false : true)
     }
 }));
 
@@ -31,25 +33,25 @@ router.post('/login/', async (req, res) => {
 
     let data = null;
     try {
-        data = await db.one(formatSQL('SELECT password FROM users WHERE name = $(user)', {
-            user: req.body.user
+        data = await db.one(formatSQL('SELECT password FROM users WHERE email = $(email)', {
+            email: req.body.email
         }));
+
+        let result = await bcrypt.compare(req.body.pass, data.password); 
+
+        if (result) {
+            req.session.loggedIn = true;
+            req.session.email = req.body.email;
+            req.session.role = data.role
+            res.send('password matched and you logged in');
+        }
+        else {
+            throw new Error('error');
+        }
     }
     catch(error) {
         console.log('ERROR:', error);
-        res.status(401).send('not a valid login');
-    }
-    
-    let result = await bcrypt.compare(req.body.pass, data.password); 
-
-    if (result) {
-        req.session.loggedIn = true;
-        req.session.userName = req.body.user;
-        req.session.role = data.role
-        res.send('password matched and you logged in');
-    }
-    else {
-        res.status(401).send('password did not match');
+        res.status(401).send('not a valid combo');
     }
 });
 
@@ -58,7 +60,7 @@ router.post('/login/', async (req, res) => {
 router.get('/secure', (req, res) => {
     // if the session store shows that the user is logged in
     if(req.session.loggedIn) {
-        res.send(`Here is your confidential data, ${req.session.userName}`);
+        res.send(`Here is your confidential data, ${req.session.email}`);
 
         // logging the contents of the entire session store
         MyStore.all((err, session) => {
