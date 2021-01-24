@@ -234,11 +234,9 @@ CREATE TABLE tdg_privilege (
 INSERT INTO tdg_privilege 
     (privilege_id, privilege_name)
         VALUES 
-            (DEFAULT, 'guest'),
-            --(DEFAULT, 'user'),
+            (DEFAULT, 'member'),
             (DEFAULT, 'auditor'),
             (DEFAULT, 'admin');
-            --(DEFAULT, 'superuser');
 
 -- many to many to many
 CREATE TABLE tdg_role (
