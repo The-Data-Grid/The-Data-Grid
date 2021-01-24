@@ -473,7 +473,7 @@ async function statsQuery(req, res, next) {
 function sendSetup(req, res) {
 
     let cycleTime = Date.now() - res.locals.cycleTime[0]
-    console.log(`Sent setupObject in ${cycleTime} ms`)
+    //console.log(`Sent setupObject in ${cycleTime} ms`)
     
     // if the "If-Modified-Since" header is not included or is newer or the same age as the setupObject's lastModified date
     if(res.locals.parsed.ifModifiedSince >= setupObject.lastModified) {
