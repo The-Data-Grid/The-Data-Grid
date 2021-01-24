@@ -78,7 +78,7 @@ app.all('/', function(req, res){
 });
 app.all('*', function(req, res){
     //console.log('../Deployment/Angular/dist' + req.path);
-    console.log('../Deployment/Angular/dist' + req.path);
+    //console.log('../Deployment/Angular/dist' + req.path);
     res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
 });
 	
