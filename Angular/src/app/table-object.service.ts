@@ -30,7 +30,7 @@ export class TableObjectService {
     let returnableIDToColumnIndex = this.getReturnableIDToColumnIndex(setupObject, tableObject);
 
     // construct the column header arrays
-    tableObject.returnableColumnIDs.forEach(columnID => {
+    tableObject.returnableIDs.forEach(columnID => {
       let columnIndex = returnableIDToColumnIndex[columnID];
 
       dataTableColumns.push({
@@ -47,7 +47,7 @@ export class TableObjectService {
 
 
       // fill out the row object
-      tableObject.returnableColumnIDs.forEach((columnID, i) => {
+      tableObject.returnableIDs.forEach((columnID, i) => {
         let columnIndex = returnableIDToColumnIndex[columnID];
         let datatype = datatypes[setupObject.columns[columnIndex].datatypeKey];
         // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype)
@@ -80,7 +80,7 @@ export class TableObjectService {
 
   getReturnableIDToColumnIndex(setupObject, tableObject) {
     let returnableIDToColumnIndex = {};
-    tableObject.returnableColumnIDs.forEach(columnID => {
+    tableObject.returnableIDs.forEach(columnID => {
       let treeID = setupObject.returnableIDToTreeID[columnID].split('>')
       let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
       //need column name, type, and index

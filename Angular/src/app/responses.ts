@@ -346,7 +346,7 @@ export let SetupObject = {
 
 
 export let TableObject = {
-    returnableColumnIDs: [
+    returnableIDs: [
         12, //Org
         13, //basin brand
         11, //gpf

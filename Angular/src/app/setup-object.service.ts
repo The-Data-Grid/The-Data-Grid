@@ -242,6 +242,8 @@ export class SetupObjectService {
 
   // create the appliedFilterSelections object by finding all selectors. 
   // also find all columns that have default marked true
+  //fills defaultcolumnIDs with the IDs of default columns
+  //TODO: add functionality to return inputSelectors
   private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs): any {
     let selectors = {
       numericChoice: [],

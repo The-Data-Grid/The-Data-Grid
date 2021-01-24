@@ -3,7 +3,7 @@ import { ApiService } from '../api.service';
 import { DatePipe } from '@angular/common';
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../dropdown-settings'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
-import { AppliedFilterSelections} from '../models'
+import { AppliedFilterSelections } from '../models'
 
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
@@ -51,8 +51,8 @@ export class AuditsComponent implements OnInit {
     bool: {},
     _placeholder: "placeholder"
   };
-  featureSelectors = {  };
-  globalSelectors = {  };
+  featureSelectors = {};
+  globalSelectors = {};
   selectorsLoaded: boolean = false;
 
   // the following are for multiselect dropdowns:
@@ -73,11 +73,13 @@ export class AuditsComponent implements OnInit {
 
   getSetupObject() {
     if (USE_FAKE_DATA) {
+      console.log("using data from responses.ts")
       this.setupObject = SetupObject;
       this.parseSetupObject();
     }
     else {
       this.apiService.getSetupTableObject().subscribe((res) => {
+        console.log("using data from express server")
         this.setupObject = res;
         this.parseSetupObject();
       });
@@ -194,22 +196,22 @@ export class AuditsComponent implements OnInit {
 
 
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.dropdown)) {
-      if (input) {filterString += ID + "=" + input}
+      if (input) { filterString += ID + "=" + input }
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.numericEqual)) {
-      if (input) {filterString += ID + "=" + input}
+      if (input) { filterString += ID + "=" + input }
     }
     for (const [ID, inputObject] of Object.entries(this.appliedFilterSelections.numericChoice)) {
       // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.calendarEqual)) {
-      if (input) {filterString += ID + "=" + input}
+      if (input) { filterString += ID + "=" + input }
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.text)) {
-      if (input) {filterString += ID + "=" + input}
+      if (input) { filterString += ID + "=" + input }
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.bool)) {
-      if (input) {filterString += ID + "=" + input}
+      if (input) { filterString += ID + "=" + input }
     }
 
   }
