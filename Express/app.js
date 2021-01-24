@@ -13,11 +13,11 @@ connectPostgreSQL('default');
 
 const insertTry = require('./insert/try.js');
 const parse = require('./parse.js');
-const validate = require('./validate.js')
+const {validationConstructor} = require('./validate.js')
 const query = require('./query.js');
 const insert = require('./insert.js');
 const template = require('./template.js');
-const router = require('./auth/login.js');
+const authorize = require('./auth/login.js');
 
 app.use(cors());
 // app.use(bodyParser.json()); shouldn't need
@@ -45,11 +45,17 @@ function cycleTimer(req, res, next) {
     next()
 }
 
-//** Data Query **//
-app.get('/api/audit/observation/:feature/:include', router, parse.queryParse, validate.validateAudit, query.featureQuery, query.sendDefault); 
+//** Observation Data Query **//
+app.get('/api/audit/observation/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
 
-//** Dropdown Query **/
-app.get('/api/audit/observation/dropdown/:feature/:include', router, parse.queryParse, validate.validateAudit, query.featureQuery, query.sendDropdown)
+//** Observation Dropdown Query **/
+app.get('/api/audit/observation/dropdown/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDropdown)
+
+//** Observation Download Query **//
+app.get('/api/audit/observation/download/:downloadType/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
+
+//** Item Data Query **//
+app.get('/api/audit/item/:feature/:include', authorize, parse.queryParse, validationConstructor('item'))
 
 //** Setup Query **//
 app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);
@@ -64,10 +70,10 @@ app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTe
 app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
 // Easter Egg
-app.get('/api/coffee', router, (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
+app.get('/api/coffee', authorize, (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
 
 // Login 
-app.use('/auth', router);
+app.use('/auth', authorize);
 
 app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 

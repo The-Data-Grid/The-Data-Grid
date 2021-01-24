@@ -28,39 +28,39 @@ router.use(session({
     }
 }));
 
-router.post('/login/', (req, res) => {
-    let combo = [req.body.user, req.body.pass];
-    //console.log(req.body); 
 
-    db.one(formatSQL('SELECT password FROM users WHERE name = $(user)', {
-        user: combo[0]
-    }))
-    .then(data => {
-        //console.log('password = ' + data.password);
-        //console.log('combo[1] = ' + combo[1]); 
-        let result = bcrypt.compareSync(combo[1], data.password); 
-        //compare the unhashed password with the hashed password in the database using the bcrypt compareSync function
+router.post('/login/', async (req, res) => {
+
+    let data = null;
+    try {
+        data = await db.one(formatSQL('SELECT password FROM users WHERE email = $(email)', {
+            email: req.body.email
+        }));
+
+        let result = await bcrypt.compare(req.body.pass, data.password); 
+
         if (result) {
             req.session.loggedIn = true;
-            req.session.userName = req.body.user;
+            req.session.email = req.body.email;
             req.session.role = data.role
             res.send('password matched and you logged in');
         }
         else {
-            res.status(401).send('password did not match');
+            throw new Error('error');
         }
-    })
-    .catch(error => {
+    }
+    catch(error) {
         console.log('ERROR:', error);
-        // req.session.destroy(); 
-        res.status(401).send('not a valid login');
-    })
+        res.status(401).send('not a valid combo');
+    }
 });
+
+
 
 router.get('/secure', (req, res) => {
     // if the session store shows that the user is logged in
     if(req.session.loggedIn) {
-        res.send(`Here is your confidential data, ${req.session.userName}`);
+        res.send(`Here is your confidential data, ${req.session.email}`);
 
         // logging the contents of the entire session store
         MyStore.all((err, session) => {
@@ -71,6 +71,7 @@ router.get('/secure', (req, res) => {
         res.send('Permission Denied');
     };
 });
+
 
 function authorize(path) {
     return((req, res, next) => {
