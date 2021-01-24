@@ -49,7 +49,7 @@ function cycleTimer(req, res, next) {
 app.get('/api/audit/observation/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
 
 //** Observation Dropdown Query **/
-app.get('/api/audit/observation/dropdown/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDropdown)
+app.get('/api/audit/observation/distinct/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDistinct)
 
 //** Observation Download Query **//
 app.get('/api/audit/observation/download/:downloadType/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
