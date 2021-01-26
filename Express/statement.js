@@ -179,13 +179,19 @@ const setup = {
 
 };
 
+// SQL for login.js
 
-
+const login = {
+    //for example instead of get features, write as something else and then reference sql.somethinngelse in aut
+    // email: '(SELECT data_email FROM item_user WHERE data_email = $(checkemail))' , 
+    password: '(SELECT tdg_p_hash FROM item_user WHERE data_email = $(checkemail))'
+    };    
 
 module.exports = {
     query,
     construct,
-    setup
+    setup,
+    login
 };
 
 

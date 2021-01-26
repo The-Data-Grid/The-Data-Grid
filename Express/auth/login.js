@@ -11,6 +11,8 @@ const db = postgresClient.getConnection.db;
 // get SQL formatter
 const formatSQL = postgresClient.format;
 
+
+const SQL = require('../statement.js').login;
 // session store init
 let Store = require('memorystore')(session); 
 let MyStore = new Store({checkPeriod: 1000000});
@@ -33,8 +35,8 @@ router.post('/login/', async (req, res) => {
 
     let data = null;
     try {
-        data = await db.one(formatSQL('SELECT password FROM users WHERE email = $(email)', {
-            email: req.body.email
+        data = await db.one(formatSQL(SQL.password, {
+            checkemail= req.body.email
         }));
 
         let result = await bcrypt.compare(req.body.pass, data.password); 
