@@ -297,6 +297,19 @@ function isPositiveInteger(field) {
     return n !== Infinity && String(n) === field && n > 0;
 }
 
+function isValidEmail(email) {
+    if(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/.test(email)) {
+        return true
+    } else {
+        return false
+    }
+}
+
 module.exports = {
-    validationConstructor
+    validationConstructor,
+    hasDuplicates,
+    isText,
+    isNumber,
+    isValidDate,
+    isValidEmail
 };

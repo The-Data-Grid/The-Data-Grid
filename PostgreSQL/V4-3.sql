@@ -144,8 +144,10 @@ CREATE TABLE m2m_auditor (
 
 CREATE TABLE item_user (
     item_id SERIAL PRIMARY KEY,
-    item_organization_id INTEGER NOT NULL, --fk **
-    data_full_name TEXT NOT NULL,
+    item_organization_id INTEGER, --fk **
+    data_first_name TEXT NOT NULL,
+    data_last_name TEXT NOT NULL,
+    data_date_of_birth TIMESTAMPTZ NOT NULL,
     data_email TEXT NOT NULL,
     tdg_p_hash TEXT NOT NULL,
     data_is_email_public BOOLEAN NOT NULL,
@@ -1351,7 +1353,7 @@ CALL "insert_m2m_metadata_item"('item_state', 'item_country', TRUE, FALSE, 'Coun
 CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
 CALL "insert_m2m_metadata_item"('item_template', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
 CALL "insert_m2m_metadata_item"('item_template', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_user', 'item_organization', TRUE, FALSE, 'Member of Organization', NULL);
+CALL "insert_m2m_metadata_item"('item_user', 'item_organization', FALSE, FALSE, 'Member of Organization', NULL);
 --     submission
 CALL "insert_m2m_metadata_item"('item_submission', 'item_audit', TRUE, FALSE, 'Audit of Submission', NULL);
 CALL "insert_m2m_metadata_item"('item_submission', 'item_organization', TRUE, FALSE, 'Submitting Organization', NULL);
@@ -1365,7 +1367,8 @@ CALL "insert_m2m_metadata_item"('item_audit', 'item_user', TRUE, FALSE, 'Authori
 
 
 -- Inserting Columns into metadata
--- Item columns
+-- Item columns 
+-- column_name,  table_name_,  observation_table_name,  subobservation_table_name, item_table_name, is_default, is_nullable, frontend_name, filter_selector_name, input_selector_name, frontend_type_name, information, accuracy, sql_type_name, reference_type_name
 CALL "insert_metadata_column"('data_time_created', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Time Audit Created', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
 CALL "insert_metadata_column"('data_population', 'item_city', NULL, NULL, 'item_city', TRUE, TRUE, 'City Population', 'numericEqual', NULL, 'string', NULL, NULL, 'NUMERIC', 'item-non-id');
 CALL "insert_metadata_column"('data_fips_code', 'item_county', NULL, NULL, 'item_county', TRUE, TRUE, 'FIPS County Code', 'numericEqual', NULL, 'string', 'Five digit number which uniquely identify counties and county equivalents', NULL, 'NUMERIC', 'item-non-id');
@@ -1390,8 +1393,10 @@ CALL "insert_metadata_column"('data_title', 'item_catalog', NULL, NULL, 'item_ca
 --     user
 CALL "insert_metadata_column"('data_is_email_public', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Email visible to Public', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');
 CALL "insert_metadata_column"('data_is_quarterly_updates', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Receive Quarterly Updates', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');
-CALL "insert_metadata_column"('data_full_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_first_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User First Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_last_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Last Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_date_of_birth', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Date of Birth', 'calendarRange', 'calendarEqual', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id');
 
 
 -- Locations
