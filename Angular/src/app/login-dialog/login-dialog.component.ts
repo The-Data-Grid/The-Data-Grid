@@ -87,7 +87,8 @@ export class DialogComponent implements OnInit {
 
   isPasswordAttempted() {
     let password = (<HTMLInputElement>document.getElementById("password_1")).value;
-    if (password != "") {
+    let confirm = (<HTMLInputElement>document.getElementById("password_2")).value;
+    if (password != "" || confirm != "") {
       return false;
     }
     return true;
