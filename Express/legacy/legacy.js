@@ -1599,4 +1599,117 @@ const commonJoin = { //JOINS THAT ARE SHARED BETWEEN FEATURES
     }
     */
 
-    
+    /*
+    QUERY.JS featureQuery legacy
+
+    // SUBMISSION
+    // ==================================================
+    let submissionReturnableIDs = allReturnableIDs.filter((returnable) => returnable.feature === null);
+    let submissionClauseArray = [];
+    // first push the tdg_submission reference
+    submissionClauseArray.push(formatSQL(submission, {
+        feature: feature
+    }))
+
+    // if submission returnables exist
+    if(submissionReturnableIDs.length >= 1) {
+        // get all join objects in request
+        let joins = submissionReturnableIDs.filter(returnable => returnable.joinObject.refs.length > 0);
+        let joinObjects = joins.map(returnable => returnable.joinObject);
+        let locals = submissionReturnableIDs.filter(returnable => returnable.joinObject.refs.length == 0);
+
+
+
+        // perform reference selection to trim join tree and assign aliases
+        let joinArray = recursiveReferenceSelection([joinObjects], {}, aliasNumber)
+
+        console.log(joinArray);
+
+        console.log(submissionClauseArray)
+
+        // make joins and add to clauseArray
+        for(let join of joinArray.builtArray) {
+            submissionClauseArray.push(string2Join(join, 's', ('ITEM_SUBMISSION')))
+        }
+
+        console.log(submissionClauseArray)
+
+        // add local selects
+        locals.forEach(returnable => {
+            selectClauses.push(formatSQL(returnable.selectSQL, {
+                alias: 'item_submission'
+            }))
+        });
+
+        
+    }
+
+
+
+    // LISTS AND SPECIAL
+    // ==================================================
+    let listAndSpecialReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'list' || returnable.referenceType == 'special')
+    let listAndSpecialClauseArray = []
+    if(listAndSpecialReturnableIDs.length >= 1) {
+        for(let returnable of listAndSpecialReturnableIDs) {
+            // Adding the custom join clause
+            listAndSpecialClauseArray.push(returnable.joinSQL)
+            // Adding the select clause
+            selectClauses.push(returnable.selectSQL)
+            // Adding the feature dependency
+            featureTree.push(returnable.feature)
+            // add table and column to whereLookup
+            whereLookup[returnable.ID] = returnable.selectSQL
+        }
+    }
+
+    // ITEM AND LOCATION
+    // ==================================================
+    let dynamicReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'location' || returnable.referenceType == 'item')
+    let dynamicClauseArray = [];
+    if(dynamicReturnableIDs.length >= 1) {
+        // get all join objects in request
+        let joins = dynamicReturnableIDs.map(returnable => returnable.joinObject)
+        
+        // perform reference selection to trim join tree and assign aliases
+        let joinArray = recursiveReferenceSelection([joins], {}, aliasNumber)
+        console.log('BA')
+        console.log(joinArray.builtArray)
+        console.log('IDAL')
+        console.log(joinArray.idAliasLookup)
+
+        // make joins and add to clauseArray
+        for(let join of joinArray.builtArray) {
+            dynamicClauseArray.push(string2Join(join, 'd', feature))
+        }
+        // add selections to selectClauses
+        for(let returnable of dynamicReturnableIDs) {
+            // get alias and interpolate into select
+            let alias = 'd' + joinArray.idAliasLookup[String(returnable.ID)]
+            selectClauses.push(formatSQL(returnable.selectSQL, {
+                table: alias
+            }))
+            // add feature to featureTree
+            featureTree.push(returnable.feature)
+            // add table and column to whereLookup
+            whereLookup[returnable.ID] = alias + '.' + returnable.dataColumn
+        }
+    }
+
+    // LOCAL AND LOCAL-GLOBAL
+    // ==================================================
+    let localReturnableIDs = allReturnableIDs.filter((returnable) => returnable.referenceType == 'local' || returnable.referenceType == 'local-global')
+    if(localReturnableIDs.length >= 1) {
+        for(let returnable of localReturnableIDs) {
+            // Adding the select clause
+            selectClauses.push(formatSQL(returnable.selectSQL, {
+                table: feature
+            }))
+            // Adding the feature dependency
+            featureTree.push(returnable.feature)
+            // add table and column to whereLookup
+            whereLookup[returnable.ID] = returnable.feature + '.' + returnable.dataColumn
+        }
+    }
+
+    */

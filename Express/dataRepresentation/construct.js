@@ -16,8 +16,14 @@ const stripJsonComments = require('strip-json-comments'); // .jsonc handling
 const chalk = require('chalk'); // pretty console.log
 var util = require('util'); // util.inspect()
 
-const postgresClient = require('../db/pg.js');
-const db = postgresClient.connect('construct')
+
+// Database connection and SQL formatter
+const {postgresClient, connectPostgreSQL} = require('../db/pg.js');
+// Establish an new connection pool
+connectPostgreSQL('construct')
+// get connection object
+const db = postgresClient.getConnection.cdb;
+// get SQL formatter
 const formatSQL = postgresClient.format;
 
 // Importing SQL //
@@ -86,6 +92,8 @@ if(process.argv[0] == 'make-schema') {
     if(process.argv.includes('--returnable') || process.argv.includes('-r')) {
         commandLineArgs.type = 'r'
         let argFilter = process.argv.filter(arg => /^--choose=.*/.test(arg));
+        commandLineArgs.isSummary = process.argv.includes('-s') || process.argv.includes('--summary');
+        commandLineArgs.isTree = process.argv.includes('-t') || process.argv.includes('--tree');
         if(argFilter.length == 1) {
             commandLineArgs.filter = argFilter[0].match(/^--choose=(.*)/)[1];
         } else {
@@ -123,7 +131,8 @@ async function makeSchema(commandLineArgs) {
     await asyncConstructAuditingTables(features, [...columns, ...globalColumns], commandLineArgs);
 
     // Closing the database connection
-    db.$pool.end();
+    db.$pool.end
+    console.log('Closed PostgreSQL Connection: construct')
 }
 
 async function configSchema(commandLineArgs) {
@@ -165,7 +174,8 @@ async function configSchema(commandLineArgs) {
     await showComputed(commandLineArgs);
 
     // Closing the database connection
-    db.$pool.end();
+    db.$pool.end
+    console.log('Closed PostgreSQL Connection: construct')
 }
 
 async function inspectSchema(commandLineArgs) {
@@ -191,11 +201,26 @@ async function inspectSchema(commandLineArgs) {
             if(commandLineArgs.filter !== null) {
                 // if submission
                 if(commandLineArgs.filter === 'submission') {
-                    out = await db.any('SELECT * FROM metadata_returnable AS r WHERE r.feature_id IS NULL')
+                    out = await db.any('SELECT * FROM returnable_view as r WHERE r.f__table_name IS NULL')
                 } else {
-                    out = await db.any(formatSQL('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter))', {
+                    out = await db.any(formatSQL('SELECT * FROM returnable_view as r WHERE r.f__table_name = $(filter)', {
                         filter: commandLineArgs.filter
                     }));
+                }
+                
+                if(commandLineArgs.isSummary) {
+                    const originalOut = Array.from(out);
+                    out = {};
+                    originalOut.forEach(r => {
+                        out[r.r__returnable_id] = r.r__frontend_name
+                    })
+                } else if(commandLineArgs.isTree) {
+                    const originalOut = Array.from(out);
+                    out = {};
+                    originalOut.forEach(r => {
+                        // this is just formatting
+                        out[r.r__returnable_id] = (r.r__join_object.tables.length > 0 ? `${r.r__join_object.tables.filter((e,i) => (i % 2 == 0 || i+1 == r.r__join_object.tables.length )).join(' > ')}: ${r.r__frontend_name}` : (commandLineArgs.filter === 'submission' ? r.c__table_name : r.f__table_name) + ': ' + r.r__frontend_name)
+                    })
                 }
                 
             } else {
@@ -209,12 +234,13 @@ async function inspectSchema(commandLineArgs) {
         out = await db.any('SELECT * FROM metadata_column');
     }
 
-    let count = out.length
+    let count = (commandLineArgs.isSummary || commandLineArgs.isTree ? Object.keys(out).length : out.length)
     console.log(out)
     console.log(chalk.cyanBright.underline(`Count: ${count}`))
 
     // Closing the database connection
-    db.$pool.end();
+    db.$pool.end
+    console.log('Closed PostgreSQL Connection: construct')
 }
 
 
@@ -258,7 +284,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     //console.log('\x1b[1m', '1. Constructing Features')
     console.log(chalk.whiteBright.bold('1. Constructing Features'));
 
-    let featureOutput = await constructFeatures2(featureSchema);
+    let featureOutput = await constructFeatures(featureSchema);
     // if there is an error in feature construction exit function
     if(featureOutput.error === true) {
         return
@@ -307,7 +333,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     */
     console.log(chalk.whiteBright.bold('2. Constructing Columns'));
 
-    let columnOutput = await addDataColumns2(columnSchema, featureSchema, featureOutput.itemIDColumnLookup, featureOutput.featureItemLookup);
+    let columnOutput = await addDataColumns(columnSchema, featureSchema, featureOutput.itemIDColumnLookup, featureOutput.featureItemLookup);
     // if there is an error in column construction exit function
     if(columnOutput.error === true) {
         return 
@@ -356,10 +382,11 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     
     // Creating the computed file and returnables folder 
     await showComputed(commandLineArgs);
-    
 
-    // Done!
+    // Creating schema assets
+    makeAssets(featureOutput);
     
+    // Done!
     console.log(chalk.blueBright.bgWhiteBright('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'));
     console.log(chalk.blueBright.bgWhiteBright('                             '));
     console.log(chalk.green.bgWhiteBright('   Successful Construction   '));
@@ -384,7 +411,7 @@ out: errorObject: specifies if there is an error
      featureItemLookup: feature -> item
      itemRealGeoLookup: item -> realGeo object
 ============================================================ */
-async function constructFeatures2(features) {
+async function constructFeatures(features) {
 
     let featureItemLookup = {};
     let itemIDColumnLookup = {};
@@ -547,7 +574,7 @@ in: columns: Array of metadataFeatureInput objects (parsed features.jsonc)
 out: errorObject: specifies if there is an error
 ============================================================ */
 
-async function addDataColumns2(columns, features, itemIDColumnLookup, featureItemLookup) {
+async function addDataColumns(columns, features, itemIDColumnLookup, featureItemLookup) {
 
     // Globals
     // These data columns are defined for every feature
@@ -958,7 +985,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         joinObject.tables = Array.from(itemObject.path)
         // make columns
         for(let n = 0; n < itemObject.path.length; n += 2) {
-            if(n == 0 && featureItemLookup[itemObject.featureName] === itemObject.itemName) { // if observable item and first join
+            if(n == 0 && joinObject.tables[0] != 'item_submission') { // if first join and not submission
                 // push the item_id column (in both the observation_... and item_... table)
                 joinObject.columns.push('observableitem_id', 'item_id');
                 //joinObject.columns.push('item_id');
@@ -1170,7 +1197,7 @@ async function makeItemParentLookup() {
 function constructjsError(error) {
     console.log(chalk.bgWhite.red(error));
     console.log(chalk.bgWhite.red('CONSTRUCT.JS EXECUTION HALTED'));
-    throw Error('you are literally throwing ~ wtf bro!');
+    throw Error('Error in construction of schema! You must drop the database and try again.');
 }
 
 
@@ -1179,7 +1206,19 @@ function readSchema(file) { // Schema read function
     return JSON.parse(stripJsonComments(fs.readFileSync(__dirname + file, 'utf8')))
 }
 
+function makeAssets(featureOutput) {
+    const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup} = featureOutput;
+    
+    // Adding files to ./Express/dataRepresentation/schemaAssets
+    fs.writeFileSync(`${__dirname}/schemaAssets/itemIDColumnLookup.json`, JSON.stringify(itemIDColumnLookup))
+    console.log(chalk.whiteBright.bold(`Wrote itemIDColumnLookup.json to schemaAssets`));
 
+    fs.writeFileSync(`${__dirname}/schemaAssets/featureItemLookup.json`, JSON.stringify(featureItemLookup));
+    console.log(chalk.whiteBright.bold(`Wrote featireItemLookup.json to schemaAssets`));
+
+    fs.writeFileSync(`${__dirname}/schemaAssets/itemRealGeoLookup.json`, JSON.stringify(itemRealGeoLookup));
+    console.log(chalk.whiteBright.bold(`Wrote itemRealGeoLookup.json to schemaAssets`));
+}
 
 async function showComputed(commandLineArgs) {
     // Creating the computed file and returnables folder 

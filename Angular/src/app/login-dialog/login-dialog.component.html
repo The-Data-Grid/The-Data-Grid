@@ -16,13 +16,13 @@
     <p>
         <mat-form-field appearance="outline" class="formField">
           <mat-label>Email</mat-label>
-          <input id="username_attempt" matInput (input) = "checkForms()" placeholder="">
+          <input id="username_attempt" matInput (input) = "checkForms()" [(ngModel)]="loginEmail" placeholder="">
         </mat-form-field>
     </p>
     <p>
             <mat-form-field appearance="outline" class="formField" style="top: 15px">
               <mat-label>Password</mat-label>
-              <input type="password" id="password_attempt" matInput (input)="checkForms()" placeholder="">
+              <input type="password" id="password_attempt" matInput [(ngModel)]="loginPassword" (input)="checkForms()" placeholder="">
             </mat-form-field>
         </p>
         <a class="password" href="">Forgot Password?</a>
@@ -31,7 +31,7 @@
   <div style="position: absolute; margin-top:60px">
     <button (click)="sign_up_modal()" class="signUpModal">SIGN UP</button>
     <!-- <button (click)="sign_up_modal()" mat-button style="font-size:11px;position: absolute; background-color:white; color: #4d79ff; margin-left: 170px; text-decoration: underline;">SIGN UP</button> -->
-    <button mat-button color="primary" class="signInButton">SIGN IN</button>
+    <button mat-button color="primary" class="signInButton" (click)="signIn()">SIGN IN</button>
   </div>
 
 </div>

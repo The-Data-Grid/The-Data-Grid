@@ -11,37 +11,59 @@ var tdgdbname = 'v4';
 var tdgdbuser = 'postgres';
 
 const postgresClient = {
-    connect: type => {
-        switch(type) {
-            case 'setup':
-                let syncdb = new SyncClient;
-                syncdb.connectSync(`host=localhost port=5432 dbname=${tdgdbname} connect_timeout=5 user=${tdgdbuser}`);
-                return syncdb;
-            case 'main':
-                // Default runtime database connection
-                const defaultConnection = { //connection info
-                    host: 'localhost',
-                    port: 5432,
-                    database: tdgdbname,
-                    user: tdgdbuser,
-                    password: null,
-                    max: 30 // use up to 30 connections
-                };
-                return pgp(defaultConnection);
-            case 'construct':
-                // Schema construction CLI database connection
-                const constructionConnection = { 
-                    host: 'localhost',
-                    port: 5432,
-                    database: tdgdbname,
-                    user: tdgdbuser,
-                    password: null,
-                    max: 1 // use only one connection
-                };
-                return pgp(constructionConnection);
-        };
-    },
     format: pgp.as.format
 };
 
-module.exports = postgresClient;
+function connectPostgreSQL(config) {
+    if(config == 'default') {
+
+        console.log(`Establishing PostgreSQL connections...`)
+
+        // sync setup connection
+        const syncdb = new SyncClient;
+        syncdb.connectSync(`host=localhost port=5432 dbname=${tdgdbname} connect_timeout=5 user=${tdgdbuser}`);
+        console.log(`New PostgreSQL Connection: setup`)
+
+        // Default runtime database connection
+        const defaultConnection = { //connection info
+            host: 'localhost',
+            port: 5432,
+            database: tdgdbname,
+            user: tdgdbuser,
+            password: null,
+            max: 30 // use up to 30 connections
+        };
+        const db = pgp(defaultConnection);
+        console.log(`New PostgreSQL Connection: default`)
+
+        postgresClient.getConnection = {
+            syncdb,
+            db
+        };
+    } else if(config == 'construct') {
+
+        console.log(`Establishing PostgreSQL connections...`)
+
+        // Schema construction CLI database connection
+        const constructionConnection = { 
+            host: 'localhost',
+            port: 5432,
+            database: tdgdbname,
+            user: tdgdbuser,
+            password: null,
+            max: 1, // use only one connection
+            idleTimeoutMillis: 1 // disconnect right after
+        };
+        const cdb = pgp(constructionConnection);
+        console.log(`New PostgreSQL Connection: construct`)
+
+        postgresClient.getConnection = {
+            cdb
+        };
+    } else Error('Must use a valid connection type: \'default\', \'construct\'')
+};
+
+module.exports = {
+    postgresClient,
+    connectPostgreSQL
+};

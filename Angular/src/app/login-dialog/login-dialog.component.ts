@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
+import {UserInfoService} from '../user-info.service';
 
 interface Month {
   value: string;
   viewValue: string;
+}
+
+interface loginObject {
+  email: string;
+  pass: string;
 }
 
 @Component({
@@ -15,8 +21,11 @@ export class DialogComponent implements OnInit {
 
   modal = "sign_in"
   formsFilledOut = false; 
+  loginEmail;
+  loginPassword;
   signUpPassword;
   matchPassword;
+  userLoginObject:loginObject;
 
   handleInput() {
     console.log("help");
@@ -55,7 +64,7 @@ export class DialogComponent implements OnInit {
   }
   
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>) { 
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, private userInfoService:UserInfoService) { 
   }
 
   ngOnInit() {
@@ -141,6 +150,15 @@ export class DialogComponent implements OnInit {
       return false;
     }
     return false;
+  }
+
+  signIn() {
+    // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);
+    this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
+    // console.log(this.userLoginObject);
+    this.userInfoService.attemptLogin(this.userLoginObject)
+      .subscribe(res => console.log(res), err => alert(`HTTP Error ${err.status}: ${err.error}`))
+    ;
   }
 
   close() {

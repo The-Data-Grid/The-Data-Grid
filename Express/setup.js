@@ -6,8 +6,10 @@
 // ============================================================
 
 // Database connection and SQL formatter
-const postgresClient = require('./db/pg.js');
-const syncdb = postgresClient.connect('setup')
+const {postgresClient} = require('./db/pg.js');
+// get connection object
+const syncdb = postgresClient.getConnection.syncdb
+// get SQL formatter
 const formatSQL = postgresClient.format;
 
 // QUERIES //
@@ -28,10 +30,9 @@ itemM2M = syncdb.querySync(itemM2M);
 frontendTypes = syncdb.querySync(frontendTypes);
 allFeatures = syncdb.querySync(allFeatures);
 
-// close the database connection
-syncdb.end();
-console.log('Setup database queries complete, disconnected from database');
-
+// closing db connection
+console.log('Closed PostgreSQL Connection: setup');
+syncdb.end()
 
 // RETURNABLE ID CLASS
 // ============================================================
@@ -91,7 +92,7 @@ class ReturnableID {
 
 function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures) {
 
-    let returnableIDLookup = [];
+    let returnableIDLookup = {};
     let idValidationLookup = {};
     let featureParents = {};
     let setupObject = {};
@@ -380,7 +381,8 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             feature: row['f__table_name'],
             //referenceColumn: row['c__reference_column_name'],
             //referenceTable: row['c__reference_table_name'],
-
+            item: row['i__table_name'],
+            referenceType: row['rt__type_name'],
             isFilterable: isFilterable,
             isSubmission: isSubmission,
 
@@ -450,32 +452,34 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             appendSQL = 'LEFT JOIN m2m_auditor ON \
                             tdg_observation_count.observation_count_id = m2m_auditor.observation_count_id \
-                            INNER JOIN item_user AS user_auditor_name ON m2m_auditor.user_id = user_auditor_name.user_id';
+                            LEFT JOIN item_user AS user_auditor_name ON m2m_auditor.item_user_id = user_auditor_name.item_id';
 
-            selectSQL = `COALESCE(${feature}.data_auditor, user_auditor_name.data_full_name)`;
+            selectSQL = `COALESCE(ARRAY_AGG(${feature}.data_auditor::TEXT), ARRAY_AGG(CONCAT(user_auditor_name.data_first_name, ' ', user_auditor_name.data_last_name)))`;
 
         // Standard Operating Procedure
         } else if(frontendName == 'Standard Operating Procedure' && referenceType == 'special') { 
 
             appendSQL = 'LEFT JOIN m2m_item_sop ON\
                             tdg_observation_count.observation_count_id = m2m_item_sop.observation_count_id \
-                            INNER JOIN item_sop ON m2m_item_sop.sop_id = tdg_sop.sop_id'
+                            LEFT JOIN item_sop ON m2m_item_sop.item_sop_id = item_sop.item_id'
 
-            selectSQL = `item_sop.data_name`
+            selectSQL = formatSQL(`ARRAY_AGG(item_sop.$(columnName:name)::TEXT)`, {
+                columnName: columnName
+            });
 
         } else if(referenceType == 'obs-list') {
 
             appendSQL = formatSQL('LEFT JOIN m2m_$(tableName:raw) \
                                     ON m2m_$(tableName:raw).observation_id = $(feature:name).observation_id \
-                                    INNER JOIN $(tableName:name) AS $(listAlias:name) \
+                                    LEFT JOIN $(tableName:name) AS $(listAlias:name) \
                                     ON $(listAlias:name).list_id = m2m_$(tableName:value).list_id', {
                                         feature: feature, 
                                         tableName: tableName,
                                         listAlias: listAlias.join('')
             });
             
-            // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = formatSQL('STRING_AGG($(listAlias:name).$(columnName:name)::TEXT, \', \')', {
+            // Add ARRAY_AGG() here? ... yes, Oliver!
+            selectSQL = formatSQL('ARRAY_AGG($(listAlias:name).$(columnName:name)::TEXT)', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -488,15 +492,15 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             appendSQL = formatSQL('LEFT JOIN m2m_$(tableName:raw) \
                                     ON m2m_$(tableName:raw).item_id = $(pgpParam:raw).item_id \
-                                    INNER JOIN $(tableName:name) AS $(listAlias:name) \
+                                    LEFT JOIN $(tableName:name) AS $(listAlias:name) \
                                     ON $(listAlias:name).list_id = m2m_$(tableName:value).list_id', {
                                         pgpParam: '$(alias:name)', // a little bit weird
                                         tableName: tableName,
                                         listAlias: listAlias.join('')
             });
             
-            // Add STRING_AGG() here? ... yes, Oliver!
-            selectSQL = formatSQL('STRING_AGG($(listAlias:name).$(columnName:name)::TEXT, \', \')', {
+            // Add ARRAY_AGG() here? ... yes, Oliver!
+            selectSQL = formatSQL('ARRAY_AGG($(listAlias:name).$(columnName:name)::TEXT)', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -537,7 +541,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                             fk: locationForeignKey
                                        });
 
-            selectSQL = formatSQL('$(locationAlias:name).$(columnName:name)', {
+            selectSQL = formatSQL('ST_AsGeoJSON($(locationAlias:name).$(columnName:name))', {
                 locationAlias: locationAlias.join(''),
                 columnName: columnName,
                 returnableID: returnableIDAlias
@@ -618,16 +622,16 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup.push(new ReturnableID(feature, returnableID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName))
+        returnableIDLookup[returnableID] = new ReturnableID(feature, returnableID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName)
 
     }
 
     
     return({
-        setupObject: setupObject,
-        idValidationLookup: idValidationLookup,
-        featureParents: featureParents,
-        returnableIDLookup: returnableIDLookup
+        setupObject,
+        idValidationLookup,
+        featureParents,
+        returnableIDLookup
     })
 }
 
@@ -875,6 +879,8 @@ module.exports = {
     returnableIDLookup,
     idValidationLookup,
     featureParents,
-    setupObject
+    setupObject,
+    allItems,
+    itemM2M
 }
 
