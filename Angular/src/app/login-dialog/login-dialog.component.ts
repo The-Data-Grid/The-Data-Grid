@@ -15,6 +15,8 @@ export class DialogComponent implements OnInit {
 
   modal = "sign_in"
   formsFilledOut = false; 
+  signUpPassword;
+  matchPassword;
 
   handleInput() {
     console.log("help");
@@ -94,7 +96,52 @@ export class DialogComponent implements OnInit {
     return true;
   }
 
+  shouldDisplayWarning() {
+    var regExp = /[a-zA-Z]/g;
+    var numRegExp = /[0-9]/g;
+    if (this.signUpPassword) {
+      console.log(this.signUpPassword.length)
+      if (this.signUpPassword.length > 0) {
+        if (!regExp.test(this.signUpPassword) || !numRegExp.test(this.signUpPassword) || this.signUpPassword.length < 10) {
+          return false;
+        }
+        else {
+          return true;
+        }
+      }
+      return true;
+    }
+    return true;
+    // if (this.signUpPassword.length > 0) {
+    //   return false;
+    // }
+    // return true;
+  }
 
+  checkSignupPasswords() {
+  }
+
+  checkPasswords() {
+    if (this.signUpPassword && this.matchPassword) {
+      if (this.signUpPassword === this.matchPassword) {
+        return true;
+      }
+      else {
+        return false;
+      }  
+    }
+    return true;
+  }
+
+  canConfirmPassword() {
+    if (this.signUpPassword || this.matchPassword) {
+      if ((this.signUpPassword.length > 1 && this.shouldDisplayWarning()) || this.matchPassword) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
 
   close() {
     this.dialogRef.close();
