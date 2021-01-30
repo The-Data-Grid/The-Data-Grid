@@ -45,7 +45,6 @@ export class ApiService {
     // return this.http.get<TableObject>(url, { params: qsparams });
     // console.log(url);
 
-    
     var url = API_URL + '/table';
     return this.http.get<TableObject>(url);
   }

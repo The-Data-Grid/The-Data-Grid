@@ -51,6 +51,7 @@ export class GlobalPresetsComponent implements OnInit {
         this.setupObject,
         this.appliedFilterSelections,
         this.defaultColumns);
+      console.log(this.globalSelectors)
     });
   }
 

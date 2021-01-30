@@ -29,6 +29,31 @@
 
 
   <mat-accordion>
+    <div *ngFor="let feature of rootFeatures">
+      <mat-expansion-panel [disabled]='auditOpened'>
+        <mat-expansion-panel-header>
+          <mat-panel-title style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
+            <span>
+              {{ feature.name }}
+            </span>
+            <button mat-icon-button class="add-button" aria-label="Add feature"
+              (click)="openFeatureAudit(feature)">
+              <mat-icon style="font-size: small;">add</mat-icon>
+            </button>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"
+          [footerHeight]="50" rowHeight="auto" [scrollbarH]="false" [limit]="5">
+          <ngx-datatable-column *ngFor="let col of columns" [prop]="getProp(col)" [name]="col">
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </mat-expansion-panel>
+    </div>
+  </mat-accordion>
+
+
+  <!-- hardcoded -->
+  <!-- <mat-accordion>
     <div *ngFor="let audit of audits">
       <div *ngFor="let feature of audit.features">
         <div *ngIf="feature.included">
@@ -50,10 +75,9 @@
             </ngx-datatable>
           </mat-expansion-panel>
         </div>
-
       </div>
     </div>
-  </mat-accordion>
+  </mat-accordion> -->
 
 </div>
 

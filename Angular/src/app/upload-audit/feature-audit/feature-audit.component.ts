@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from '../../api.service';
 import { SetupObjectService } from '../../setup-object.service';
@@ -20,7 +20,11 @@ import { AppliedFilterSelections } from '../../models'
 })
 export class FeatureAuditComponent implements OnInit {
 
-  constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>, private apiService: ApiService, private setupObjectService: SetupObjectService, private tableObjectService: TableObjectService) {
+  constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>, 
+    @Inject(MAT_DIALOG_DATA) public data,
+    private apiService: ApiService, 
+    private setupObjectService: SetupObjectService, 
+    private tableObjectService: TableObjectService) {
   }
 
   title;
@@ -56,21 +60,21 @@ export class FeatureAuditComponent implements OnInit {
   idInfo;
   page = "FeaturesAuditPage"
 
+  featureIndex = this.data.index;
+  featureName = this.data.name;
+
   dummy = [
     {
       title: "Global Data",
-      content: []
+      type: "global_data"
     },
     {
-      title: "Toilet ID",
-      content: [
-        "Building, Building Name: Mathematical Sciences",
-        "Room, Room Number: 1349",
-        "Toilet, Clockwise Number: 2"
-      ]
+      title: this.featureName + " ID",
+      type: "id"
     },
     {
       title: "Action",
+      type: "action",
       content: [
         "Observation",
         "Removal",
@@ -78,28 +82,20 @@ export class FeatureAuditComponent implements OnInit {
       ]
     },
     {
-      title: "Toilet Attributes",
-      content: [
-        "Intake Valve*: 32"
-      ]
+      title: this.featureName + " Attributes",
+      type: "attributes",
     },
     {
-      title: "Toilet Observation",
-      content: [
-        "Date Conducted:",
-        "GPF: 3.14"
-      ]
+      title: this.featureName + " Observation",
+      type: "observation",
+
     },
     {
       title: "Subfeature",
-      content: [
-        "Basin",
-        "Flushometer"
-      ]
+      type: "subfeature",
     }
   ]
 
-  featureIndex = 0;
 
   ngOnInit() {
     this.getSetupObject();

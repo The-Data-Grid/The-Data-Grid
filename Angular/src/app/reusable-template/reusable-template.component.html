@@ -114,10 +114,10 @@
 </ng-template>
 
 <ng-template #searchableChecklistDropdownTemplate let-info>
-    <ng-multiselect-dropdown *ngIf="info.returnableID" class="multi" class="selector" [placeholder]="info.column.frontendName + ' ' + info.returnableID"
+    <!-- <ng-multiselect-dropdown *ngIf="info.returnableID" class="multi" class="selector" [placeholder]="info.column.frontendName + ' ' + info.returnableID"
         [(ngModel)]="appliedFilterSelections.searchableChecklistDropdownTemplate[info.returnableID]" [settings]="searchableChecklistDropdownSettings"
         [data]="dropdownList" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
-    </ng-multiselect-dropdown>
+    </ng-multiselect-dropdown> -->
 </ng-template>
 
 <ng-template #textTemplate let-info>

@@ -133,7 +133,7 @@ export class SetupObjectService {
 
   this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, setupObject);
 
-  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs);
+  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, true);
 }
 
 
@@ -171,7 +171,8 @@ export class SetupObjectService {
       });
       allFeatureSelectors[featureIndex] = this.parseColumns(featureColumns,
         appliedFilterSelections,
-        defaultColumnIDs);
+        defaultColumnIDs,
+        true);
     });
     return allFeatureSelectors;
   }
@@ -213,7 +214,8 @@ export class SetupObjectService {
       });
       allFeatureInputSelectors[featureIndex] = this.parseColumns(featureColumns,
         appliedFilterSelections,
-        defaultColumnIDs);
+        defaultColumnIDs,
+        false);
     });
     return allFeatureInputSelectors;
   }
@@ -243,8 +245,8 @@ export class SetupObjectService {
   // create the appliedFilterSelections object by finding all selectors. 
   // also find all columns that have default marked true
   //fills defaultcolumnIDs with the IDs of default columns
-  //TODO: add functionality to return inputSelectors
-  private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs): any {
+  //wantFeatureSelector indicates whether we want to return filterSelectors or inputSelectors
+  private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFeatureSelector: boolean): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],
@@ -259,10 +261,12 @@ export class SetupObjectService {
       _placeholder: "placeholder"
     };
 
-    infos.forEach(info => {
-      if (info.column.filterSelector) {
+    let curColumnSelector = null;
 
-        switch (info.column.filterSelector.selectorKey) {
+    infos.forEach(info => {
+      wantFeatureSelector ? curColumnSelector = info.column.filterSelector : curColumnSelector = info.column.inputSelector;
+      if (curColumnSelector) {
+        switch (curColumnSelector.selectorKey) {
           case "dropdown": {
             selectors.dropdown.push(info);
             appliedFilterSelections.dropdown[info.returnableID] = null; break;

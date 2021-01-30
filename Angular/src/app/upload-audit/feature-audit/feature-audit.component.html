@@ -1,6 +1,6 @@
 <body style="overflow-x: hidden;">
   <div class="top_decoration"></div>
-  <h3 style="margin-left:22px;margin-top:25px">New {{title}} Submission</h3>
+  <h3 style="margin-left:22px;margin-top:25px">New {{featureName}} Submission</h3>
 
   <!-- LOOKS CONVOLUTED AT THE MOMENT BECAUSE ONLY THE SUBFEATURES AND TOILET ATTRIBUTES PANELS GET THEIR DATA FROM THE SETUP OBJECT -->
 
@@ -11,40 +11,39 @@
           {{panel.title}}
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div
-        *ngIf="panel.title != 'Subfeature' && panel.title != 'Toilet Observation'  && panel.title != 'Toilet Attributes' && panel.title != 'Toilet ID' && panel.title != 'Global Data'">
+      <div *ngIf="panel.type == 'action'">
         <div *ngFor="let string of panel.content">
           <div class="secondary_separator"></div>
           {{string}}
         </div>
       </div>
 
-      <div *ngIf="panel.title == 'Global Data'" style="overflow: auto;">
-      <app-reusable-template [feature]="globalSelectors"
-        [appliedFilterSelections]="appliedFilterSelections"
-        [page]="page">
-    </app-reusable-template>
-</div>
+      <div *ngIf="panel.type == 'global_data'" style="overflow: auto;">
+        <app-reusable-template [feature]="globalSelectors" [appliedFilterSelections]="appliedFilterSelections"
+          [page]="page">
+        </app-reusable-template>
+      </div>
 
-
-      <div *ngIf="panel.title == 'Toilet ID'">
+      <div *ngIf="panel.type == 'id'">
         <div *ngFor="let itemChild of idInfo">
           <div class="secondary_separator"></div>
           {{ itemChild.frontendName }}: {{ itemChild.information }}
         </div>
       </div>
 
-      <div *ngIf="panel.title == 'Toilet Attributes'">
-        <app-reusable-template class="custom" [featureIndex]="0" [feature]="attributeSelectors[featureIndex]" [appliedFilterSelections]="appliedFilterSelections">
+      <div *ngIf="panel.type == 'attributes'">
+        <app-reusable-template class="custom" [featureIndex]="featureIndex" [feature]="attributeSelectors[featureIndex]"
+          [appliedFilterSelections]="appliedFilterSelections">
         </app-reusable-template>
       </div>
 
-      <div *ngIf="panel.title == 'Toilet Observation'">
-        <app-reusable-template class="custom" [featureIndex]="0" [feature]="observationSelectors[featureIndex]" [appliedFilterSelections]="appliedFilterSelections">
+      <div *ngIf="panel.type == 'observation'">
+        <app-reusable-template class="custom" [featureIndex]="featureIndex"
+          [feature]="observationSelectors[featureIndex]" [appliedFilterSelections]="appliedFilterSelections">
         </app-reusable-template>
       </div>
 
-      <div *ngIf="panel.title == 'Subfeature'">
+      <div *ngIf="panel.type == 'subfeature'">
         <div *ngFor="let subfeature of subfeatures">
           <mat-accordion>
             <mat-expansion-panel>
