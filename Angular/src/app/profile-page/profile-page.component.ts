@@ -1,21 +1,39 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { PasswordAuthenticationComponent } from '../password-authentication/password-authentication.component';
+import {MatSort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
 
-export interface DonationElement {
+
+// export interface DonationElement {
+//   date: string;
+//   organization: string;
+//   amount: string;
+//   benefits: string;
+//   receipt: string;
+// }
+
+// const ELEMENT_DATA: DonationElement[] = [
+//   {date: '10/29/1929', organization:"UCLA",amount:"$42.00",benefits:"liquidity",receipt:"link"},
+//   {date: '9/29/2008', organization:"project save the earth",amount:"$500.00",benefits:"CDO",receipt:"link"},
+//   {date: '3/12/2020', organization:"Project Launder Money",amount:"$15,000.00",benefits:"Statue",receipt:"link"}
+
+// ]
+
+export interface PeriodicElement {
+  name: string;
   date: string;
-  organization: string;
   amount: string;
   benefits: string;
   receipt: string;
 }
 
-const ELEMENT_DATA: DonationElement[] = [
-  {date: '10/29/1929', organization:"UCLA",amount:"$42.00",benefits:"liquidity",receipt:"link"},
-  {date: '9/29/2008', organization:"project save the earth",amount:"$500.00",benefits:"CDO",receipt:"link"},
-  {date: '3/12/2020', organization:"Project Launder Money",amount:"$15,000.00",benefits:"Statue",receipt:"link"}
+const ELEMENT_DATA: PeriodicElement[] = [
+  {date: "3/12/20", name: 'Project University', amount: "$200.00", benefits: "Tax write-off", receipt: "link"},
+  {date: "3/12/20", name: 'Saving the World', amount: "$40.00", benefits: 'Liquidity', receipt: "link"},
+  {date: "3/12/20", name: 'Efficiency Epoch', amount: "$4,000.00", benefits: 'Treasury Bonds', receipt: "link"},
+];
 
-]
 
 
 @Component({
@@ -32,8 +50,15 @@ export class ProfilePageComponent implements OnInit {
 
   }
 
-  displayedColumns: string[] = ['date', 'org', 'amount', 'benes', 'rec'];
-  dataSource = ELEMENT_DATA;
+  displayedColumns: string[] = ['date', 'name', 'amount', 'benefits', 'receipt'];
+  dataSource = new MatTableDataSource(ELEMENT_DATA);
+
+  @ViewChild(MatSort) sort: MatSort;
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+  }
+
 
   fetch(cb) {
     const req = new XMLHttpRequest();
@@ -126,7 +151,6 @@ export class ProfilePageComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
-  }  
-
+  } 
 
 }

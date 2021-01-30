@@ -3,11 +3,11 @@
 */
 [
     {
-        "tableName": "observation_toilet",
-        "parentTableName": null,
-        "frontendName": "Toilet",
-        "numFeatureRange": null,
-        "information": "A fixed receptacle into which a person may urinate or defecate",
+        "tableName": "observation_toilet", //infer
+        "parentTableName": null, //infer
+        "frontendName": "Toilet", // required
+        "numFeatureRange": null, // not sure yet
+        "information": "A fixed receptacle into which a person may urinate or defecate", // optional, default null
         "observableItem" : {
             "requiredItem": [
                 {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Toilet", "information": null}
