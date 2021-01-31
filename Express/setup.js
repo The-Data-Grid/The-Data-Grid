@@ -305,10 +305,15 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         // observable item index
         let observableItemIndex = itemOrder.indexOf(observableItem);
 
+        // backend name is defined by table name
+        let backendName = el['f__table_name']
+        backendName = backendName.match(/^(?:sub)?observation_(.*)/)[1]
+
 // INFO: numFeatureRange is commented out
         return({
             children: [observationColumnIndices, attributeColumnIndices, observableItemIndex],
             frontendName: frontendName,
+            backendName: backendName,
             information: information,
             // numFeatureRange: numFeatureRange,
             featureChildren: directChildren
