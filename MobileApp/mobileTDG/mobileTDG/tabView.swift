@@ -9,6 +9,8 @@ import SwiftUI
 
 struct tabView: View {
     @EnvironmentObject var viewRouter: ViewRouter
+    @Environment(\.managedObjectContext) private var viewContext
+    @State var isCommunicating = false
     
     var body: some View{
         GeometryReader { geometry in
@@ -23,7 +25,10 @@ struct tabView: View {
                     submittedAuditsView()
                 case .unsubmitted:
                     unsubmittedAuditsView()
+                case .detail:
+                    auditDetailView()
                 }
+                
                 Spacer()
                 HStack {
                     Image(systemName: "house")
@@ -31,21 +36,22 @@ struct tabView: View {
                         .aspectRatio(contentMode: .fit)
                         .padding(20)
                         .frame(width: geometry.size.width/3, height:70)
-                        .foregroundColor(viewRouter.currentTab == .home ? .black : .gray)
+                        .foregroundColor(viewRouter.currentTab != .home ? .black : .gray)
                         .onTapGesture {
                             viewRouter.currentTab = .home
                         }
-                    Image(decorative: "TDG-globe")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding(5)
-                        .frame(width: geometry.size.width/3, height:70)
                     Image(systemName: "phone.fill.arrow.up.right").resizable()
                         .aspectRatio(contentMode: .fit)
                         .padding(20)
                         .frame(width: geometry.size.width/3, height:70)
+                        .onTapGesture {
+                            isCommunicating = true
+                        }
                 }.frame(width: geometry.size.width, height: geometry.size.height/11)
                 .background(Color.white.shadow(radius: 2))
+                .sheet(isPresented: $isCommunicating, content: {
+                    communicationView()
+                })
             }.edgesIgnoringSafeArea(.bottom)
         }
     }

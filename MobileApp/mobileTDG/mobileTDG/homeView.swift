@@ -9,23 +9,30 @@ import SwiftUI
 
 struct homeView: View {
     @EnvironmentObject var viewRouter: ViewRouter
+    @Environment(\.managedObjectContext) private var viewContext
+
     var body: some View {
         VStack (spacing: 15) {
-            Button(action: {
-                viewRouter.currentTab = .settings
-            }, label: {
-                Image(systemName: "gear")
-                    .resizable()
-                    .foregroundColor(.black)
-                    .padding(5)
-                    .frame(width: 40, height: 40)
-            })
+            HStack {
+                Button(action: {
+                    viewRouter.currentTab = .settings
+                }, label: {
+                    Image(systemName: "gear")
+                        .resizable()
+                        .foregroundColor(.black)
+                        .padding(5)
+                        .frame(width: 40, height: 40)
+                })
+                Spacer()
+            }.padding(.leading)
             Spacer()
             globeLogo()
             dataGridTitle()
             Spacer()
             Spacer()
-            Button(action: {}, label: {
+            Button(action: {
+                    viewRouter.currentTab = .detail},
+                   label: {
                 Text("New Audit")
                     .font(Font.custom("IBMPlexSans", size: 20, relativeTo: Font.TextStyle.body))
                     .padding()
