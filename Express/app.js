@@ -59,7 +59,7 @@ app.get('/api/audit/observation/download/:downloadType/:feature/:include', parse
 app.get('/api/audit/item/:feature/:include', parse.queryParse, validationConstructor('item'))
 
 //** Setup Query **//
-app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);
+app.get('/api/audit/setup', cycleTimer, parse.setupParse, query.sendSetup);
 
 // Audit Upload
 //app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
