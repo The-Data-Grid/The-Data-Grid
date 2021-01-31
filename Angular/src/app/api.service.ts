@@ -25,6 +25,7 @@ export class ApiService {
 
   public getSetupTableObject(): Observable<SetupTableObject> {
     var url = API_URL + '/setup';
+    // var url = API_URL + '/audit/setup';
 
     return this.http.get<SetupTableObject>(url, {
       observe: 'response',
@@ -48,6 +49,22 @@ export class ApiService {
     var url = API_URL + '/table';
     return this.http.get<TableObject>(url);
   }
+
+  public getDropdownObject(): Observable<any> {
+    var url = API_URL + '/audit/observation/distinct/toilet';
+    // var url = API_URL + '/audit/setup';
+
+    return this.http.get<any>(url, {
+      observe: 'response',
+    })
+      .pipe(map((response: any) => {
+        console.log("Server Status: " + response.status + ":::::" + response.statusText);
+        console.log(response.body);
+        return response.body;
+      }));
+  }
+
+  
 
 
 }

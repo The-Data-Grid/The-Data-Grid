@@ -54,6 +54,7 @@ export class AuditsComponent implements OnInit {
   featureSelectors = {};
   globalSelectors = {};
   selectorsLoaded: boolean = false;
+  dropdownObject;
 
   // the following are for multiselect dropdowns:
   dropdownList = FakeData;
@@ -69,6 +70,14 @@ export class AuditsComponent implements OnInit {
 
   ngOnInit() {
     this.getSetupObject();
+    this.getDropdownOptions();
+  }
+
+  getDropdownOptions() {
+    this.apiService.getDropdownObject().subscribe((res) => {
+      this.dropdownObject = res;
+      console.log(this.dropdownObject)
+    })
   }
 
   getSetupObject() {
@@ -112,7 +121,8 @@ export class AuditsComponent implements OnInit {
     console.log(this.featureSelectors);
     console.log("applied filter selections:");
     console.log(this.appliedFilterSelections);
-
+    console.log("defaultColumnIDs:");
+    console.log(this.defaultColumnIDs);
     // console.log("featuresToChildren:");
     // console.log(this.featuresToChildren);
     this.applyFilters();
@@ -187,7 +197,8 @@ export class AuditsComponent implements OnInit {
   applyFilters() {
     if (!this.selectedFeature) { return; }
     console.log(this.appliedFilterSelections);
-    this.getTableObject();
+    // this.getTableObject();
+    this.formQueryURL();
   }
 
   formQueryURL() {
@@ -214,6 +225,8 @@ export class AuditsComponent implements OnInit {
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.bool)) {
       if (input) { filterString += ID + "=" + input }
     }
+
+    console.log(columnsString + filterString)
 
   }
 

@@ -310,7 +310,7 @@ export class SetupObjectService {
         }
       }
       if (info.column.default) {
-        defaultColumnIDs.push(info.column.returnableID);
+        defaultColumnIDs.push(info.returnableID);
       }
     });
     return selectors;
