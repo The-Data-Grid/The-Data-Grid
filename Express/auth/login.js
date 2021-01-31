@@ -30,8 +30,8 @@ router.use(session({
     saveUninitialized: false,
     name: 'sessionID',
     cookie: {
-        // 1.67 hours
-        maxAge: 6000000, 
+        // 1 day
+        maxAge: 86_400_000, 
         // make sure this is secure in prod
         secure: (process.env.NODE_ENV == 'development' ? false : true)
     }
