@@ -3,14 +3,14 @@
 */
 [
     {
-        "tableName": "observation_toilet",
-        "parentTableName": null,
-        "frontendName": "Toilet",
-        "numFeatureRange": null,
-        "information": "A fixed receptacle into which a person may urinate or defecate",
+        "tableName": "observation_toilet", //infer
+        "parentTableName": null, //infer
+        "frontendName": "Toilet", // required
+        "numFeatureRange": null, // not sure yet
+        "information": "A fixed receptacle into which a person may urinate or defecate", // optional, default null
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_room", "isID": true, "isNullable": false}
+                {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Toilet", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
@@ -29,7 +29,7 @@
         "information": "A bowl or other receptacle into which men may urinate",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_room", "isID": true, "isNullable": false}
+                {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Urinal", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
@@ -48,7 +48,7 @@
         "information": "A fixed basin with a water supply and a drain",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_room", "isID": true, "isNullable": false}
+                {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Sink", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
@@ -67,7 +67,7 @@
         "information": "A reflective surface that reflects a clear image",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_room", "isID": true, "isNullable": false}
+                {"name": "item_room", "isID": true, "isNullable": false, "frontendName": "Room of Mirror", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",
@@ -86,7 +86,7 @@
         "information": "A part or division of a building enclosed by walls, floor, and ceiling",
         "observableItem" : {
             "requiredItem": [
-                {"name": "item_building", "isID": true, "isNullable": false}
+                {"name": "item_building", "isID": true, "isNullable": false, "frontendName": "Building of Room", "information": null}
             ],
             "realGeo": {
                 "itemName": "item_building",

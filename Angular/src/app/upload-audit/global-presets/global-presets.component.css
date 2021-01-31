@@ -6,14 +6,11 @@
 
 .top_decoration {
   height: 30px;
-  width: 802px;
-  margin-left: -25px;
-  margin-top: -25px;
+  min-width:3000px;
   background-color: #569CD7;
   overflow-y: hidden;
   overflow-x: hidden;
 }
-
 
 
 .primary_separator {
@@ -22,7 +19,7 @@
   background-color: black;
   height: 1px;
   width: 831px;
-  margin-left: -54px
+  margin-left: 0px
 }
 
 .secondary_separator {
@@ -31,7 +28,7 @@
   background-color: lightgray;
   height: 1px;
   width: 831px;
-  margin-left: -54px
+  margin-left: 0px
 }
 
 .cdk-global-overlay-wrapper {
@@ -41,3 +38,8 @@
     overflow: auto;
     pointer-events: auto;  
   }
+
+  .mat-dialog-container {
+    padding: 0px !important;
+  }
+  

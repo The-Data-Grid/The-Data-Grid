@@ -4,7 +4,7 @@
   "description": "Development management at UCLA Bruin Home Solutions",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./Express/app.js -e *",
+    "dev": "nodemon ./Express/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
     "construct": "node ./Express/dataRepresentation/construct.js"
@@ -13,12 +13,11 @@
   "license": "ISC",
   "dependencies": {
     "@angular/animations": "^9.1.1",
-    "@angular/cdk": "^9.2.2",
+    "@angular/cdk": "^9.2.4",
     "@angular/cli": "^9.1.1",
-    "@angular/common": "^9.1.1",
+    "@angular/common": "^9.1.13",
     "@angular/compiler": "^9.1.1",
     "@angular/compiler-cli": "^9.1.1",
-    "@angular/core": "^9.1.1",
     "@angular/flex-layout": "^9.0.0-beta.29",
     "@angular/forms": "^9.1.1",
     "@angular/material": "^9.2.2",
@@ -26,12 +25,17 @@
     "@angular/platform-browser-dynamic": "^9.1.1",
     "@angular/router": "^9.1.1",
     "@swimlane/ngx-datatable": "^17.0.0",
+    "bcrypt": "^5.0.0",
     "chalk": "^4.1.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "excel4node": "^1.7.2",
     "exceljs": "^4.1.1",
     "express": "^4.17.1",
+    "libpq": "^1.8.9",
+    "express-session": "^1.17.1",
+    "lodash": "^4.17.20",
+    "memorystore": "^1.6.4",
     "ng-click-outside": "^7.0.0",
     "ng-multiselect-dropdown": "^0.2.10",
     "ngx-horizontal-timeline": "0.0.6",
@@ -39,11 +43,12 @@
     "pg": "^8.3.3",
     "pg-native": "^3.0.0",
     "pg-promise": "^10.5.6",
-    "rxjs": "^ 6.5.4",
+    "rxjs": "^6.6.3",
     "strip-json-comments": "^3.1.1",
     "zone.js": "^0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.901.1"
+    "@angular-devkit/build-angular": "^0.901.1",
+    "@angular/core": "^9.1.13"
   }
 }

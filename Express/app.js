@@ -2,23 +2,30 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const validate = require('./validate.js')
-const parse = require('./parse.js');
-const setup = require('./setup.js');
-const query = require('./query.js');
-const insert = require('./insert.js');
-const template = require('./template.js');
 const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
 const port = process.env.PORT || 4001;
 
+// start the main connection pool
+const {connectPostgreSQL} = require('./db/pg.js');
+connectPostgreSQL('default');
+
+const insertTry = require('./insert/try.js');
+const parse = require('./parse.js');
+const {validationConstructor} = require('./validate.js')
+const query = require('./query.js');
+const insert = require('./insert.js');
+const template = require('./template.js');
+const authRouter = require('./auth/login.js');
+
 app.use(cors());
-app.use(bodyParser.json());
+// app.use(bodyParser.json()); shouldn't need
 
 // middleware
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false}));
+app.use('/api', authRouter);
 
 // remove "X-Powered-By: Express" from header
 app.set('x-powered-by', false);
@@ -39,11 +46,20 @@ function cycleTimer(req, res, next) {
     next()
 }
 
-//** Data Query **//
-app.get('/api/audit/:feature/:include', cycleTimer, parse.queryParse, validate.validateAudit, query.featureQuery); 
+//** Observation Data Query **//
+app.get('/api/audit/observation/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
+
+//** Observation Distinct Query **/
+app.get('/api/audit/observation/distinct/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDistinct)
+
+//** Observation Download Query **//
+app.get('/api/audit/observation/download/:downloadType/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
+
+//** Item Data Query **//
+app.get('/api/audit/item/:feature/:include', parse.queryParse, validationConstructor('item'))
 
 //** Setup Query **//
-app.get('/api/setup', cycleTimer, parse.setupParse, setup.sendSetup);
+app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);
 
 // Audit Upload
 //app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
@@ -55,11 +71,8 @@ app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTe
 app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
 // Easter Egg
-app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center>&copy TDG API Error Response ${new Date().getFullYear()}<center>`))
+app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
 
-// Incomplete Routes
-//app.get('/api/a/:include', cors());
-//app.get('/api/s/filter', cors(), query.setupQuery(req, res));
 
 app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 

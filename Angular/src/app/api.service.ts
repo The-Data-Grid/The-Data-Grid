@@ -3,12 +3,11 @@ import { HttpClient, HttpResponse } from '@angular/common/http'
 import { environment } from '../environments/environment';
 import { Observable, observable, Subscribable } from 'rxjs';
 import { map, catchError, filter, switchMap } from 'rxjs/operators';
-import { ToiletObject, TableObject, SetupTableObject } from './models';
+import {  TableObject, SetupTableObject } from './models';
 import { error } from '@angular/compiler/src/util';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-const API_URL = environment.apiUrl;
-const fakeServerURL = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server";
+const API_URL = environment.apiUrl; //this should default to environment.ts in dev and environment.prod.ts in production
 const PORT = environment.port;
 
 @Injectable({
@@ -24,20 +23,16 @@ export class ApiService {
     return array.join('&');
   }
 
-  public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
-    // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-    // var url = API_URL + '/setup';
-    var url = fakeServerURL + '/setup';
-    var lastModifiedObject = {
-      lastModified: lastModified
-    }
+  public getSetupTableObject(): Observable<SetupTableObject> {
+    var url = API_URL + '/setup';
+    // var url = API_URL + '/audit/setup';
 
     return this.http.get<SetupTableObject>(url, {
       observe: 'response',
-      // params: lastModifiedObject
     })
       .pipe(map((response: any) => {
         console.log("Server Status: " + response.status + ":::::" + response.statusText);
+        console.log(response.body);
         return response.body;
       }));
   }
@@ -51,10 +46,25 @@ export class ApiService {
     // return this.http.get<TableObject>(url, { params: qsparams });
     // console.log(url);
 
-    
-    var url = fakeServerURL + '/table';
+    var url = API_URL + '/table';
     return this.http.get<TableObject>(url);
   }
+
+  public getDropdownObject(): Observable<any> {
+    var url = API_URL + '/audit/observation/distinct/toilet';
+    // var url = API_URL + '/audit/setup';
+
+    return this.http.get<any>(url, {
+      observe: 'response',
+    })
+      .pipe(map((response: any) => {
+        console.log("Server Status: " + response.status + ":::::" + response.statusText);
+        console.log(response.body);
+        return response.body;
+      }));
+  }
+
+  
 
 
 }

@@ -1,83 +1,84 @@
 <!-- outside div body wrapper to make sure tab bar doesnt push down content -->
 
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
 
 </head>
-<div id="body">
-    <mat-card>
-        <div id="top-buttons" fxLayoutAlign="end center">
-            <button mat-button [routerLink]="'/upload-audit'">
-                Cancel
+
+<div style="width: 90%; margin-left: auto; margin-right: auto">
+  <div id="top-buttons" fxLayoutAlign="end center" style="margin-top: 10px;;">
+    <button mat-button [routerLink]="'/upload-audit'">
+      Cancel
+    </button>
+    <button mat-button id="save-button" [routerLink]="'/upload-audit'">
+      Save
+    </button>
+  </div>
+  <h4>
+    {{audit.auditName}}
+  </h4>
+  <div id="open-dialog-buttons" style="margin-bottom: 20px;;">
+    <button mat-button (click)="openGlobalPresets()">
+      Global Presets
+    </button>
+    <button mat-button (click)="openRootFeatures()">
+      Add Root Features
+    </button>
+  </div>
+
+
+  <mat-accordion>
+    <div *ngFor="let feature of rootFeatures">
+      <mat-expansion-panel [disabled]='auditOpened'>
+        <mat-expansion-panel-header>
+          <mat-panel-title style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
+            <span>
+              {{ feature.name }}
+            </span>
+            <button mat-icon-button class="add-button" aria-label="Add feature"
+              (click)="openFeatureAudit(feature)">
+              <mat-icon style="font-size: small;">add</mat-icon>
             </button>
-            <button mat-button id="save-button" [routerLink]="'/upload-audit'">
-                Save
-            </button>
-        </div>
-        <mat-card-header>
-            <div id="name">
-                {{audit.auditName}}
-            </div>
-        </mat-card-header>
-        <mat-card-subtitle>
-            <button mat-button (click)="openGlobalPresets()">
-                Global Presets
-            </button>
-            <button mat-button (click)="openRootFeatures()">
-                Add Root Features
-            </button>
-            <button mat-button (click)="openFeatureAudit()">
-                see feature audit component (temp)
-            </button>
-        </mat-card-subtitle>
-
-    </mat-card>
-
-    <!-- <h1>{{myDate | date:'yyyy-MM-dd'}}</h1> -->
-    <div style="margin-top: 30px;"></div>
-    <div class="lower_bound"></div>
-    <div *ngFor="let audit of audits">
-        <div *ngFor="let feature of audit.features">
-            <div *ngIf="feature.included">
-                <h1 class="audit_name">{{ feature.name }}</h1>
-                <h2 class="add" [id]="feature.name + ' add'">+</h2>
-                <span class="caret_formatting" (click)="showOrHideTable(feature.name)">
-                    <i [id]="feature.name + ' caret'" class="fa fa-caret-down subformatting"
-                        style="font-size: 18px;"></i>
-                </span>
-                <div class="lower_bound"></div>
-
-                <table [id]="feature.name" class="center table_styling" style="display: none; margin-left: 8px;">
-                    <th class="column_name id_style"></th>
-                    <th class="column_name id_style"></th>
-                    <th class="column_name id_style" style="padding: 1px; margin-top: 1px;">{{ feature.name }} ID</th>
-                    <th class="column_name id_style" style="padding: 1px;">Room ID</th>
-                    <tr>
-                        <th class="column_name">Action</th>
-                        <th class="column_name">Last Updated</th>
-                        <th class="column_name">Clockwise Number</th>
-                        <th class="column_name">Room</th>
-                    </tr>
-                    <tr *ngFor="let action of feature.actions">
-                        <td>{{ action.action }}</td>
-                        <td>{{ action.updated }}</td>
-                        <td>{{ action.c_number }}</td>
-                        <td>{{ action.room }}</td>
-                    </tr>
-                </table>
-                <div *ngIf="checkIfTableShown(feature.name)" class="table_separation">
-                    <!-- <tr>
-                            <td class="table_separation"></td>
-                        </tr> -->
-                </div>
-
-
-
-
-            </div>
-        </div>
-
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"
+          [footerHeight]="50" rowHeight="auto" [scrollbarH]="false" [limit]="5">
+          <ngx-datatable-column *ngFor="let col of columns" [prop]="getProp(col)" [name]="col">
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </mat-expansion-panel>
     </div>
+  </mat-accordion>
 
-    <div style="padding-bottom: 40px;"></div>
+
+  <!-- hardcoded -->
+  <!-- <mat-accordion>
+    <div *ngFor="let audit of audits">
+      <div *ngFor="let feature of audit.features">
+        <div *ngIf="feature.included">
+          <mat-expansion-panel [disabled] = 'auditOpened'>
+            <mat-expansion-panel-header>
+              <mat-panel-title style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
+                <span>
+                  {{ feature.name }}
+                </span>
+                <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit(feature.name)">
+                  <mat-icon style="font-size: small;">add</mat-icon>
+                </button>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"
+              [footerHeight]="50" rowHeight="auto" [scrollbarH]="false" [limit]="5">
+              <ngx-datatable-column *ngFor="let col of columns" [prop]="getProp(col)" [name]="col">
+              </ngx-datatable-column>
+            </ngx-datatable>
+          </mat-expansion-panel>
+        </div>
+      </div>
+    </div>
+  </mat-accordion> -->
+
+</div>
+
+<div style="padding-bottom: 40px;"></div>

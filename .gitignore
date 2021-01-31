@@ -1,14 +1,24 @@
 node_modules/*
 PostgreSQL/data/*
+Deployment/*
+
 # exclude
 !node_modules/.gitkeep
 !PostgreSQL/data/.gitkeep
+!Deployment/Angular/dist/.gitkeep
+!Deployment/Express/.gitkeep
+!Deployment/Authentication/.gitkeep
 
-.env
-
+# .env
 .DS_Store
 
 # computed returnables
 Express/dataRepresentation/auditSchemas/*/returnables/
 
+# schema dependent assets
+Express/dataRepresentation/schemaAssets/*
+!Express/dataRepresentation/schemaAssets/.gitkeep
+
+# helpers
 Express/queryTester.js
+PostgreSQL/scratch.txt
