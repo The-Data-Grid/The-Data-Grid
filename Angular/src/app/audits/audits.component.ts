@@ -101,7 +101,9 @@ export class AuditsComponent implements OnInit {
     this.globalSelectors = this.setupObjectService.getGlobalSelectors(
       this.setupObject,
       this.appliedFilterSelections,
-      this.defaultColumnIDs);
+      this.defaultColumnIDs, 
+      true
+      );
 
     // get root features
     this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);

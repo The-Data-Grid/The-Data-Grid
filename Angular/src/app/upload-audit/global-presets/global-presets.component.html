@@ -1,19 +1,16 @@
 <body style="overflow-x: hidden;">
     <div class="top_decoration"></div>
-    <p style="font-weight: 600;margin-left: 20px;">Global Presets</p>
-    <div class="primary_separator"></div>
-    <div *ngFor="let selector of globalSelectors['calendarRange']">
-        <span style="margin-left: 20px;">
-            {{selector.column.frontendName}}:
-        </span>
-        <div class="secondary_separator"></div>
+    <div style="margin-left: 20px;">
+        <h3 >Global Presets</h3>
+
+        <div *ngIf="selectorsLoaded">
+            <app-reusable-template [feature]="globalSelectors"
+                [appliedFilterSelections]="appliedFilterSelections"
+                >
+            </app-reusable-template>
+        </div>
     </div>
-    <div *ngFor="let selector of globalSelectors['searchableDropdown']">
-        <span style="margin-left: 20px;">
-            {{selector.column.frontendName}}:
-        </span>
-        <div class="secondary_separator"></div>
-    </div>
+
 
     <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
         <button mat-button (click)="close()" style="margin-right: 10px;">

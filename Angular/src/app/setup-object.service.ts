@@ -104,6 +104,7 @@ export class SetupObjectService {
     params: -setupObject
             -appliedFilterSelections: an object that will hold's a user's input for each selector
             -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+            -wantFeatureSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
 
     returns: selector object that maps selector type to column information. 
     selector object format:
@@ -126,14 +127,14 @@ export class SetupObjectService {
         returnableID: column's returnableID
     }
  */////////////////////////////////////////
- getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs) {
+ getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, wantFeatureSelector: boolean) {
   let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
   let globalColumns = [];
   let path = [IDX_OF_GLOBAL_ITEM_IDX];
 
   this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, setupObject);
 
-  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, true);
+  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFeatureSelector);
 }
 
 

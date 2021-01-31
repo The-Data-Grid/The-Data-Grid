@@ -39,6 +39,8 @@ export class GlobalPresetsComponent implements OnInit {
     _placeholder: "placeholder"
   };
   defaultColumns = [];
+  selectorsLoaded: boolean = false;
+
 
   ngOnInit(): void {
     this.getSetupTableObject();
@@ -50,8 +52,10 @@ export class GlobalPresetsComponent implements OnInit {
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(
         this.setupObject,
         this.appliedFilterSelections,
-        this.defaultColumns);
+        this.defaultColumns,
+        false);
       console.log(this.globalSelectors)
+      this.selectorsLoaded = true;
     });
   }
 
