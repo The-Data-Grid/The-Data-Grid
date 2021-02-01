@@ -17,16 +17,15 @@ if (process.argv[2] == '-d') {
 else
     httpPort = 4001;
 
+// start the main connection pool	
+const {connectPostgreSQL} = require('./db/pg.js');	
+connectPostgreSQL('default');
 
 const parse = require('./parse.js');
 const {validationConstructor} = require('./validate.js')
 const query = require('./query.js');
 const template = require('./template.js');
 const authRouter = require('./auth/login.js');
-
-// start the main connection pool	
-const {connectPostgreSQL} = require('./db/pg.js');	
-connectPostgreSQL('default');
 
 app.use(cors());
 //app.use(bodyParser.json());
