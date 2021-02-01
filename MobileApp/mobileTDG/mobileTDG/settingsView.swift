@@ -8,19 +8,32 @@
 import SwiftUI
 
 struct settingsView: View {
+    
+    init() {
+       // UITableView.appearance().backgroundColor = .clear
+    }
+    
+    @EnvironmentObject var viewRouter: ViewRouter
+    
     @State private var showAccountSettings = false
     @State private var showPVSettings = false
     
-    @State private var photoSync = false
-    @State private var autoSync = false
+    @State private var photoSync = UserDefaults.standard.bool(forKey: "psync")
+    @State private var autoSync = UserDefaults.standard.bool(forKey: "async")
+    
+    private var name = UserDefaults.standard.string(forKey: "username")
     
     var body: some View {
         VStack(alignment: .leading) {
             Text("Settings").font(.largeTitle).padding()
             Form {
                     DisclosureGroup("Account", isExpanded: $showAccountSettings) {
-                            Text("Name")
+                        Text("Name: \(name ?? "")")
+                        Button(action: {
+                            viewRouter.currentPage = .login
+                        }) {
                             Text("Logout")
+                        }
                     }.accentColor(Color.black)
                     /*
                     Divider()
@@ -48,7 +61,7 @@ struct settingsView: View {
                     Toggle("Auto-Sync", isOn: $autoSync)
                         .toggleStyle(CheckboxToggleStyle())
                      
-            }
+            }.background(Color.white)
             Text("Terms").padding(.leading)
             Text("Version 1.0.0").padding(.leading)
         }
@@ -57,6 +70,7 @@ struct settingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        settingsView()
+        settingsView().environmentObject(ViewRouter())
+
     }
 }
