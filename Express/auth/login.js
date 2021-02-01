@@ -11,11 +11,12 @@ const db = postgresClient.getConnection.db;
 // get SQL formatter
 const formatSQL = postgresClient.format;
 
-const {isValidEmail, isValidDate} = require('../validate.js');
+const {isValidEmail, isValidDate, isValidPassword} = require('../validate.js');
 
 const {apiDateToUTC} = require('../parse.js');
 
 const SQL = require('../statement.js').login;
+const { ComponentFactoryResolver } = require('@angular/core');
 
 
 // session store init
@@ -73,6 +74,42 @@ router.post('/logout', (req, res) => {
         req.session.destroy();
         res.send('you just logged out!'); 
     }
+});
+
+
+// New user register
+router.post('/user/new', async (req, res) => {
+    if (!isValidPassword(req.body.pass)) {
+        res.send('invalid password'); 
+    }
+
+    if (!isValidEmail(req.body.email)) {
+        res.send('Invalid Email'); 
+    }
+
+    if (!isValidDate(req.body.dateOfBirth)) {
+        res.send('Invalid Date'); 
+    }
+
+    //check if email is taken 
+    let data = null;
+    try {
+        data = await db.oneOrNone(formatSQL(SQL.isEmailTaken, {
+            checkemail: req.body.email
+        }));
+
+        if (data != null) {
+            res.send('email already taken');
+        }
+    }
+    catch(error) {
+        console.log('ERROR:', error);
+        res.status(401).send('service internal error');
+    }
+
+    //hash password
+    let hashedPassword = await bcrypt.hash(req.body.pass, 10); 
+    res.send('registration successful')
 });
 
 module.exports = router

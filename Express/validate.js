@@ -305,11 +305,20 @@ function isValidEmail(email) {
     }
 }
 
+function isValidPassword(password) {
+    if (password.length < 10 || 
+        !(/[a-zA-Z]/g.test(password)) || 
+        !(/\d/.test(password)))
+        return false;
+    return true; 
+}
+
 module.exports = {
     validationConstructor,
     hasDuplicates,
     isText,
     isNumber,
     isValidDate,
-    isValidEmail
+    isValidEmail,
+    isValidPassword 
 };
