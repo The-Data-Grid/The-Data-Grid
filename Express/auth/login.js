@@ -11,10 +11,18 @@ const db = postgresClient.getConnection.db;
 // get SQL formatter
 const formatSQL = postgresClient.format;
 
+const {isValidEmail, isValidDate} = require('../validate.js');
+
+const {apiDateToUTC} = require('../parse.js');
+
+const SQL = require('../statement.js').login;
+
+
 // session store init
 let Store = require('memorystore')(session); 
 let MyStore = new Store({checkPeriod: 1000000});
 
+// Session on every route
 router.use(session({
     store: MyStore, 
     secret: 'shhhhh',
@@ -22,19 +30,20 @@ router.use(session({
     saveUninitialized: false,
     name: 'sessionID',
     cookie: {
-        maxAge: 60000, 
+        // 1 day
+        maxAge: 86_400_000, 
         // make sure this is secure in prod
         secure: (process.env.NODE_ENV == 'development' ? false : true)
     }
 }));
 
-
-router.post('/login/', async (req, res) => {
+// Login
+router.post('/login', async (req, res) => {
 
     let data = null;
     try {
-        data = await db.one(formatSQL('SELECT password FROM users WHERE email = $(email)', {
-            email: req.body.email
+        data = await db.one(formatSQL(SQL.password, {
+            checkemail: req.body.email
         }));
 
         let result = await bcrypt.compare(req.body.pass, data.password); 
@@ -55,7 +64,26 @@ router.post('/login/', async (req, res) => {
     }
 });
 
+// Logout
+router.post('/logout', (req, res) => {
+    if (typeof req.session.loggedIn == 'undefined') {
+        res.send('you already logged out.');
+    } 
+    else {
+        req.session.destroy();
+        res.send('you just logged out!'); 
+    }
+});
 
+module.exports = router
+
+
+
+
+
+/************************************
+Route Auth Testing -- For next sprint
+*************************************
 
 router.get('/secure', (req, res) => {
     // if the session store shows that the user is logged in
@@ -128,15 +156,4 @@ let pathAuthLookup = {
 router.get('/api/audit/observation/:feature/:include', authorize('observation'));
 
 router.get('/api/coffee', authorize('coffee'));
-
-router.post('/logout/', (req, res) => {
-    if (typeof req.session.loggedIn == 'undefined') {
-        res.send('you already logged out.');
-    } 
-    else {
-        req.session.destroy();
-        res.send('you just logged out!'); 
-    }
-});
-
-module.exports = router
+*/

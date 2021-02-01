@@ -17,7 +17,7 @@ const {validationConstructor} = require('./validate.js')
 const query = require('./query.js');
 const insert = require('./insert.js');
 const template = require('./template.js');
-const authorize = require('./auth/login.js');
+const authRouter = require('./auth/login.js');
 
 app.use(cors());
 // app.use(bodyParser.json()); shouldn't need
@@ -25,6 +25,7 @@ app.use(cors());
 // middleware
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false}));
+app.use('/api', authRouter);
 
 // remove "X-Powered-By: Express" from header
 app.set('x-powered-by', false);
@@ -46,19 +47,19 @@ function cycleTimer(req, res, next) {
 }
 
 //** Observation Data Query **//
-app.get('/api/audit/observation/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
+app.get('/api/audit/observation/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
 
-//** Observation Dropdown Query **/
-app.get('/api/audit/observation/dropdown/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDropdown)
+//** Observation Distinct Query **/
+app.get('/api/audit/observation/distinct/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDistinct)
 
 //** Observation Download Query **//
-app.get('/api/audit/observation/download/:downloadType/:feature/:include', authorize, parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
+app.get('/api/audit/observation/download/:downloadType/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 
 
 //** Item Data Query **//
-app.get('/api/audit/item/:feature/:include', authorize, parse.queryParse, validationConstructor('item'))
+app.get('/api/audit/item/:feature/:include', parse.queryParse, validationConstructor('item'))
 
 //** Setup Query **//
-app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);
+app.get('/api/audit/setup', cycleTimer, parse.setupParse, query.sendSetup);
 
 // Audit Upload
 //app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);
@@ -70,10 +71,8 @@ app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTe
 app.get('/api/stats/', parse.statsParse, query.statsQuery);
 
 // Easter Egg
-app.get('/api/coffee', authorize, (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
+app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
 
-// Login 
-app.use('/auth', authorize);
 
 app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 

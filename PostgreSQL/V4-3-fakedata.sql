@@ -41,16 +41,18 @@ VALUES
 INSERT INTO item_user 
 ("item_id",
 "item_organization_id",
-"data_full_name",
+"data_first_name",
+"data_last_name",
+"data_date_of_birth",
 "data_email",
 "tdg_p_hash",
 "data_is_email_public",
 "data_is_quarterly_updates",
 "is_superuser")
 VALUES
-    (default, 2, 'Oliver Melgrove', 'oliver@melgrove.com', 'password', true, true, false),
-    (default, 1, 'Tanya Zhong', 'tanyazhong1@gmail.com', 'password', true, true, true),
-    (default, 1, 'Kian Nikzad', 'kian.nikzad@gmail.com', 'password', true, true, true);
+    (default, 2, 'Oliver', 'Melgrove', 'Tue, 26 Jan 2021 21:53:05 GMT', 'oliver@melgrove.com', 'password', true, true, false),
+    (default, 1, 'Tanya', 'Zhong', 'Tue, 26 Jan 2021 21:53:05 GMT', 'tanyazhong1@gmail.com', 'password', true, true, true),
+    (default, 1, 'Kian', 'Nikzad', 'Tue, 26 Jan 2021 21:53:05 GMT', 'kian.nikzad@gmail.com', 'password', true, true, true);
 
 
 INSERT INTO tdg_role 

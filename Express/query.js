@@ -393,13 +393,13 @@ function sendDefault(req, res) {
 
 // SEND OBSERVATION DATA
 // ============================================================
-function sendDropdown(req, res) {
+function sendDistinct(req, res) {
     // This is column-major data
 
     let keys = res.locals.parsed.finalQuery.fields.map(field => field.name).filter(key => key !== 'obspkey');
     let returnableIDs = keys.map(key => parseInt(key.slice(1)));
     
-    let dropdownData = Array(returnableIDs.length).fill().map(e => [])
+    let columnData = Array(returnableIDs.length).fill().map(e => [])
 
     // fill the rows
     keys.forEach((key, i) => {
@@ -410,18 +410,18 @@ function sendDropdown(req, res) {
         if(['obs-list', 'item-list', 'special'].includes(returnableIDLookup[returnableIDs[i]].referenceType) && res.locals.parsed.finalQuery.fields[i+1].dataTypeID == 1009) {
             
             res.locals.parsed.finalQuery.rows.forEach(row => {        
-                dropdownData[i].push([...new Set(row[key])]) 
+                columnData[i].push([...new Set(row[key])]) 
             })
         } else {
             res.locals.parsed.finalQuery.rows.forEach(row => {            
-                dropdownData[i].push(row[key]) 
+                columnData[i].push(row[key]) 
             })
         }
     });
 
     // take distinct
     // if output is an array we have to use lodash to take the unique arrays
-    dropdownData = dropdownData.map((row, i) => {
+    columnData = columnData.map((row, i) => {
         if(['obs-list', 'item-list', 'special'].includes(returnableIDLookup[returnableIDs[i]].referenceType) && res.locals.parsed.finalQuery.fields[i+1].dataTypeID == 1009) {
             return lodashArray.uniqWith(row, lodashLang.isEqual)
         } else {
@@ -431,7 +431,7 @@ function sendDropdown(req, res) {
 
     res.json({
         returnableIDs,
-        dropdownData
+        columnData
     })
 }
 
@@ -473,7 +473,7 @@ async function statsQuery(req, res, next) {
 function sendSetup(req, res) {
 
     let cycleTime = Date.now() - res.locals.cycleTime[0]
-    console.log(`Sent setupObject in ${cycleTime} ms`)
+    //console.log(`Sent setupObject in ${cycleTime} ms`)
     
     // if the "If-Modified-Since" header is not included or is newer or the same age as the setupObject's lastModified date
     if(res.locals.parsed.ifModifiedSince >= setupObject.lastModified) {
@@ -496,6 +496,6 @@ module.exports = {
     statsQuery,
     cycleTime,
     sendDefault,
-    sendDropdown,
+    sendDistinct,
     sendSetup
 };

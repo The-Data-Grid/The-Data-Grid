@@ -305,10 +305,15 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         // observable item index
         let observableItemIndex = itemOrder.indexOf(observableItem);
 
+        // backend name is defined by table name
+        let backendName = el['f__table_name']
+        backendName = backendName.match(/^(?:sub)?observation_(.*)/)[1]
+
 // INFO: numFeatureRange is commented out
         return({
             children: [observationColumnIndices, attributeColumnIndices, observableItemIndex],
             frontendName: frontendName,
+            backendName: backendName,
             information: information,
             // numFeatureRange: numFeatureRange,
             featureChildren: directChildren
@@ -454,7 +459,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                             tdg_observation_count.observation_count_id = m2m_auditor.observation_count_id \
                             LEFT JOIN item_user AS user_auditor_name ON m2m_auditor.item_user_id = user_auditor_name.item_id';
 
-            selectSQL = `COALESCE(ARRAY_AGG(${feature}.data_auditor::TEXT), ARRAY_AGG(user_auditor_name.data_full_name::TEXT))`;
+            selectSQL = `COALESCE(ARRAY_AGG(${feature}.data_auditor::TEXT), ARRAY_AGG(CONCAT(user_auditor_name.data_first_name, ' ', user_auditor_name.data_last_name)))`;
 
         // Standard Operating Procedure
         } else if(frontendName == 'Standard Operating Procedure' && referenceType == 'special') { 
