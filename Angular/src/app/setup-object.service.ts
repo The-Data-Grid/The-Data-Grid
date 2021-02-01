@@ -104,7 +104,7 @@ export class SetupObjectService {
     params: -setupObject
             -appliedFilterSelections: an object that will hold's a user's input for each selector
             -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
-            -wantFeatureSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
+            -wantFilterSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
 
     returns: selector object that maps selector type to column information. 
     selector object format:
@@ -127,14 +127,14 @@ export class SetupObjectService {
         returnableID: column's returnableID
     }
  */////////////////////////////////////////
- getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, wantFeatureSelector: boolean) {
+ getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, wantFilterSelector: boolean) {
   let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
   let globalColumns = [];
   let path = [IDX_OF_GLOBAL_ITEM_IDX];
 
   this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, setupObject);
 
-  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFeatureSelector);
+  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFilterSelector);
 }
 
 
@@ -246,8 +246,8 @@ export class SetupObjectService {
   // create the appliedFilterSelections object by finding all selectors. 
   // also find all columns that have default marked true
   //fills defaultcolumnIDs with the IDs of default columns
-  //wantFeatureSelector indicates whether we want to return filterSelectors or inputSelectors
-  private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFeatureSelector: boolean): any {
+  //wantFilterSelector indicates whether we want to return filterSelectors or inputSelectors
+  private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFilterSelector: boolean): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],
@@ -265,7 +265,7 @@ export class SetupObjectService {
     let curColumnSelector = null;
 
     infos.forEach(info => {
-      wantFeatureSelector ? curColumnSelector = info.column.filterSelector : curColumnSelector = info.column.inputSelector;
+      wantFilterSelector ? curColumnSelector = info.column.filterSelector : curColumnSelector = info.column.inputSelector;
       if (curColumnSelector) {
         switch (curColumnSelector.selectorKey) {
           case "dropdown": {
