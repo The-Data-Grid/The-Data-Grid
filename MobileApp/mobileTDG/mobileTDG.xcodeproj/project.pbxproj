@@ -1,0 +1,367 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */; };
+		F6A90DC62561C2840067AAA1 /* loginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC52561C2840067AAA1 /* loginView.swift */; };
+		F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DC72561C2860067AAA1 /* Assets.xcassets */; };
+		F6A90DCB2561C2860067AAA1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */; };
+		F6A90DDB2564ED140067AAA1 /* IBM_Plex_Sans in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */; };
+		F6A90DEC25650C6E0067AAA1 /* settingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEB25650C6E0067AAA1 /* settingsView.swift */; };
+		F6A90DEF25774D8F0067AAA1 /* styling.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEE25774D8F0067AAA1 /* styling.swift */; };
+		F6A90DF625775C770067AAA1 /* tabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DF525775C770067AAA1 /* tabView.swift */; };
+		F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */; };
+		F6A90DFC25775CDA0067AAA1 /* unsubmittedAuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */; };
+		F6A90DFF257766AF0067AAA1 /* homeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DFE257766AF0067AAA1 /* homeView.swift */; };
+		F6A90E03257767BF0067AAA1 /* motherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90E02257767BF0067AAA1 /* motherView.swift */; };
+		F6A90E07257769C30067AAA1 /* viewRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90E06257769C30067AAA1 /* viewRouter.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F6A90DC02561C2840067AAA1 /* mobileTDG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobileTDG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mobileTDGApp.swift; sourceTree = "<group>"; };
+		F6A90DC52561C2840067AAA1 /* loginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loginView.swift; sourceTree = "<group>"; };
+		F6A90DC72561C2860067AAA1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F6A90DCC2561C2860067AAA1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */ = {isa = PBXFileReference; lastKnownFileType = folder; name = IBM_Plex_Sans; path = ../../../../../Downloads/IBM_Plex_Sans; sourceTree = "<group>"; };
+		F6A90DEB25650C6E0067AAA1 /* settingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsView.swift; sourceTree = "<group>"; };
+		F6A90DEE25774D8F0067AAA1 /* styling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = styling.swift; sourceTree = "<group>"; };
+		F6A90DF525775C770067AAA1 /* tabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tabView.swift; sourceTree = "<group>"; };
+		F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = submittedAuditsView.swift; sourceTree = "<group>"; };
+		F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = unsubmittedAuditsView.swift; sourceTree = "<group>"; };
+		F6A90DFE257766AF0067AAA1 /* homeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = homeView.swift; sourceTree = "<group>"; };
+		F6A90E02257767BF0067AAA1 /* motherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = motherView.swift; sourceTree = "<group>"; };
+		F6A90E06257769C30067AAA1 /* viewRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewRouter.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F6A90DBD2561C2840067AAA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F6A90DB72561C2840067AAA1 = {
+			isa = PBXGroup;
+			children = (
+				F6A90DC22561C2840067AAA1 /* mobileTDG */,
+				F6A90DC12561C2840067AAA1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F6A90DC12561C2840067AAA1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F6A90DC02561C2840067AAA1 /* mobileTDG.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F6A90DC22561C2840067AAA1 /* mobileTDG */ = {
+			isa = PBXGroup;
+			children = (
+				F6A90DEE25774D8F0067AAA1 /* styling.swift */,
+				F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */,
+				F6A90E06257769C30067AAA1 /* viewRouter.swift */,
+				F6A90E02257767BF0067AAA1 /* motherView.swift */,
+				F6A90DC52561C2840067AAA1 /* loginView.swift */,
+				F6A90DF525775C770067AAA1 /* tabView.swift */,
+				F6A90DFE257766AF0067AAA1 /* homeView.swift */,
+				F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */,
+				F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */,
+				F6A90DEB25650C6E0067AAA1 /* settingsView.swift */,
+				F6A90DC72561C2860067AAA1 /* Assets.xcassets */,
+				F6A90DCC2561C2860067AAA1 /* Info.plist */,
+				F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */,
+				F6A90DC92561C2860067AAA1 /* Preview Content */,
+			);
+			path = mobileTDG;
+			sourceTree = "<group>";
+		};
+		F6A90DC92561C2860067AAA1 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F6A90DBF2561C2840067AAA1 /* mobileTDG */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6A90DCF2561C2860067AAA1 /* Build configuration list for PBXNativeTarget "mobileTDG" */;
+			buildPhases = (
+				F6A90DBC2561C2840067AAA1 /* Sources */,
+				F6A90DBD2561C2840067AAA1 /* Frameworks */,
+				F6A90DBE2561C2840067AAA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mobileTDG;
+			productName = mobileTDG;
+			productReference = F6A90DC02561C2840067AAA1 /* mobileTDG.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F6A90DB82561C2840067AAA1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1220;
+				LastUpgradeCheck = 1220;
+				TargetAttributes = {
+					F6A90DBF2561C2840067AAA1 = {
+						CreatedOnToolsVersion = 12.2;
+					};
+				};
+			};
+			buildConfigurationList = F6A90DBB2561C2840067AAA1 /* Build configuration list for PBXProject "mobileTDG" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F6A90DB72561C2840067AAA1;
+			productRefGroup = F6A90DC12561C2840067AAA1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F6A90DBF2561C2840067AAA1 /* mobileTDG */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F6A90DBE2561C2840067AAA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6A90DCB2561C2860067AAA1 /* Preview Assets.xcassets in Resources */,
+				F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */,
+				F6A90DDB2564ED140067AAA1 /* IBM_Plex_Sans in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F6A90DBC2561C2840067AAA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6A90DEC25650C6E0067AAA1 /* settingsView.swift in Sources */,
+				F6A90E07257769C30067AAA1 /* viewRouter.swift in Sources */,
+				F6A90DC62561C2840067AAA1 /* loginView.swift in Sources */,
+				F6A90DEF25774D8F0067AAA1 /* styling.swift in Sources */,
+				F6A90DFC25775CDA0067AAA1 /* unsubmittedAuditsView.swift in Sources */,
+				F6A90E03257767BF0067AAA1 /* motherView.swift in Sources */,
+				F6A90DF625775C770067AAA1 /* tabView.swift in Sources */,
+				F6A90DFF257766AF0067AAA1 /* homeView.swift in Sources */,
+				F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */,
+				F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F6A90DCD2561C2860067AAA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F6A90DCE2561C2860067AAA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F6A90DD02561C2860067AAA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"mobileTDG/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = mobileTDG/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "The-Data-Grid.mobileTDG";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F6A90DD12561C2860067AAA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"mobileTDG/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = mobileTDG/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "The-Data-Grid.mobileTDG";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F6A90DBB2561C2840067AAA1 /* Build configuration list for PBXProject "mobileTDG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6A90DCD2561C2860067AAA1 /* Debug */,
+				F6A90DCE2561C2860067AAA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6A90DCF2561C2860067AAA1 /* Build configuration list for PBXNativeTarget "mobileTDG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6A90DD02561C2860067AAA1 /* Debug */,
+				F6A90DD12561C2860067AAA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F6A90DB82561C2840067AAA1 /* Project object */;
+}

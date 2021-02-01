@@ -9,12 +9,12 @@
     bottom: 30px;
 }
 
-::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {
+.custom ::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {
     /*change color of label*/
     color: rgb(228, 228, 228) !important;
 }
 
-::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple {
+.custom ::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple {
     background-color: rgba(228, 228, 228, 0.5) !important;
 }
 
@@ -55,7 +55,7 @@
 
 /* form fields within sidenav bar */
 
-.mat-form-field {
+.selector {
     margin-left: auto;
     margin-right: auto;
     font-size: small;
@@ -98,5 +98,5 @@
 }
 
 #apply-button {
-    margin-bottom: 25px;
+    margin-bottom: 40px;
 }

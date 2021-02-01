@@ -1,0 +1,39 @@
+/* Container holding the image and the text */
+.team-header-container {
+    position: relative;
+    text-align: center;
+    color: white;
+  }
+
+  /* Team Header Text */
+.team-header {
+    font-weight: bold;
+    font-size: 64px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.team-section-header {
+    font-family: IBM Plex Sans;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 50px;
+    color: #569CD7;
+    margin: 20px;
+}
+
+.team-member-card {
+    position: relative;
+    width: 20%;
+    margin-bottom: 20px;
+}
+
+.member-description {
+    font-family: IBM Plex Sans;
+    font-style: normal;
+    font-size: 18px;
+    line-height: 23px;
+    padding: 0px;
+}

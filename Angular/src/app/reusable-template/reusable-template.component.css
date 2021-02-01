@@ -1,0 +1,15 @@
+.selector {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: small;
+    width: 85%;
+    /* color: green !important */
+}
+
+.auditsPageColorScheme {
+    color: rgb(228, 228, 228) !important;
+}
+
+.featuresPageColorScheme {
+    color: #989898 !important;
+}

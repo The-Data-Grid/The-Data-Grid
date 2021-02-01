@@ -294,4 +294,93 @@
     margin-top: 80px;
  }
 
+ .divider {
+    width: 130%;
+    height: 1px;
+    background-color: #cccccc;
+    margin-left: -50px;
+ }
+
+ .indivDivider {
+    width: 2px;
+    height:50px;
+    background-color: black;
+    position: absolute;
+    z-index: 5;
+ }
+
+ .mainDivider {
+   width: 2px;
+   height:500px;
+   background-color: black;
+   position: absolute;
+   z-index: 5;
+   /* margin-left: 40%; */
+
+ }
+
+/* ngx-datatable.material .datatable-header .datatable-header-cell {
+   font-size: 10px !important;
+} */
+
+ /* :host ::ng-deep .datatable-header-cell-label-draggable  {
+   padding-bottom: 100px !important;
+ }
+
+ .datatable-header-cell-template {
+   vertical-align: bottom;
+   border-bottom: 2px solid #ddd;
+   padding: 800px;
+   line-height: 1.42857143;
+   font-weight: bold;
+   color: rgb(51, 51, 51);
+   }
+
+:host ::ng-deep .datatable-header-cell-label-draggable {
+   font-size: 500px;
+} */
+
+
+table {
+   width: 100%;
+ }
  
+ /* th.mat-header-cell, td.mat-cell {
+     text-align: center;
+     border: 1px solid #CCC;
+     padding: 0 !important;
+ } */
+
+ .NOOOOO {
+    background-color: #ffffff;
+ }
+
+ .mat-cell {
+    color: #585858;
+    font-size: 13px;
+    font-weight: 400;
+ }
+
+ td[colspan]:not([colspan="1"]) {
+   text-align: center;
+}
+ 
+td[colspan="2"] {
+   text-align: center;
+}
+
+table, tr, td {
+   border: #ffffff;
+} 
+
+.mat-header-cell {
+   height: 14px;
+}
+
+.second_header {
+   height: 40px !important;
+}
+
+.tr_font {
+   font-size: 12px;
+}

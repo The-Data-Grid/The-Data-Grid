@@ -55,11 +55,35 @@
                         </a>
                     </div>
                 </div>
-                <a mat-tab-link [routerLink]="'/about'" routerLinkActive="activeButton"
+                <div (mouseenter)="changeHover()" (mouseleave)="changeHover()">
+                    <a mat-tab-link [routerLink]="'/about'" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla6="routerLinkActive" [active]="rla6.isActive">
                     <span *ngIf="currentWindowWidth >= 700"> About Us </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
-                </a>
+                    </a>
+                    <div *ngIf="isHover">
+                        <a mat-tab-link routerLinkActive #rla8="routerLinkActive" [active]="rla8.isActive"
+                            class="nav-dropdown-option" fxLayout="column"
+                            fxLayoutAlign="center center">
+                            <span>Mission</span>
+                        </a>
+                        <a mat-tab-link routerLinkActive #rla9="routerLinkActive" [active]="rla9.isActive"
+                            class="nav-dropdown-option" fxLayout="column"
+                            fxLayoutAlign="center center">
+                            <span>How It Works</span>
+                        </a>
+                        <a mat-tab-link routerLinkActive #rla10="routerLinkActive" [active]="rla10.isActive"
+                            class="nav-dropdown-option" [routerLink]="'/team'" fxLayout="column"
+                            fxLayoutAlign="center center">
+                            <span>Team</span>
+                        </a> 
+                        <a mat-tab-link routerLinkActive #rla11="routerLinkActive" [active]="rla11.isActive"
+                            class="nav-dropdown-option" fxLayout="column"
+                            fxLayoutAlign="center center">
+                            <span>Contact</span>
+                        </a>
+                    </div>
+                </div>
                 <a mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla7="routerLinkActive" [active]="rla7.isActive">
                     <span *ngIf="currentWindowWidth >= 700"> My Profile </span>
