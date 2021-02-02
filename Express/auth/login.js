@@ -111,7 +111,7 @@ router.post('/user/new', async (req, res) => {
     //hash password
     let hashedPassword = await bcrypt.hash(req.body.pass, 10); 
 
-userSQL.addingUsers= {
+userSQL.insertingUsers= {
     userfirstname: req.body.firstName,
     userlastname: req.body.lastName,
     useremail: req.body.email,
