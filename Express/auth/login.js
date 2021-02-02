@@ -17,7 +17,7 @@ const {apiDateToUTC} = require('../parse.js');
 
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
-const { ComponentFactoryResolver } = require('@angular/core');
+
 
 
 // session store init
@@ -35,9 +35,10 @@ router.use(session({
         // 1 day
         maxAge: 86_400_000, 
         // make sure this is secure in prod
-        secure: (process.env.NODE_ENV == 'development' ? false : true)
+        secure: false//(process.env.NODE_ENV == 'development' ? false : true)
     }
 }));
+
 
 // Login
 router.post('/login', async (req, res) => {
@@ -59,6 +60,7 @@ router.post('/login', async (req, res) => {
         else {
             throw new Error('error');
         }
+        
     }
     catch(error) {
         console.log('ERROR:', error);
@@ -68,8 +70,9 @@ router.post('/login', async (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
-    if (typeof req.session.loggedIn == 'undefined') {
-        res.send('you already logged out.');
+    
+    if (req.session.loggedIn !== true) {
+        res.status(400).send('you already logged out.');
     } 
     else {
         req.session.destroy();
@@ -110,14 +113,19 @@ router.post('/user/new', async (req, res) => {
     //hash password
     let hashedPassword = await bcrypt.hash(req.body.pass, 10); 
 
-userSQL.insertingUsers= {
-    userfirstname: req.body.firstName,
-    userlastname: req.body.lastName,
-    useremail: req.body.email,
-    userpass:  hashedPassword,
-    userdateofbirth: req.body.dateOfBirth,
-    userpublic: req.body.isEmailPublic,
-    userquarterlyupdates: req.body.isQuarterlyUpdates
+    try {
+        await db.none(formatSQL(userSQL.insertingUsers, {
+                userfirstname: req.body.firstName,
+                userlastname: req.body.lastName,
+                useremail: req.body.email,
+                userpass:  hashedPassword,
+                userdateofbirth: req.body.dateOfBirth,
+                userpublic: req.body.isEmailPublic,
+                userquarterlyupdates: req.body.isQuarterlyUpdates
+        }))
+    } catch(error) {
+        console.log('ERROR:', error);
+        res.status(500).send('service internal error');
     }
 
     res.send('registration successful')

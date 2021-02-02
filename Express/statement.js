@@ -182,13 +182,13 @@ const setup = {
 // SQL for login.js
 
 const login = {
-    password: '(SELECT tdg_p_hash FROM item_user WHERE data_email = $(checkemail))',
-    isEmailTaken: '(SELECT data_email FROM item_user WHERE data_email = $(checkemail))'
+    password: 'SELECT tdg_p_hash AS password FROM item_user WHERE data_email = $(checkemail)',
+    isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)'
     };   
 
 
 const addingUsers = {
-insertingUsers: `(INSERT INTO item_user (item_id, item_organization_id, data_first_name, data_last_name, 
+insertingUsers: `INSERT INTO item_user (item_id, item_organization_id, data_first_name, data_last_name, 
     data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser) 
 VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false)`
     };
