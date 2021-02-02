@@ -10,13 +10,16 @@ var path = require("path");
 //const port = process.env.PORT || 4001;
 var httpPort;
 var httpsPort;
-if (process.argv[2] == '-d') {
+
+// Deploying?
+const isDeployment = process.argv[2] == '-d'
+
+if (isDeployment) {
     httpPort = 80;
     httpsPort = 443;
-}
-else
+} else {
     httpPort = 4001;
-
+}
 // start the main connection pool	
 const {connectPostgreSQL} = require('./db/pg.js');	
 connectPostgreSQL('default');
@@ -36,9 +39,12 @@ app.use(express.urlencoded({ extended: false}));
 app.use('/api', authRouter);
 
 // set TLS options
-const options = {
-    key: fs.readFileSync('/etc/letsencrypt/live/thedatagrid.org/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/thedatagrid.org/fullchain.pem')
+let options;
+if(isDeployment) {
+    options = {
+        key: fs.readFileSync('/etc/letsencrypt/live/thedatagrid.org/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/thedatagrid.org/fullchain.pem')
+    }
 };
 // remove "X-Powered-By: Express" from header
 app.set('x-powered-by', false);
@@ -83,13 +89,19 @@ app.all('*', function(req, res){
 });
     
 ////// LISTEN //////
-    
-//app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
-// listen with HTTPS server
-const httpsServer = https.createServer(options, app).listen(httpsPort, () => console.log(`TDG Backend Node.js HTTPS server is running on port ${httpsPort}`));
-// if deploying, create HTTP server that redirects to HTTPS with 301 status code and listen
-if (process.argv[2] == '-d') {
-    const httpApp = express();
-    httpApp.all('*', (req, res) => res.redirect(301, 'https://' + req.hostname + req.url));    
-    const httpServer = http.createServer(httpApp).listen(httpPort, () => console.log(`TDG Backend Node.js HTTP server is running on port ${httpPort}`));
+
+if(isDeployment) {
+    // listen with HTTPS server
+    const httpsServer = https.createServer(options, app).listen(httpsPort, () => console.log(`TDG Backend Node.js HTTPS server is running on port ${httpsPort}`));
+    // if deploying, create HTTP server that redirects to HTTPS with 301 status code and listen
+    if (process.argv[2] == '-d') {
+        const httpApp = express();
+        httpApp.all('*', (req, res) => res.redirect(301, 'https://' + req.hostname + req.url));    
+        const httpServer = http.createServer(httpApp).listen(httpPort, () => console.log(`TDG Backend Node.js HTTP server is running on port ${httpPort}`));
+    }
+}
+// Then development
+else {
+    let port = 4001
+    app.listen(port, () => console.log(`TDG Backend Node.js server is running on port ${port}`))
 }
