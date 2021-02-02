@@ -182,17 +182,26 @@ const setup = {
 // SQL for login.js
 
 const login = {
-    //for example instead of get features, write as something else and then reference sql.somethinngelse in aut
-    // email: '(SELECT data_email FROM item_user WHERE data_email = $(checkemail))' , 
     password: '(SELECT tdg_p_hash FROM item_user WHERE data_email = $(checkemail))',
     isEmailTaken: '(SELECT data_email FROM item_user WHERE data_email = $(checkemail))'
     };   
+
+
+const addingUsers = {
+insertingUsers: `(INSERT INTO item_user (item_id, item_organization_id, data_first_name, data_last_name, 
+    data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser) 
+VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false)`
+    };
+    
+
+
 
 module.exports = {
     query,
     construct,
     setup,
-    login
+    login,
+    addingUsers
 };
 
 
