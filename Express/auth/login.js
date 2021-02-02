@@ -81,31 +81,30 @@ router.post('/logout', (req, res) => {
 // New user register
 router.post('/user/new', async (req, res) => {
     if (!isValidPassword(req.body.pass)) {
-        res.send('invalid password'); 
+        res.status(400).send('invalid password'); 
     }
 
     if (!isValidEmail(req.body.email)) {
-        res.send('Invalid Email'); 
+        res.status(400).send('Invalid Email'); 
     }
 
     if (!isValidDate(req.body.dateOfBirth)) {
-        res.send('Invalid Date'); 
+        res.status(400).send('Invalid Date'); 
     }
 
     //check if email is taken 
-    let data = null;
     try {
-        data = await db.oneOrNone(formatSQL(SQL.isEmailTaken, {
+        const data = await db.oneOrNone(formatSQL(SQL.isEmailTaken, {
             checkemail: req.body.email
         }));
 
         if (data != null) {
-            res.send('email already taken');
+            res.status(400).send('email already taken');
         }
     }
     catch(error) {
         console.log('ERROR:', error);
-        res.status(401).send('service internal error');
+        res.status(500).send('service internal error');
     }
 
     //hash password
