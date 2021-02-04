@@ -135,10 +135,10 @@ export class FeatureAuditComponent implements OnInit {
 
   getGlobalSelectors() {
     // parse global columns
-    this.globalSelectors = this.setupObjectService.getGlobalSelectors(
-      this.setupObject,
-      this.appliedFilterSelections,
-      this.defaultColumns, false);
+    // this.globalSelectors = this.setupObjectService.getGlobalSelectors(
+    //   this.setupObject,
+    //   this.appliedFilterSelections,
+    //   this.defaultColumns);
   }
 
   getRootFeatures() {

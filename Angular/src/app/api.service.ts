@@ -64,6 +64,14 @@ export class ApiService {
       }));
   }
 
+
+  // POST REQUESTS
+
+  attemptLogin(loginObject) {
+    return this.http.post(`${API_URL}/login`,loginObject);
+  }
+
+
   
 
 

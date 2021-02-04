@@ -225,3 +225,7 @@ overflow-y: hidden;
 .mat-dialog-container {
   padding: 0px !important;
 }
+
+::ng-deep .mat-expansion-panel-header[aria-disabled=true] {
+  color: rgba(0,0,0,.87);
+}
