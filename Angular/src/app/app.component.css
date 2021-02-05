@@ -36,6 +36,39 @@ body {
    padding-left: 0;
 }
 
+.bottom-bar {
+   background-color: #9EACB8;
+   height: 150px;
+   padding-top: 30px;
+}
+
+.bottom-card {
+   background-color: inherit;
+   width: 20%;
+}
+
+.bot-text {
+   font-size: 16px;
+   line-height: 15px;
+   color: #ffffff;
+}
+
+
+.bot-logo {
+   font-family: IBM Plex Mono;
+   font-style: normal;
+   font-weight: 500;
+   font-size: 25px;
+   line-height: 30px;
+   color: #ffffff;
+}
+
+.social-button {
+   height: 40px;
+   margin: 5px;
+}
+
+/* old botBar styles?*/
 .bottomBar {
    position: fixed;
    bottom: 0;
