@@ -195,54 +195,10 @@ export class AuditsComponent implements OnInit {
   applyFilters() {
     if (!this.selectedFeature) { return; }
     console.log(this.appliedFilterSelections);
-    // this.getTableObject();
-    this.formQueryURL();
+    this.getTableObject();
   }
 
-  formQueryURL() {
-    // create the "columns" part of the query by joining the default column IDS with '&'
-    let columnsString = this.defaultColumnIDs.join('&');
-    let colAndFilterSeparater = "?";
-    let filters = []
 
-
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.dropdown)) {
-      if (input) { filters.push(ID + "=" + input) }
-    }
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.numericEqual)) {
-      if (input) { filters.push(ID + "=" + input) }
-    }
-    for (const [ID, inputObject] of Object.entries(this.appliedFilterSelections.numericChoice)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
-    }
-    for (const [ID, inputObject] of Object.entries(this.appliedFilterSelections.calendarRange)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
-    }
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.calendarEqual)) {
-      if (input) { filters.push(ID + "=" + input) }
-    }
-    for (const [ID, inputArray] of Object.entries(this.appliedFilterSelections.searchableDropdown)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
-    }
-    for (const [ID, inputArray] of Object.entries(this.appliedFilterSelections.checklistDropdown)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
-    }
-    for (const [ID, inputArray] of Object.entries(this.appliedFilterSelections.searchableChecklistDropdown)) {
-      inputArray.forEach(option => {
-        filters.push(ID + "=" + option.item_text)
-        // TO ASK: HOW TO DEAL WITH MULTIPLE SELECTIONS? for the multiselectors
-      });
-    }
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.text)) {
-      if (input) { filters.push(ID + "=" + input) }
-    }
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.bool)) {
-      if (input) { filters.push(ID + "=" + input) }
-    }
-
-    console.log(columnsString + colAndFilterSeparater + filters.join('&'));
-
-  }
 
   applyDateFilter = (val: string) => {
     val = this.datepipe.transform(val, 'MM-dd-yyyy');
