@@ -54,7 +54,7 @@
             </mat-select>
         </mat-form-field>
         <mat-form-field style="width: 45%;">
-            <mat-label>{{info.column.frontendName}} {{info.returnableID}} (numChoice) </mat-label>
+            <mat-label>{{info.column.frontendName}} {{info.returnableID}} (NC) </mat-label>
             <input matInput placeholder="ex: 4.5"
                 [(ngModel)]='appliedFilterSelections.numericChoice[info.returnableID].value'>
         </mat-form-field>
@@ -63,7 +63,7 @@
 
 <ng-template #numericEqualTemplate let-info>
     <mat-form-field *ngIf="info.returnableID" class="selector">
-        <mat-label>{{info.column.frontendName}} {{info.returnableID}} (numEqual) </mat-label>
+        <mat-label>{{info.column.frontendName}} {{info.returnableID}} (NE) </mat-label>
         <input matInput placeholder="ex: 4.5" [(ngModel)]='appliedFilterSelections.numericEqual[info.returnableID]'>
     </mat-form-field>
 </ng-template>
@@ -85,7 +85,7 @@
         fxLayoutAlign="space-between center">
         <mat-form-field style="width: 45%;">
             <input matInput class="datetime-picker" type="datetime-local"
-                [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (calendarRange)'"
+                [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (CR)'"
                 [(ngModel)]="appliedFilterSelections.calendarRange[info.returnableID].start">
         </mat-form-field>
         <span> to </span>
@@ -98,23 +98,24 @@
 
 <ng-template #calendarEqualTemplate let-info>
     <mat-form-field *ngIf="info.returnableID" class="selector">
-        <input matInput type="datetime-local" [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (calendarEqual)'"
+        <input matInput type="datetime-local"
+            [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (CE)'"
             [(ngModel)]="appliedFilterSelections.calendarEqual[info.returnableID]">
     </mat-form-field>
 </ng-template>
 
 <ng-template #searchableDropdownTemplate let-info>
-    <ng-multiselect-dropdown *ngIf="info.returnableID && dropdownOptions" class="selector" 
-        [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (searchableDropdown)'"
+    <ng-multiselect-dropdown *ngIf="info.returnableID && dropdownOptions" class="selector"
+        [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (SD)'"
         [(ngModel)]="appliedFilterSelections.searchableDropdown[info.returnableID]"
-        [settings]="searchableDropdownSettings" [data]="IDtoOptions[info.returnableID]" (onSelect)="onItemSelect($event)"
-        (onSelectAll)="onSelectAll($event)">
+        [settings]="searchableDropdownSettings" [data]="IDtoOptions[info.returnableID]"
+        (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
     </ng-multiselect-dropdown>
 </ng-template>
 
 <ng-template #checklistDropdownTemplate let-info>
-    <ng-multiselect-dropdown *ngIf="info.returnableID"  class="selector"
-        [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (checklistDropdown)'"
+    <ng-multiselect-dropdown *ngIf="info.returnableID" class="selector"
+        [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (CD)'"
         [(ngModel)]="appliedFilterSelections.checklistDropdown[info.returnableID]"
         [settings]="checklistDropdownSettings" [data]="dropdownList" (onSelect)="onItemSelect($event)"
         (onSelectAll)="onSelectAll($event)">
@@ -122,11 +123,11 @@
 </ng-template>
 
 <ng-template #searchableChecklistDropdownTemplate let-info>
-    <ng-multiselect-dropdown *ngIf="info.returnableID && dropdownOptions"  class="selector"
-        [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (searchableChecklistDropdown)'"
+    <ng-multiselect-dropdown *ngIf="info.returnableID && dropdownOptions" class="selector"
+        [placeholder]="info.column.frontendName + ' ' + info.returnableID + ' (SCD)'"
         [(ngModel)]="appliedFilterSelections.searchableChecklistDropdown[info.returnableID]"
-        [settings]="searchableChecklistDropdownSettings" [data]="IDtoOptions[info.returnableID]" (onSelect)="onItemSelect($event)"
-        (onSelectAll)="onSelectAll($event)">
+        [settings]="searchableChecklistDropdownSettings" [data]="IDtoOptions[info.returnableID]"
+        (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
     </ng-multiselect-dropdown>
 
 </ng-template>

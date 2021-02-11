@@ -92,14 +92,13 @@ export class ApiService {
       if (input) { filters.push(ID + "=" + input) }
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableDropdown)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
+      inputArray.forEach(option => {filters.push(ID + "=" + option.item_text)});
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.checklistDropdown)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
+      inputArray.forEach(option => {filters.push(ID + "=" + option.item_text)});
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableChecklistDropdown)) {
-      inputArray.forEach(option => {
-        filters.push(ID + "=" + option.item_text)
+      inputArray.forEach(option => {filters.push(ID + "=" + option.item_text)
         // TO ASK: HOW TO DEAL WITH MULTIPLE SELECTIONS? for the multiselectors
       });
     }

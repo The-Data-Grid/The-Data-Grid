@@ -83,12 +83,14 @@ export class ReusableTemplateComponent implements OnInit {
   mapIDtoOptions() {
     let IDtoOptions = {}
     this.dropdownOptions.returnableIDs.forEach((ID, i) => {
-      IDtoOptions[ID]  = []
+      IDtoOptions[ID] = []
       this.dropdownOptions.columnData[i].forEach((element, j) => {
-        IDtoOptions[ID].push({ 
-          item_id: j, 
-          item_text: element 
-        })
+        if (element) {
+          IDtoOptions[ID].push({
+            item_id: j,
+            item_text: element
+          })
+        }
       });
     })
     return IDtoOptions;

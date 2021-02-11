@@ -32,7 +32,7 @@ export class AuditsComponent implements OnInit {
   page = "AuditsPage"
 
   // variables for filtering sidebar
-  filterBy = "Submission";
+  filterBy = "Feature";
   setupObject;
   defaultColumnIDs = []; //default denotes which return columns are to be included in queries by default
   rootFeatures = [];
