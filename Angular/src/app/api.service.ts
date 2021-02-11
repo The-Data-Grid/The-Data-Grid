@@ -50,16 +50,18 @@ export class ApiService {
     return this.http.get<TableObject>(url);
   }
 
-  public getDropdownObject(): Observable<any> {
-    var url = API_URL + '/audit/observation/distinct/toilet';
-    // var url = API_URL + '/audit/setup';
+  public getDropdownOptions(): Observable<any> {
+    // var url = API_URL + '/audit/observation/distinct';
+    var url = API_URL + '/audit/observation/distinct/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161';
+    // console.log("dropdown url:")
+    // console.log(url)
 
     return this.http.get<any>(url, {
       observe: 'response',
     })
       .pipe(map((response: any) => {
         console.log("Server Status: " + response.status + ":::::" + response.statusText);
-        console.log(response.body);
+        // console.log(response.body);
         return response.body;
       }));
   }

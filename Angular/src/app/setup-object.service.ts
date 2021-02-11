@@ -77,7 +77,7 @@ export class SetupObjectService {
     item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_ITEM_IDXS, i);
-      console.log(itemPointer.index + " ID " + itemPointer.frontendName)
+      // console.log(itemPointer.index + " ID " + itemPointer.frontendName)
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
     });
@@ -92,7 +92,7 @@ export class SetupObjectService {
     item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
-      console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
+      // console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
     });
@@ -288,7 +288,7 @@ export class SetupObjectService {
             selectors.calendarEqual.push(info);
             appliedFilterSelections.calendarEqual[info.returnableID] = null; break;
           }
-          case "searchablenumericEqual": {
+          case "searchableDropdown": {
             selectors.searchableDropdown.push(info);
             appliedFilterSelections.searchableDropdown[info.returnableID] = []; break;
           }

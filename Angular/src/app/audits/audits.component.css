@@ -6,7 +6,7 @@
     right: 0;
     top: 50px;
     /* space for bottom bar: */
-    bottom: 30px;
+    bottom: 5px;
 }
 
 .custom ::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {

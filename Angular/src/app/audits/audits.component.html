@@ -13,7 +13,7 @@
                 <div *ngIf="selectorsLoaded">
                     <app-reusable-template [feature]="globalSelectors"
                         [appliedFilterSelections]="appliedFilterSelections"
-                        >
+                         >
                     </app-reusable-template>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <app-reusable-template [feature]="featureSelectors[selectedFeature.index]"
-                        [appliedFilterSelections]="appliedFilterSelections">
+                            [appliedFilterSelections]="appliedFilterSelections">
                         </app-reusable-template>
                     </mat-expansion-panel>
 
@@ -48,7 +48,8 @@
                                 {{setupObject.features[childIndex].frontendName}}
                             </mat-panel-title>
                         </mat-expansion-panel-header>
-                        <app-reusable-template [feature]="featureSelectors[childIndex]" [appliedFilterSelections]="appliedFilterSelections">
+                        <app-reusable-template [feature]="featureSelectors[childIndex]"
+                            [appliedFilterSelections]="appliedFilterSelections" >
                         </app-reusable-template>
                     </mat-expansion-panel>
                 </mat-accordion>

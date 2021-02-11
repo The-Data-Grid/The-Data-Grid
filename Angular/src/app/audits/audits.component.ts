@@ -54,7 +54,9 @@ export class AuditsComponent implements OnInit {
   featureSelectors = {};
   globalSelectors = {};
   selectorsLoaded: boolean = false;
-  dropdownObject;
+  dropdownOptions = {
+    placeholder: "hello"
+  };
 
   // the following are for multiselect dropdowns:
   dropdownList = FakeData;
@@ -70,15 +72,8 @@ export class AuditsComponent implements OnInit {
 
   ngOnInit() {
     this.getSetupObject();
-    this.getDropdownOptions();
   }
 
-  getDropdownOptions() {
-    this.apiService.getDropdownObject().subscribe((res) => {
-      this.dropdownObject = res;
-      console.log(this.dropdownObject)
-    })
-  }
 
   getSetupObject() {
     if (USE_FAKE_DATA) {
@@ -117,14 +112,14 @@ export class AuditsComponent implements OnInit {
     // map features to children
     this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
 
-    console.log("global selectors:");
-    console.log(this.globalSelectors);
-    console.log("feature selectors:");
-    console.log(this.featureSelectors);
-    console.log("applied filter selections:");
-    console.log(this.appliedFilterSelections);
-    console.log("defaultColumnIDs:");
-    console.log(this.defaultColumnIDs);
+    // console.log("global selectors:");
+    // console.log(this.globalSelectors);
+    // console.log("feature selectors:");
+    // console.log(this.featureSelectors);
+    // console.log("applied filter selections:");
+    // console.log(this.appliedFilterSelections);
+    // console.log("defaultColumnIDs:");
+    // console.log(this.defaultColumnIDs);
     // console.log("featuresToChildren:");
     // console.log(this.featuresToChildren);
     this.applyFilters();
@@ -200,7 +195,7 @@ export class AuditsComponent implements OnInit {
     if (!this.selectedFeature) { return; }
     console.log(this.appliedFilterSelections);
     // this.getTableObject();
-    this.formQueryURL();
+    // this.formQueryURL();
   }
 
   formQueryURL() {
@@ -218,8 +213,20 @@ export class AuditsComponent implements OnInit {
     for (const [ID, inputObject] of Object.entries(this.appliedFilterSelections.numericChoice)) {
       // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
     }
+    for (const [ID, inputObject] of Object.entries(this.appliedFilterSelections.calendarRange)) {
+      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
+    }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.calendarEqual)) {
       if (input) { filterString += ID + "=" + input }
+    }
+    for (const [ID, inputArray] of Object.entries(this.appliedFilterSelections.searchableDropdown)) {
+      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
+    }
+    for (const [ID, inputArray] of Object.entries(this.appliedFilterSelections.checklistDropdown)) {
+      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
+    }
+    for (const [ID, inputArray] of Object.entries(this.appliedFilterSelections.searchableChecklistDropdown)) {
+      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.text)) {
       if (input) { filterString += ID + "=" + input }
