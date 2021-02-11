@@ -44,13 +44,14 @@ export class AuditsComponent implements OnInit {
     calendarRange: {},
     calendarEqual: {},
     dropdown: {},
-    searchableDropdown: {},
-    checklistDropdown: {},
-    searchableChecklistDropdown: {},
+    searchableDropdown: [],
+    checklistDropdown: [],
+    searchableChecklistDropdown: [],
     text: {},
     bool: {},
     _placeholder: "placeholder"
   };
+  // appliedFilterSelections = new AppliedFilterSelections();
   featureSelectors = {};
   globalSelectors = {};
   selectorsLoaded: boolean = false;
@@ -195,20 +196,21 @@ export class AuditsComponent implements OnInit {
     if (!this.selectedFeature) { return; }
     console.log(this.appliedFilterSelections);
     // this.getTableObject();
-    // this.formQueryURL();
+    this.formQueryURL();
   }
 
   formQueryURL() {
     // create the "columns" part of the query by joining the default column IDS with '&'
     let columnsString = this.defaultColumnIDs.join('&');
-    let filterString = "?"
+    let colAndFilterSeparater = "?";
+    let filters = []
 
 
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.dropdown)) {
-      if (input) { filterString += ID + "=" + input }
+      if (input) { filters.push(ID + "=" + input) }
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.numericEqual)) {
-      if (input) { filterString += ID + "=" + input }
+      if (input) { filters.push(ID + "=" + input) }
     }
     for (const [ID, inputObject] of Object.entries(this.appliedFilterSelections.numericChoice)) {
       // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
@@ -217,7 +219,7 @@ export class AuditsComponent implements OnInit {
       // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.calendarEqual)) {
-      if (input) { filterString += ID + "=" + input }
+      if (input) { filters.push(ID + "=" + input) }
     }
     for (const [ID, inputArray] of Object.entries(this.appliedFilterSelections.searchableDropdown)) {
       // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
@@ -226,16 +228,19 @@ export class AuditsComponent implements OnInit {
       // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
     }
     for (const [ID, inputArray] of Object.entries(this.appliedFilterSelections.searchableChecklistDropdown)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
+      inputArray.forEach(option => {
+        filters.push(ID + "=" + option.item_text)
+        // TO ASK: HOW TO DEAL WITH MULTIPLE SELECTIONS? for the multiselectors
+      });
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.text)) {
-      if (input) { filterString += ID + "=" + input }
+      if (input) { filters.push(ID + "=" + input) }
     }
     for (const [ID, input] of Object.entries(this.appliedFilterSelections.bool)) {
-      if (input) { filterString += ID + "=" + input }
+      if (input) { filters.push(ID + "=" + input) }
     }
 
-    console.log(columnsString + filterString)
+    console.log(columnsString + colAndFilterSeparater + filters.join('&'));
 
   }
 

@@ -52,9 +52,9 @@ export class ReusableTemplateComponent implements OnInit {
         calendarRange: {},
         calendarEqual: {},
         dropdown: {},
-        searchableDropdown: {},
-        checklistDropdown: {},
-        searchableChecklistDropdown: {},
+        searchableDropdown: [],
+        checklistDropdown: [],
+        searchableChecklistDropdown: [],
         text: {},
         bool: {},
         _placeholder: "placeholder"
@@ -75,7 +75,7 @@ export class ReusableTemplateComponent implements OnInit {
       console.log("dropdown (from resusable.ts):");
       console.log(this.dropdownOptions)
       this.IDtoOptions = this.mapIDtoOptions();
-      console.log(this.IDtoOptions)
+      // console.log(this.IDtoOptions)
     })
   }
 
@@ -84,9 +84,9 @@ export class ReusableTemplateComponent implements OnInit {
     let IDtoOptions = {}
     this.dropdownOptions.returnableIDs.forEach((ID, i) => {
       IDtoOptions[ID]  = []
-      this.dropdownOptions.columnData[i].forEach(element => {
+      this.dropdownOptions.columnData[i].forEach((element, j) => {
         IDtoOptions[ID].push({ 
-          item_id: "placeholder", 
+          item_id: j, 
           item_text: element 
         })
       });

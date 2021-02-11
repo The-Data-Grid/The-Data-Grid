@@ -40,13 +40,14 @@ export class FeatureAuditComponent implements OnInit {
     calendarRange: {},
     calendarEqual: {},
     dropdown: {},
-    searchableDropdown: {},
-    checklistDropdown: {},
-    searchableChecklistDropdown: {},
+    searchableDropdown: [],
+    checklistDropdown: [],
+    searchableChecklistDropdown: [],
     text: {},
     bool: {},
     _placeholder: "placeholder"
   };
+
   defaultColumns = []
   rootFeatures = []
   featuresToChildren = {}
