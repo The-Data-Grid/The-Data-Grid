@@ -33,15 +33,17 @@ export class ViewAuditComponent implements OnInit {
     calendarRange: {},
     calendarEqual: {},
     dropdown: {},
-    searchableDropdown: {},
-    checklistDropdown: {},
-    searchableChecklistDropdown: {},
+    searchableDropdown: [],
+    checklistDropdown: [],
+    searchableChecklistDropdown: [],
     text: {},
     bool: {},
     _placeholder: "placeholder"
   };
   defaultColumns = [];
   rootFeatures = [];
+  // for optimistic updating from the dialogs
+  displayedRootFeatures = [];
 
 
 
@@ -68,7 +70,10 @@ export class ViewAuditComponent implements OnInit {
     const dialogRef = this.dialog.open(RootFeaturesComponent, {
       width: '801px',
       maxHeight: '500px',
-      data: this.audits
+      data: [this.audits, this.displayedRootFeatures],
+    })
+    const sub = dialogRef.componentInstance.notify.subscribe((emission) => {
+      this.displayedRootFeatures = this.rootFeatures.filter(feature => emission.indexOf(feature.name) >= 0);
     })
   }
 
@@ -123,6 +128,7 @@ export class ViewAuditComponent implements OnInit {
     this.apiService.getSetupTableObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject)
+      this.displayedRootFeatures = this.rootFeatures;
     });
   }
 

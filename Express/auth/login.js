@@ -1,4 +1,3 @@
-
 const express = require('express'); 
 const router = express.Router(); //use router instead of app
 const session = require('express-session'); 
@@ -140,12 +139,10 @@ module.exports = router
 /************************************
 Route Auth Testing -- For next sprint
 *************************************
-
 router.get('/secure', (req, res) => {
     // if the session store shows that the user is logged in
     if(req.session.loggedIn) {
         res.send(`Here is your confidential data, ${req.session.email}`);
-
         // logging the contents of the entire session store
         MyStore.all((err, session) => {
             console.log(session)
@@ -155,19 +152,14 @@ router.get('/secure', (req, res) => {
         res.send('Permission Denied');
     };
 });
-
-
 function authorize(path) {
     return((req, res, next) => {
             // if the session store shows that the user is logged in
-
-
         if(pathAuthLookup[path].role === 'guest') {
             next();
         }
         
         else if(req.session.loggedIn) {
-
             let isAuthorizedOnPath = (
                 pathAuthLookup[path].role == 'superuser' ? 
                     (req.session.role != 'superuser' ? 
@@ -176,7 +168,6 @@ function authorize(path) {
                     ) :
                     true
             );
-
             if(!isAuthorizedOnPath) {
                 res.status(403).send('Unauthorized Resource')
                 res.end()
@@ -188,14 +179,12 @@ function authorize(path) {
     
                 next();
             }
-
         } else {
             res.status(403).send('Unauthorized Resource');
         };
     })
     
 }
-
 // specify which paths have user or superuser authorization
 let pathAuthLookup = {
     observation: {
@@ -205,11 +194,9 @@ let pathAuthLookup = {
         role: 'superuser'
     }
 };
-
 // so it's kind of like I'm repeating the routes
 //     - if valid: next()
 //     - if not: res.status(403)
 router.get('/api/audit/observation/:feature/:include', authorize('observation'));
-
 router.get('/api/coffee', authorize('coffee'));
 */

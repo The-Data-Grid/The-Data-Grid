@@ -6,16 +6,21 @@
     right: 0;
     top: 50px;
     /* space for bottom bar: */
-    bottom: 30px;
+    bottom: 5px;
 }
 
-.custom ::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {
+.custom ::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value{
     /*change color of label*/
     color: rgb(228, 228, 228) !important;
 }
 
 .custom ::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple {
     background-color: rgba(228, 228, 228, 0.5) !important;
+}
+
+.span {
+    /*change color of label*/
+    color: rgb(228, 228, 228) !important;
 }
 
 /* main content */
@@ -36,14 +41,10 @@
     width: 90%;
 }
 
-.mat-icon {
-    color: rgba(73, 73, 73, .8);
-}
-
 /* actual sidebar */
 
 .sidenav {
-    width: 25%;
+    width: 30%;
     text-align: center;
     color: rgb(228, 228, 228);
     background-color: rgba(73, 73, 73, .8) !important;
@@ -54,15 +55,6 @@
 }
 
 /* form fields within sidenav bar */
-
-.selector {
-    margin-left: auto;
-    margin-right: auto;
-    font-size: small;
-    width: 85%;
-    color: rgb(228, 228, 228) !important;
-}
-
 .mat-expansion-panel {
     margin-left: auto;
     margin-right: auto;
@@ -70,6 +62,7 @@
     width: 80%;
     background-color: transparent;
     overflow: visible !important;
+    color: rgb(228, 228, 228) !important;
 }
 
 .mat-expansion-panel-header-title {
@@ -86,17 +79,7 @@
     margin-top: 3rem;
 }
 
-.datetime-picker{
-    text-align: center;
-    font-size: x-small;
-}
-
-/* matInput datetime picker icon color */
-::-webkit-calendar-picker-indicator { 
-    color: white !important;
-    /* background: transparent;  */
-}
-
 #apply-button {
     margin-bottom: 40px;
 }
+

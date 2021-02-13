@@ -32,7 +32,7 @@ export class AuditsComponent implements OnInit {
   page = "AuditsPage"
 
   // variables for filtering sidebar
-  filterBy = "Submission";
+  filterBy = "Feature";
   setupObject;
   defaultColumnIDs = []; //default denotes which return columns are to be included in queries by default
   rootFeatures = [];
@@ -44,17 +44,20 @@ export class AuditsComponent implements OnInit {
     calendarRange: {},
     calendarEqual: {},
     dropdown: {},
-    searchableDropdown: {},
-    checklistDropdown: {},
-    searchableChecklistDropdown: {},
+    searchableDropdown: [],
+    checklistDropdown: [],
+    searchableChecklistDropdown: [],
     text: {},
     bool: {},
     _placeholder: "placeholder"
   };
+  // appliedFilterSelections = new AppliedFilterSelections();
   featureSelectors = {};
   globalSelectors = {};
   selectorsLoaded: boolean = false;
-  dropdownObject;
+  dropdownOptions = {
+    placeholder: "hello"
+  };
 
   // the following are for multiselect dropdowns:
   dropdownList = FakeData;
@@ -70,15 +73,8 @@ export class AuditsComponent implements OnInit {
 
   ngOnInit() {
     this.getSetupObject();
-    this.getDropdownOptions();
   }
 
-  getDropdownOptions() {
-    this.apiService.getDropdownObject().subscribe((res) => {
-      this.dropdownObject = res;
-      console.log(this.dropdownObject)
-    })
-  }
 
   getSetupObject() {
     if (USE_FAKE_DATA) {
@@ -117,14 +113,14 @@ export class AuditsComponent implements OnInit {
     // map features to children
     this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
 
-    console.log("global selectors:");
-    console.log(this.globalSelectors);
-    console.log("feature selectors:");
-    console.log(this.featureSelectors);
-    console.log("applied filter selections:");
-    console.log(this.appliedFilterSelections);
-    console.log("defaultColumnIDs:");
-    console.log(this.defaultColumnIDs);
+    // console.log("global selectors:");
+    // console.log(this.globalSelectors);
+    // console.log("feature selectors:");
+    // console.log(this.featureSelectors);
+    // console.log("applied filter selections:");
+    // console.log(this.appliedFilterSelections);
+    // console.log("defaultColumnIDs:");
+    // console.log(this.defaultColumnIDs);
     // console.log("featuresToChildren:");
     // console.log(this.featuresToChildren);
     this.applyFilters();
@@ -199,38 +195,10 @@ export class AuditsComponent implements OnInit {
   applyFilters() {
     if (!this.selectedFeature) { return; }
     console.log(this.appliedFilterSelections);
-    // this.getTableObject();
-    this.formQueryURL();
+    this.getTableObject();
   }
 
-  formQueryURL() {
-    // create the "columns" part of the query by joining the default column IDS with '&'
-    let columnsString = this.defaultColumnIDs.join('&');
-    let filterString = "?"
 
-
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.dropdown)) {
-      if (input) { filterString += ID + "=" + input }
-    }
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.numericEqual)) {
-      if (input) { filterString += ID + "=" + input }
-    }
-    for (const [ID, inputObject] of Object.entries(this.appliedFilterSelections.numericChoice)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
-    }
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.calendarEqual)) {
-      if (input) { filterString += ID + "=" + input }
-    }
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.text)) {
-      if (input) { filterString += ID + "=" + input }
-    }
-    for (const [ID, input] of Object.entries(this.appliedFilterSelections.bool)) {
-      if (input) { filterString += ID + "=" + input }
-    }
-
-    console.log(columnsString + filterString)
-
-  }
 
   applyDateFilter = (val: string) => {
     val = this.datepipe.transform(val, 'MM-dd-yyyy');
