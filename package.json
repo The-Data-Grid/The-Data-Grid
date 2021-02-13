@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./Express/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "testOLD": "echo \"Error: no test specified\" && exit 1",
     "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
     "construct": "node ./Express/dataRepresentation/construct.js"
   },
@@ -39,6 +41,7 @@
     "ng-click-outside": "^7.0.0",
     "ng-multiselect-dropdown": "^0.2.10",
     "ngx-horizontal-timeline": "0.0.6",
+    "node-gyp": "^7.1.2",
     "nodemon": "^2.0.4",
     "pg": "^8.3.3",
     "pg-native": "^3.0.0",
@@ -49,6 +52,12 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.901.1",
-    "@angular/core": "^9.1.13"
+    "@angular/core": "^9.1.13",
+    "frisby": "^2.1.3",
+    "jest": "^26.4.2",
+    "mocha": "^8.1.3",
+    "nock": "^13.0.4",
+    "node-mocks-http": "^1.9.0",
+    "supertest": "^5.0.0"
   }
 }
