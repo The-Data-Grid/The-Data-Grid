@@ -157,8 +157,15 @@ export class DialogComponent implements OnInit {
     this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
     // console.log(this.userLoginObject);
     this.apiService.attemptLogin(this.userLoginObject)
-      .subscribe(res => console.log(res), err => alert(`HTTP Error ${err.status}: ${err.error}`))
-    ;
+      .subscribe(res => console.log(res), err => {
+        if (err.status == 200) {
+          alert("successful sign in")
+        }
+        else {
+          alert(`HTTP Error ${err.status}: ${err.error}`)
+        }
+      }
+          )    ;
   }
 
   close() {
