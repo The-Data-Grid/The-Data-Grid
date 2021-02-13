@@ -38,12 +38,11 @@ export class TableObjectService {
     let returnableIDToColumnIndex = this.getReturnableIDToColumnIndex(setupObject, tableObject);
 
     // construct the column header arrays
-    tableObject.returnableIDs.forEach(columnID => {
-      let columnIndex = returnableIDToColumnIndex[columnID];
-
+    tableObject.returnableIDs.forEach(returnableID => {
+      let columnIndex = returnableIDToColumnIndex[returnableID];
       dataTableColumns.push({
         prop: setupObject.columns[columnIndex].frontendName,
-        type: datatypes[setupObject.columns[columnIndex].datatypeKey],
+        type: datatypes[setupObject.columns[columnIndex].datatype],
         index: columnIndex
       });
     });
@@ -55,9 +54,9 @@ export class TableObjectService {
 
 
       // fill out the row object
-      tableObject.returnableIDs.forEach((columnID, i) => {
-        let columnIndex = returnableIDToColumnIndex[columnID];
-        let datatype = datatypes[setupObject.columns[columnIndex].datatypeKey];
+      tableObject.returnableIDs.forEach((returnableID, i) => {
+        let columnIndex = returnableIDToColumnIndex[returnableID];
+        let datatype = datatypes[setupObject.columns[columnIndex].datatype];
         // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype)
 
         switch (datatype) {
@@ -81,8 +80,12 @@ export class TableObjectService {
 
       rows.push(row);
     });
-
-    // console.log(dataTableColumns)
+    // console.log("setupObject:")
+    // console.log(setupObject)
+    console.log("dataTableColumns:")
+    console.log(dataTableColumns)
+    console.log("rows:")
+    console.log(rows)
     return rows;
   }
 
@@ -94,75 +97,53 @@ export class TableObjectService {
       //treeID is an array containing numbers that represent the path through the tree
       //reverse so we can pop from it like a stack
       let treeID = setupObject.returnableIDToTreeID[returnableID].split('>').reverse()
-      let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
-      if (treeID[0] == IDX_OF_GLOBAL_ITEM_IDX) {
-        let globalItem = setupObject.items[globalItemIndex];
-        let childArrayIndex = treeID[1];
-
-        if (childArrayIndex == IDX_OF_ID_COL_IDXS) {
-          let columnIndex = globalItem.children[IDX_OF_ID_COL_IDXS][treeID[2]];
-          returnableIDToColumnIndex[returnableID] = columnIndex;
-        }
-        else if (childArrayIndex == IDX_OF_ID_ITEM_IDXS) {
-          let itemNode = globalItem.children[IDX_OF_ID_ITEM_IDXS][treeID[2]];
-          // returnableIDToColumnIndex[returnableID] = itemNode.index;
-        }
-        else if (childArrayIndex == IDX_OF_NON_ID_COL_IDXS) {
-          let columnIndex = globalItem.children[IDX_OF_NON_ID_COL_IDXS][treeID[2]];
-          returnableIDToColumnIndex[returnableID] = columnIndex;
-        }
-        else if (childArrayIndex == IDX_OF_NON_ID_ITEM_IDXS) {
-          let itemNode = globalItem.children[IDX_OF_NON_ID_ITEM_IDXS][treeID[2]];
-          // returnableIDToColumnIndex[returnableID] = itemNode.index;
-        }
+      let firstIndex = treeID.pop();
+      if (firstIndex == IDX_OF_GLOBAL_ITEM_IDX) {
+        let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
+        returnableIDToColumnIndex[returnableID] = this.getColumnIndexFromItem(globalItemIndex, treeID, setupObject);
       }
-      else if (treeID[0] == IDX_OF_FEATURES_ARR) {
-        let featureIndex = setupObject.children[IDX_OF_FEATURES_ARR][treeID[1]];
+      else if (firstIndex == IDX_OF_FEATURES_ARR) {
+        let featureIndex = setupObject.children[IDX_OF_FEATURES_ARR][treeID.pop()];
         let feature = setupObject.features[featureIndex];
-        let childArrayIndex = treeID[2];
+        let childArrayIndex = treeID.pop();
         if (childArrayIndex != IDX_OF_ITEM_IDX) {
-          let columnIndex = feature.children[childArrayIndex][treeID[3]];
-          returnableIDToColumnIndex[returnableID] = columnIndex;
+          returnableIDToColumnIndex[returnableID] = feature.children[childArrayIndex][treeID.pop()];
         }
         else {
           let itemIndex = feature.children[IDX_OF_ITEM_IDX];
-          let itemChildArrayIndex = treeID[4];
-          // setupObject.items[itemIndex]
-
-
+          returnableIDToColumnIndex[returnableID] = this.getColumnIndexFromItem(itemIndex, treeID, setupObject);
         }
-
       }
     });
-    console.log("setupObject:")
-    console.log(setupObject)
-    console.log("returnableIDToColumnIndex:")
-    console.log(returnableIDToColumnIndex)
+
+    // console.log("returnableIDToColumnIndex:")
+    // console.log(returnableIDToColumnIndex)
     return returnableIDToColumnIndex;
   }
 
   //https://stackoverflow.com/questions/29605929/remove-first-item-of-the-array-like-popping-from-stack
-  //https://stackoverflow.com/questions/6501160/why-is-pop-faster-than-shift
-  //return columnIndex
-  // itemChildArrayIndex, itemChildArrayElementIndex are consecutive elements in treeID array
-  getColumnIndexFromItem(itemIndex, itemChildArrayIndex, itemChildArrayElementIndex, setupObject) {
-    let item = setupObject.items[itemIndex];
-    let childArrayIndex = itemChildArrayIndex;
+
+  // returns columnIndex
+  private getColumnIndexFromItem(itemIndex, treeID, setupObject) {
+    let itemNode = setupObject.items[itemIndex];
+    let childArrayIndex = treeID.pop();
+    let childArrayElementIndex = treeID.pop();
 
     if (childArrayIndex == IDX_OF_ID_COL_IDXS) {
-      return item.children[IDX_OF_ID_COL_IDXS][itemChildArrayElementIndex];
+      return itemNode.children[IDX_OF_ID_COL_IDXS][childArrayElementIndex];
     }
     else if (childArrayIndex == IDX_OF_ID_ITEM_IDXS) {
-      let itemNode = item.children[IDX_OF_ID_ITEM_IDXS][itemChildArrayElementIndex];
-      // returnableIDToColumnIndex[returnableID] = itemNode.index;
+      let itemChildNodePointer = itemNode.children[IDX_OF_ID_ITEM_IDXS][childArrayElementIndex];
+      return this.getColumnIndexFromItem(itemChildNodePointer.index, treeID, setupObject)
     }
     else if (childArrayIndex == IDX_OF_NON_ID_COL_IDXS) {
-      return item.children[IDX_OF_NON_ID_COL_IDXS][itemChildArrayElementIndex];
+      return itemNode.children[IDX_OF_NON_ID_COL_IDXS][childArrayElementIndex];
     }
     else if (childArrayIndex == IDX_OF_NON_ID_ITEM_IDXS) {
-      let itemNode = item.children[IDX_OF_NON_ID_ITEM_IDXS][itemChildArrayElementIndex];
-      // returnableIDToColumnIndex[returnableID] = itemNode.index;
+      let itemChildNodePointer = itemNode.children[IDX_OF_NON_ID_ITEM_IDXS][childArrayElementIndex];
+      return this.getColumnIndexFromItem(itemChildNodePointer.index, treeID, setupObject)
     }
-
   }
+
+
 }

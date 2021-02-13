@@ -97,9 +97,9 @@ export class AuditsComponent implements OnInit {
     this.globalSelectors = this.setupObjectService.getGlobalSelectors(
       this.setupObject,
       this.appliedFilterSelections,
-      this.defaultColumnIDs, 
+      this.defaultColumnIDs,
       true
-      );
+    );
 
     // get root features
     this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
@@ -137,8 +137,8 @@ export class AuditsComponent implements OnInit {
     else {
       this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections).subscribe((res) => {
         this.tableObject = res;
-            console.log("tableObject:");
-    console.log(this.tableObject);
+        // console.log("tableObject:");
+        // console.log(this.tableObject);
         this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
       });
     }
