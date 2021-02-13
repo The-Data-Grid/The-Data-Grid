@@ -17,7 +17,7 @@
   <div style="margin-top: 20px; width: 90%; margin-left:25px" *ngIf="status=='template'">
     <!-- FROM TEMPLATE -->
     <mat-accordion>
-      <div *ngFor="let audit of data">
+      <div *ngFor="let audit of data[0]">
         <mat-expansion-panel>
           <mat-expansion-panel-header class="right-aligned-header">
             <mat-panel-title>
@@ -51,8 +51,8 @@
               {{ feature.name }}
             </mat-panel-title>
             <mat-panel-description>
-              <input [id]="feature+ ' root checkbox'" class="checkmark" style="cursor: pointer;" type="checkbox"
-                checked="checked" (click)="$event.stopPropagation()">
+              <input [id]="feature.name+ ' root checkbox'" class="checkmark" style="cursor: pointer;" type="checkbox"
+                [checked]="isCurrentlySelected(feature.name)" (click)="$event.stopPropagation()">
             </mat-panel-description>
           </mat-expansion-panel-header>
         </mat-expansion-panel>
@@ -65,7 +65,7 @@
     <button mat-button (click)="close()" style="margin-right: 10px;">
       Cancel
     </button>
-    <button mat-button (click)="updateFeatures()" style="background-color: #569CD7; color: white;">
+    <button mat-button (click)="onSubmit()" style="background-color: #569CD7; color: white;">
       Add
     </button>
   </div>
