@@ -152,18 +152,18 @@ export class SetupObjectService {
  */////////////////////////////////////////
   getFeatureSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs) {
     let allFeatureSelectors = [];
-    // for each feature
+    // for each feature...
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
       // console.log(setupObject.features[featureIndex].frontendName)
-      // find feature's observation columns
+      // ...find feature's observation columns
       setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
         featureColumns.push({
           column: setupObject.columns[observationColumnIndex],
           returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject)
         });
       });
-      // find feature's attribute columns
+      // ...find feature's attribute columns
       setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
         featureColumns.push({
           column: setupObject.columns[attributeColumnIndex],
@@ -202,11 +202,11 @@ export class SetupObjectService {
     isObservation ? childType = IDX_OF_OBSERVATION_COL_IDXS : childType = IDX_OF_ATTRIBUTE_COL_IDXS;
 
     let allFeatureInputSelectors = [];
-    // for each feature
+    // for each feature...
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
       // console.log(childType + " " + setupObject.features[featureIndex].frontendName)
-      // find feature's observation or attribute columns
+      // ...find feature's observation or attribute columns
       setupObject.features[featureIndex].children[childType].forEach((columnIndex, i) => {
         featureColumns.push({
           column: setupObject.columns[columnIndex],

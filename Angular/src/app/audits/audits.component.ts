@@ -137,6 +137,8 @@ export class AuditsComponent implements OnInit {
     else {
       this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections).subscribe((res) => {
         this.tableObject = res;
+            console.log("tableObject:");
+    console.log(this.tableObject);
         this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
       });
     }

@@ -3,7 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http'
 import { environment } from '../environments/environment';
 import { Observable, observable, Subscribable } from 'rxjs';
 import { map, catchError, filter, switchMap } from 'rxjs/operators';
-import {  TableObject, SetupTableObject, AppliedFilterSelections } from './models';
+import { TableObject, SetupTableObject, AppliedFilterSelections } from './models';
 import { error } from '@angular/compiler/src/util';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
@@ -44,10 +44,10 @@ export class ApiService {
     //   url = url + "/" + this.columnsString;
     // }
     var url = API_URL + '/audit/observation/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161'
-    + "?" + this.formQueryURL(defaultColumnIDs, appliedFilterSelections);
+      + "?" + this.formQueryURL(defaultColumnIDs, appliedFilterSelections);
     // var url = API_URL + '/table';
     return this.http.get<TableObject>(url);
-  
+
   }
 
 
@@ -56,14 +56,12 @@ export class ApiService {
   public getDropdownOptions(): Observable<any> {
     // var url = API_URL + '/audit/observation/distinct';
     var url = API_URL + '/audit/observation/distinct/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161';
-    // console.log("dropdown url:")
-    // console.log(url)
 
     return this.http.get<any>(url, {
       observe: 'response',
     })
       .pipe(map((response: any) => {
-        console.log("Server Status: " + response.status + ":::::" + response.statusText);
+        // console.log("Server Status: " + response.status + ":::::" + response.statusText);
         // console.log(response.body);
         return response.body;
       }));
@@ -92,13 +90,14 @@ export class ApiService {
       if (input) { filters.push(ID + "=" + input) }
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableDropdown)) {
-      inputArray.forEach(option => {filters.push(ID + "=" + option.item_text)});
+      inputArray.forEach(option => { filters.push(ID + "=" + option.item_text) });
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.checklistDropdown)) {
-      inputArray.forEach(option => {filters.push(ID + "=" + option.item_text)});
+      inputArray.forEach(option => { filters.push(ID + "=" + option.item_text) });
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableChecklistDropdown)) {
-      inputArray.forEach(option => {filters.push(ID + "=" + option.item_text)
+      inputArray.forEach(option => {
+        filters.push(ID + "=" + option.item_text)
         // TO ASK: HOW TO DEAL WITH MULTIPLE SELECTIONS? for the multiselectors
       });
     }
@@ -109,7 +108,7 @@ export class ApiService {
       if (input) { filters.push(ID + "=" + input) }
     }
 
-    console.log(columnsString + colAndFilterSeparater + filters.join('&'));
+    // console.log(columnsString + colAndFilterSeparater + filters.join('&'));
     return filters.join('&');
 
   }
@@ -117,11 +116,11 @@ export class ApiService {
   // POST REQUESTS
 
   attemptLogin(loginObject) {
-    return this.http.post(`${API_URL}/login`,loginObject);
+    return this.http.post(`${API_URL}/login`, loginObject);
   }
 
 
-  
+
 
 
 }

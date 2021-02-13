@@ -82,15 +82,20 @@ export class ReusableTemplateComponent implements OnInit {
 
   mapIDtoOptions() {
     let IDtoOptions = {}
+    //for each returnable id...
     this.dropdownOptions.returnableIDs.forEach((ID, i) => {
       IDtoOptions[ID] = []
-      this.dropdownOptions.columnData[i].forEach((element, j) => {
-        if (element) {
+      //each returnableID is associated with an array of options. 
+      //for each element (option) in this array...
+      this.dropdownOptions.columnData[i].forEach((option, j) => {
+        //this basically makes sure we are not setting item_text: [null]
+        //bc for some reason we are getting stuff like that in the response
+        // if (!option.isArray() || option[0]) {
           IDtoOptions[ID].push({
             item_id: j,
-            item_text: element
+            item_text: option
           })
-        }
+        // }
       });
     })
     return IDtoOptions;
