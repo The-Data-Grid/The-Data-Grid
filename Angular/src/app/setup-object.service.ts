@@ -11,7 +11,7 @@ export const IDX_OF_NON_ID_ITEM_IDXS = 3;
 
 export const IDX_OF_OBSERVATION_COL_IDXS = 0;
 export const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
-export const IDX_OF_ITEM_IDX = 2;
+export const IDX_OF_ITEM_IDX = 2;  //subject to change when backend implements api
 
 @Injectable({
   providedIn: 'root'
