@@ -52,7 +52,8 @@ INSERT INTO item_user
 VALUES
     (default, 2, 'Oliver', 'Melgrove', 'Tue, 26 Jan 2021 21:53:05 GMT', 'oliver@melgrove.com', 'password', true, true, false),
     (default, 1, 'Tanya', 'Zhong', 'Tue, 26 Jan 2021 21:53:05 GMT', 'tanyazhong1@gmail.com', 'password', true, true, true),
-    (default, 1, 'Kian', 'Nikzad', 'Tue, 26 Jan 2021 21:53:05 GMT', 'kian.nikzad@gmail.com', 'password', true, true, true);
+    (default, 1, 'Kian', 'Nikzad', 'Tue, 26 Jan 2021 21:53:05 GMT', 'kian.nikzad@gmail.com', 'password', true, true, true),
+    (default, 1, 'Jorden', 'Van Foreest', 'Tue, 26 Jan 2021 21:53:05 GMT', 'jorden-van-foreest@thedatagrid.org', '$2b$10$MWv9JnM4zD6TjnZlpSYC4upMdlGatnZxY9zDxKK/8BdTRjIho0p4S', true, true, false);
 
 
 INSERT INTO tdg_role 

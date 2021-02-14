@@ -83,15 +83,15 @@ router.post('/logout', (req, res) => {
 // New user register
 router.post('/user/new', async (req, res) => {
     if (!isValidPassword(req.body.pass)) {
-        res.status(400).send('invalid password'); 
+        res.status(400).send('Bad Request 2211: Invalid Password'); 
     }
 
     if (!isValidEmail(req.body.email)) {
-        res.status(400).send('Invalid Email'); 
+        res.status(400).send('Bad Request 2212: Invalid Email'); 
     }
 
     if (!isValidDate(req.body.dateOfBirth)) {
-        res.status(400).send('Invalid Date'); 
+        res.status(400).send('Bad Request 2213: Invalid Date'); 
     }
 
     //check if email is taken 
@@ -101,12 +101,12 @@ router.post('/user/new', async (req, res) => {
         }));
 
         if (data != null) {
-            res.status(400).send('email already taken');
+            res.status(400).send('Bad Request 2214: Email already taken');
         }
     }
     catch(error) {
         console.log('ERROR:', error);
-        res.status(500).send('service internal error');
+        res.status(500).send('Internal Server Error 7702:');
     }
 
     //hash password

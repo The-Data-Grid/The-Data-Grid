@@ -99,8 +99,8 @@ for (let id in idValidationLookup) {
     }
 
     // Getting the root feature
-    let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
-
+    let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature) 
+    
     // if empty or feature not included yet, initialize column and filter array for new feature
     if(!Object.keys(validateObservation).includes(feature)) {
         validateObservation[feature] = {
@@ -305,11 +305,20 @@ function isValidEmail(email) {
     }
 }
 
+function isValidPassword(password) {
+    if (password.length < 10 || 
+        !(/[a-zA-Z]/g.test(password)) || 
+        !(/\d/.test(password)))
+        return false;
+    return true; 
+}
+
 module.exports = {
     validationConstructor,
     hasDuplicates,
     isText,
     isNumber,
     isValidDate,
-    isValidEmail
+    isValidEmail,
+    isValidPassword 
 };
