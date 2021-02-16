@@ -1,0 +1,569 @@
+Establishing PostgreSQL connections...
+New PostgreSQL Connection: setup
+New PostgreSQL Connection: default
+Closed PostgreSQL Connection: setup
+TDG Backend Node.js HTTPS server is running on port 443
+TDG Backend Node.js HTTP server is running on port 80
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/profile-page'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.html'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.html'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.html'
+Establishing PostgreSQL connections...
+New PostgreSQL Connection: setup
+New PostgreSQL Connection: default
+Closed PostgreSQL Connection: setup
+events.js:187
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::443
+    at Server.setupListenHandle [as _listen2] (net.js:1298:14)
+    at listenInCluster (net.js:1346:12)
+    at Server.listen (net.js:1434:7)
+    at Object.<anonymous> (/home/kian_nikzad/The-Data-Grid/Express/app.js:89:54)
+    at Module._compile (internal/modules/cjs/loader.js:945:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:962:10)
+    at Module.load (internal/modules/cjs/loader.js:798:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:711:12)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:1014:10)
+    at internal/main/run_main_module.js:17:11
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (net.js:1325:8)
+    at processTicksAndRejections (internal/process/task_queues.js:80:21) {
+  code: 'EADDRINUSE',
+  errno: 'EADDRINUSE',
+  syscall: 'listen',
+  address: '::',
+  port: 443
+}
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/owa/auth/logon.aspx'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/actuator/health'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/owa/auth/logon.aspx'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/phpmyadmin'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wordpress/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/blog/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/assets/mock.json'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/actuator/health'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/aaa9'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/aab9'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/owa'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/favicon.ico'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wordpress/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/blog/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/owa/auth/logon.aspx'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/audits'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/favicon.ico'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOTDIR: not a directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.html/bwY0GoD'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/actuator/health'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/nice%20ports%2C/Tri%6Eity.txt%2ebak'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/nmaplowercheck1612429288'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/sdk'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/HNAP1'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/evox/about'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/favicon.ico'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/sitemap.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/.well-known/security.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/invoker/readonly'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/favicon.ico'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/owa/auth/logon.aspx'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/humans.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/ads.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/sitemap.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/.well-known/security.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/favicon.ico'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/c'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/actuator/health'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/favicon.ico'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/pKUM'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/composer.json'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/assets/mock.json'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wordpress/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/blog/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/sitemap.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/.well-known/security.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/owa/auth/logon.aspx'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wordpress/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/blog/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/invoker/readonly'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/actuator/health'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/invoker/readonly'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/owa/auth/logon.aspx'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/jbossmq-httpil/HTTPServerILServlet'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/login'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wordpress/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/blog/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/apple-touch-icon.png'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/favicon.ico'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/apple-touch-icon-precomposed.png'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/actuator/health'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/apple-touch-icon-120x120-precomposed.png'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/apple-touch-icon-120x120.png'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/apple-touch-icon-precomposed.png'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/apple-touch-icon.png'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wordpress/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/blog/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/assets/mock.json'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/v1/pods'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/.git/config'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/v2/_catalog'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/info'
+NotFoundError: Not Found
+    at SendStream.error (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:270:31)
+    at SendStream.pipe (/home/kian_nikzad/The-Data-Grid/node_modules/send/index.js:584:14)
+    at sendfile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:1103:8)
+    at ServerResponse.sendFile (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/response.js:433:3)
+    at /home/kian_nikzad/The-Data-Grid/Express/app.js:82:9
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:137:13)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at next (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/layer.js:95:5)
+    at /home/kian_nikzad/The-Data-Grid/node_modules/express/lib/router/index.js:281:22
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/graphql'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/owa/auth/logon.aspx'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/humans.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/ads.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/favicon.ico'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/mifs/.;/services/LogService'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/phpmyadmin'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/phpmyadmin'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/phpmyadmin/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/pma'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/pma'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/pma/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/pmadmin'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/pmadmin'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/pmadmin/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/pma.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/admin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/admin'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/admin'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/admin/pma.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/admin/index.php'
+Error: ENOTDIR: not a directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.html/bwY0GoD'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/robots.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wordpress/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp/wp-login.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/actuator/health'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/api/jsonws/invoke'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/index.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/solr/admin/info/system'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp-content/plugins/wp-file-manager/readme.txt'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/console'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/_ignition/execute-solution'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/Autodiscover/Autodiscover.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/login'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/login'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/blog/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/site/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/old/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/test/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/test/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/en/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/demo/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/cms/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/staging/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/beta/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/news/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/main/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/oldsite/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/website/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/portal/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/2019/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/v1/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/store/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/wp2/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/blogs/wp-includes/wlwmanifest.xml'
+Error: ENOENT: no such file or directory, stat '/home/kian_nikzad/The-Data-Grid/Deployment/Angular/dist/composer.json'
