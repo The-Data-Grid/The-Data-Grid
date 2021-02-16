@@ -391,7 +391,7 @@ function sendDefault(req, res) {
 };
 
 
-// SEND OBSERVATION DATA
+// SEND DISTINCT OBSERVATION DATA
 // ============================================================
 function sendDistinct(req, res) {
     // This is column-major data

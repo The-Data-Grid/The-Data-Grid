@@ -23,7 +23,8 @@ let {returnableQuery,
        allFeatures} = require('./statement.js').setup
 
 
-returnableQuery = syncdb.querySync(returnableQuery);
+// returnableQuery = syncdb.querySync(returnableQuery);
+returnableQuery = syncdb.querySync('select * from returnable_view');
 columnQuery = syncdb.querySync(columnQuery);
 allItems = syncdb.querySync(allItems);
 itemM2M = syncdb.querySync(itemM2M);
@@ -251,8 +252,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         });
     });
 
+    // index of globalObject
     let submissionItemIndex = itemOrder.indexOf('item_submission');
-
+    // all item indicies
+    let itemIndices = itemOrder.map((e,i) => i)
     
 
     // Construct featureNodeObject
@@ -357,7 +360,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // Constructing the final setupObject
     // ==================================================
 
-    setupObject.children = [featureIndices, submissionItemIndex];
+    setupObject.children = [featureIndices, itemIndices, submissionItemIndex];
     setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
     setupObject.items = itemNodeObjects;
     setupObject.features = featureNodeObjects;
@@ -365,7 +368,8 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     setupObject.datatypes = datatypeArray;
     setupObject.returnableIDToTreeID = returnableIDToTreeIDObject;
     setupObject.treeIDToReturnableID = treeIDToReturnableIDObject;
-    setupObject.lastModified = Date.now();
+    // Not sending this because it should be in header
+    // setupObject.lastModified = Date.now();
     // yay
 
 
@@ -843,13 +847,19 @@ const initialReturnableMapper = (returnable, statics) => {
     //console.log(returnable['r__join_object'])
     let currentPath = Array.from(returnable['r__join_object'].tables);
 
-    // if submission
+    // if non observational
     if(returnable['f__table_name'] === null) {
-        treeArray.push(1);
-        // get index of item_submission
-        // let referencedItemIndex = itemOrder.indexOf('item_submission');
-        // push index to treeArray
-        // treeArray.push(referencedItemIndex);
+        // is submission / global item?        
+        if(returnable['non_obs_i__table_name'] == 'item_submission') {
+            treeArray.push(2);
+        } 
+        // then a standard item
+        else {
+            // push item array index
+            treeArray.push(1)
+            // get index
+            treeArray.push(itemOrder.indexOf(returnable['non_obs_i__table_name']))
+        }
         // calling itemReturnableMapper
         return itemReturnableMapper(returnable, currentPath, treeArray, statics);
     } else {
