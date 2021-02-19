@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http'
+import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http'
 import { environment } from '../environments/environment';
 import { Observable, observable, Subscribable } from 'rxjs';
 import { map, catchError, filter, switchMap } from 'rxjs/operators';
@@ -115,12 +115,16 @@ export class ApiService {
 
   // POST REQUESTS
 
-  attemptLogin(loginObject) {
-    return this.http.post(`${API_URL}/login`, loginObject);
+  attemptLogin(loginObject, withCredentials=true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json','No-Auth':'True', 'withCredentials':'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/login`, loginObject, {headers:reqHeader, responseType: 'text', withCredentials:true });
   }
 
 
-
-
+  signOut(withCredentials=true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json','No-Auth':'True', 'withCredentials':'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/logout`, {
+   }, {headers:reqHeader, responseType:'text', withCredentials:true});
+  }
 
 }

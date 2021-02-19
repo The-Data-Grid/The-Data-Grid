@@ -10,6 +10,11 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
 
+interface logoutObject {
+  email: string;
+  pass: string;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -25,13 +30,29 @@ export class AppComponent implements OnInit {
 
   constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router,) { }
 
-  check() {
-    console.log("lala");
+
+  checkStorage() {
+    // console.log(localStorage)
+    if (localStorage.length == 0) {
+      return false
+    }
+    else {
+      return true;
+    }
   }
 
 
   changeHover() {
     this.isHover = !this.isHover;
+  }
+
+  logOut() {
+    this.apiService.signOut()
+      .subscribe((res) => {
+        localStorage.removeItem("userEmail");
+        console.log("signed out!")
+      })
+    // console.log("loggin out!")
   }
 
   openDialog() {

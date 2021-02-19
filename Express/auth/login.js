@@ -2,8 +2,14 @@ const express = require('express');
 const router = express.Router(); //use router instead of app
 const session = require('express-session'); 
 const bcrypt = require('bcrypt');
+var cors = require('cors')
 
 const {postgresClient} = require('../db/pg.js'); 
+
+var corsOptions = {
+    origin: 'http://localhost:4200',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  }  
 
 // get connection object
 const db = postgresClient.getConnection.db;
@@ -17,11 +23,11 @@ const {apiDateToUTC} = require('../parse.js');
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 
-
-
 // session store init
 let Store = require('memorystore')(session); 
 let MyStore = new Store({checkPeriod: 1000000});
+
+// router.use(corsOptions);
 
 // Session on every route
 router.use(session({
@@ -40,7 +46,7 @@ router.use(session({
 
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/login', cors(corsOptions), async (req, res) => {
 
     let data = null;
     try {
@@ -53,7 +59,11 @@ router.post('/login', async (req, res) => {
         if (result) {
             req.session.loggedIn = true;
             req.session.email = req.body.email;
-            req.session.role = data.role
+            req.session.role = data.role;
+            // res.clearCookie(req.session);
+            // res.clearCookie(req.body.email);
+            // res.cookie(req.session);
+            // res.cookie(req.body.email);
             res.send('password matched and you logged in');
         }
         else {
@@ -68,7 +78,9 @@ router.post('/login', async (req, res) => {
 });
 
 // Logout
-router.post('/logout', (req, res) => {
+router.post('/logout', cors(corsOptions), async (req, res) => {
+
+    console.log(req.session)
     
     if (req.session.loggedIn !== true) {
         res.status(400).send('you already logged out.');

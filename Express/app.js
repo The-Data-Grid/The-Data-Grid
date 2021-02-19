@@ -30,7 +30,7 @@ const query = require('./query.js');
 const template = require('./template.js');
 const authRouter = require('./auth/login.js');
 
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost:4200'}));
 //app.use(bodyParser.json());
 
 // middleware

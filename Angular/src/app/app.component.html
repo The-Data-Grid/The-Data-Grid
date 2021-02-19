@@ -84,14 +84,18 @@
                         </a>
                     </div>
                 </div>
-                <a mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton"
+                <a *ngIf="checkStorage()" mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla7="routerLinkActive" [active]="rla7.isActive">
                     <span *ngIf="currentWindowWidth >= 700"> My Profile </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-address-card" style="font-size: 20px;"></i>
                 </a>
                 <span class="example-spacer"></span>
-                <a mat-tab-link (click)="openDialog()">
+                <a *ngIf="!checkStorage()" mat-tab-link (click)="openDialog()">
                     <span *ngIf="currentWindowWidth >= 700"> Log In </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
+                </a>
+                <a *ngIf="checkStorage()" mat-tab-link (click)="logOut()">
+                    <span *ngIf="currentWindowWidth >= 700"> Log Out </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
                 </a>
             </nav>
