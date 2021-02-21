@@ -11,7 +11,7 @@ export const IDX_OF_NON_ID_ITEM_IDXS = 3;
 
 export const IDX_OF_OBSERVATION_COL_IDXS = 0;
 export const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
-export const IDX_OF_ITEM_IDX = 2;
+export const IDX_OF_ITEM_IDX = 2;  //subject to change when backend implements api
 
 @Injectable({
   providedIn: 'root'
@@ -77,7 +77,7 @@ export class SetupObjectService {
     item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_ITEM_IDXS, i);
-      console.log(itemPointer.index + " ID " + itemPointer.frontendName)
+      // console.log(itemPointer.index + " ID " + itemPointer.frontendName)
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
     });
@@ -92,7 +92,7 @@ export class SetupObjectService {
     item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
-      console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
+      // console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, setupObject);
     });
@@ -104,7 +104,7 @@ export class SetupObjectService {
     params: -setupObject
             -appliedFilterSelections: an object that will hold's a user's input for each selector
             -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
-            -wantFeatureSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
+            -wantFilterSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
 
     returns: selector object that maps selector type to column information. 
     selector object format:
@@ -127,14 +127,14 @@ export class SetupObjectService {
         returnableID: column's returnableID
     }
  */////////////////////////////////////////
- getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, wantFeatureSelector: boolean) {
+ getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, wantFilterSelector: boolean) {
   let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
   let globalColumns = [];
   let path = [IDX_OF_GLOBAL_ITEM_IDX];
 
   this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, setupObject);
 
-  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFeatureSelector);
+  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFilterSelector);
 }
 
 
@@ -152,18 +152,18 @@ export class SetupObjectService {
  */////////////////////////////////////////
   getFeatureSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs) {
     let allFeatureSelectors = [];
-    // for each feature
+    // for each feature...
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
       // console.log(setupObject.features[featureIndex].frontendName)
-      // find feature's observation columns
+      // ...find feature's observation columns
       setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
         featureColumns.push({
           column: setupObject.columns[observationColumnIndex],
           returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject)
         });
       });
-      // find feature's attribute columns
+      // ...find feature's attribute columns
       setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
         featureColumns.push({
           column: setupObject.columns[attributeColumnIndex],
@@ -202,11 +202,11 @@ export class SetupObjectService {
     isObservation ? childType = IDX_OF_OBSERVATION_COL_IDXS : childType = IDX_OF_ATTRIBUTE_COL_IDXS;
 
     let allFeatureInputSelectors = [];
-    // for each feature
+    // for each feature...
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
       // console.log(childType + " " + setupObject.features[featureIndex].frontendName)
-      // find feature's observation or attribute columns
+      // ...find feature's observation or attribute columns
       setupObject.features[featureIndex].children[childType].forEach((columnIndex, i) => {
         featureColumns.push({
           column: setupObject.columns[columnIndex],
@@ -246,8 +246,8 @@ export class SetupObjectService {
   // create the appliedFilterSelections object by finding all selectors. 
   // also find all columns that have default marked true
   //fills defaultcolumnIDs with the IDs of default columns
-  //wantFeatureSelector indicates whether we want to return filterSelectors or inputSelectors
-  private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFeatureSelector: boolean): any {
+  //wantFilterSelector indicates whether we want to return filterSelectors or inputSelectors
+  private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFilterSelector: boolean): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],
@@ -265,7 +265,7 @@ export class SetupObjectService {
     let curColumnSelector = null;
 
     infos.forEach(info => {
-      wantFeatureSelector ? curColumnSelector = info.column.filterSelector : curColumnSelector = info.column.inputSelector;
+      wantFilterSelector ? curColumnSelector = info.column.filterSelector : curColumnSelector = info.column.inputSelector;
       if (curColumnSelector) {
         switch (curColumnSelector.selectorKey) {
           case "dropdown": {
@@ -288,7 +288,7 @@ export class SetupObjectService {
             selectors.calendarEqual.push(info);
             appliedFilterSelections.calendarEqual[info.returnableID] = null; break;
           }
-          case "searchablenumericEqual": {
+          case "searchableDropdown": {
             selectors.searchableDropdown.push(info);
             appliedFilterSelections.searchableDropdown[info.returnableID] = []; break;
           }

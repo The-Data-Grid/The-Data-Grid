@@ -6,15 +6,30 @@
 //
 
 import SwiftUI
+import CoreData
 
 @main
 struct mobileTDGApp: App {
+    let persistenceController = PersistenceController.shared
     @StateObject var viewRouter = ViewRouter()
     
     var body: some Scene {
         WindowGroup {
-            motherView().environmentObject(viewRouter)
+            motherView().environmentObject(viewRouter).environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
+    
+    func saveContext () {
+        let context = persistenceController.container.viewContext
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                // add error handling
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+    }
+    
 }
-

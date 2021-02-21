@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild, HostListener, Output, EventEmitter } from '@angular/core';
 import { ApiService } from '../../api.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatCheckboxModule, MatCheckbox} from '@angular/material/checkbox';
@@ -19,13 +19,34 @@ interface Data {
   styleUrls: ['./root-features.component.css'],
 })
 export class RootFeaturesComponent implements OnInit {
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
+  rootFeatureOptions = [];
 
   constructor(private apiService: ApiService,
     public dialogRef: MatDialogRef<RootFeaturesComponent>,
-    @Inject(MAT_DIALOG_DATA)public data: Data, private setupObjectService: SetupObjectService) {
+    @Inject(MAT_DIALOG_DATA)public data: Data, @Inject(MAT_DIALOG_DATA) public da:Data, private setupObjectService: SetupObjectService) {
     }
 
+
+    onSubmit():void {
+      console.log(this.rootFeatures.length)
+      for (let i = 0; i < this.rootFeatures.length; i++) {
+        if ((document.getElementById(`${this.rootFeatures[i].name} root checkbox`) as HTMLInputElement).checked == true) {
+          this.rootFeatureOptions.push(this.rootFeatures[i].name);}
+      }
+      this.dialogRef.close()
+      console.log(this.rootFeatureOptions);
+      this.notify.emit(this.rootFeatureOptions);
+    }
+
+    isCurrentlySelected(selector) {
+      var result = this.data[1].filter(feature => feature.name == selector);
+      if (result.length != 0) {
+        return true;
+      }
+      return false;
+    }
 
   setupObject;
   rootFeatures;
@@ -33,7 +54,10 @@ export class RootFeaturesComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentWindowWidth = window.innerWidth
+    console.log(this.data);
+    this.getSetupObject()
   }
+
 
   @HostListener('window:resize')
   onResize() {
@@ -65,47 +89,6 @@ getSubFeaturesLength(subfeatureList) {
   }
 }
 
-// keeps track of which features are checked (temporary)
-  updateFeatures() {
-    if (this.status == 'template') {
-    var featuresLength = this.getFeaturesLength();
-    console.log(featuresLength + " is the features length");
-
-
-    for (var i = 0; i <= featuresLength; ++i) {
-      const no = (<HTMLInputElement>document.getElementById(this.data[i].name + " checkbox"))
-      const feature = document.getElementById(this.data[i].name + " checkbox") as HTMLInputElement;
-      if (!feature.checked) {
-        this.data[i].included = false;
-      }
-      else {
-        this.data[i].included = true;
-      }
-
-      const subFeaturesLength = this.getSubFeaturesLength(this.data[i]);
-      for (var j = 0; j <= subFeaturesLength; j++) {
-        if (this.data[i].included == false) {
-          this.data[i].features[j].included = false;
-          continue;
-        }
-        const subFeature = document.getElementById(this.data[i].features[j].name + " checkbox") as HTMLInputElement;
-        if (!subFeature.checked) {
-          this.data[i].features[j].included = false;
-        }
-        else {
-          this.data[i].features[j].included = true;
-        }
-      }
-
-    }
-    this.close();
-  }
-  else {
-    this.close();
-  }
-
-  }
-
   isChecked = false;
 
   status = "template";
@@ -126,7 +109,6 @@ getSetupObject() {
   this.apiService.getSetupTableObject().subscribe((res) => {
     USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
     this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
-    // this.setupObjectService.getRootFeatures(this.setupObject);
   });
 }
   

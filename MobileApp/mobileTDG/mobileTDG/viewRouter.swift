@@ -22,4 +22,5 @@ enum Tab {
     case settings
     case submitted
     case unsubmitted
+    case detail
 }

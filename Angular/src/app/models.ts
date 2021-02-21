@@ -4,12 +4,18 @@ export interface AppliedFilterSelections {
     calendarRange: any;
     calendarEqual: any;
     dropdown: any;
-    searchableDropdown: any;
-    checklistDropdown: any;
-    searchableChecklistDropdown: any;
+    searchableDropdown: Array<multiselectOption[]>;  // array of multiselectoptions arrays
+    checklistDropdown: Array<multiselectOption[]>; 
+    searchableChecklistDropdown: Array<multiselectOption[]>; 
     text: any;
     bool: any;
     _placeholder?: any;
+}
+
+
+export interface multiselectOption { 
+    item_id: number;
+    item_text: String;
 }
 
 // export interface Selectors  {

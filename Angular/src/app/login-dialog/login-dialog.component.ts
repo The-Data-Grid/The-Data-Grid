@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
-import {UserInfoService} from '../user-info.service';
+import { ApiService } from '../api.service';
 
 interface Month {
   value: string;
@@ -64,7 +64,7 @@ export class DialogComponent implements OnInit {
   }
   
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>, private userInfoService:UserInfoService) { 
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService) { 
   }
 
   ngOnInit() {
@@ -156,9 +156,16 @@ export class DialogComponent implements OnInit {
     // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);
     this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
     // console.log(this.userLoginObject);
-    this.userInfoService.attemptLogin(this.userLoginObject)
-      .subscribe(res => console.log(res), err => alert(`HTTP Error ${err.status}: ${err.error}`))
-    ;
+    this.apiService.attemptLogin(this.userLoginObject)
+      .subscribe(res => console.log(res), err => {
+        if (err.status == 200) {
+          alert("successful sign in")
+        }
+        else {
+          alert(`HTTP Error ${err.status}: ${err.error}`)
+        }
+      }
+          )    ;
   }
 
   close() {

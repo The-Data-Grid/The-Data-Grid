@@ -157,20 +157,29 @@ mat-label {
   } 
   
   .formField {
-    top: -10px; left: 5%; font-size: 14px
+    top: -45px; left: 5%; font-size: 14px
   }
 
   .password {
-    font-size: 10px; position: relative; top: -20px; right: -18px
+    font-size: 13px; position: relative; top: -20px; right: -18px; margin-left: 15px;
   }
 
   .signUpModal {
-    position:absolute; width:500px; outline: none; font-size:11px; background-color: transparent; border:0px; color: #581f8d; text-decoration: underline; cursor: pointer; margin-left:-40px; margin-top:10px;
+    position:absolute; outline: none; font-size:11px; background-color: transparent; border:0px; color: #581f8d; text-decoration: underline; cursor: pointer;
+  }
+
+  .signUpButton {
+    font-size:11px; background-color: transparent; border:0px; color: #581f8d; text-decoration: underline; cursor: pointer; margin-top: 10px;
   }
 
   .signInButton {
-    position: absolute; background-color:#569CD7; color: white; margin-left: 250px;
+    position: absolute; background-color:#569CD7; color: white; padding-left: 15px; padding-right: 15px; font-weight: 100;
   }
+
+  .signInButton .mat-form-field-custom {
+    font-weight: 100;
+  }
+  
 
   .closeButton {
     margin-top:-10%; right: -92%; position: relative

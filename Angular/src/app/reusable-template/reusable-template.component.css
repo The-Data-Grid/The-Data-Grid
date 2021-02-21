@@ -3,7 +3,6 @@
     margin-right: auto;
     font-size: small;
     width: 85%;
-    /* color: green !important */
 }
 
 .auditsPageColorScheme {
@@ -13,3 +12,4 @@
 .featuresPageColorScheme {
     color: #989898 !important;
 }
+
