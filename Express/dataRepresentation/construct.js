@@ -51,6 +51,8 @@ const {insert_m2m_metadata_item,
        makeItemReturnablesSubobservationQuery, 
        insert_metadata_returnable, 
        checkAuditorNameTrigger} = require('../statement.js').construct
+    
+const {allItems} = require('../statement.js').setup
 
 // Construction CLI //
 // ============================================================
@@ -399,7 +401,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     await showComputed(commandLineArgs);
 
     // Creating schema assets
-    makeAssets(featureOutput);
+    await makeAssets(featureOutput);
     
     // Done!
     console.log(chalk.blueBright.bgWhiteBright('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'));
@@ -993,7 +995,6 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
     }
     // if non observable get the itemID
     else {
-        console.log('ORIGINAL ITEM NAME ********************************** ' + itemObject.originalItemName);
         
         itemID = await db.one(formatSQL(makeItemReturbablesItemQuery, {
             itemName: itemObject.originalItemName
@@ -1013,7 +1014,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         joinObject.tables = Array.from(itemObject.path)
         // make columns
         for(let n = 0; n < itemObject.path.length; n += 2) {
-            if(n == 0 && joinObject.tables[0] != 'item_submission') { // if first join and not submission
+            if(n == 0 && itemObject.featureName !== null) { // if first join and not item
                 // push the item_id column (in both the observation_... and item_... table)
                 joinObject.columns.push('observableitem_id', 'item_id');
                 //joinObject.columns.push('item_id');
@@ -1238,7 +1239,7 @@ function readSchema(file) { // Schema read function
     return JSON.parse(stripJsonComments(fs.readFileSync(__dirname + file, 'utf8')))
 }
 
-function makeAssets(featureOutput) {
+async function makeAssets(featureOutput) {
     const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup} = featureOutput;
     
     // Adding files to ./Express/dataRepresentation/schemaAssets
@@ -1250,6 +1251,9 @@ function makeAssets(featureOutput) {
 
     fs.writeFileSync(`${__dirname}/schemaAssets/itemRealGeoLookup.json`, JSON.stringify(itemRealGeoLookup));
     console.log(chalk.whiteBright.bold(`Wrote itemRealGeoLookup.json to schemaAssets`));
+    
+    fs.writeFileSync(`${__dirname}/schemaAssets/allItems.json`, JSON.stringify(await db.many(allItems)));
+    console.log(chalk.whiteBright.bold(`Wrote allItems.json to schemaAssets`));    
 }
 
 async function showComputed(commandLineArgs) {

@@ -20,7 +20,11 @@ const query = {
 
     offset: 'OFFSET $(offset)',
 
-    select: 'SELECT $(feature:name)."observation_id" AS obspkey, $(selectClauses:raw)',
+    observationSelect: 'SELECT $(feature:name)."observation_id" AS observation_pkey, $(selectClauses:raw)',
+
+    itemSelect: 'SELECT $(item:name)."item_id" AS item_pkey, $(selectClauses:raw)',
+
+    observationCount: 'INNER JOIN tdg_observation_count on $(feature:name).observation_count_id = tdg_observation_count.observation_count_id',
 
     where: '$(clause:value) ($(condition:raw))',
 

@@ -1,15 +1,16 @@
 
 /********************
- ******* SETUP ******
+        SETUP      
  ********************/
 
 const fs = require('fs')
 
 const {idValidationLookup} = require('./setup.js');
-let featureItemLookup;
+let featureItemLookup, allItems;
 
 try {
     featureItemLookup = JSON.parse(fs.readFileSync(`${__dirname}/dataRepresentation/schemaAssets/featureItemLookup.json`))
+    allItems = JSON.parse(fs.readFileSync(`${__dirname}/dataRepresentation/schemaAssets/allItems.json`))
 } catch(err) {
     throw Error('Error reading schema assets. Have you constructed the schema yet? Use `npm run construct -- make-schema ...` or `bash ./Express/db/init.sh`')
 }
@@ -24,15 +25,19 @@ is different for the observation query and the item query
 idValidationLookup:
     Contains every returnableID and some values for each:
         rootFeature
-        feature
+        feature // null if item returnable
         item
         referenceType
         isFilterable
         isSubmission
         sqlType
+        baseItem // null if feature returnable
 
 featureItemLookup:
     Contains every feature and its respective item
+
+allItems
+    Contains every item
 
 ******************
 ** Observation ***
@@ -59,10 +64,6 @@ validateItem:
         valid returnableIDs to query
             valid for _item_ if:
                 referenceType in item-id, item-non-id, item-list, item-factor, item-location, attribute (current)
-                AND
-                feature == _item_
-                    problem: we want to be able to get data from other items
-                    sol: let's try and generate returnables for all items, not just observable items
         valid returnableIDs to filter
         sql type of filterable returnableIDs
 
@@ -71,13 +72,17 @@ validItems:
 
 */
 
-// Generate globals
+
+
 var globals = {
     filter: [],
     column: []
 };
 
-for (let id in idValidationLookup) { //>>>>>>>>>>>>>>>>>>  is_submission
+let validateObservation = {};
+let validateItem = {};
+
+for (let id in idValidationLookup) { 
     if (idValidationLookup[id].isSubmission === true) {
         globals.column.push(parseInt(id));
         if(idValidationLookup[id].isFilterable === true) {
@@ -86,24 +91,24 @@ for (let id in idValidationLookup) { //>>>>>>>>>>>>>>>>>>  is_submission
     };
 };
 
-// Dynamically generating validateObservation and validateItem by
+// Dynamically generating validateObservation by
 // looping through all ids in idValidationLookup
-var validateObservation = {};
-var validateItem = {};
-
 for (let id in idValidationLookup) {
-    
-    // Removing globals
-    if(idValidationLookup[id].feature === null && idValidationLookup[id].rootfeature === null) {
-        continue
+    let baseItem = idValidationLookup[id].baseItem
+    // feature or item returnable ?
+    let currentValidator, currentBase;
+    if(baseItem === null) {
+        currentValidator = validateObservation
+        currentBase = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
+    } else {
+        currentValidator = validateItem
+        currentBase = baseItem
     }
 
-    // Getting the root feature
-    let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
-
-    // if empty or feature not included yet, initialize column and filter array for new feature
-    if(!Object.keys(validateObservation).includes(feature)) {
-        validateObservation[feature] = {
+    // if empty or not included yet, initialize column and filter array for new feature
+    // we can do this because currentValidator is a pointer
+    if(!(currentBase in currentValidator)) {
+        currentValidator[currentBase] = {
             column: [],
             filter: [],
             sqlType: []
@@ -111,11 +116,11 @@ for (let id in idValidationLookup) {
     }
 
     let idToInt = parseInt(id); // in case id isn't already an int
-    validateObservation[feature]['column'].push(idToInt);
+    currentValidator[currentBase].column.push(idToInt);
     
     if (idValidationLookup[id].isFilterable) {
-        validateObservation[feature]['filter'].push(idToInt);
-        validateObservation[feature]['sqlType'].push(idValidationLookup[id].sqlType);
+        currentValidator[currentBase].filter.push(idToInt);
+        currentValidator[currentBase].sqlType.push(idValidationLookup[id].sqlType);
     }
 }
 
@@ -161,7 +166,7 @@ function validationConstructor(init) {
 
     function itemOrObservation(validate, globals, validateFeatures) {
 
-        //// `V`alidate request feature, columns, and filters ////
+        //// Validate request feature, columns, and filters ////
         return (req, res, next) => {
 
             // item_... or obs_... depending on endpoint
@@ -170,13 +175,13 @@ function validationConstructor(init) {
 
 
             if(!validateFeatures.includes(feature)) {
-                return res.status(400).send(`Bad Request 2201: ${feature} is not a valid feature`);
+                return res.status(400).send(`Bad Request 2201: ${feature} is not a valid ${init == 'item' ? 'item' : 'feature'}`);
             };
 
             // Validate columns for feature
 
             for(let column of res.locals.parsed.columns) {
-                if(!validate[feature]['column'].includes(parseInt(column)) && !globals.column.includes(parseInt(column))) {
+                if(!validate[feature].column.includes(parseInt(column)) && (init == 'item' || !globals.column.includes(parseInt(column)))) {
                     return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
                 };
             };
@@ -187,8 +192,8 @@ function validationConstructor(init) {
             let filterIDKeys = Object.keys(res.locals.parsed.filters);    
 
             for(let filter of filterIDKeys) {
-                // if not a valid filter for this feature or not a global filter
-                if(!validate[feature]['filter'].includes(parseInt(filter)) && !globals.filter.includes(parseInt(filter))) { 
+                // if not a valid filter for this feature and not a global filter and feature validation
+                if(!validate[feature].filter.includes(parseInt(filter)) && (init == 'item' || !globals.filter.includes(parseInt(filter)))) { 
                     return res.status(400).send(`Bad Request 2203: ${filter} is not a valid filter for the ${feature} feature`);
                 } else {
                     let operator = res.locals.parsed.filters[filter]['operation'];
@@ -198,23 +203,23 @@ function validationConstructor(init) {
                         if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
                             return res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`);
                         }
-                        field.forEach(function(item) {
+                        for(let item of field) {
                             if(!isText(item)) {
                                 return res.status(400).send(`Bad Request 1604: Field for id: ${filter} must be text`);
                             }
-                        });
+                        }
                     } else if(validate[feature]['sqlType'][index] == 'NUMERIC') {
-                        field.forEach(function(item) {
+                        for(let item of field) {
                             if(!isNumber(item)) {
                                 return res.status(400).send(`Bad Request 1605: Field for id: ${filter} must be numeric`);
                             }
-                        });
+                        }
                     } else if(validate[feature]['sqlType'][index] == 'TIMESTAMPTZ') {
-                        field.forEach(function(item) {
+                        for(let item of field) {
                             if(!isValidDate(item)) {
                                 return res.status(400).send(`Bad Request 1606: Field for id: ${filter} must be a valid date in mm-dd-yyyy format`);
                             }
-                        });
+                        }
                     }
                 }
                 index++;
@@ -240,13 +245,13 @@ function validationConstructor(init) {
                 } else if (filter == 'offset' && !isPositiveInteger(universalFilters[filter])) {
                     return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a postiive integer.`);
                 } else if (filter == 'sorta' || filter == 'sortd') {
-                    if (!validate[feature]['column'].includes(parseInt(universalFilters[filter])) && !globals.filter.includes(parseInt(universalFilters[filter]))) {
+                    if (!validate[feature].column.includes(parseInt(universalFilters[filter])) && (init == 'item' || !globals.filter.includes(parseInt(universalFilters[filter])))) {
                         return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer.`);
                     }
                 }
             }
 
-            // Passing to query.js
+            // Passing to query.js            
             next();
         }
 
@@ -314,7 +319,8 @@ function isValidPassword(password) {
 }
 
 module.exports = {
-    validationConstructor,
+    validateObservation: validationConstructor('observation'),
+    validateItem: validationConstructor('item'),
     hasDuplicates,
     isText,
     isNumber,

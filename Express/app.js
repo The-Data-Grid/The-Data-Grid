@@ -25,8 +25,8 @@ const {connectPostgreSQL} = require('./db/pg.js');
 connectPostgreSQL('default');
 
 const parse = require('./parse.js');
-const {validationConstructor} = require('./validate.js')
-const query = require('./query.js');
+const {validateObservation, validateItem} = require('./validate.js')
+const query = require('./query/query.js');
 const template = require('./template.js');
 const authRouter = require('./auth/login.js');
 
@@ -58,14 +58,36 @@ function cycleTimer(req, res, next) {
     next()
 }
 
-//** Observation Data Query **//	
-app.get('/api/audit/observation/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 	
+//** Observation Data Query w/ Download **//	
+app.get(['/api/audit/observation/:feature/:include', '/api/audit/observation/download/:downloadType/:feature/:include'],
+    parse.queryParse, 
+    validateObservation, 
+    query.featureQuery, 
+    query.sendDefault);
+
 //** Observation Distinct Query **/	
-app.get('/api/audit/observation/distinct/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDistinct)	
-//** Observation Download Query **//	
-app.get('/api/audit/observation/download/:downloadType/:feature/:include', parse.queryParse, validationConstructor('observation'), query.featureQuery, query.sendDefault); 	
-//** Item Data Query **//	
-app.get('/api/audit/item/:feature/:include', parse.queryParse, validationConstructor('item'))
+app.get('/api/audit/observation/distinct/:feature/:include', 
+    parse.queryParse, 
+    validateObservation, 
+    query.featureQuery, 
+    query.sendDistinct);
+
+
+//** Item Data Query w/ Download **//	
+app.get(['/api/audit/item/:feature/:include', '/api/audit/item/download/:downloadType/:feature/:include'],
+    parse.queryParse, 
+    validateItem, 
+    query.itemQuery, 
+    query.sendDefault);
+
+//** Item Distinct Query **//	
+app.get('/api/audit/item/distinct/:feature/:include', 
+    parse.queryParse, 
+    validateItem, 
+    query.itemQuery, 
+    query.sendDistinct);
+
+
 
 //** Setup Query **//	
 app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);	
@@ -78,7 +100,7 @@ app.get('/api/stats/', parse.statsParse, query.statsQuery);
 // Easter Egg	
 app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
 
-// Default to web app paths
+/* Default to web app paths
 app.all('/', function(req, res){
     res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
 });
@@ -86,8 +108,10 @@ app.all('*', function(req, res){
     //console.log('../Deployment/Angular/dist' + req.path);
     //console.log('../Deployment/Angular/dist' + req.path);
     res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
-});
+});*/
     
+
+
 ////// LISTEN //////
 
 if(isDeployment) {

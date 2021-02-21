@@ -50,7 +50,7 @@ const queryParse = (req, res, next) => {
                 type: 'json'
             }
         } else {
-            res.status(400).send(`Bad Request 1604: Download type must be 'json' or 'csv'`)
+            return res.status(400).send(`Bad Request 1604: Download type must be 'json' or 'csv'`)
         }
     } else {
         res.locals.parsed.download = {

@@ -1,14 +1,22 @@
-////// QUERY ENGINE //////
+// QUERY ENGINE //
+/* ============================================================
+Generates the joins that are needed to query the requested returnables. Trims
+the tree of repeated joins by calculating which returnables can share joins,
+generates and assigns aliases to joined tables, references these aliases
+in the select and where clauses for the necessary returnables.
+============================================================ */
 
 // pg-promise sql formatter
-const {postgresClient} = require('./db/pg.js');
+const {postgresClient} = require('../db/pg.js');
 const formatSQL = postgresClient.format;
 
 // alias join and submission SQL statements
 const {
     submission,
-    referenceSelectionJoin
-} = require('./statement.js').query
+    referenceSelectionJoin,
+    observationSelect,
+    itemSelect
+} = require('../statement.js').query
 
 /**  
   * dynamicSQLEngine
@@ -24,16 +32,18 @@ const {
   * @returns {Object} {selectClauseArray, joinClauseArray, featureTreeArray, whereLookup}
   */
 
-var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature) => {
+var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => {
     // Initialize Output
     let selectClauseArray = [];
     let joinClauseArray = [];
     let whereLookup = {};
 
-    // push the item_submission reference
-    joinClauseArray.push(formatSQL(submission, {
-        feature: feature
-    }));
+    // if observation query push the item_submission reference
+    if(queryType == 'observation') {
+        joinClauseArray.push(formatSQL(submission, {
+            feature: feature
+        }));
+    }
     
     // Handle returnables that do not have references
     let localReturnables = returnableIDs.filter(returnable => returnable.joinObject.refs.length == 0);
@@ -133,8 +143,27 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature) => {
         };
     });
 
+    // take the unique features in the tree
+    featureTreeArray = [...new Set(featureTreeArray)]
+
+    // Adding commas to select clauses
+    selectClauseArray = selectClauseArray.join(', ')
+    let selectClause;
+    // different clause depending on whether item or observation query
+    if(queryType == 'observation') {
+        selectClause = formatSQL(observationSelect, {
+            feature: feature,
+            selectClauses: selectClauseArray
+        });
+    } else if(queryType == 'item') {
+        selectClause = formatSQL(itemSelect, {
+            item: feature,
+            selectClauses: selectClauseArray
+        })
+    }
+
     return({
-        selectClauseArray,
+        selectClause,
         joinClauseArray,
         featureTreeArray,
         whereLookup
