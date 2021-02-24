@@ -109,6 +109,12 @@ for (let id in idValidationLookup) {
     // we can do this because currentValidator is a pointer
     if(!(currentBase in currentValidator)) {
         currentValidator[currentBase] = {
+    // Getting the root feature
+    let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
+    
+    // if empty or feature not included yet, initialize column and filter array for new feature
+    if(!Object.keys(validateObservation).includes(feature)) {
+        validateObservation[feature] = {
             column: [],
             filter: [],
             sqlType: []
