@@ -449,6 +449,13 @@ CREATE TABLE metadata_item (
     UNIQUE(table_name)
 );
 
+CREATE VIEW non_observable_item_view
+    AS 
+    SELECT i.table_name i__table_name
+        FROM metadata_item as i
+        LEFT JOIN metadata_item_type as t on i.item_type = t.type_id
+            WHERE t.type_name IN ('potential-observable', 'non-observable');
+
 
 /*
 All data_... columns. These are either in 
@@ -538,6 +545,11 @@ CREATE TABLE metadata_returnable (
     metadata for the column.
     */
     column_id INTEGER NOT NULL, --fk **
+
+    /*
+    NULL if the returnable is associated with a feature item
+    */
+    item_id INTEGER, --fk
 
     /*
     NULL if the item of the associated metadata_column is 'item_submission'
@@ -667,10 +679,13 @@ CREATE VIEW returnable_view AS (SELECT
         r.returnable_id as r__returnable_id, r.frontend_name as r__frontend_name, r.is_used as r__is_used, r.join_object as r__join_object, 
         r.is_real_geo as r__is_real_geo, r.join_object -> 'attributeType' as r__attribute_type, r.feature_id as r__feature_id, 
         
-        i.table_name as i__table_name, i.frontend_name as i__frontend_name 
+        i.table_name as i__table_name, i.frontend_name as i__frontend_name,
+
+        non_obs_i.table_name as non_obs_i__table_name
         
         FROM metadata_returnable as r 
         LEFT JOIN metadata_column AS c ON c.column_id = r.column_id 
+        LEFT JOIN metadata_item as non_obs_i on non_obs_i.item_id = r.item_id
         LEFT JOIN metadata_feature AS f ON r.feature_id = f.feature_id 
         LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id 
         LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id 
@@ -701,6 +716,7 @@ ALTER TABLE metadata_feature ADD FOREIGN KEY (observable_item_id) REFERENCES met
 ALTER TABLE metadata_feature ADD FOREIGN KEY (parent_id) REFERENCES metadata_feature (feature_id);
 
 ALTER TABLE metadata_returnable ADD FOREIGN KEY (column_id) REFERENCES metadata_column;
+ALTER TABLE metadata_returnable ADD FOREIGN KEY (item_id) REFERENCES metadata_item;
 ALTER TABLE metadata_returnable ADD FOREIGN KEY (feature_id) REFERENCES metadata_feature;
 ALTER TABLE metadata_returnable ADD FOREIGN KEY (rootfeature_id) REFERENCES metadata_feature;
 
@@ -1026,6 +1042,7 @@ CREATE PROCEDURE insert_metadata_item_observable(item TEXT, frontend_name TEXT, 
 
 -- Inserts a new returnable into metadata_returnable without join_object or frontend_name
 CREATE FUNCTION insert_metadata_returnable(column_id INTEGER, 
+                                          item_id INTEGER,
                                           feature_id INTEGER, 
                                           rootfeature_id INTEGER,
                                           frontend_name TEXT,
@@ -1040,6 +1057,7 @@ CREATE FUNCTION insert_metadata_returnable(column_id INTEGER,
             INSERT INTO metadata_returnable
                 (returnable_id,
                 column_id,
+                item_id,
                 feature_id,
                 rootfeature_id,
                 frontend_name,
@@ -1049,6 +1067,7 @@ CREATE FUNCTION insert_metadata_returnable(column_id INTEGER,
                 VALUES (
                     DEFAULT,
                     column_id,
+                    item_id,
                     feature_id,
                     rootfeature_id,
                     frontend_name,

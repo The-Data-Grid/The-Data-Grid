@@ -46,10 +46,13 @@ const {insert_m2m_metadata_item,
        getReturnables, 
        getItemParents, 
        makeItemReturnablesColumnQuery, 
-       makeItemReturnablesFeatureQuery, 
+       makeItemReturnablesFeatureQuery,
+       makeItemReturbablesItemQuery, 
        makeItemReturnablesSubobservationQuery, 
        insert_metadata_returnable, 
        checkAuditorNameTrigger} = require('../statement.js').construct
+    
+const {allItems} = require('../statement.js').setup
 
 // Construction CLI //
 // ============================================================
@@ -70,7 +73,8 @@ if(process.argv[0] == 'make-schema') {
     (process.argv.includes('--show-computed') || process.argv.includes('-sc') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
     // here we go
     return makeSchema(commandLineArgs);
-} else if(process.argv[0] == 'config') {
+} 
+else if(process.argv[0] == 'config') {
     let commandLineArgs = {};
     // remove command
     process.argv.splice(0, 1);
@@ -84,7 +88,8 @@ if(process.argv[0] == 'make-schema') {
     (process.argv.includes('--show-computed') || process.argv.includes('-sc') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
     // here we go
     return configSchema(commandLineArgs);
-} else if(process.argv[0] == 'inspect') {
+} 
+else if(process.argv[0] == 'inspect') {
     let commandLineArgs = {};
     // remove command
     process.argv.splice(0, 1);
@@ -185,9 +190,11 @@ async function inspectSchema(commandLineArgs) {
 
         if(commandLineArgs.used === true) {
             if(commandLineArgs.filter !== null) {
-                // if submission
-                if(commandLineArgs.filter === 'submission') {
-                    out = await db.any('SELECT * FROM metadata_returnable AS r WHERE r.feature_id IS NULL AND r.is_used = true')
+                // if non observational
+                if(/^item_.*/.test(commandLineArgs.filter)) {
+                    out = await db.any(formatSQL('SELECT * FROM metadata_returnable AS r join metadata_item as i on r.item_id = i.item_id WHERE i.table_name = $(item) AND r.is_used = true', {
+                        item: commandLineArgs.filter
+                    }))
                 } else {
                     out = await db.any(formatSQL('SELECT * FROM metadata_returnable AS r WHERE r.feature_id = (SELECT feature_id FROM metadata_feature WHERE table_name = $(filter)) AND r.is_used = true', {
                         filter: commandLineArgs.filter
@@ -199,9 +206,11 @@ async function inspectSchema(commandLineArgs) {
             }
         } else {
             if(commandLineArgs.filter !== null) {
-                // if submission
-                if(commandLineArgs.filter === 'submission') {
-                    out = await db.any('SELECT * FROM returnable_view as r WHERE r.f__table_name IS NULL')
+                // if non observational
+                if(/^item_.*/.test(commandLineArgs.filter)) {
+                    out = await db.any('SELECT * FROM returnable_view as r WHERE r.non_obs_i__table_name = $(item)', {
+                        item: commandLineArgs.filter
+                    })
                 } else {
                     out = await db.any(formatSQL('SELECT * FROM returnable_view as r WHERE r.f__table_name = $(filter)', {
                         filter: commandLineArgs.filter
@@ -219,7 +228,7 @@ async function inspectSchema(commandLineArgs) {
                     out = {};
                     originalOut.forEach(r => {
                         // this is just formatting
-                        out[r.r__returnable_id] = (r.r__join_object.tables.length > 0 ? `${r.r__join_object.tables.filter((e,i) => (i % 2 == 0 || i+1 == r.r__join_object.tables.length )).join(' > ')}: ${r.r__frontend_name}` : (commandLineArgs.filter === 'submission' ? r.c__table_name : r.f__table_name) + ': ' + r.r__frontend_name)
+                        out[r.r__returnable_id] = (r.r__join_object.tables.length > 0 ? `${r.r__join_object.tables.filter((e,i) => (i % 2 == 0 || i+1 == r.r__join_object.tables.length )).join(' > ')}: ${r.r__frontend_name}` : (/^item_.*/.test(commandLineArgs.filter) ? r.non_obs_i__table_name : r.f__table_name) + ': ' + r.r__frontend_name)
                     })
                 }
                 
@@ -360,6 +369,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
             {
                 featureName: feature,
                 itemName: featureOutput.featureItemLookup[feature],
+                originalItemName: featureOutput.featureItemLookup[feature],
                 path: [feature, featureOutput.featureItemLookup[feature]]
             }
         ];
@@ -368,23 +378,30 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
         let returnables = await generateReturnables(itemArray, [], itemParentLookup, featureOutput.itemRealGeoLookup, featureOutput.featureItemLookup);
         console.log(chalk.whiteBright.bold(`Constructed IDs: ${returnables.join(', ')} for the ${feature} feature \n`));
     };
-    // for item_submission generate returnables
-    console.log(chalk.whiteBright.bold(`Constructing returnables for the item_submission tree`));
-    let itemArray = [
-        {
-            featureName: null,
-            itemName: 'item_submission',
-            path: []
-        }
-    ];
-    let returnables = await generateReturnables(itemArray, [], itemParentLookup, featureOutput.itemRealGeoLookup, featureOutput.featureItemLookup);
-    console.log(chalk.whiteBright.bold(`Constructed IDs: ${returnables.join(', ')} for item_submission \n`));
+
+    // for non observable items generate returnables
+    // first get all non observable items
+    const nonObservableItems = await db.many('SELECT * FROM non_observable_item_view');
     
+    for(let item of nonObservableItems.map(item => item.i__table_name)) {
+        console.log(chalk.whiteBright.bold(`Constructing returnables for the ${item} item`));
+        let itemArray = [
+            {
+                featureName: null,
+                itemName: item,
+                originalItemName: item,
+                path: []
+            }
+        ];
+        let returnables = await generateReturnables(itemArray, [], itemParentLookup, featureOutput.itemRealGeoLookup, featureOutput.featureItemLookup);
+        console.log(chalk.whiteBright.bold(`Constructed IDs: ${returnables.join(', ')} for ${item} \n`));
+    
+    }
     // Creating the computed file and returnables folder 
     await showComputed(commandLineArgs);
 
     // Creating schema assets
-    makeAssets(featureOutput);
+    await makeAssets(featureOutput);
     
     // Done!
     console.log(chalk.blueBright.bgWhiteBright('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'));
@@ -922,6 +939,7 @@ async function generateReturnables(itemArray, returnableArray, itemParentLookup,
                 referencedItems.push({
                     featureName: itemObject.featureName,
                     itemName: parent.itemName,
+                    originalItemName: itemObject.originalItemName,
                     path: newPath
                 })
             })
@@ -956,6 +974,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         tables: []
     };
     let featureID;
+    let itemID;
     let isRealGeo = false;
     let rootFeatureID;
 
@@ -964,7 +983,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         itemName: itemObject.itemName
     }));
 
-    // if not submission get the featureID
+    // if observable get the featureID
     if(itemObject.featureName !== null) {
         
         featureID = await db.one(formatSQL(makeItemReturnablesFeatureQuery, {
@@ -972,6 +991,16 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         }));
 
         featureID = featureID.featureid;
+        itemID = null
+    }
+    // if non observable get the itemID
+    else {
+        
+        itemID = await db.one(formatSQL(makeItemReturbablesItemQuery, {
+            itemName: itemObject.originalItemName
+        }));
+
+        itemID = itemID.itemid;
     }
 
     // construct joinObject from path
@@ -985,7 +1014,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
         joinObject.tables = Array.from(itemObject.path)
         // make columns
         for(let n = 0; n < itemObject.path.length; n += 2) {
-            if(n == 0 && joinObject.tables[0] != 'item_submission') { // if first join and not submission
+            if(n == 0 && itemObject.featureName !== null) { // if first join and not item
                 // push the item_id column (in both the observation_... and item_... table)
                 joinObject.columns.push('observableitem_id', 'item_id');
                 //joinObject.columns.push('item_id');
@@ -1070,6 +1099,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 // insert returnable into metadata_returnable and get returnableID
                 let returnableID = await db.one(formatSQL(insert_metadata_returnable, {
                     columnID: columnID,
+                    itemID: itemID,
                     featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
                     frontendName: 'Current ' + frontendName,
@@ -1093,6 +1123,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 // insert returnable into metadata_returnable and get returnableID
                 let returnableID = await db.one(formatSQL(insert_metadata_returnable, {
                     columnID: columnID,
+                    itemID: itemID,
                     featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
                     frontendName: 'Current ' + frontendName,
@@ -1115,6 +1146,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 // insert returnable into metadata_returnable and get returnableID
                 returnableID = await db.one(formatSQL(insert_metadata_returnable, {
                     columnID: columnID,
+                    itemID: itemID,
                     featureID: insertableFeatureID,
                     rootFeatureID: rootFeatureID,
                     frontendName: 'Observed ' + frontendName,
@@ -1136,6 +1168,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             // insert returnable into metadata_returnable and get returnableID
             let returnableID = await db.one(formatSQL(insert_metadata_returnable, {
                 columnID: columnID,
+                itemID: itemID,
                 featureID: insertableFeatureID,
                 rootFeatureID: rootFeatureID,
                 frontendName: frontendName,
@@ -1148,9 +1181,9 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
 
             returnables.push(returnableID);
 
-            // if submission
+            // if non observable
             if(itemObject.featureName === null) {
-                console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the item_submission tree`));
+                console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.itemName} item`));
             } else {
                 console.log(chalk.green(`Returnable Construction: ReturnableID:${returnableID} created for the ${itemObject.featureName} feature`));
             }
@@ -1206,7 +1239,7 @@ function readSchema(file) { // Schema read function
     return JSON.parse(stripJsonComments(fs.readFileSync(__dirname + file, 'utf8')))
 }
 
-function makeAssets(featureOutput) {
+async function makeAssets(featureOutput) {
     const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup} = featureOutput;
     
     // Adding files to ./Express/dataRepresentation/schemaAssets
@@ -1218,6 +1251,9 @@ function makeAssets(featureOutput) {
 
     fs.writeFileSync(`${__dirname}/schemaAssets/itemRealGeoLookup.json`, JSON.stringify(itemRealGeoLookup));
     console.log(chalk.whiteBright.bold(`Wrote itemRealGeoLookup.json to schemaAssets`));
+    
+    fs.writeFileSync(`${__dirname}/schemaAssets/allItems.json`, JSON.stringify(await db.many(allItems)));
+    console.log(chalk.whiteBright.bold(`Wrote allItems.json to schemaAssets`));    
 }
 
 async function showComputed(commandLineArgs) {

@@ -20,7 +20,11 @@ const query = {
 
     offset: 'OFFSET $(offset)',
 
-    select: 'SELECT $(feature:name)."observation_id" AS obspkey, $(selectClauses:raw)',
+    observationSelect: 'SELECT $(feature:name)."observation_id" AS observation_pkey, $(selectClauses:raw)',
+
+    itemSelect: 'SELECT $(item:name)."item_id" AS item_pkey, $(selectClauses:raw)',
+
+    observationCount: 'INNER JOIN tdg_observation_count on $(feature:name).observation_count_id = tdg_observation_count.observation_count_id',
 
     where: '$(clause:value) ($(condition:raw))',
 
@@ -83,10 +87,12 @@ const construct = {
     makeItemReturnablesColumnQuery: 'SELECT c.column_id AS columnID, c.column_name AS columnName, c.table_name AS tableName, c.subobservation_table_name AS subobservationTableName, c.frontend_name AS frontendName, r.type_name AS ReferenceTypeName FROM metadata_column AS c INNER JOIN metadata_reference_type AS r ON c.reference_type = r.type_id WHERE c.metadata_item_id = (SELECT i.item_id FROM metadata_item AS i WHERE i.table_name = $(itemName))',
     
     makeItemReturnablesFeatureQuery: 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(featureName)',
+
+    makeItemReturbablesItemQuery: 'SELECT i.item_id AS itemID FROM metadata_item AS i WHERE i.table_name = $(itemName)',
     
     makeItemReturnablesSubobservationQuery: 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(subobservationTableName)',
     
-    insert_metadata_returnable: 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject), $(isRealGeo)) AS returnableid',
+    insert_metadata_returnable: 'SELECT "insert_metadata_returnable"($(columnID), $(itemID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject), $(isRealGeo)) AS returnableid',
         
     // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
     checkAuditorNameTrigger: 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \

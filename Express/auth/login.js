@@ -22,6 +22,8 @@ const {apiDateToUTC} = require('../parse.js');
 
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
+const { ComponentFactoryResolver } = require('@angular/core');
+
 
 // session store init
 let Store = require('memorystore')(session); 
@@ -40,10 +42,9 @@ router.use(session({
         // 1 day
         maxAge: 86_400_000, 
         // make sure this is secure in prod
-        secure: false//(process.env.NODE_ENV == 'development' ? false : true)
+        secure: (process.env.NODE_ENV == 'development' ? false : true)
     }
 }));
-
 
 // Login
 router.post('/login', cors(corsOptions), async (req, res) => {
@@ -69,7 +70,6 @@ router.post('/login', cors(corsOptions), async (req, res) => {
         else {
             throw new Error('error');
         }
-        
     }
     catch(error) {
         console.log('ERROR:', error);
@@ -78,10 +78,7 @@ router.post('/login', cors(corsOptions), async (req, res) => {
 });
 
 // Logout
-router.post('/logout', cors(corsOptions), async (req, res) => {
-
-    console.log(req.session)
-    
+router.post('/logout', (req, res) => {
     if (req.session.loggedIn !== true) {
         res.status(400).send('you already logged out.');
     } 
@@ -118,28 +115,125 @@ router.post('/user/new', async (req, res) => {
     }
     catch(error) {
         console.log('ERROR:', error);
-        res.status(500).send('Internal Server Error 7702:');
+        res.status(500).send('Internal Server Error 7702');
     }
 
     //hash password
     let hashedPassword = await bcrypt.hash(req.body.pass, 10); 
 
+userSQL.insertingUsers= {
+    userfirstname: req.body.firstName,
+    userlastname: req.body.lastName,
+    useremail: req.body.email,
+    userpass:  hashedPassword,
+    userdateofbirth: apiDateToUTC(req.body.dateOfBirth),
+    userpublic: req.body.isEmailPublic,
+    userquarterlyupdates: req.body.isQuarterlyUpdates
+    }
+
+    res.send('registration successful')
+});
+
+
+
+
+
+// Send verfication email to new user  
+router.post('/sendVerfiyEmail', (req, res) => {
+    rand = Date.now() + Math.floor(Math.random() * 100 + 54); 
     try {
-        await db.none(formatSQL(userSQL.insertingUsers, {
-                userfirstname: req.body.firstName,
-                userlastname: req.body.lastName,
-                useremail: req.body.email,
-                userpass:  hashedPassword,
-                userdateofbirth: req.body.dateOfBirth,
-                userpublic: req.body.isEmailPublic,
-                userquarterlyupdates: req.body.isQuarterlyUpdates
+        await db.none(formatSQL(userSQL.updateUserSecret, {
+                random: rand, //secret token for security
+                email: req.body.email
         }))
     } catch(error) {
         console.log('ERROR:', error);
         res.status(500).send('service internal error');
     }
+    //encode email as part of the link
+    let encodedEmail = Buffer.from(req.body.email, 'utf8').toString('base64');
+    emailLink = "/verifyEmailLink/" + encodedEmail + "?id=" + rand; 
+    
+    sendEmail(req.body.email, emailLink); //sendEmail function not implemented yet
+    
+});
 
-    res.send('registration successful')
+
+// Verify email link of new user  
+router.post('/verifyEmailLink', (req, res) => { 
+    try {
+        decodedEmail = Buffer.from(req.body.email, 'base64').toString('utf8');
+        data = await db.one(formatSQL(SQL.secret, {
+            checkemail: decodedEmail
+        }));
+        
+        if (data.secret == req.body.secret) {
+            await db.none(formatSQL(userSQL.updateUserStatus, {
+                useremail: decodedEmail,
+                status: "active"
+            }))
+            res.status(200).send("Email verified");
+        } else {
+            res.status(404).send("Email verification failed");
+        }   
+    } catch(error) {
+        console.log('ERROR:', error);
+        res.status(500).send('service internal error');
+    }
+});
+
+
+// Send email to user for password reset  
+router.post('/sendPasswordResetEmail', (req, res) => {
+    rand = Date.now() + Math.floor(Math.random() * 100 + 54);
+    try {
+        await db.none(formatSQL(userSQL.updateUserSecret, {
+                random: rand,
+                email: req.body.email
+        }))
+    } catch(error) {
+        console.log('ERROR:', error);
+        res.status(500).send('service internal error');
+    }
+    let encodedEmail = Buffer.from(req.body.email, 'utf8').toString('base64');
+    emailLink = "/verifyPasswordResetLink/" + encodedEmail + "?id=" + rand; 
+    
+    sendEmail(req.body.email, emailLink); //sendEmail function not implemented yet
+});
+
+
+// User identity for requesting password reset is confirmed
+router.post('/verifyPasswordResetLink', (req, res) => {
+    try {
+        decodedEmail = Buffer.from(req.body.email, 'base64').toString('utf8');
+        data = await db.one(formatSQL(SQL.secret, {
+            checkemail: decodedEmail
+        }));
+
+        if (data.secret == req.body.secret) {
+            res.status(200).send("Password reset verified");
+        } else {
+            res.status(404).send("Password reset verification failed");
+        }
+    } catch(error) {
+        console.log('ERROR:', error);
+        res.status(500).send('service internal error');
+    }
+});
+
+// Update new password
+router.post('ResetPassword', (req, res) => {
+    let hashedPassword = await bcrypt.hash(req.body.pass, 10); 
+    try {
+        await db.none(formatSQL(userSQL.updateUserPassword, {
+                useremail: req.body.email,
+                password: hashedPassword
+        }))
+        res.status(200).send("Password reset successfully");
+    } catch(error) {
+        console.log('ERROR:', error);
+        res.status(500).send('service internal error');
+    }
 });
 
 module.exports = router
