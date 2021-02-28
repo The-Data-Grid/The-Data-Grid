@@ -40,6 +40,7 @@ export class GlobalPresetsComponent implements OnInit {
   };
   defaultColumns = [];
   selectorsLoaded: boolean = false;
+  globalReturnableIDs = [];
 
 
   ngOnInit(): void {
@@ -52,7 +53,8 @@ export class GlobalPresetsComponent implements OnInit {
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(
         this.setupObject,
         this.appliedFilterSelections,
-        this.defaultColumns, [],
+        this.defaultColumns, 
+        this.globalReturnableIDs,
         false);
       console.log(this.globalSelectors)
       this.selectorsLoaded = true;

@@ -45,15 +45,28 @@ export class SetupObjectService {
   //gets an array of returnable IDS for feature columns
   getFeatureReturnableIDs(setupObject, featureIndex) {
       let returnableIDs = [];
+      let ID = null;
       
       let indexOfFeatureIndex = setupObject.children[IDX_OF_FEATURES_ARR].indexOf(featureIndex);
       // ...find feature's observation columns
       setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
-        returnableIDs.push(this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject));
+        ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject);
+        if (ID) {
+          returnableIDs.push(ID);
+        }
+        else {
+          console.log("undefined returnable ID for observation column:" + i)
+        }
       });
       // ...find feature's attribute columns
       setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
-        returnableIDs.push(this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject));
+        ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject);
+        if (ID) {
+          returnableIDs.push(ID);
+        }
+        else {
+          console.log("undefined returnable ID for attribute column:" + i)
+        }
       });
       return returnableIDs;
   }

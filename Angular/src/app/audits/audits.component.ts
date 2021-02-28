@@ -35,6 +35,8 @@ export class AuditsComponent implements OnInit {
   filterBy = "Feature";
   setupObject;
   defaultColumnIDs = []; //default denotes which return columns are to be included in queries by default
+  globalReturnableIDs = [];
+  featureReturnableIDs = [];
   rootFeatures = [];
   selectedFeature;
   featuresToChildren = {};
@@ -51,7 +53,6 @@ export class AuditsComponent implements OnInit {
     bool: {},
     _placeholder: "placeholder"
   };
-  // appliedFilterSelections = new AppliedFilterSelections();
   featureSelectors = {};
   globalSelectors = {};
   selectorsLoaded: boolean = false;
@@ -59,8 +60,8 @@ export class AuditsComponent implements OnInit {
     placeholder: "hello"
   };
 
-  // the following are for multiselect dropdowns:
-  dropdownList = FakeData;
+  // the following variables are for multiselect dropdowns:
+  // dropdownList = FakeData;
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
@@ -87,7 +88,7 @@ export class AuditsComponent implements OnInit {
         console.log("using data from express server")
         this.setupObject = res;
         this.parseSetupObject();
-        console.log(this.setupObject)
+        // console.log(this.setupObject)
       });
     }
   }
@@ -97,7 +98,8 @@ export class AuditsComponent implements OnInit {
     this.globalSelectors = this.setupObjectService.getGlobalSelectors(
       this.setupObject,
       this.appliedFilterSelections,
-      this.defaultColumnIDs, [],
+      this.defaultColumnIDs,
+      this.globalReturnableIDs,
       true
     );
 
@@ -195,15 +197,18 @@ export class AuditsComponent implements OnInit {
   applyFilters() {
     if (!this.selectedFeature) { return; }
     console.log(this.appliedFilterSelections);
+    // console.log(this.globalReturnableIDs);
     this.getTableObject();
   }
 
+  onFeatureSelection() {
+    this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.selectedFeature.index);
+    console.log(this.featureReturnableIDs)
+  }
 
 
   applyDateFilter = (val: string) => {
     val = this.datepipe.transform(val, 'MM-dd-yyyy');
-    // console.log(val);
-
     // this.rows = this.filteredData.filter(function (item) {
     //   if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
     //     return true;
@@ -211,7 +216,7 @@ export class AuditsComponent implements OnInit {
     // });
   }
 
-
+  // dont delete:
   onItemSelect(item: any) {
     // console.log(item);
   }
