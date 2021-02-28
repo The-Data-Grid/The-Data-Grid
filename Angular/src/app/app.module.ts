@@ -9,6 +9,7 @@ import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { DownloadComponent } from './download/download.component';
@@ -65,7 +66,8 @@ import { TeamComponent } from './team/team.component';
     NgxDatatableModule,
     NgMultiSelectDropDownModule.forRoot(),
     ClickOutsideModule,
-    MaterialModule
+    MaterialModule,
+    MatTooltipModule,
   ],
   providers: [ApiService, DatePipe, SetupObjectService, TableObjectService],
   bootstrap: [AppComponent],
