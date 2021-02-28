@@ -139,7 +139,7 @@ userSQL.insertingUsers= {
 
 
 // Send verfication email to new user  
-router.post('/sendVerfiyEmail', (req, res) => {
+router.post('/sendVerfiyEmail', async (req, res) => {
     rand = Date.now() + Math.floor(Math.random() * 100 + 54); 
     try {
         await db.none(formatSQL(userSQL.updateUserSecret, {
@@ -160,7 +160,7 @@ router.post('/sendVerfiyEmail', (req, res) => {
 
 
 // Verify email link of new user  
-router.post('/verifyEmailLink', (req, res) => { 
+router.post('/verifyEmailLink', async (req, res) => { 
     try {
         decodedEmail = Buffer.from(req.body.email, 'base64').toString('utf8');
         data = await db.one(formatSQL(SQL.secret, {
@@ -184,7 +184,7 @@ router.post('/verifyEmailLink', (req, res) => {
 
 
 // Send email to user for password reset  
-router.post('/sendPasswordResetEmail', (req, res) => {
+router.post('/sendPasswordResetEmail', async (req, res) => {
     rand = Date.now() + Math.floor(Math.random() * 100 + 54);
     try {
         await db.none(formatSQL(userSQL.updateUserSecret, {
@@ -203,7 +203,7 @@ router.post('/sendPasswordResetEmail', (req, res) => {
 
 
 // User identity for requesting password reset is confirmed
-router.post('/verifyPasswordResetLink', (req, res) => {
+router.post('/verifyPasswordResetLink', async (req, res) => {
     try {
         decodedEmail = Buffer.from(req.body.email, 'base64').toString('utf8');
         data = await db.one(formatSQL(SQL.secret, {
@@ -222,7 +222,7 @@ router.post('/verifyPasswordResetLink', (req, res) => {
 });
 
 // Update new password
-router.post('ResetPassword', (req, res) => {
+router.post('ResetPassword', async (req, res) => {
     let hashedPassword = await bcrypt.hash(req.body.pass, 10); 
     try {
         await db.none(formatSQL(userSQL.updateUserPassword, {

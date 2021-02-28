@@ -100,7 +100,7 @@ app.get('/api/stats/', parse.statsParse, query.statsQuery);
 // Easter Egg	
 app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
 
-/* Default to web app paths
+//Default to web app paths
 app.all('/', function(req, res){
     res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
 });
@@ -108,7 +108,7 @@ app.all('*', function(req, res){
     //console.log('../Deployment/Angular/dist' + req.path);
     //console.log('../Deployment/Angular/dist' + req.path);
     res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
-});*/
+});
     
 
 
