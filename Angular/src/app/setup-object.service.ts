@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AppliedFilterSelections, ReturnableIDObject} from './models'
 
 export const IDX_OF_FEATURES_ARR = 0;
-export const IDX_OF_GLOBAL_ITEM_IDX = 1;
+export const IDX_OF_GLOBAL_ITEM_IDX = 2;
 
 export const IDX_OF_ID_COL_IDXS = 0;
 export const IDX_OF_ID_ITEM_IDXS = 1;
