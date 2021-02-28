@@ -16,13 +16,6 @@ const PORT = environment.port;
 export class ApiService {
   constructor(private http: HttpClient) { }
 
-  suffix: string;
-  columnsString;
-
-  makeColumnsString(array): string {
-    return array.join('&');
-  }
-
   public getSetupTableObject(): Observable<SetupTableObject> {
     var url = API_URL + '/setup';
     // var url = API_URL + '/audit/setup';
@@ -38,11 +31,12 @@ export class ApiService {
   }
 
   public getTableObject(feature: string, defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections): any {
-    // var url = API_URL + "/audit/" + feature;
-    // this.columnsString = this.makeColumnsString(columns);
-    // if (this.columnsString) {
-    //   url = url + "/" + this.columnsString;
-    // }
+    //DON'T DELETE. once sink is the only feature we can get dropdown info for.
+    //we wil need this stuff once sink and default columns are no longer hardcoded
+    // var url = API_URL + "/audit/observation/" + feature;
+
+    // sink as feature and default columns are hardcoded:
+    //rn form queryurl just forms the filters part. in the future i might make it create the whole url.
     var url = API_URL + '/audit/observation/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161'
       + "?" + this.formQueryURL(defaultColumnIDs, appliedFilterSelections);
     // var url = API_URL + '/table';
@@ -51,11 +45,9 @@ export class ApiService {
   }
 
 
-
-
   public getDropdownOptions(): Observable<any> {
     // var url = API_URL + '/audit/observation/distinct';
-    var url = API_URL + '/audit/observation/distinct/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161';
+    var url = API_URL + '/audit/observation/distinct/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161&188';
 
     return this.http.get<any>(url, {
       observe: 'response',
@@ -72,59 +64,64 @@ export class ApiService {
     // create the "columns" part of the query by joining the default column IDS with '&'
     let columnsString = defaultColumnIDs.join('&');
     let colAndFilterSeparater = "?";
-    let filters = []
+
+    //each element consists of a returnable, "=", and its user selections
+    //ex: 42=Toyota, 58=red|blue
+    let filterStings = []
 
     for (const [ID, input] of Object.entries(appliedFilterSelections.dropdown)) {
-      if (input) { filters.push(ID + "=" + input) }
+      if (input) { filterStings.push(ID + "=" + input) }
     }
     for (const [ID, input] of Object.entries(appliedFilterSelections.numericEqual)) {
-      if (input) { filters.push(ID + "=" + input) }
+      if (input) { filterStings.push(ID + "=" + input) }
     }
     for (const [ID, inputObject] of Object.entries(appliedFilterSelections.numericChoice)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
     }
     for (const [ID, inputObject] of Object.entries(appliedFilterSelections.calendarRange)) {
-      // if (inputObject.relation && inputObject.value ) {filterString += ID + "=" + input}
     }
     for (const [ID, input] of Object.entries(appliedFilterSelections.calendarEqual)) {
-      if (input) { filters.push(ID + "=" + input) }
+      if (input) { filterStings.push(ID + "=" + input) }
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableDropdown)) {
-      inputArray.forEach(option => { filters.push(ID + "=" + option.item_text) });
+      inputArray.forEach(option => { filterStings.push(ID + "=" + option.item_text) });
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.checklistDropdown)) {
-      inputArray.forEach(option => { filters.push(ID + "=" + option.item_text) });
+      inputArray.forEach(option => { filterStings.push(ID + "=" + option.item_text) });
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableChecklistDropdown)) {
+      let optionStrings = [];
       inputArray.forEach(option => {
-        filters.push(ID + "=" + option.item_text)
-        // TO ASK: HOW TO DEAL WITH MULTIPLE SELECTIONS? for the multiselectors
+        optionStrings.push(option.item_text);
       });
+      // if there are no options, don't add this filter's id to the URL
+      if (optionStrings.length != 0) {
+        filterStings.push(ID + "=" + optionStrings.join('|'));
+      }
     }
     for (const [ID, input] of Object.entries(appliedFilterSelections.text)) {
-      if (input) { filters.push(ID + "=" + input) }
+      if (input) { filterStings.push(ID + "=" + input) }
     }
     for (const [ID, input] of Object.entries(appliedFilterSelections.bool)) {
-      if (input) { filters.push(ID + "=" + input) }
+      if (input) { filterStings.push(ID + "=" + input) }
     }
 
-    // console.log(columnsString + colAndFilterSeparater + filters.join('&'));
-    return filters.join('&');
+    // console.log(columnsString + colAndFilterSeparater + filterStings.join('&'));
+    return filterStings.join('&');
 
   }
 
   // POST REQUESTS
 
-  attemptLogin(loginObject, withCredentials=true) {
-    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json','No-Auth':'True', 'withCredentials':'True', 'With-Credentials': 'True' });
-    return this.http.post(`${API_URL}/login`, loginObject, {headers:reqHeader, responseType: 'text', withCredentials:true });
+  attemptLogin(loginObject, withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
 
-  signOut(withCredentials=true) {
-    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json','No-Auth':'True', 'withCredentials':'True', 'With-Credentials': 'True' });
+  signOut(withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
     return this.http.post(`${API_URL}/logout`, {
-   }, {headers:reqHeader, responseType:'text', withCredentials:true});
+    }, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
 }

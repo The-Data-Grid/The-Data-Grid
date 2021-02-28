@@ -148,10 +148,11 @@ export class FeatureAuditComponent implements OnInit {
 
   getFeatureSelectors() {
     // parse feature columns
-    this.featureSelectors = this.setupObjectService.getFeatureSelectors(
+    this.featureSelectors = this.setupObjectService.getFeatureFilterSelectors(
       this.setupObject,
       this.appliedFilterSelections,
-      this.defaultColumns);
+      this.defaultColumns
+      );
   }
 
   getFeatureChildren() {
