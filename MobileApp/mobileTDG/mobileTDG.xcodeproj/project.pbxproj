@@ -3,15 +3,19 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03138BE9A82B3717340374A6 /* Pods_mobileTDG.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4C15021EA2C6F497778AF69 /* Pods_mobileTDG.framework */; };
 		F62A30C7258F20DE00A16C14 /* mobileTDG.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */; };
 		F649FDCB25A1BEF600A1A67C /* auditDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */; };
 		F680463925A199F3005B5855 /* persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = F680463825A199F3005B5855 /* persistence.swift */; };
 		F68EE89925C75E3900E27E15 /* communicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68EE89825C75E3900E27E15 /* communicationView.swift */; };
 		F68EE89D25C760B800E27E15 /* globalPresetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68EE89C25C760B800E27E15 /* globalPresetsView.swift */; };
+		F68EE8A025C768BB00E27E15 /* addRootFeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68EE89F25C768BB00E27E15 /* addRootFeaturesView.swift */; };
+		F68EE8A825C7782D00E27E15 /* testSetupObject.json in Resources */ = {isa = PBXBuildFile; fileRef = F68EE8A725C7782D00E27E15 /* testSetupObject.json */; };
+		F69A17A425D924D000FE0A83 /* AuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69A17A325D924D000FE0A83 /* AuditsView.swift */; };
 		F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */; };
 		F6A90DC62561C2840067AAA1 /* loginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC52561C2840067AAA1 /* loginView.swift */; };
 		F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DC72561C2860067AAA1 /* Assets.xcassets */; };
@@ -28,11 +32,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3BE960B070013A9C1D1B14A7 /* Pods-mobileTDG.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobileTDG.debug.xcconfig"; path = "Target Support Files/Pods-mobileTDG/Pods-mobileTDG.debug.xcconfig"; sourceTree = "<group>"; };
+		A4C0F7915A8AE339A1CD8925 /* Pods-mobileTDG.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobileTDG.release.xcconfig"; path = "Target Support Files/Pods-mobileTDG/Pods-mobileTDG.release.xcconfig"; sourceTree = "<group>"; };
+		E4C15021EA2C6F497778AF69 /* Pods_mobileTDG.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mobileTDG.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F62A30C6258F20DE00A16C14 /* mobileTDG.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = mobileTDG.xcdatamodel; sourceTree = "<group>"; };
 		F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = auditDetailView.swift; sourceTree = "<group>"; };
 		F680463825A199F3005B5855 /* persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = persistence.swift; sourceTree = "<group>"; };
 		F68EE89825C75E3900E27E15 /* communicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = communicationView.swift; sourceTree = "<group>"; };
 		F68EE89C25C760B800E27E15 /* globalPresetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = globalPresetsView.swift; sourceTree = "<group>"; };
+		F68EE89F25C768BB00E27E15 /* addRootFeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = addRootFeaturesView.swift; sourceTree = "<group>"; };
+		F68EE8A725C7782D00E27E15 /* testSetupObject.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = testSetupObject.json; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.json; };
+		F69A17A325D924D000FE0A83 /* AuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuditsView.swift; sourceTree = "<group>"; };
 		F6A90DC02561C2840067AAA1 /* mobileTDG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobileTDG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mobileTDGApp.swift; sourceTree = "<group>"; };
 		F6A90DC52561C2840067AAA1 /* loginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loginView.swift; sourceTree = "<group>"; };
@@ -55,17 +65,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03138BE9A82B3717340374A6 /* Pods_mobileTDG.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4970A2B1AA4AA2F53F0AAEE7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E4C15021EA2C6F497778AF69 /* Pods_mobileTDG.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C756108B55A6D6597B13404B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3BE960B070013A9C1D1B14A7 /* Pods-mobileTDG.debug.xcconfig */,
+				A4C0F7915A8AE339A1CD8925 /* Pods-mobileTDG.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		F6A90DB72561C2840067AAA1 = {
 			isa = PBXGroup;
 			children = (
 				F6A90DC22561C2840067AAA1 /* mobileTDG */,
 				F6A90DC12561C2840067AAA1 /* Products */,
+				C756108B55A6D6597B13404B /* Pods */,
+				4970A2B1AA4AA2F53F0AAEE7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -86,9 +116,9 @@
 				F6A90DF525775C770067AAA1 /* tabView.swift */,
 				F6A90DFE257766AF0067AAA1 /* homeView.swift */,
 				F68EE89825C75E3900E27E15 /* communicationView.swift */,
-				F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */,
-				F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */,
+				F69A17A325D924D000FE0A83 /* AuditsView.swift */,
 				F68EE89C25C760B800E27E15 /* globalPresetsView.swift */,
+				F68EE89F25C768BB00E27E15 /* addRootFeaturesView.swift */,
 				F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */,
 				F6A90DEB25650C6E0067AAA1 /* settingsView.swift */,
 				F680463825A199F3005B5855 /* persistence.swift */,
@@ -96,6 +126,9 @@
 				F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */,
 				F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */,
 				F6A90DCC2561C2860067AAA1 /* Info.plist */,
+				F68EE8A725C7782D00E27E15 /* testSetupObject.json */,
+				F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */,
+				F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */,
 				F6A90DC72561C2860067AAA1 /* Assets.xcassets */,
 				F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */,
 				F6A90DC92561C2860067AAA1 /* Preview Content */,
@@ -118,9 +151,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F6A90DCF2561C2860067AAA1 /* Build configuration list for PBXNativeTarget "mobileTDG" */;
 			buildPhases = (
+				572CA0D1024BB04826DF7DB3 /* [CP] Check Pods Manifest.lock */,
 				F6A90DBC2561C2840067AAA1 /* Sources */,
 				F6A90DBD2561C2840067AAA1 /* Frameworks */,
 				F6A90DBE2561C2840067AAA1 /* Resources */,
+				C7609D4B005C410508363177 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -168,6 +203,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68EE8A825C7782D00E27E15 /* testSetupObject.json in Resources */,
 				F6A90DCB2561C2860067AAA1 /* Preview Assets.xcassets in Resources */,
 				F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */,
 				F6A90DDB2564ED140067AAA1 /* IBM_Plex_Sans in Resources */,
@@ -176,11 +212,54 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		572CA0D1024BB04826DF7DB3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-mobileTDG-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C7609D4B005C410508363177 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mobileTDG/Pods-mobileTDG-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mobileTDG/Pods-mobileTDG-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mobileTDG/Pods-mobileTDG-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		F6A90DBC2561C2840067AAA1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F69A17A425D924D000FE0A83 /* AuditsView.swift in Sources */,
 				F62A30C7258F20DE00A16C14 /* mobileTDG.xcdatamodeld in Sources */,
 				F680463925A199F3005B5855 /* persistence.swift in Sources */,
 				F6A90DEC25650C6E0067AAA1 /* settingsView.swift in Sources */,
@@ -193,6 +272,7 @@
 				F6A90E03257767BF0067AAA1 /* motherView.swift in Sources */,
 				F6A90DF625775C770067AAA1 /* tabView.swift in Sources */,
 				F6A90DFF257766AF0067AAA1 /* homeView.swift in Sources */,
+				F68EE8A025C768BB00E27E15 /* addRootFeaturesView.swift in Sources */,
 				F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */,
 				F68EE89D25C760B800E27E15 /* globalPresetsView.swift in Sources */,
 				F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */,
@@ -320,6 +400,7 @@
 		};
 		F6A90DD02561C2860067AAA1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3BE960B070013A9C1D1B14A7 /* Pods-mobileTDG.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -341,6 +422,7 @@
 		};
 		F6A90DD12561C2860067AAA1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A4C0F7915A8AE339A1CD8925 /* Pods-mobileTDG.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
