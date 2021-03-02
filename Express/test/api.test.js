@@ -1,26 +1,33 @@
 
-var app = require('../app'); // Link to server file
+// Set the app to Testing mode first
+process.argv[2] = '--test'
+// Link to server file
+var app = require('../app'); 
+
 const supertest = require('supertest');
 const request = supertest(app);
 
 // Define different endpoints to test
-let e1 = '/api/audit/urinal/';
-let o1 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0&sorta=334';
-let o2 = e1 + 'bad';
-let o3 = e1 + '194?13[get]=01-20-2000';
-let o4 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&sorta=334';
-let o5 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0';
-let o6 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0&sorta=334&sortd=421';
-let o7 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0&sorta=334&sorta=356';
-let o8 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset[dne]&sorta=334';
-let o9 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=0&offset=0&sorta=334';
-let o10 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=-10&sorta=334';
+let observationBase = '/api/audit/observation/sink/';
+let itemBase = '/api/audit/item/sink/';
+let invalidBase = '/api/audit/observation/invalid/'
+
+let o1 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0&sorta=334';
+let o2 = observationBase + 'bad';
+let o3 = observationBase + '194?13[get]=01-20-2000';
+let o4 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&sorta=334';
+let o5 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0';
+let o6 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0&sorta=334&sortd=421';
+let o7 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0&sorta=334&sorta=356';
+let o8 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset[dne]&sorta=334';
+let o9 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=0&offset=0&sorta=334';
+let o10 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=-10&sorta=334';
 let e2 = '/api/audit/flower';
-let o11 = e1 + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0&sorta=abc'
+let o11 = observationBase + '194&334&78&35?13[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=0&sorta=abc'
 
 test('Test api/audit endpoint', function (done) {
     request
-        .get(e1)
+        .get(observationBase)
         .end(function (err, res) {
             if (err) return done(err);
             checkResponse(res, 404);
@@ -30,11 +37,11 @@ test('Test api/audit endpoint', function (done) {
 
 test('Test invalid feature', function (done) {
     request
-        .get(o1)
+        .get(invalidBase)
         .end(function (err, res) {
             if (err) return done(err);
             checkResponse(res, 400);
-            expect(res.text).toBe('Bad Request 2201: feature_urinal is not a valid feature')
+            expect(res.text).toBe('Bad Request 2201: invalid is not a valid feature')
             done();
         });
 });
