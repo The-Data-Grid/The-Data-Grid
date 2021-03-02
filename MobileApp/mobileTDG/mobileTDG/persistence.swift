@@ -63,4 +63,16 @@ struct PersistenceController {
             }
         })
     }
+    
+    func saveContext() {
+        let context = container.viewContext
+        
+        if context.hasChanges {
+            do{
+                try context.save()
+            } catch {
+                fatalError("Unresolved error \(error), \(error.localizedDescription)")
+            }
+        }
+    }
 }

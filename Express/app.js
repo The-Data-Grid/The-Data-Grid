@@ -12,7 +12,9 @@ var httpPort;
 var httpsPort;
 
 // Deploying?
-const isDeployment = process.argv[2] == '-d'
+const isDeployment = ['-d', '--deploy'].includes(process.argv[2])
+// Testing?
+const isTesting = ['-t', '--test'].includes(process.argv[2])
 
 if (isDeployment) {
     httpPort = 80;
@@ -30,7 +32,7 @@ const query = require('./query/query.js');
 const template = require('./template.js');
 const authRouter = require('./auth/login.js');
 
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost:4200'}));
 //app.use(bodyParser.json());
 
 // middleware
@@ -100,7 +102,8 @@ app.get('/api/stats/', parse.statsParse, query.statsQuery);
 // Easter Egg	
 app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
 
-/* Default to web app paths
+//Default to web app paths
+/*
 app.all('/', function(req, res){
     res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
 });
@@ -108,8 +111,8 @@ app.all('*', function(req, res){
     //console.log('../Deployment/Angular/dist' + req.path);
     //console.log('../Deployment/Angular/dist' + req.path);
     res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
-});*/
-    
+});
+*/
 
 
 ////// LISTEN //////
@@ -123,6 +126,11 @@ if(isDeployment) {
         httpApp.all('*', (req, res) => res.redirect(301, 'https://' + req.hostname + req.url));    
         const httpServer = http.createServer(httpApp).listen(httpPort, () => console.log(`TDG Backend Node.js HTTP server is running on port ${httpPort}`));
     }
+}
+// Testing?
+else if(isTesting) {
+    // export the app to the tester
+    module.exports = app
 }
 // Then development
 else {

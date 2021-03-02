@@ -12,8 +12,7 @@
                 <h3>Global Filters</h3>
                 <div *ngIf="selectorsLoaded">
                     <app-reusable-template [feature]="globalSelectors"
-                        [appliedFilterSelections]="appliedFilterSelections"
-                         >
+                        [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="globalReturnableIDs">
                     </app-reusable-template>
                 </div>
             </div>
@@ -23,7 +22,7 @@
                 <h3>Feature Filters</h3>
                 <mat-form-field class="selector">
                     <mat-label>Features</mat-label>
-                    <mat-select [(ngModel)]="selectedFeature">
+                    <mat-select [(ngModel)]="selectedFeature" (ngModelChange)="onFeatureSelection()">
                         <mat-option *ngFor="let info of rootFeatures" [value]="info">
                             {{info.name}}
                         </mat-option>
@@ -38,7 +37,7 @@
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <app-reusable-template [feature]="featureSelectors[selectedFeature.index]"
-                            [appliedFilterSelections]="appliedFilterSelections">
+                            [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="featureReturnableIDs">
                         </app-reusable-template>
                     </mat-expansion-panel>
 
@@ -49,7 +48,8 @@
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <app-reusable-template [feature]="featureSelectors[childIndex]"
-                            [appliedFilterSelections]="appliedFilterSelections" >
+                            [appliedFilterSelections]="appliedFilterSelections"
+                            [returnableIDs]="featureReturnableIDs">
                         </app-reusable-template>
                     </mat-expansion-panel>
                 </mat-accordion>

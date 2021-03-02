@@ -15,9 +15,11 @@ struct mobileTDGApp: App {
     
     var body: some Scene {
         WindowGroup {
-            motherView().environmentObject(viewRouter).environment(\.managedObjectContext, persistenceController.container.viewContext)
+            motherView().environmentObject(viewRouter).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            // switch away from preview in real version
         }
     }
+    
     
     func saveContext () {
         let context = persistenceController.container.viewContext

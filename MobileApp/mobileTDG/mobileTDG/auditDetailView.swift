@@ -12,44 +12,50 @@ struct auditDetailView: View {
     @State private var auditName = "Audit Submission 1"
     @State private var editingName = false
     @State var showGlobalPresets = false
+    @State var showAddRoot = false
     
     var body: some View {
         NavigationView {
             VStack {
                 HStack {
-                    TextField("", text: $auditName).font(.largeTitle).disabled(!editingName)
-                    Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                    TextField("", text: $auditName).font(.title).disabled(!editingName)
+                    Button(action: {editingName = !editingName}, label: {
                         Image(systemName: !editingName ? "pencil" : "checkmark")
                             .font(Font.system(.title).bold()).accentColor(.black)
                     })
-                }.padding()
-                Divider().background(Color.black)
-                HStack{
+                }.padding(20)
+                Divider().padding(.top,-5)
+                HStack(spacing: 30){
                     Button(action: {
                         showGlobalPresets = true},
                            label: {
                         Text("Global Presets")
-                            .font(Font.custom("IBMPlexSans", size: 20, relativeTo: Font.TextStyle.body))
-                            .padding(12)
+                            .font(Font.custom("IBMPlexSans", size: 15, relativeTo: Font.TextStyle.body))
+                            .padding(9)
+                            .padding([.leading,.trailing], 18)
                             .background(Color("green").opacity(Double(0.5)))
                             .foregroundColor(Color.black)
                             .cornerRadius(20)
+                    }).sheet(isPresented: $showGlobalPresets, content: {
+                        globalPresetsView()
                     })
-                    Button(action: {},
+                    Button(action: {
+                        showAddRoot = true},
                            label: {
                         Text("Add Root Features")
-                            .font(Font.custom("IBMPlexSans", size: 20, relativeTo: Font.TextStyle.body))
-                            .padding(12)
+                            .font(Font.custom("IBMPlexSans", size: 15, relativeTo: Font.TextStyle.body))
+                            .padding(9)
+                            .padding([.leading,.trailing], 10)
                             .background(Color("green").opacity(Double(0.5)))
                             .foregroundColor(Color.black)
                             .cornerRadius(20)
+                    }).sheet(isPresented: $showAddRoot, content: {
+                        addRootFeaturesView()
                     })
-                }.padding([.leading,.trailing])
+                }.padding([.top,.bottom], 5)
+                Divider()
                 Spacer()
             }
-            .sheet(isPresented: $showGlobalPresets, content: {
-                globalPresetsView()
-            })
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
                 leading: Button(action: {

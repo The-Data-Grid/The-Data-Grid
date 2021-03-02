@@ -6,9 +6,16 @@ import { DialogComponent } from './login-dialog/login-dialog.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import {MatMenuTrigger} from '@angular/material/menu'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Clipboard } from '@angular/cdk/clipboard'
+
 
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
+
+interface logoutObject {
+  email: string;
+  pass: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -23,15 +30,31 @@ export class AppComponent implements OnInit {
   isHover:boolean = false;
 
 
-  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router,) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private clipboard: Clipboard,) { }
 
-  check() {
-    console.log("lala");
+
+  checkStorage() {
+    // console.log(localStorage)
+    if (localStorage.length == 0) {
+      return false
+    }
+    else {
+      return true;
+    }
   }
 
 
   changeHover() {
     this.isHover = !this.isHover;
+  }
+
+  logOut() {
+    this.apiService.signOut()
+      .subscribe((res) => {
+        localStorage.removeItem("userEmail");
+        console.log("signed out!")
+      })
+    // console.log("loggin out!")
   }
 
   openDialog() {
@@ -61,5 +84,9 @@ export class AppComponent implements OnInit {
     this.currentWindowWidth = window.innerWidth;
 
     // this.dialog.open(LockDialogComponent, dialogConfig);
+  }
+
+  copyEmail() {
+    this.clipboard.copy("thedatagrid@gmail.com");
   }
 }

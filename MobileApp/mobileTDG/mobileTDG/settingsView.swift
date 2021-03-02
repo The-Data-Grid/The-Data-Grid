@@ -61,7 +61,8 @@ struct settingsView: View {
                     Toggle("Auto-Sync", isOn: $autoSync)
                         .toggleStyle(CheckboxToggleStyle())
                      
-            }.background(Color.white)
+            }
+            .background(Color.white)
             Text("Terms").padding(.leading)
             Text("Version 1.0.0").padding(.leading)
         }

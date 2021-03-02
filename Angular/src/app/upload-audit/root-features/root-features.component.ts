@@ -111,22 +111,6 @@ getSetupObject() {
     this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
   });
 }
-  
-
-  // getSetupObject() {
-  //   this.apiService.getSetupTableObject(null).subscribe((res) => {
-  //     this.setupObject = res;
-
-
-  //     for (var i = 0; i < this.setupObject.subfeatureStartIndex; i++) {
-  //       // if (document.getElementById(this.setupObject.featureColumns[i].frontendName) != null) {
-  //         if (!this.all_root_features.includes(this.setupObject.featureColumns[i].frontendName))
-  //           this.all_root_features.push(this.setupObject.featureColumns[i].frontendName)
-  //       // }
-  //     }
-  //     console.log(this.all_root_features)
-  //   });
-  // }
-
+ 
 
 }
