@@ -233,7 +233,8 @@ async function inspectSchema(commandLineArgs) {
                     })
                 } else if(commandLineArgs.isQueryString) {
                     const originalOut = Array.from(out);
-                    out = originalOut.map(r => r.r__returnable_id).join('&')
+                    // If you're reading this I'm sorry
+                    out = [originalOut.length, originalOut.map(r => r.r__returnable_id).join('&')]
                 }
                 
             } else {
@@ -248,6 +249,14 @@ async function inspectSchema(commandLineArgs) {
     }
 
     let count = (commandLineArgs.isSummary || commandLineArgs.isTree ? Object.keys(out).length : out.length)
+
+    // handling for query string
+    // I'm really sorry I know this sucks a lot
+    if(commandLineArgs.isQueryString) {
+        count = out[0]
+        out = out[1]        
+    }
+
     console.log(out)
     console.log(chalk.cyanBright.underline(`Count: ${count}`))
 
