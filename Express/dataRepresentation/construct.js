@@ -99,6 +99,7 @@ else if(process.argv[0] == 'inspect') {
         let argFilter = process.argv.filter(arg => /^--choose=.*/.test(arg));
         commandLineArgs.isSummary = process.argv.includes('-s') || process.argv.includes('--summary');
         commandLineArgs.isTree = process.argv.includes('-t') || process.argv.includes('--tree');
+        commandLineArgs.isQueryString = process.argv.includes('-qs') || process.argv.includes('--query-string');
         if(argFilter.length == 1) {
             commandLineArgs.filter = argFilter[0].match(/^--choose=(.*)/)[1];
         } else {
@@ -230,6 +231,9 @@ async function inspectSchema(commandLineArgs) {
                         // this is just formatting
                         out[r.r__returnable_id] = (r.r__join_object.tables.length > 0 ? `${r.r__join_object.tables.filter((e,i) => (i % 2 == 0 || i+1 == r.r__join_object.tables.length )).join(' > ')}: ${r.r__frontend_name}` : (/^item_.*/.test(commandLineArgs.filter) ? r.non_obs_i__table_name : r.f__table_name) + ': ' + r.r__frontend_name)
                     })
+                } else if(commandLineArgs.isQueryString) {
+                    const originalOut = Array.from(out);
+                    out = originalOut.map(r => r.r__returnable_id).join('&')
                 }
                 
             } else {
