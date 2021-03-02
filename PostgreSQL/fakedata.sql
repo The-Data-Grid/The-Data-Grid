@@ -201,7 +201,7 @@ VALUES
 
 -- "submission_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name"
 INSERT INTO item_submission 
-("submission_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name")
+("item_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name")
 VALUES
     (default, 1, 1, 1, NULL, NOW(), 'Powell Sink Submission 1'),
     (default, 1, 1, 2, NULL, NOW(), 'Powell Sink Submission 2'),

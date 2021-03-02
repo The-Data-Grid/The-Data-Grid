@@ -30,7 +30,7 @@ const query = {
 
     whereCondition: '$(select:value) $(operation:value) $(filterValue)',
 
-    submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.submission_id',
+    submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.item_id',
 
     subfeatureJoin: 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id',
 

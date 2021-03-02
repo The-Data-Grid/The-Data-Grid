@@ -9,7 +9,9 @@
     "test:watch": "jest --watch",
     "testOLD": "echo \"Error: no test specified\" && exit 1",
     "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
-    "construct": "node ./Express/dataRepresentation/construct.js"
+    "construct": "node ./Express/dataRepresentation/construct.js",
+    "db-init": "bash ./Express/db/init.sh",
+    "db-fake": "bash ./Express/db/fake.sh"
   },
   "author": "",
   "license": "ISC",

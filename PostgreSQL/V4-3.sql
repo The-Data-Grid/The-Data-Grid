@@ -168,7 +168,7 @@ CREATE TABLE m2m_user_organization (
 -- Submission
 
 CREATE TABLE item_submission (
-    submission_id SERIAL PRIMARY KEY,
+    item_id SERIAL PRIMARY KEY,
     item_audit_id INTEGER NOT NULL, --fk **
     item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
     item_user_id INTEGER NOT NULL, --fk **
@@ -1121,7 +1121,7 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
             -- Submission reference
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("submission_id")
-                            REFERENCES "item_submission" ("submission_id")', table_name);
+                            REFERENCES "item_submission" ("item_id")', table_name);
             
             -- Observable Item reference
             EXECUTE FORMAT('ALTER TABLE %I 
