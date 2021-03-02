@@ -3,20 +3,28 @@ import {
   IDX_OF_FEATURES_ARR,
   IDX_OF_GLOBAL_ITEM_IDX,
   IDX_OF_ID_COL_IDXS,
+  IDX_OF_ID_ITEM_IDXS,
+  IDX_OF_NON_ID_COL_IDXS,
+  IDX_OF_NON_ID_ITEM_IDXS,
   IDX_OF_OBSERVATION_COL_IDXS,
-  IDX_OF_ATTRIBUTE_COL_IDXS
+  IDX_OF_ATTRIBUTE_COL_IDXS,
+  IDX_OF_ITEM_IDX,
+  SetupObjectService
 } from './setup-object.service'
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class TableObjectService {
 
-  constructor() { }
+  constructor(
+    private setupObjectService: SetupObjectService
+  ) { }
 
 
   /* ////////////////////////////////////
-     getTableInfo(setupObject, tableObject, dataTableColumns)
+     getRows(setupObject, tableObject, dataTableColumns)
 
      params: setupObject, tableObject, dataTableColumns
 
@@ -30,12 +38,11 @@ export class TableObjectService {
     let returnableIDToColumnIndex = this.getReturnableIDToColumnIndex(setupObject, tableObject);
 
     // construct the column header arrays
-    tableObject.returnableIDs.forEach(columnID => {
-      let columnIndex = returnableIDToColumnIndex[columnID];
-
+    tableObject.returnableIDs.forEach(returnableID => {
+      let columnIndex = returnableIDToColumnIndex[returnableID];
       dataTableColumns.push({
         prop: setupObject.columns[columnIndex].frontendName,
-        type: datatypes[setupObject.columns[columnIndex].datatypeKey],
+        type: datatypes[setupObject.columns[columnIndex].datatype],
         index: columnIndex
       });
     });
@@ -47,9 +54,9 @@ export class TableObjectService {
 
 
       // fill out the row object
-      tableObject.returnableIDs.forEach((columnID, i) => {
-        let columnIndex = returnableIDToColumnIndex[columnID];
-        let datatype = datatypes[setupObject.columns[columnIndex].datatypeKey];
+      tableObject.returnableIDs.forEach((returnableID, i) => {
+        let columnIndex = returnableIDToColumnIndex[returnableID];
+        let datatype = datatypes[setupObject.columns[columnIndex].datatype];
         // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype)
 
         switch (datatype) {
@@ -73,37 +80,70 @@ export class TableObjectService {
 
       rows.push(row);
     });
-
-    // console.log(dataTableColumns)
+    // console.log("setupObject:")
+    // console.log(setupObject)
+    console.log("dataTableColumns:")
+    console.log(dataTableColumns)
+    console.log("rows:")
+    console.log(rows)
     return rows;
   }
 
+  //02200
+
   getReturnableIDToColumnIndex(setupObject, tableObject) {
     let returnableIDToColumnIndex = {};
-    tableObject.returnableIDs.forEach(columnID => {
-      let treeID = setupObject.returnableIDToTreeID[columnID].split('>')
-      let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
-      //need column name, type, and index
-
-      if (treeID[0] == IDX_OF_GLOBAL_ITEM_IDX) {
-        let globalItem = setupObject.items[globalItemIndex];
-        let childArrayIndex = treeID[1];
-        if (childArrayIndex == IDX_OF_ID_COL_IDXS) {
-          let columnIndex = globalItem.children[IDX_OF_ID_COL_IDXS][treeID[2]];
-          returnableIDToColumnIndex[columnID] = columnIndex;
-        }
-        // TODO: go into children[1], the itemnodepointerchild array thing
+    tableObject.returnableIDs.forEach(returnableID => {
+      //treeID is an array containing numbers that represent the path through the tree
+      //reverse so we can pop from it like a stack
+      let treeID = setupObject.returnableIDToTreeID[returnableID].split('>').reverse()
+      let firstIndex = treeID.pop();
+      if (firstIndex == IDX_OF_GLOBAL_ITEM_IDX) {
+        let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
+        returnableIDToColumnIndex[returnableID] = this.getColumnIndexFromItem(globalItemIndex, treeID, setupObject);
       }
-      else if (treeID[0] == IDX_OF_FEATURES_ARR) {
-        let featureIndex = setupObject.children[IDX_OF_FEATURES_ARR][treeID[1]];
+      else if (firstIndex == IDX_OF_FEATURES_ARR) {
+        let featureIndex = setupObject.children[IDX_OF_FEATURES_ARR][treeID.pop()];
         let feature = setupObject.features[featureIndex];
-        let childArrayIndex = treeID[2];
-        let columnIndex = feature.children[childArrayIndex][treeID[3]];
-        returnableIDToColumnIndex[columnID] = columnIndex;
+        let childArrayIndex = treeID.pop();
+        if (childArrayIndex != IDX_OF_ITEM_IDX) {
+          returnableIDToColumnIndex[returnableID] = feature.children[childArrayIndex][treeID.pop()];
+        }
+        else {
+          let itemIndex = feature.children[IDX_OF_ITEM_IDX];
+          returnableIDToColumnIndex[returnableID] = this.getColumnIndexFromItem(itemIndex, treeID, setupObject);
+        }
       }
     });
+
+    // console.log("returnableIDToColumnIndex:")
     // console.log(returnableIDToColumnIndex)
     return returnableIDToColumnIndex;
   }
+
+  //https://stackoverflow.com/questions/29605929/remove-first-item-of-the-array-like-popping-from-stack
+
+  // returns columnIndex
+  private getColumnIndexFromItem(itemIndex, treeID, setupObject) {
+    let itemNode = setupObject.items[itemIndex];
+    let childArrayIndex = treeID.pop();
+    let childArrayElementIndex = treeID.pop();
+
+    if (childArrayIndex == IDX_OF_ID_COL_IDXS) {
+      return itemNode.children[IDX_OF_ID_COL_IDXS][childArrayElementIndex];
+    }
+    else if (childArrayIndex == IDX_OF_ID_ITEM_IDXS) {
+      let itemChildNodePointer = itemNode.children[IDX_OF_ID_ITEM_IDXS][childArrayElementIndex];
+      return this.getColumnIndexFromItem(itemChildNodePointer.index, treeID, setupObject)
+    }
+    else if (childArrayIndex == IDX_OF_NON_ID_COL_IDXS) {
+      return itemNode.children[IDX_OF_NON_ID_COL_IDXS][childArrayElementIndex];
+    }
+    else if (childArrayIndex == IDX_OF_NON_ID_ITEM_IDXS) {
+      let itemChildNodePointer = itemNode.children[IDX_OF_NON_ID_ITEM_IDXS][childArrayElementIndex];
+      return this.getColumnIndexFromItem(itemChildNodePointer.index, treeID, setupObject)
+    }
+  }
+
 
 }

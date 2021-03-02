@@ -7,13 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F62A30C7258F20DE00A16C14 /* mobileTDG.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */; };
+		F649FDCB25A1BEF600A1A67C /* auditDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */; };
+		F680463925A199F3005B5855 /* persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = F680463825A199F3005B5855 /* persistence.swift */; };
+		F68EE89925C75E3900E27E15 /* communicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68EE89825C75E3900E27E15 /* communicationView.swift */; };
+		F68EE89D25C760B800E27E15 /* globalPresetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68EE89C25C760B800E27E15 /* globalPresetsView.swift */; };
 		F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */; };
 		F6A90DC62561C2840067AAA1 /* loginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC52561C2840067AAA1 /* loginView.swift */; };
 		F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DC72561C2860067AAA1 /* Assets.xcassets */; };
 		F6A90DCB2561C2860067AAA1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */; };
 		F6A90DDB2564ED140067AAA1 /* IBM_Plex_Sans in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */; };
 		F6A90DEC25650C6E0067AAA1 /* settingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEB25650C6E0067AAA1 /* settingsView.swift */; };
-		F6A90DEF25774D8F0067AAA1 /* styling.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEE25774D8F0067AAA1 /* styling.swift */; };
+		F6A90DEF25774D8F0067AAA1 /* reusableStylings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEE25774D8F0067AAA1 /* reusableStylings.swift */; };
 		F6A90DF625775C770067AAA1 /* tabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DF525775C770067AAA1 /* tabView.swift */; };
 		F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */; };
 		F6A90DFC25775CDA0067AAA1 /* unsubmittedAuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */; };
@@ -23,6 +28,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F62A30C6258F20DE00A16C14 /* mobileTDG.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = mobileTDG.xcdatamodel; sourceTree = "<group>"; };
+		F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = auditDetailView.swift; sourceTree = "<group>"; };
+		F680463825A199F3005B5855 /* persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = persistence.swift; sourceTree = "<group>"; };
+		F68EE89825C75E3900E27E15 /* communicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = communicationView.swift; sourceTree = "<group>"; };
+		F68EE89C25C760B800E27E15 /* globalPresetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = globalPresetsView.swift; sourceTree = "<group>"; };
 		F6A90DC02561C2840067AAA1 /* mobileTDG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobileTDG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mobileTDGApp.swift; sourceTree = "<group>"; };
 		F6A90DC52561C2840067AAA1 /* loginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loginView.swift; sourceTree = "<group>"; };
@@ -31,7 +41,7 @@
 		F6A90DCC2561C2860067AAA1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */ = {isa = PBXFileReference; lastKnownFileType = folder; name = IBM_Plex_Sans; path = ../../../../../Downloads/IBM_Plex_Sans; sourceTree = "<group>"; };
 		F6A90DEB25650C6E0067AAA1 /* settingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsView.swift; sourceTree = "<group>"; };
-		F6A90DEE25774D8F0067AAA1 /* styling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = styling.swift; sourceTree = "<group>"; };
+		F6A90DEE25774D8F0067AAA1 /* reusableStylings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reusableStylings.swift; sourceTree = "<group>"; };
 		F6A90DF525775C770067AAA1 /* tabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tabView.swift; sourceTree = "<group>"; };
 		F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = submittedAuditsView.swift; sourceTree = "<group>"; };
 		F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = unsubmittedAuditsView.swift; sourceTree = "<group>"; };
@@ -70,18 +80,23 @@
 		F6A90DC22561C2840067AAA1 /* mobileTDG */ = {
 			isa = PBXGroup;
 			children = (
-				F6A90DEE25774D8F0067AAA1 /* styling.swift */,
-				F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */,
 				F6A90E06257769C30067AAA1 /* viewRouter.swift */,
 				F6A90E02257767BF0067AAA1 /* motherView.swift */,
 				F6A90DC52561C2840067AAA1 /* loginView.swift */,
 				F6A90DF525775C770067AAA1 /* tabView.swift */,
 				F6A90DFE257766AF0067AAA1 /* homeView.swift */,
+				F68EE89825C75E3900E27E15 /* communicationView.swift */,
 				F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */,
 				F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */,
+				F68EE89C25C760B800E27E15 /* globalPresetsView.swift */,
+				F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */,
 				F6A90DEB25650C6E0067AAA1 /* settingsView.swift */,
-				F6A90DC72561C2860067AAA1 /* Assets.xcassets */,
+				F680463825A199F3005B5855 /* persistence.swift */,
+				F6A90DEE25774D8F0067AAA1 /* reusableStylings.swift */,
+				F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */,
+				F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */,
 				F6A90DCC2561C2860067AAA1 /* Info.plist */,
+				F6A90DC72561C2860067AAA1 /* Assets.xcassets */,
 				F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */,
 				F6A90DC92561C2860067AAA1 /* Preview Content */,
 			);
@@ -166,15 +181,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F62A30C7258F20DE00A16C14 /* mobileTDG.xcdatamodeld in Sources */,
+				F680463925A199F3005B5855 /* persistence.swift in Sources */,
 				F6A90DEC25650C6E0067AAA1 /* settingsView.swift in Sources */,
+				F68EE89925C75E3900E27E15 /* communicationView.swift in Sources */,
 				F6A90E07257769C30067AAA1 /* viewRouter.swift in Sources */,
 				F6A90DC62561C2840067AAA1 /* loginView.swift in Sources */,
-				F6A90DEF25774D8F0067AAA1 /* styling.swift in Sources */,
+				F649FDCB25A1BEF600A1A67C /* auditDetailView.swift in Sources */,
+				F6A90DEF25774D8F0067AAA1 /* reusableStylings.swift in Sources */,
 				F6A90DFC25775CDA0067AAA1 /* unsubmittedAuditsView.swift in Sources */,
 				F6A90E03257767BF0067AAA1 /* motherView.swift in Sources */,
 				F6A90DF625775C770067AAA1 /* tabView.swift in Sources */,
 				F6A90DFF257766AF0067AAA1 /* homeView.swift in Sources */,
 				F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */,
+				F68EE89D25C760B800E27E15 /* globalPresetsView.swift in Sources */,
 				F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -362,6 +382,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				F62A30C6258F20DE00A16C14 /* mobileTDG.xcdatamodel */,
+			);
+			currentVersion = F62A30C6258F20DE00A16C14 /* mobileTDG.xcdatamodel */;
+			path = mobileTDG.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = F6A90DB82561C2840067AAA1 /* Project object */;
 }

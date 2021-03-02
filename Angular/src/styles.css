@@ -165,7 +165,22 @@ html, body {
 }
 
 
+/* datetime picker */
+.datetime-picker{
+  text-align: center;
+  font-size: x-small;
+  color: rgb(228, 228, 228) !important;
+}
 
+::-webkit-calendar-picker-indicator {
+  width: 12px;
+  height: 15px;
+}
+
+/* set calendar icon color. do not delete */
+/* ::-webkit-calendar-picker-indicator {
+  background: url(/assets/calendar_white.png) no-repeat !important;
+} */
 
 
 /* radio button */
@@ -191,8 +206,6 @@ html, body {
 .mat-expansion-panel {
   border-radius: 0 !important;
 }
-
-
 
 
 /* the bar at the bottom of a tab on the nav bar */

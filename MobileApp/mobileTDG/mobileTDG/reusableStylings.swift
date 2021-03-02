@@ -21,3 +21,17 @@ struct CheckboxToggleStyle: ToggleStyle {
         }
     }
 }
+
+struct dataGridTitle: View {
+    var body: some View {
+        Text("the data grid")
+            .font(Font.custom("IBMPlexSans-Regular", size: 40, relativeTo: Font.TextStyle.largeTitle))
+            .multilineTextAlignment(.center)
+    }
+}
+
+struct globeLogo: View {
+    var body: some View {
+        Image(decorative: "TDG-globe").padding()
+    }
+}

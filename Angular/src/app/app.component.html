@@ -100,7 +100,64 @@
         <footer *ngIf="currentWindowWidth > 700" id="footer">
             <nav>
                 <hr class="bottom_separator">
-                <mat-toolbar style="height: 32px; position: absolute; overflow: hidden; bottom:-25px; background-color: #FBFBFB; color: gray">
+                <div fxLayout="row" fxLayoutAlign="space-around start" class="bottom-bar">
+                    <div style="width: 25%;">
+                        <div class="bot-logo" fxLayoutAlign="center center">
+                            <img src="../../favicon.png" alt="tdg logo" style="height: 35px; width: 35px; margin:5px;">
+                            <span> the data grid </span>
+                        </div>
+                        <div fxLayoutAlign="center center">
+                            <a href="https://www.facebook.com/thedatagrid">
+                                <img src="assets/_facebook.png" alt="Facebook" class="social-button">
+                            </a>
+                            <a href="https://www.instagram.com/thedatagrid/">
+                                <img src="assets/instalogo.png" alt="Instagram" class="social-button">
+                            </a>
+                            <a href="https://www.linkedin.com/company/the-data-grid/">
+                                <img src="assets/LinkedIn.png" alt="LinkedIn" class="social-button" style="height: 41px; margin-left: 8px; margin-top: 8px;">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="bottom-card">
+                        <p class="bot-text" style="font-weight: 500;">Contact us</p>
+                        <div>
+                            <a>
+                                <img src="assets/subscribe.png" alt="Subscribe"
+                                    style="height: 15px; width: 20px;">
+                            </a>
+                            <a mat-button class="bot-text"
+                                    style="padding: 6px">thedatagrid@gmail.com </a>
+                        </div>
+                    </div>
+                    <div class="bottom-card">
+                        <p class="bot-text" style="font-weight: 500;">Support Us</p>
+                        <div>
+                            <a href="https://www.paypal.com">
+                                <img src="assets/donate.png" alt="Donate" style="height: 16px;">
+                            </a>
+                            <a href="https://www.paypal.com" mat-button class="bot-text" style="padding: 5px;">Donate</a>
+                        </div>                        
+                        <div>
+                            <a>
+                                <img src="assets/subscribe.png" alt="Subscribe"
+                                    style="height: 15px; width: 20px;">
+                            </a>
+                            <a mat-button class="bot-text"
+                                style="padding: 6px">Subscribe</a>
+                        </div>
+                    </div>
+                    <div class="bottom-card">
+                        <p class="bot-text" style="font-weight: 500;">Careers</p>
+                        <p class="bot-text" style="font-weight: 500;">Terms of Use</p>
+                        <p class="bot-text" style="font-weight: 500;">Privacy Policy</p>
+                    </div>
+                </div>
+            </nav>
+        </footer>
+    </div>
+
+    <!-- Previous Bottom Bar
+        <mat-toolbar style="height: 32px; position: absolute; overflow: hidden; bottom:-25px; background-color: #FBFBFB; color: gray">
                     <div class="ig">
                         <a href="https://www.instagram.com">
                             <img src="assets/_instagram_.png" alt="Instagram"
@@ -132,9 +189,8 @@
                         <a href="https://www.paypal.com" mat-button style="font-size: 14px; padding: 6px;">Donate</a>
                     </div>
                 </mat-toolbar>
-            </nav>
-        </footer>
-    </div>
+    -->
+
     <!-- <div *ngIf="currentWindowWidth < 700" id="wrapper">           
       <header>
               <nav>

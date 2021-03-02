@@ -40,13 +40,14 @@ export class FeatureAuditComponent implements OnInit {
     calendarRange: {},
     calendarEqual: {},
     dropdown: {},
-    searchableDropdown: {},
-    checklistDropdown: {},
-    searchableChecklistDropdown: {},
+    searchableDropdown: [],
+    checklistDropdown: [],
+    searchableChecklistDropdown: [],
     text: {},
     bool: {},
     _placeholder: "placeholder"
   };
+
   defaultColumns = []
   rootFeatures = []
   featuresToChildren = {}
@@ -135,10 +136,10 @@ export class FeatureAuditComponent implements OnInit {
 
   getGlobalSelectors() {
     // parse global columns
-    this.globalSelectors = this.setupObjectService.getGlobalSelectors(
-      this.setupObject,
-      this.appliedFilterSelections,
-      this.defaultColumns);
+    // this.globalSelectors = this.setupObjectService.getGlobalSelectors(
+    //   this.setupObject,
+    //   this.appliedFilterSelections,
+    //   this.defaultColumns);
   }
 
   getRootFeatures() {

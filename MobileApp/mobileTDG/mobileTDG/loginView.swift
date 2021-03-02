@@ -19,6 +19,7 @@ struct loginView: View {
     var body: some View {
             VStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, spacing: 15) {
                 Spacer()
+                //see reusable stylings for detail on following stumps
                 globeLogo()
                 dataGridTitle()
                 Spacer()
@@ -30,9 +31,9 @@ struct loginView: View {
                 // Navigates to home page if user is Authorized
                 Button(action: {
                     if(authorizeUser(user: username, password: password)){
+                        UserDefaults.standard.set(username, forKey: "username")
+                        UserDefaults.standard.set(true, forKey: "loggedIn")
                         userAuth = true
-                    }
-                    if(userAuth) {
                         viewRouter.currentPage = .tab
                     }
                 }) {
@@ -51,6 +52,7 @@ func authorizeUser(user: String, password: String) -> Bool {
     return false
 }
 
+// Canvas preview setup
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         loginView().environmentObject(ViewRouter())
@@ -61,20 +63,6 @@ struct LoginView_Previews: PreviewProvider {
 * Subviews
 * minimize bulk from styling
 */
-struct dataGridTitle: View {
-    var body: some View {
-        Text("the data grid")
-            .font(Font.custom("IBMPlexSans-Regular", size: 40, relativeTo: Font.TextStyle.largeTitle))
-            .multilineTextAlignment(.center)
-    }
-}
-
-struct globeLogo: View {
-    var body: some View {
-        Image(decorative: "TDG-globe").padding()
-    }
-}
-
 struct submitButtonContent: View {
     var body: some View {
         Text("SUBMIT").font(Font.custom("IBMPlexSans", size: 20, relativeTo: Font.TextStyle.body))
