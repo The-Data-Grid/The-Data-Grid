@@ -153,6 +153,8 @@ CREATE TABLE item_user (
     data_is_email_public BOOLEAN NOT NULL,
     data_is_quarterly_updates BOOLEAN NOT NULL,
     is_superuser BOOLEAN NOT NULL,
+    secret_token TEXT,
+    is_pending BOOLEAN NOT NULL DEFAULT TRUE,
     UNIQUE(data_email)
 );
 
