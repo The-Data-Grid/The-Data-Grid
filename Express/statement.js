@@ -195,10 +195,16 @@ const login = {
 
 const addingUsers = {
 insertingUsers: `INSERT INTO item_user (item_id, item_organization_id, data_first_name, data_last_name, 
-    data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser) 
-VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false)`
+    data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser, secret_token, is_pending) 
+VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false, NULL, true)`
     };
-    
+
+const updates  = {
+    updateToken: 'UPDATE item_user SET secret_token = ($token) WHERE data_email = $(email)',
+    updateStatus: 'UPDATE item_user SET is_pending = ($status) WHERE data_email = $(email)',
+    updatepassword: 'UPDATE item_user SET tdg_p_hash = ($password) WHERE data_email = $(email)'
+};
+
 
 
 
@@ -207,7 +213,8 @@ module.exports = {
     construct,
     setup,
     login,
-    addingUsers
+    addingUsers,
+    updates
 };
 
 
