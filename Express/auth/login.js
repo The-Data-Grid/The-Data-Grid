@@ -143,8 +143,8 @@ userSQL.insertingUsers= {
 router.post('/sendVerfiyEmail', async (req, res) => {
     rand = Date.now() + Math.floor(Math.random() * 100 + 54); 
     try {
-        await db.none(formatSQL(userSQL.updateUserSecret, {
-                random: rand, //secret token for security
+        await db.none(formatSQL(updating.updateToken, {
+                token: rand, //secret token for security
                 email: req.body.email
         }))
     } catch(error) {
@@ -169,8 +169,8 @@ router.post('/verifyEmailLink', async (req, res) => {
         }));
         
         if (data.secret == req.body.secret) {
-            await db.none(formatSQL(userSQL.updateUserStatus, {
-                useremail: decodedEmail,
+            await db.none(formatSQL(updating.updateStatus, {
+                email: decodedEmail,
                 status: "active"
             }))
             res.status(200).send("Email verified");
@@ -188,8 +188,8 @@ router.post('/verifyEmailLink', async (req, res) => {
 router.post('/sendPasswordResetEmail', async (req, res) => {
     rand = Date.now() + Math.floor(Math.random() * 100 + 54);
     try {
-        await db.none(formatSQL(userSQL.updateUserSecret, {
-                random: rand,
+        await db.none(formatSQL(updating.updateToken, {
+                token: rand,
                 email: req.body.email
         }))
     } catch(error) {
@@ -226,8 +226,8 @@ router.post('/verifyPasswordResetLink', async (req, res) => {
 router.post('ResetPassword', async (req, res) => {
     let hashedPassword = await bcrypt.hash(req.body.pass, 10); 
     try {
-        await db.none(formatSQL(userSQL.updateUserPassword, {
-                useremail: req.body.email,
+        await db.none(formatSQL(updating.updatepassword, {
+                email: req.body.email,
                 password: hashedPassword
         }))
         res.status(200).send("Password reset successfully");

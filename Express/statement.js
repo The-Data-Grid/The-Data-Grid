@@ -189,7 +189,8 @@ const setup = {
 
 const login = {
     password: 'SELECT tdg_p_hash AS password FROM item_user WHERE data_email = $(checkemail)',
-    isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)'
+    isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)',
+    secret : 'SELECT secret_token FROM item_user WHERE data_email = $(checkemail)'
     };   
 
 
