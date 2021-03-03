@@ -10,9 +10,9 @@ in the select and where clauses for the necessary returnables.
 const {postgresClient} = require('../db/pg.js');
 const formatSQL = postgresClient.format;
 
-// alias join and submission SQL statements
+// alias join and global SQL statements
 const {
-    submission,
+    global,
     referenceSelectionJoin,
     observationSelect,
     itemSelect
@@ -38,9 +38,9 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
     let joinClauseArray = [];
     let whereLookup = {};
 
-    // if observation query push the item_submission reference
+    // if observation query push the global item reference
     if(queryType == 'observation') {
-        joinClauseArray.push(formatSQL(submission, {
+        joinClauseArray.push(formatSQL(global, {
             feature: feature
         }));
     }
@@ -49,7 +49,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
     let localReturnables = returnableIDs.filter(returnable => returnable.joinObject.refs.length == 0);
     localReturnables.forEach(returnable => {
 
-        // push feature to featureTree if not a submission returnable
+        // push feature to featureTree if not a global returnable
         if(returnable.feature !== null) {
             featureTreeArray.push(returnable.feature);
         };
@@ -58,7 +58,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
         if(returnable.appendSQL === null) {
             /*  
                 1. add select clause and no join, since select references either 
-                item_submission or observation_..., which are joined by default'
+                item_global or observation_..., which are joined by default
             */
             selectClauseArray.push(formatSelectAlias(returnable.selectSQL, returnable.ID));
 
@@ -70,7 +70,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
         } else { // then SQL needs to be appended
             /*
                 appendSQL should not have any parameters since it is joined to either the feature
-                or the submission, and not a request specific alias. 
+                or the global item, and not a request specific alias. 
 
                 1. add select clause
             */
@@ -104,7 +104,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
 
     referencedReturnables.forEach(returnable => {
 
-        // push feature to featureTree if not a submission returnable
+        // push feature to featureTree if not a global returnable
         if(returnable.feature !== null) {
             featureTreeArray.push(returnable.feature);
         };

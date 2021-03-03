@@ -16,11 +16,9 @@ const formatSQL = postgresClient.format;
 
 // SQL statements
 const {
-    select, 
     where, 
     whereCondition, 
     groupBy,
-    submission,
     rootFeatureJoin,
     subfeatureJoin,
     observationCount,
@@ -201,11 +199,17 @@ function makeUniversalFilters(whereLookup, universalFilters, feature, queryType)
     //                 item primary key if item
     let universalSort;
     if(queryType == 'observation') {
+        // default column to sort observations by
+        let columnName = formatSQL('$(table:name).data_time_conducted', {
+            table: feature
+        })
+
         universalSort = formatSQL(sortd, {
-            columnName: 'item_submission.data_time_submitted'
+            columnName
         });
     }
     else {
+        // default column to sort items by
         let columnName = formatSQL('$(table:name).item_id', {
             table: feature
         })

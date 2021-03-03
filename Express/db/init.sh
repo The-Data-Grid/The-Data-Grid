@@ -3,7 +3,7 @@
 echo "Init db"
 eval psql -U postgres -d postgres -f "./PostgreSQL/reset.sql"
 echo "Dropped and Created"
-eval psql -U postgres -d v4 -f "./PostgreSQL/V4-3.sql"
-echo "Run V4-3"
+eval psql -U postgres -d v5 -f "./PostgreSQL/V5.0.sql"
+echo "Run V5.0"
 eval npm run construct -- make-schema water
 echo "Constructed Schema"

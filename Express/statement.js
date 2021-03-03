@@ -12,9 +12,9 @@ const query = {
 
     referenceSelectionJoin: 'LEFT JOIN $(joinTable:name) AS $(joinAlias:name) ON $(joinAlias:name).$(joinColumn:name) = $(originalAlias:name).$(originalColumn:name)',
 
-    sorta: 'ORDER BY $(columnName:value) ASC',
+    sorta: 'ORDER BY $(columnName:raw) ASC',
 
-    sortd: 'ORDER BY $(columnName:value) DESC',
+    sortd: 'ORDER BY $(columnName:raw) DESC',
 
     limit: 'LIMIT $(limit)',
 
@@ -31,12 +31,13 @@ const query = {
     whereCondition: '$(select:value) $(operation:value) $(filterValue)',
 
     submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.item_id',
+    global: 'LEFT JOIN item_global on $(feature:name).global_id = item_global.item_id',
 
     subfeatureJoin: 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id',
 
     rootFeatureJoin: 'FROM $(rootFeature:value)',
 
-    groupBy: 'GROUP BY $(nonListReturnables:raw), $(feature:name).observation_id, item_submission.data_time_submitted'
+    groupBy: 'GROUP BY $(nonListReturnables:raw), $(feature:name).observation_id, $(feature:name).data_time_conducted'
 
 };
 
