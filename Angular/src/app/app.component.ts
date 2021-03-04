@@ -48,6 +48,7 @@ export class AppComponent implements OnInit {
   }
 
   logOut() {
+    // localStorage.removeItem("userEmail");
     console.log(localStorage)
     this.apiService.signOut()
       .subscribe((res) => {
@@ -58,7 +59,6 @@ export class AppComponent implements OnInit {
           timeOut: 3000,
         })
       })
-    // console.log("loggin out!")
   }
 
   openDialog() {
