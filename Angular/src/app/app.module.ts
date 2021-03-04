@@ -1,6 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
+import {ToastyModule} from 'ng2-toasty';
+import { SimpleNotificationsModule } from 'angular2-notifications';
+import { ToastNotificationsModule } from "ngx-toast-notifications";
+import { ToastrModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -65,7 +69,11 @@ import { TeamComponent } from './team/team.component';
     NgxDatatableModule,
     NgMultiSelectDropDownModule.forRoot(),
     ClickOutsideModule,
-    MaterialModule
+    MaterialModule,
+    ToastyModule.forRoot(),
+    SimpleNotificationsModule.forRoot(),
+    ToastNotificationsModule,
+    ToastrModule.forRoot(),
   ],
   providers: [ApiService, DatePipe, SetupObjectService, TableObjectService],
   bootstrap: [AppComponent],

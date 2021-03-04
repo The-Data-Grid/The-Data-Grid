@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiService } from '../api.service';
 import { HttpHeaders } from "@angular/common/http"
+import { ToastrService } from 'ngx-toastr';
+
+// import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
 
 interface Month {
   value: string;
@@ -27,6 +30,19 @@ export class DialogComponent implements OnInit {
   signUpPassword;
   matchPassword;
   userLoginObject:loginObject;
+
+  successProps = {
+    type: 'warn',
+    title: 'Password expiring',
+    content: 'Your password is about to expire in n days.',
+    timeOut: 5000,
+    showProgressBar: true,
+    pauseOnHover: true,
+    clickToClose: true,
+    animate: 'fromRight',
+    preventDuplicates : true,
+    icons : 'alert'
+  }
 
   handleInput() {
     console.log("help");
@@ -65,7 +81,7 @@ export class DialogComponent implements OnInit {
   }
   
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService) { 
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService, private toastr: ToastrService) { 
   }
 
   ngOnInit() {
@@ -155,13 +171,21 @@ export class DialogComponent implements OnInit {
   }
 
   signIn() {
-    // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);
     this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
-    // console.log(this.userLoginObject);
     this.apiService.attemptLogin(this.userLoginObject)
-      .subscribe((res) => {console.log(res); localStorage.setItem("userEmail", "ted")});
+      .subscribe((res) => {
+        console.log(res); localStorage.setItem("userEmail", `${this.userLoginObject.email}`)
+        this.close()
+        this.toastr.success('Signed On Successfully', '', {
+          positionClass: 'toast-bottom-center', 
+          timeOut: 3000,
+        })
+      }, (err) => this.toastr.error("Incorrect username and password", "", {
+        positionClass: 'toast-bottom-center',
+        timeOut: 3000
+      }));
+      // this.close();
 
-    this.close();
       // .subscribe(res => console.log(res), err => {
       //   if (err.status == 200) {
       //     console.log(err);

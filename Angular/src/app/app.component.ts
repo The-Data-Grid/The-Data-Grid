@@ -6,6 +6,7 @@ import { DialogComponent } from './login-dialog/login-dialog.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import {MatMenuTrigger} from '@angular/material/menu'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
@@ -28,7 +29,7 @@ export class AppComponent implements OnInit {
   isHover:boolean = false;
 
 
-  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router,) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private toastr:ToastrService) { }
 
 
   checkStorage() {
@@ -47,10 +48,15 @@ export class AppComponent implements OnInit {
   }
 
   logOut() {
+    console.log(localStorage)
     this.apiService.signOut()
       .subscribe((res) => {
         localStorage.removeItem("userEmail");
         console.log("signed out!")
+        this.toastr.info('Signed Out Successfully', '', {
+          positionClass: 'toast-bottom-center', 
+          timeOut: 3000,
+        })
       })
     // console.log("loggin out!")
   }
