@@ -1070,7 +1070,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             }
         };
 
-        // if not submission
+        // if not global
         if(itemObject.featureName !== null) {
             // is it the realGeo column?
             let itemRealGeo = itemRealGeoLookup[featureItemLookup[itemObject.featureName]];
@@ -1093,7 +1093,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 rootFeatureID = null;
             }
 
-        } else { // else then submission and no feature or geo information
+        } else { // else then global and no feature or geo information
             isRealGeo = false;
             insertableFeatureID = null;
             rootFeatureID = null;

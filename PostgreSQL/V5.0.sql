@@ -152,9 +152,13 @@ CREATE TABLE item_user (
     tdg_p_hash TEXT NOT NULL,
     data_is_email_public BOOLEAN NOT NULL,
     data_is_quarterly_updates BOOLEAN NOT NULL,
-    is_superuser BOOLEAN NOT NULL,
+    -- is_superuser BOOLEAN NOT NULL,
     secret_token TEXT,
     is_pending BOOLEAN NOT NULL DEFAULT TRUE,
+    privilege_id INTEGER NOT NULL, --fk **
+    -- Constraint: privilege 'superuser' must only be associated with TDG org
+    -- Note: TDG must be the first organization added in the database for now! (must have PK = 1)
+    CHECK((privilege_id = 3 AND item_organization_id = 1) OR (privilege_id != 3)),
     UNIQUE(data_email)
 );
 
@@ -165,16 +169,20 @@ CREATE TABLE m2m_user_organization (
 );
 */
 
--- Submission
+-- Submission and Globals
 
-CREATE TABLE item_submission (
+CREATE TABLE item_global (
     item_id SERIAL PRIMARY KEY,
+
     item_audit_id INTEGER NOT NULL, --fk **
     item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
     item_user_id INTEGER NOT NULL, --fk **
-    item_template_id INTEGER, --fk ** ???
-    data_time_submitted TIMESTAMPTZ NOT NULL,
-    data_submission_name TEXT
+    item_template_id INTEGER --fk ** ???
+);
+
+CREATE TABLE item_submission (
+    item_id SERIAL PRIMARY KEY,
+    data_time_submitted TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE tdg_submission_edit (
@@ -207,9 +215,11 @@ CREATE TABLE item_catalog (
 CREATE TABLE item_audit (
     item_id SERIAL PRIMARY KEY,
     item_catalog_id INTEGER, --fk **
-    data_audit_name TEXT,
+    data_audit_name TEXT NOT NULL,
     item_user_id INTEGER NOT NULL, --fk **
-    data_time_created TIMESTAMPTZ NOT NULL
+    item_organization_id INTEGER, --fk **  NOTE: If null then user audit, if not null then organization audit
+    data_time_created TIMESTAMPTZ NOT NULL,
+    UNIQUE(data_time_created, data_audit_name)
 );
 
 -- Privilege
@@ -239,22 +249,31 @@ INSERT INTO tdg_privilege
     (privilege_id, privilege_name)
         VALUES 
             (DEFAULT, 'guest'),
-            --(DEFAULT, 'user'),
-            (DEFAULT, 'auditor'),
-            (DEFAULT, 'admin');
-            --(DEFAULT, 'superuser');
+            (DEFAULT, 'user'),
+            (DEFAULT, 'superuser');
 
 -- many to many to many
 CREATE TABLE tdg_role (
     role_id SERIAL PRIMARY KEY,
-    privilege_id INTEGER NOT NULL, --fk **
+    -- privilege_id INTEGER NOT NULL, --fk **
     item_organization_id INTEGER NOT NULL, --fk **
-    item_user_id INTEGER NOT NULL --fk **
+    item_user_id INTEGER NOT NULL, --fk **
+    role_type_id INTEGER NOT NULL --fk **
     -- Constraint: privilege 'superuser' must only be associated with TDG org
     -- Note: TDG must be the first organization added in the database for now! (must have PK = 1)
-    CHECK((privilege_id = 5 AND item_organization_id = 1) OR (privilege_id != 5))
+    -- CHECK((privilege_id = 3 AND item_organization_id = 1) OR (privilege_id != 3))
 );
 
+CREATE TABLE tdg_role_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL
+);
+
+INSERT INTO tdg_role_type 
+    (type_id, type_name)
+        VALUES
+            (DEFAULT, 'auditor'),
+            (DEFAULT, 'admin');
 
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                                                                   _______                                       
@@ -445,9 +464,9 @@ CREATE TABLE metadata_item (
     item_type INTEGER NOT NULL, --fk **
 
     /*
-    Privilege level needed to add a new item. There are only 5 privileges
+    Privilege level needed to add a new item. There are only 3 privileges
     */
-    creation_privilege INTEGER NOT NULL CHECK(creation_privilege BETWEEN 1 AND 5),
+    creation_privilege INTEGER NOT NULL,
     UNIQUE(table_name)
 );
 
@@ -554,12 +573,12 @@ CREATE TABLE metadata_returnable (
     item_id INTEGER, --fk
 
     /*
-    NULL if the item of the associated metadata_column is 'item_submission'
+    NULL if an item returnable
     */
     feature_id INTEGER, --fk **
 
     /*
-    The root feature for this subfeature, NULL if not subfeature or if item is 'item_submission'
+    The root feature for this subfeature, NULL if not subfeature or if an item returnable
     */ 
     rootfeature_id INTEGER, --fk **
 
@@ -648,17 +667,6 @@ CREATE TABLE users (
     role TEXT NOT NULL
 );
 
-insert into users 
-    (
-        id,
-        name,
-        email,
-        password,
-        role
-    )
-    values 
-        (default, 'veronica', 'veronica@gmail.com', 'example', 'user'),
-        (default, 'edward', 'ed@gmail.com', 'example', 'superuser');
 
 
 CREATE VIEW returnable_view AS (SELECT 
@@ -733,6 +741,7 @@ ALTER TABLE m2m_metadata_item ADD FOREIGN KEY (item_id) REFERENCES metadata_item
 ALTER TABLE m2m_metadata_item ADD FOREIGN KEY (referenced_item_id) REFERENCES metadata_item;
 
 ALTER TABLE metadata_item ADD FOREIGN KEY (item_type) REFERENCES metadata_item_type;
+ALTER TABLE metadata_item ADD FOREIGN KEY (creation_privilege) REFERENCES tdg_privilege;
 
 
 -- Room, Building, Community, region
@@ -757,13 +766,13 @@ ALTER TABLE item_state ADD FOREIGN KEY (location_region_id) REFERENCES location_
 
 ALTER TABLE item_country ADD FOREIGN KEY (location_region_id) REFERENCES location_region;
 
+-- Global
+ALTER TABLE item_global ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
+ALTER TABLE item_global ADD FOREIGN KEY (item_template_id) REFERENCES item_template;
+ALTER TABLE item_global ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+ALTER TABLE item_global ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit (item_id);
 
 -- Submission
-ALTER TABLE item_submission ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
-ALTER TABLE item_submission ADD FOREIGN KEY (item_template_id) REFERENCES item_template;
-ALTER TABLE item_submission ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
-ALTER TABLE item_submission ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit (item_id);
-
 ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_submission_id) REFERENCES item_submission;
 ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
@@ -793,12 +802,17 @@ ALTER TABLE m2m_tdg_assigned_auditor ADD FOREIGN KEY (item_audit_id) REFERENCES 
 
 ALTER TABLE item_audit ADD FOREIGN KEY (item_catalog_id) REFERENCES item_catalog;
 ALTER TABLE item_audit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+ALTER TABLE item_audit add FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
 
 -- Users, Privilege, Organization
-ALTER TABLE tdg_role ADD FOREIGN KEY (privilege_id) REFERENCES tdg_privilege;
+ALTER TABLE item_user ADD FOREIGN KEY (privilege_id) REFERENCES tdg_privilege;
+
+
 ALTER TABLE tdg_role ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 ALTER TABLE tdg_role ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+
+ALTER TABLE tdg_role ADD FOREIGN KEY (role_type_id) REFERENCES tdg_role_type;
 
 -- ALTER TABLE m2m_user_organization ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 -- ALTER TABLE m2m_user_organization ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
@@ -1104,6 +1118,7 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
             EXECUTE FORMAT('CREATE TABLE %I (
                             observation_id SERIAL PRIMARY KEY,
                             observation_count_id INTEGER NOT NULL,
+                            global_id INTEGER NOT NULL,
                             submission_id INTEGER NOT NULL,
                             observableitem_id INTEGER NOT NULL)', table_name);
             
@@ -1118,6 +1133,11 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
                             FOR EACH ROW
                             EXECUTE PROCEDURE update_observation_count()', table_name);
         
+            -- Global reference
+            EXECUTE FORMAT('ALTER TABLE %I 
+                            ADD FOREIGN KEY ("global_id")
+                            REFERENCES "item_global" ("item_id")', table_name);
+
             -- Submission reference
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("submission_id")
@@ -1346,22 +1366,24 @@ INSERT INTO metadata_item
     (item_id, table_name, frontend_name, item_type, creation_privilege)
         VALUES
             --('item_room', (SELECT type_id FROM metadata_item_type WHERE type_name = 'observable'), 4), --construct.js
-            (DEFAULT, 'item_building', 'Building', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 4),
-            (DEFAULT, 'item_organization', 'Organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_entity', 'Entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_city', 'City', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_county', 'County', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_state', 'State', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_country', 'Country', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 5),
-            (DEFAULT, 'item_sop', 'Standard Operating Procedure', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 4),
-            (DEFAULT, 'item_template', 'Template', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_building', 'Building', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 2),
+            (DEFAULT, 'item_organization', 'Organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
+            (DEFAULT, 'item_entity', 'Entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
+            (DEFAULT, 'item_city', 'City', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
+            (DEFAULT, 'item_county', 'County', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
+            (DEFAULT, 'item_state', 'State', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
+            (DEFAULT, 'item_country', 'Country', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
+            (DEFAULT, 'item_sop', 'Standard Operating Procedure', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
+            (DEFAULT, 'item_template', 'Template', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_user', 'User', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 1),
-            (DEFAULT, 'item_submission', 'Submission', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
-            (DEFAULT, 'item_catalog', 'Catalog', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
-            (DEFAULT, 'item_audit', 'Audit', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3);
+            (DEFAULT, 'item_submission', 'Submission', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
+            (DEFAULT, 'item_global', 'Global Item', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
+            (DEFAULT, 'item_catalog', 'Catalog', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
+            (DEFAULT, 'item_audit', 'Audit', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2);
 
 
 -- Calling insertion procedure
+-- observable_item TEXT, referenced TEXT, isID BOOLEAN, isNullable BOOLEAN, frontendName TEXT, information TEXT
 -- potential-observable
 CALL "insert_m2m_metadata_item"('item_building', 'item_entity', TRUE, FALSE, 'Entity of Building', NULL);
 CALL "insert_m2m_metadata_item"('item_organization', 'item_entity', TRUE, FALSE, 'Entity of Organization', NULL);
@@ -1376,13 +1398,14 @@ CALL "insert_m2m_metadata_item"('item_template', 'item_user', TRUE, FALSE, 'Auth
 CALL "insert_m2m_metadata_item"('item_template', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
 CALL "insert_m2m_metadata_item"('item_user', 'item_organization', FALSE, FALSE, 'Member of Organization', NULL);
 --     submission
-CALL "insert_m2m_metadata_item"('item_submission', 'item_audit', TRUE, FALSE, 'Audit of Submission', NULL);
-CALL "insert_m2m_metadata_item"('item_submission', 'item_organization', TRUE, FALSE, 'Submitting Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_submission', 'item_user', TRUE, FALSE, 'Submitting User', NULL);
-CALL "insert_m2m_metadata_item"('item_submission', 'item_template', FALSE, TRUE, 'Template Used', NULL);
+CALL "insert_m2m_metadata_item"('item_global', 'item_audit', TRUE, FALSE, 'Audit of Observation', NULL);
+CALL "insert_m2m_metadata_item"('item_global', 'item_organization', TRUE, FALSE, 'Auditing Organization', NULL);
+CALL "insert_m2m_metadata_item"('item_global', 'item_user', TRUE, FALSE, 'Auditing User', NULL);
+CALL "insert_m2m_metadata_item"('item_global', 'item_template', FALSE, TRUE, 'Template Used', NULL);
 --     audit
 CALL "insert_m2m_metadata_item"('item_audit', 'item_catalog', FALSE, TRUE, 'Catalog of Audit', NULL);
 CALL "insert_m2m_metadata_item"('item_audit', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
+CALL "insert_m2m_metadata_item"('item_audit', 'item_organization', FALSE, TRUE, 'Authoring Organization', NULL);
 
 
 
@@ -1401,9 +1424,9 @@ CALL "insert_metadata_column"('data_building_name', 'item_building', NULL, NULL,
 CALL "insert_metadata_column"('data_entity_name', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Name', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 CALL "insert_metadata_column"('data_entity_address', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Address', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_city_name', 'item_city', NULL, NULL, 'item_city', TRUE, FALSE, 'City Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_submission_name', 'item_submission', NULL, NULL, 'item_submission', TRUE, TRUE, 'Audit Submission Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+--CALL "insert_metadata_column"('data_submission_name', 'item_submission', NULL, NULL, 'item_submission', TRUE, TRUE, 'Audit Submission Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_county_name', 'item_county', NULL, NULL, 'item_county', TRUE, FALSE, 'County Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, TRUE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_state_name', 'item_state', NULL, NULL, 'item_state', TRUE, FALSE, 'State Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 CALL "insert_metadata_column"('data_country_name', 'item_country', NULL, NULL, 'item_country', TRUE, FALSE, 'Country Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 CALL "insert_metadata_column"('data_organization_name_text', 'item_organization', NULL, NULL, 'item_organization', TRUE, FALSE, 'Organization Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');

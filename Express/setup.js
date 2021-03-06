@@ -253,7 +253,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     });
 
     // index of globalObject
-    let submissionItemIndex = itemOrder.indexOf('item_submission');
+    let globalItemIndex = itemOrder.indexOf('item_global');
     // all item indicies
     let itemIndices = itemOrder.map((e,i) => i)
     
@@ -360,7 +360,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // Constructing the final setupObject
     // ==================================================
 
-    setupObject.children = [featureIndices, itemIndices, submissionItemIndex];
+    setupObject.children = [featureIndices, itemIndices, globalItemIndex];
     setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
     setupObject.items = itemNodeObjects;
     setupObject.features = featureNodeObjects;
@@ -382,7 +382,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         let isFilterable = (row['fs__selector_name'] === null ? false : true);
 
-        let isSubmission = (row['non_obs_i__table_name'] === 'item_submission' ? true : false);
+        let isGlobal = (row['non_obs_i__table_name'] === 'item_global' ? true : false);
 
         idValidationLookup[id] = {
             // feature and root feature
@@ -393,7 +393,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             item: row['i__table_name'],
             referenceType: row['rt__type_name'],
             isFilterable: isFilterable,
-            isSubmission: isSubmission,
+            isGlobal,
 
             sqlType: row['sql__type_name'],
             //groundTruthLocation: row['c__is_ground_truth']
@@ -860,8 +860,8 @@ const initialReturnableMapper = (returnable, statics) => {
 
     // if non observational
     if(returnable['f__table_name'] === null) {
-        // is submission / global item?        
-        if(returnable['non_obs_i__table_name'] == 'item_submission') {
+        // is global item?        
+        if(returnable['non_obs_i__table_name'] == 'item_global') {
             treeArray.push(2);
         } 
         // then a standard item

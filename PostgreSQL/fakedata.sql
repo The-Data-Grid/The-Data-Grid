@@ -48,23 +48,23 @@ INSERT INTO item_user
 "tdg_p_hash",
 "data_is_email_public",
 "data_is_quarterly_updates",
-"is_superuser")
+"privilege_id")
 VALUES
-    (default, 2, 'Oliver', 'Melgrove', 'Tue, 26 Jan 2021 21:53:05 GMT', 'oliver@melgrove.com', 'password', true, true, false),
-    (default, 1, 'Tanya', 'Zhong', 'Tue, 26 Jan 2021 21:53:05 GMT', 'tanyazhong1@gmail.com', 'password', true, true, true),
-    (default, 1, 'Kian', 'Nikzad', 'Tue, 26 Jan 2021 21:53:05 GMT', 'kian.nikzad@gmail.com', 'password', true, true, true),
-    (default, 1, 'Jorden', 'Van Foreest', 'Tue, 26 Jan 2021 21:53:05 GMT', 'jorden-van-foreest@thedatagrid.org', '$2b$10$MWv9JnM4zD6TjnZlpSYC4upMdlGatnZxY9zDxKK/8BdTRjIho0p4S', true, true, false);
+    (default, 1, 'Oliver', 'Melgrove', 'Tue, 26 Jan 2021 21:53:05 GMT', 'oliver@melgrove.com', 'password', true, true, 3),
+    (default, 1, 'Tanya', 'Zhong', 'Tue, 26 Jan 2021 21:53:05 GMT', 'tanyazhong1@gmail.com', 'password', true, true, 3),
+    (default, 1, 'Kian', 'Nikzad', 'Tue, 26 Jan 2021 21:53:05 GMT', 'kian.nikzad@gmail.com', 'password', true, true, 3),
+    (default, 1, 'Jorden', 'Van Foreest', 'Tue, 26 Jan 2021 21:53:05 GMT', 'jorden-van-foreest@thedatagrid.org', '$2b$10$MWv9JnM4zD6TjnZlpSYC4upMdlGatnZxY9zDxKK/8BdTRjIho0p4S', true, true, 2);
 
 
 INSERT INTO tdg_role 
 ("role_id",
-"privilege_id",
+"role_type_id",
 "item_organization_id",
 "item_user_id")
 VALUES
-    (default, 3, 2, 1),
-    (default, 3, 1, 2),
-    (default, 3, 1, 3);
+    (default, 2, 2, 1),
+    (default, 2, 1, 2),
+    (default, 2, 1, 3);
 
 
 -- actual features
@@ -200,18 +200,27 @@ VALUES
 
 
 -- "submission_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name"
-INSERT INTO item_submission 
-("item_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name")
+INSERT INTO item_global
+("item_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id")
 VALUES
-    (default, 1, 1, 1, NULL, NOW(), 'Powell Sink Submission 1'),
-    (default, 1, 1, 2, NULL, NOW(), 'Powell Sink Submission 2'),
-    (default, 2, 1, 3, NULL, NOW(), 'YRL Sink Submission 1'),
-    (default, 2, 1, 2, NULL, NOW(), 'YRL Sink Submission 2');
+    (default, 1, 1, 1, NULL),
+    (default, 1, 1, 2, NULL),
+    (default, 2, 1, 3, NULL),
+    (default, 2, 1, 2, NULL);
+
+INSERT INTO item_submission
+("data_time_submitted")
+VALUES
+    (NOW()),
+    (NOW()),
+    (NOW()),
+    (NOW());
 
 
 INSERT INTO observation_sink 
 ("observation_id",
 "observation_count_id",
+"global_id",
 "submission_id",
 "observableitem_id",
 "data_time_conducted",
@@ -221,29 +230,29 @@ INSERT INTO observation_sink
 "attribute_sink_basin_brand_id",
 "attribute_sink_faucet_brand_id")
 VALUES
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, NOW(), 'Nice Sink!', 'Sandra', 2.71828, 2, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 2, NOW(), 'Alright Sink.', 'Sandra', 3, 2, 2),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 3, NOW(), 'Sink!', 'Sandra', 4, 1, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 4, NOW(), 'Nice!', 'Sandra', 4.1828, 1, 2),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, 1, NOW(), 'Nice Sink!', 'Sandra', 2.71828, 2, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, 2, NOW(), 'Alright Sink.', 'Sandra', 3, 2, 2),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, 3, NOW(), 'Sink!', 'Sandra', 4, 1, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, 4, NOW(), 'Nice!', 'Sandra', 4.1828, 1, 2),
 
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 5, NOW(), NULL, 'Sandra', 7.28, 1, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 6, NOW(), NULL, 'Sandra', 1.828, 3, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 7, NOW(), NULL, 'Sandra', 3.71828, 3, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 8, NOW(), NULL, 'Sandra', 3.1415, 1, 2),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 2, 5, NOW(), NULL, 'Sandra', 7.28, 1, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 2, 6, NOW(), NULL, 'Sandra', 1.828, 3, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 2, 7, NOW(), NULL, 'Sandra', 3.71828, 3, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 2, 8, NOW(), NULL, 'Sandra', 3.1415, 1, 2),
 
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 9, NOW(), 'Nice Sink!', 'Mark', 2, 2, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 10, NOW(), 'Alright Sink.', 'Mark', 2.1, 2, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 11, NOW(), 'Sink!', 'Mark', 2.3, 1, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 12, NOW(), 'Nice!', 'Mark', 2.909, 3, 2),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 13, NOW(), NULL, 'Mark', 4.88, 1, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 14, NOW(), NULL, 'Mark', 1.02, 3, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 15, NOW(), NULL, 'Mark', 1.1, 3, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '1st', 'Mark', 2.9, 2, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 9, NOW(), 'Nice Sink!', 'Mark', 2, 2, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 10, NOW(), 'Alright Sink.', 'Mark', 2.1, 2, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 11, NOW(), 'Sink!', 'Mark', 2.3, 1, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 12, NOW(), 'Nice!', 'Mark', 2.909, 3, 2),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 13, NOW(), NULL, 'Mark', 4.88, 1, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 14, NOW(), NULL, 'Mark', 1.02, 3, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 15, NOW(), NULL, 'Mark', 1.1, 3, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 16, NOW(), '1st', 'Mark', 2.9, 2, 3),
 
     -- different people observation the same sink
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '2nd', 'Juan', 1.02, 3, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '3rd', 'Pablo', 1.1, 3, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '4th', 'Jeremiah', 2.8, 2, 3);
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 16, NOW(), '2nd', 'Juan', 1.02, 3, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 16, NOW(), '3rd', 'Pablo', 1.1, 3, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 16, NOW(), '4th', 'Jeremiah', 2.8, 2, 3);
 
 
 INSERT INTO m2m_list_sink_faucet_condition

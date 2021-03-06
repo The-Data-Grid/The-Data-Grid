@@ -29,7 +29,7 @@ idValidationLookup:
         item
         referenceType
         isFilterable
-        isSubmission
+        isGlobal
         sqlType
         baseItem // null if feature returnable
 
@@ -49,8 +49,8 @@ validateObservation:
         sql type of filterable returnableIDs
 
 globals:
-    Contains every submission returnableID:
-        filterable submissione returnableIDs
+    Contains every global returnableID:
+        filterable global returnableIDs
         column returnableIDs
 
 validFeatures
@@ -83,7 +83,7 @@ let validateObservation = {};
 let validateItem = {};
 
 for (let id in idValidationLookup) { 
-    if (idValidationLookup[id].isSubmission === true) {
+    if (idValidationLookup[id].isGlobal === true) {
         globals.column.push(parseInt(id));
         if(idValidationLookup[id].isFilterable === true) {
             globals.filter.push(parseInt(id));
