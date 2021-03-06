@@ -76,7 +76,7 @@ export class DialogComponent implements OnInit {
       this.formsFilledOut = false;
     }
 
-    console.log(this.formsFilledOut);
+    // console.log(this.formsFilledOut);
 
   }
   
