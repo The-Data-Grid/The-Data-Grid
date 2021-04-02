@@ -7,6 +7,8 @@ import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import {MatMenuTrigger} from '@angular/material/menu'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { Clipboard } from '@angular/cdk/clipboard'
+
 
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
@@ -29,7 +31,7 @@ export class AppComponent implements OnInit {
   isHover:boolean = false;
 
 
-  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private toastr:ToastrService) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private toastr:ToastrService, private clipboard: Clipboard) { }
 
 
   checkStorage() {
@@ -49,6 +51,7 @@ export class AppComponent implements OnInit {
 
   logOut() {
     console.log(localStorage)
+    localStorage.removeItem("userEmail");
     this.apiService.signOut()
       .subscribe((res) => {
         localStorage.removeItem("userEmail");
@@ -87,5 +90,9 @@ export class AppComponent implements OnInit {
     this.currentWindowWidth = window.innerWidth;
 
     // this.dialog.open(LockDialogComponent, dialogConfig);
+  }
+
+  copyEmail() {
+    this.clipboard.copy("thedatagrid@gmail.com");
   }
 }

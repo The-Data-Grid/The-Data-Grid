@@ -30,6 +30,7 @@ export class ReusableTemplateComponent implements OnInit {
   @Input() featureSelectors: any[]
   @Input() featureIndex: number
   @Input() appliedFilterSelections: AppliedFilterSelections
+  @Input() returnableIDs: AppliedFilterSelections
 
 
   dropdownOptions: any = null;
@@ -70,7 +71,7 @@ export class ReusableTemplateComponent implements OnInit {
   }
 
   getDropdownOptions() {
-    this.apiService.getDropdownOptions().subscribe((res) => {
+    this.apiService.getDropdownOptions(this.returnableIDs).subscribe((res) => {
       this.dropdownOptions = res;
       console.log("dropdown (from resusable.ts):");
       console.log(this.dropdownOptions)
@@ -90,12 +91,18 @@ export class ReusableTemplateComponent implements OnInit {
       this.dropdownOptions.columnData[i].forEach((option, j) => {
         //this basically makes sure we are not setting item_text: [null]
         //bc for some reason we are getting stuff like that in the response
-        // if (!option.isArray() || option[0]) {
+        if (option===null || option[0] === null) {
+          IDtoOptions[ID].push({
+            item_id: j,
+            item_text: "None"
+          })
+        }
+        else {
           IDtoOptions[ID].push({
             item_id: j,
             item_text: option
           })
-        // }
+        }
       });
     })
     return IDtoOptions;

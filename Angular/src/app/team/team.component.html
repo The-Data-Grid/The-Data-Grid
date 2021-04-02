@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<body>
+<body >
     <!-- Team Page Header -->
     <div class="team-header-container">
         <img style="width: 100%; opacity:.5;" src="assets/TeamPageCover.png" alt="teamHeader">
@@ -12,15 +12,15 @@
     <p class="team-section-header">FRONTEND DEVELOPERS</p>
 
     <!-- this fxLayout allows the cards to flow down to the next row if they get squished -->
-    <div style="margin: 50px" fxLayout="row wrap">
+    <div style="margin-left: 10%; margin-right: 10%; " fxLayout="row wrap" fxLayoutAlign="space-around center">
 
         <ng-template ngFor [ngForOf]="members" let-member>
             <div class="team-member-card">
                 <div fxFlex="0 1 calc(33.3% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)" fxFlex.lt-sm="100%"
-           class=".member-description">
+                    class=".member-description">
                     <img src="assets/random.png" alt="person" class="member-photo">
-                    <p style= "color:#569CD7; font-weight: bolder; text-align: center;"> {{ member.name }} </p>
-                    <p style= "color:#569CD7; font-style: italic;text-align: center;"> {{ member.team }} </p>
+                    <p style="color:#569CD7; font-weight: bolder; text-align: center;"> {{ member.name }} </p>
+                    <p style="color:#569CD7; font-style: italic;text-align: center;"> {{ member.team }} </p>
                     <p style="text-align:center"> {{ member.bio }} </p>
                     <!-- we don't yet have the right logo pics, so i just used a drop-shadow-->
                     <div fxLayoutAlign="space-between stretch" style="margin: 10%;">
@@ -31,12 +31,12 @@
                             <img src="assets/insta.png" alt="Instagram" class="social-button">
                         </a>
                         <a href="https://www.linkedin.com/company/the-data-grid/">
-                            <img src="assets/linkedin_.png" alt="LinkedIn" class="social-button" >
+                            <img src="assets/linkedin_.png" alt="LinkedIn" class="social-button">
                         </a>
                         <a href="https://www.linkedin.com/company/the-data-grid/">
                             <img src="assets/subscribe_.png" alt="LinkedIn" class="social-button">
                         </a>
-                    </div>    
+                    </div>
                 </div>
             </div>
         </ng-template>
