@@ -4,7 +4,6 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 
 const {postgresClient} = require('../db/pg.js'); 
-
 // get connection object
 const db = postgresClient.getConnection.db;
 // get SQL formatter
@@ -18,6 +17,8 @@ const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 const { ComponentFactoryResolver } = require('@angular/core');
 
+const { customAlphabet } = require('nanoid')
+const nanoid = customAlphabet('1234567890', 3)
 
 // session store init
 let Store = require('memorystore')(session); 
@@ -128,7 +129,7 @@ userSQL.insertingUsers= {
 
 // Send verfication email to new user  
 router.post('/sendVerfiyEmail', (req, res) => {
-    rand = Date.now() + Math.floor(Math.random() * 100 + 54); 
+    rand = Date.now() + nanoid()
     try {
         await db.none(formatSQL(userSQL.updateUserSecret, {
                 random: rand, //secret token for security
@@ -173,7 +174,8 @@ router.post('/verifyEmailLink', (req, res) => {
 
 // Send email to user for password reset  
 router.post('/sendPasswordResetEmail', (req, res) => {
-    rand = Date.now() + Math.floor(Math.random() * 100 + 54);
+    rand = Date.now() + nanoid()
+
     try {
         await db.none(formatSQL(userSQL.updateUserSecret, {
                 random: rand,
