@@ -89,7 +89,6 @@ export class TeamComponent implements OnInit {
   }
 
   checkWidth(): string {
-    console.log(this.innerWidth)
     if (this.innerWidth > 650) {return 'row span'};
     return 'column';
   }
