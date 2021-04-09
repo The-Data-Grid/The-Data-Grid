@@ -50,8 +50,7 @@ export class AppComponent implements OnInit {
   }
 
   logOut() {
-    console.log(localStorage)
-    localStorage.removeItem("userEmail");
+    // localStorage.removeItem("userEmail");
     this.apiService.signOut()
       .subscribe((res) => {
         localStorage.removeItem("userEmail");
