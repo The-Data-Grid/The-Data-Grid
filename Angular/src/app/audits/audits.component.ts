@@ -117,10 +117,10 @@ export class AuditsComponent implements OnInit {
 
     // console.log("global selectors:");
     // console.log(this.globalSelectors);
-    // console.log("feature selectors:");
-    // console.log(this.featureSelectors);
-    // console.log("applied filter selections:");
-    // console.log(this.appliedFilterSelections);
+    console.log("feature selectors:");
+    console.log(this.featureSelectors);
+    console.log("applied filter selections:");
+    console.log(this.appliedFilterSelections);
     // console.log("defaultColumnIDs:");
     // console.log(this.defaultColumnIDs);
     // console.log("featuresToChildren:");
