@@ -127,12 +127,15 @@
                         <button 
                             mat-button
                             matTooltip="Copy Email"
-                            (click)="copyEmail()">
-                            <a>
-                                <img src="assets/subscribe.png" alt="Subscribe"
-                                    style="height: 15px; width: 20px;">
-                            </a>
-                            <a  class="bot-text" style="padding: 6px">thedatagrid@gmail.com </a>
+                            (click)="copyEmail()"
+                            style="text-align: left;">
+                            <div>
+                                <a class="bot-text" style="vertical-align: middle; padding-right: 5px;">thedatagrid@gmail.com </a>
+                                <a>
+                                    <img src="assets/copy_icon.png" alt="Copy"
+                                    style="height: 18px; vertical-align: middle;">
+                                </a>
+                            </div>
                         </button>
                     </div>
                     <div class="bottom-card">
