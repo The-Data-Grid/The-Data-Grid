@@ -186,14 +186,13 @@ export class SetupObjectService {
     // for each feature...
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
-      console.log(setupObject.features[featureIndex].frontendName)
+      console.log(setupObject.features[featureIndex].frontendName + " " + featureIndex)
       // ...find feature's observation columns
       setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
         featureColumns.push({
           column: setupObject.columns[observationColumnIndex],
           returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject)
         });
-        console.log("yuh")
       });
       // ...find feature's attribute columns
       setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
@@ -201,7 +200,6 @@ export class SetupObjectService {
           column: setupObject.columns[attributeColumnIndex],
           returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject)
         });
-        console.log("yuh")
       });
       allFeatureSelectors[featureIndex] = this.parseColumns(featureColumns,
         appliedFilterSelections,
