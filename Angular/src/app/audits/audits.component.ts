@@ -137,8 +137,9 @@ export class AuditsComponent implements OnInit {
       this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
     }
     else {
-      this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections).subscribe((res) => {
+      this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections, this.globalReturnableIDs.concat(this.featureReturnableIDs)).subscribe((res) => {
         this.tableObject = res;
+        console.log(this.tableObject)
         this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
       });
     }
@@ -203,6 +204,7 @@ export class AuditsComponent implements OnInit {
 
   onFeatureSelection() {
     this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.selectedFeature.index);
+    console.log("this.featureReturnableIDs:")
     console.log(this.featureReturnableIDs)
   }
 

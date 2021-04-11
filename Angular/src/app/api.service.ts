@@ -30,14 +30,15 @@ export class ApiService {
       }));
   }
 
-  public getTableObject(feature: string, defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections): any {
+  public getTableObject(feature: string, defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections, returnableIDs): any {
     //DON'T DELETE. once sink is the only feature we can get dropdown info for.
     //we wil need this stuff once sink and default columns are no longer hardcoded
     // var url = API_URL + "/audit/observation/" + feature;
 
     // sink as feature and default columns are hardcoded:
     //rn form queryurl just forms the filters part. in the future i might make it create the whole url.
-    var url = API_URL + '/audit/observation/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161'
+    // var url = API_URL + '/audit/observation/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161'
+    var url = API_URL + '/audit/observation/sink/' + returnableIDs.join('&') 
       +  this.formQueryURL(defaultColumnIDs, appliedFilterSelections);
 
 

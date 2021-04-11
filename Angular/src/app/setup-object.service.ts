@@ -186,7 +186,7 @@ export class SetupObjectService {
     // for each feature...
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
-      console.log(setupObject.features[featureIndex].frontendName + " " + featureIndex)
+      // console.log(setupObject.features[featureIndex].frontendName + " " + featureIndex)
       // ...find feature's observation columns
       setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
         featureColumns.push({

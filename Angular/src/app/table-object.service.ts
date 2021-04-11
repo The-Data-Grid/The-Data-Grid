@@ -33,6 +33,7 @@ export class TableObjectService {
   getRows(setupObject, tableObject, dataTableColumns) {
     let rows = []
     let datatypes = setupObject.datatypes;
+    let newRow = {};
 
     // map returnable ID to columns
     let returnableIDToColumnIndex = this.getReturnableIDToColumnIndex(setupObject, tableObject);
@@ -41,49 +42,58 @@ export class TableObjectService {
     tableObject.returnableIDs.forEach(returnableID => {
       let columnIndex = returnableIDToColumnIndex[returnableID];
       dataTableColumns.push({
-        prop: setupObject.columns[columnIndex].frontendName,
+        name: setupObject.columns[columnIndex].frontendName,
         type: datatypes[setupObject.columns[columnIndex].datatype],
         index: columnIndex
       });
     });
 
     //add rows to the table one by one
-    tableObject.rowData.forEach(element => {
-      let row = {};
-      row["_hyperlinks"] = {};
-
+    tableObject.rowData.forEach((element, k) => {
+      console.log("hangling data for row " + k)
+      newRow = {}
+      newRow["_hyperlinks"] = {};
 
       // fill out the row object
       tableObject.returnableIDs.forEach((returnableID, i) => {
         let columnIndex = returnableIDToColumnIndex[returnableID];
         let datatype = datatypes[setupObject.columns[columnIndex].datatype];
-        // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype)
 
         switch (datatype) {
           case "string": {
-            row[setupObject.columns[columnIndex].frontendName] = element[i]; break;
+            newRow[columnIndex] = element[i];
+            if (setupObject.columns[columnIndex].frontendName == "User Email") {
+              console.log(returnableID + " " + columnIndex + " " + newRow[columnIndex])
+              // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype + " " + element[i])
+            }
+            break;
           }
           case "hyperlink": {
-            row[setupObject.columns[columnIndex].frontendName] = element[i].displayString;
-            row["_hyperlinks"][columnIndex] = element[i].URL; break;
+            // newRow[setupObject.columns[columnIndex].frontendName] = element[i].displayString;
+            // newRow["_hyperlinks"][columnIndex] = element[i].URL; break;
+            newRow[columnIndex] = element[i];
+            newRow["_hyperlinks"][columnIndex] = element[i]; break;
           }
           case "bool": {
             if (element[i]) {
-              row[setupObject.columns[columnIndex].frontendName] = "True";
+              newRow[columnIndex] = "True";
             }
             else {
-              row[setupObject.columns[columnIndex].frontendName] = "False";
+              newRow[columnIndex] = "False";
             } break;
+          }
+          case "date": {
+            newRow[columnIndex] = element[i]; break;
           }
         }
       });
-
-      rows.push(row);
+      // console.log(newRow)
+      rows.push(newRow);
     });
     // console.log("setupObject:")
     // console.log(setupObject)
-    console.log("dataTableColumns:")
-    console.log(dataTableColumns)
+    // console.log("dataTableColumns:")
+    // console.log(dataTableColumns)
     console.log("rows:")
     console.log(rows)
     return rows;
