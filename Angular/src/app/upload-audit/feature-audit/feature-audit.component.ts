@@ -20,10 +20,10 @@ import { AppliedFilterSelections } from '../../models'
 })
 export class FeatureAuditComponent implements OnInit {
 
-  constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>, 
+  constructor(public dialogRef: MatDialogRef<FeatureAuditComponent>,
     @Inject(MAT_DIALOG_DATA) public data,
-    private apiService: ApiService, 
-    private setupObjectService: SetupObjectService, 
+    private apiService: ApiService,
+    private setupObjectService: SetupObjectService,
     private tableObjectService: TableObjectService) {
   }
 
@@ -52,9 +52,6 @@ export class FeatureAuditComponent implements OnInit {
   rootFeatures = []
   featuresToChildren = {}
   dataTableColumns = [];
-  // selectedFeature;
-  tableObject;
-  rows = [];
   dropdownList = FakeData;
   globalSelectors = {};
   selectorsLoaded: boolean = false;
@@ -63,6 +60,7 @@ export class FeatureAuditComponent implements OnInit {
 
   featureIndex = this.data.index;
   featureName = this.data.name;
+  featureReturnableIDs = [];
 
   dummy = [
     {
@@ -111,8 +109,6 @@ export class FeatureAuditComponent implements OnInit {
     if (USE_FAKE_DATA) {
       this.setupObject = SetupObject;
       this.getFeatureID();
-      this.getGlobalSelectors();
-      this.getRootFeatures();
       this.getFeatureSelectors();
       this.getFeatureChildren();
       this.getAttributeAndObservationColumns()
@@ -121,11 +117,11 @@ export class FeatureAuditComponent implements OnInit {
       this.apiService.getSetupTableObject().subscribe((res) => {
         this.setupObject = res;
         this.getFeatureID();
-        this.getGlobalSelectors();
-        this.getRootFeatures();
         this.getFeatureSelectors();
         this.getFeatureChildren();
         this.getAttributeAndObservationColumns()
+        this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.featureIndex)
+
       });
     }
   }
@@ -134,24 +130,13 @@ export class FeatureAuditComponent implements OnInit {
     this.idInfo = this.setupObjectService.getFeatureItemChildren(this.setupObject, this.featureIndex);
   }
 
-  getGlobalSelectors() {
-    // parse global columns
-    // this.globalSelectors = this.setupObjectService.getGlobalSelectors(
-    //   this.setupObject,
-    //   this.appliedFilterSelections,
-    //   this.defaultColumns);
-  }
-
-  getRootFeatures() {
-    this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
-  }
-
   getFeatureSelectors() {
     // parse feature columns
-    this.featureSelectors = this.setupObjectService.getFeatureSelectors(
+    this.featureSelectors = this.setupObjectService.getFeatureFilterSelectors(
       this.setupObject,
       this.appliedFilterSelections,
-      this.defaultColumns);
+      this.defaultColumns
+    );
   }
 
   getFeatureChildren() {

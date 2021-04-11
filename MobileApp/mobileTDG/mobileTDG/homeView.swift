@@ -13,18 +13,6 @@ struct homeView: View {
 
     var body: some View {
         VStack (spacing: 15) {
-            HStack {
-                Button(action: {
-                    viewRouter.currentTab = .settings
-                }, label: {
-                    Image(systemName: "gear")
-                        .resizable()
-                        .foregroundColor(.black)
-                        .padding(5)
-                        .frame(width: 40, height: 40)
-                })
-                Spacer()
-            }.padding(.leading)
             Spacer()
             globeLogo()
             dataGridTitle()
@@ -37,31 +25,22 @@ struct homeView: View {
                     .font(Font.custom("IBMPlexSans", size: 20, relativeTo: Font.TextStyle.body))
                     .padding()
                     .frame(minWidth:0, maxWidth: 350)
-                    .background(Color("green"))
-                    .foregroundColor(Color(.white))
-                    .cornerRadius(10)
+                    .background(Color.white)
+                    .foregroundColor(Color("blue"))
+                    .cornerRadius(15)
+                    .shadow(radius: 5)
             })
             Button(action: {
-                viewRouter.currentTab = .unsubmitted},
+                viewRouter.currentTab = .audits},
                    label: {
-                Text("Unsubmitted Audits")
+                Text("View Audits")
                     .font(Font.custom("IBMPlexSans", size: 20, relativeTo: Font.TextStyle.body))
                     .padding()
                     .frame(minWidth:0, maxWidth: 350)
                     .background(Color("blue"))
                     .foregroundColor(Color.white)
-                    .cornerRadius(10)
-            })
-            Button(action: {
-                viewRouter.currentTab = .submitted},
-                   label: {
-                Text("Submitted Audits")
-                    .font(Font.custom("IBMPlexSans", size: 20, relativeTo: Font.TextStyle.body))
-                    .padding()
-                    .frame(minWidth:0, maxWidth: 350)
-                    .background(Color("blue"))
-                    .foregroundColor(Color.white)
-                    .cornerRadius(10)
+                    .cornerRadius(15)
+                    .shadow(radius: 5)
             })
             Spacer()
         }

@@ -87,7 +87,7 @@ function dataQueryWrapper(queryType) {
             let finalQuery = query.join(' '); 
             
             // DEBUG: Show SQL Query //
-            console.log(finalQuery); 
+            // console.log(finalQuery); 
     
             // Finally querying the database and attaching the result
             res.locals.parsed.finalQuery = await db.result(finalQuery)
@@ -113,7 +113,7 @@ function sendDefault(req, res) {
     // This is row-major data
 
     /* DEBUG */
-    //console.log(res.locals.parsed.finalQuery);
+    // console.log(res.locals.parsed.finalQuery);
     
 
     // fuck .fill(), all my homies hate .fill() 
@@ -239,7 +239,28 @@ function sendDistinct(req, res) {
 // SEND ID DATA
 // ============================================================
 function sendKey(req, res) {
+    // query data is passed to the function via res.locals.parsed.finalQuery
+    // finalQuery is one row
 
+    /* DEBUG */
+    // console.log(res.locals.parsed.finalQuery);
+
+    let primaryKey = null
+
+    if(res.locals.parsed.finalQuery.rows.length == 1) {
+        let keys = res.locals.parsed.finalQuery.fields.map(field => field.name);
+        keys.forEach((key) => {
+        
+            // handle primary keys
+            if(key === 'observation_pkey' || key === 'item_pkey') {
+                primaryKey = row[key]
+            }
+        });
+    }
+
+    res.json({
+        primaryKey
+    });
 }
 
 

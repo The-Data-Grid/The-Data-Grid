@@ -12,6 +12,10 @@ export interface AppliedFilterSelections {
     _placeholder?: any;
 }
 
+export interface ReturnableIDObject {
+    all: number[];
+    default: number[];
+}
 
 export interface multiselectOption { 
     item_id: number;
@@ -34,6 +38,12 @@ export interface multiselectOption {
 
 
 
+
+
+
+
+
+///////no longer up to date:///////////////////
 export class SetupTableObject {
     globalSelectors: FilterSelector[];
     featureFilters: {

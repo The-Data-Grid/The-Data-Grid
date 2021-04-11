@@ -15,7 +15,6 @@ struct globalPresetsView : View {
             VStack(alignment: .leading) {
                 Divider().background(Color(.black))
                 Spacer()
-                
             }
                 .navigationTitle("Global Presets")
                 .navigationBarTitleDisplayMode(.large)
@@ -42,9 +41,6 @@ struct globalPresetsView : View {
 
 struct GlobalPresetsView_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
             globalPresetsView()
-            globalPresetsView()
-        }
     }
 }

@@ -7,7 +7,7 @@ const SyncClient = require('pg-native');
 pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
 pgp.pg.types.setTypeParser(1184, require('../parse.js').timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
 
-var tdgdbname = 'v4';
+var tdgdbname = 'v5';
 var tdgdbuser = 'postgres';
 
 const postgresClient = {

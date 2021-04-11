@@ -33,13 +33,14 @@
 
       <div *ngIf="panel.type == 'attributes'">
         <app-reusable-template class="custom" [featureIndex]="featureIndex" [feature]="attributeSelectors[featureIndex]"
-          [appliedFilterSelections]="appliedFilterSelections">
+          [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="featureReturnableIDs">
         </app-reusable-template>
       </div>
 
       <div *ngIf="panel.type == 'observation'">
         <app-reusable-template class="custom" [featureIndex]="featureIndex"
-          [feature]="observationSelectors[featureIndex]" [appliedFilterSelections]="appliedFilterSelections">
+          [feature]="observationSelectors[featureIndex]" [appliedFilterSelections]="appliedFilterSelections"
+          [returnableIDs]="featureReturnableIDs">
         </app-reusable-template>
       </div>
 

@@ -20,7 +20,6 @@ enum Page {
 enum Tab {
     case home
     case settings
-    case submitted
-    case unsubmitted
+    case audits
     case detail
 }

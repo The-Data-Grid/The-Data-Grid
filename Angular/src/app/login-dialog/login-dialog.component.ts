@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiService } from '../api.service';
+import { HttpHeaders } from "@angular/common/http"
 
 interface Month {
   value: string;
@@ -69,6 +70,7 @@ export class DialogComponent implements OnInit {
 
   ngOnInit() {
     this.dialogRef.updateSize('400px', '550px')
+    console.log(document.cookie);
   }
 
   sign_up_modal() {
@@ -157,15 +159,27 @@ export class DialogComponent implements OnInit {
     this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
     // console.log(this.userLoginObject);
     this.apiService.attemptLogin(this.userLoginObject)
-      .subscribe(res => console.log(res), err => {
-        if (err.status == 200) {
-          alert("successful sign in")
-        }
-        else {
-          alert(`HTTP Error ${err.status}: ${err.error}`)
-        }
-      }
-          )    ;
+      .subscribe((res) => {console.log(res); localStorage.setItem("userEmail", "ted")});
+
+    this.close();
+      // .subscribe(res => console.log(res), err => {
+      //   if (err.status == 200) {
+      //     console.log(err);
+      //     console.log(document.cookie);
+      //     let headers = new HttpHeaders()
+      //     headers .set('content-type', 'application/json')
+      //     headers .set('Access-Control-Allow-Origin', '*')
+      //     console.log(headers); 
+      //     console.log(sessionStorage);
+      //     console.log(err.headers);
+      //     console.log(localStorage);
+      //     alert("successful sign in")
+      //   }
+      //   else {
+      //     alert(`HTTP Error ${err.status}: ${err.error}`)
+      //   }
+      // }
+      //     )    ;
   }
 
   close() {
