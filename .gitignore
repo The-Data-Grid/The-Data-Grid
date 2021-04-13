@@ -22,3 +22,5 @@ Express/dataRepresentation/schemaAssets/*
 # helpers
 Express/queryTester.js
 PostgreSQL/scratch.txt
+
+Express/auth/loginPersonal.js
