@@ -275,6 +275,56 @@ INSERT INTO tdg_role_type
             (DEFAULT, 'auditor'),
             (DEFAULT, 'admin');
 
+CREATE INDEX item_building_index
+ON item_building (item_entity_id);
+
+CREATE INDEX item_organization_index
+ON item_organization (item_entity_id);
+
+CREATE INDEX item_entity_index
+ON item_entity (item_city_id);
+
+CREATE INDEX item_city_index
+ON item_city (item_county_id);
+
+CREATE INDEX item_county_index
+ON item_county (item_state_id);
+
+CREATE INDEX item_state_index
+ON item_state (item_country_id);
+
+CREATE INDEX item_sop_index
+ON item_sop (item_organization_id);
+
+CREATE INDEX item_template_index1
+ON item_template (item_user_id);
+
+CREATE INDEX item_template_index2
+ON item_template (item_organization_id);
+
+CREATE INDEX item_user_index
+ON item_user (item_organization_id);
+
+CREATE INDEX item_global_index1
+ON item_global (item_audit_id);
+
+CREATE INDEX item_global_index2
+ON item_global (item_organization_id);
+
+CREATE INDEX item_global_index3
+ON item_global (item_user_id);
+
+CREATE INDEX item_global_index4
+ON item_global (item_template_id);
+
+CREATE INDEX item_audit_index1
+ON item_audit (item_catalog_id);
+
+CREATE INDEX item_audit_index2
+ON item_audit (item_user_id);
+
+CREATE INDEX item_audit_index3
+ON item_audit (item_organization_id);
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                                                                   _______                                       
                                                     ,,                            
@@ -903,6 +953,8 @@ CREATE FUNCTION add_item_to_item_reference(observable_item regclass,
             EXECUTE FORMAT('ALTER TABLE %I
                             ADD FOREIGN KEY (%I)
                             REFERENCES %I ("item_id")', observable_item, required_item_column, referenced);
+            EXECUTE FORMAT('CREATE INDEX index_for_foreign_key
+                            ON %I (%I)', observable_item, required_item_column)
         
             -- Return the id-column
             RETURN required_item_column;
@@ -1147,6 +1199,8 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("observableitem_id")
                             REFERENCES %I ("item_id")', table_name, observable_item);
+            EXECUTE FORMAT ('CREATE INDEX table_name_index
+                             ON %I', table_name)
 
             COMMIT;
         END
