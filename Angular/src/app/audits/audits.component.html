@@ -99,7 +99,7 @@
                     <!-- header cells -->
                     <ng-template let-column="column" ngx-datatable-header-template>
                         {{col.name}} {{col.returnableID}}
-                        <button mat-icon-button matTooltip="item">
+                        <button mat-icon-button  [matTooltip]="col.itemPath">
                             <mat-icon style="font-size: 90%;">info</mat-icon>
                         </button>
                     </ng-template>
