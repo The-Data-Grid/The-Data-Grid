@@ -44,7 +44,8 @@ export class TableObjectService {
       dataTableColumns.push({
         name: setupObject.columns[columnIndex].frontendName,
         type: datatypes[setupObject.columns[columnIndex].datatype],
-        index: columnIndex
+        index: columnIndex,
+        returnableID: returnableID
       });
     });
 
@@ -61,29 +62,29 @@ export class TableObjectService {
 
         switch (datatype) {
           case "string": {
-            newRow[columnIndex] = element[i];
-            if (setupObject.columns[columnIndex].frontendName == "User Email") {
-              console.log(returnableID + " " + columnIndex + " " + newRow[columnIndex])
-              // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype + " " + element[i])
-            }
+            newRow[returnableID] = element[i];
+            // if (setupObject.columns[columnIndex].frontendName == "User Email") {
+            //   console.log(returnableID + " " + columnIndex + " " + newRow[columnIndex])
+            //   // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype + " " + element[i])
+            // }
             break;
           }
           case "hyperlink": {
             // newRow[setupObject.columns[columnIndex].frontendName] = element[i].displayString;
             // newRow["_hyperlinks"][columnIndex] = element[i].URL; break;
-            newRow[columnIndex] = element[i];
-            newRow["_hyperlinks"][columnIndex] = element[i]; break;
+            newRow[returnableID] = element[i];
+            newRow["_hyperlinks"][returnableID] = element[i]; break;
           }
           case "bool": {
             if (element[i]) {
-              newRow[columnIndex] = "True";
+              newRow[returnableID] = "True";
             }
             else {
-              newRow[columnIndex] = "False";
+              newRow[returnableID] = "False";
             } break;
           }
           case "date": {
-            newRow[columnIndex] = element[i]; break;
+            newRow[returnableID] = element[i]; break;
           }
         }
       });

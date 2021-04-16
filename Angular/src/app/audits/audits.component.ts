@@ -88,7 +88,8 @@ export class AuditsComponent implements OnInit {
         console.log("using data from express server")
         this.setupObject = res;
         this.parseSetupObject();
-        // console.log(this.setupObject)
+         console.log("setupObject:");
+        console.log(this.setupObject)
       });
     }
   }

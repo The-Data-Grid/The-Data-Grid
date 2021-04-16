@@ -108,7 +108,6 @@ export class SetupObjectService {
     item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_ITEM_IDXS, i);
-      // console.log(itemPointer.index + " ID " + itemPointer.frontendName)
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, returnableIDs, setupObject);
     });
@@ -124,7 +123,6 @@ export class SetupObjectService {
     item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
-      // console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, returnableIDs, setupObject);
     });
@@ -272,7 +270,6 @@ export class SetupObjectService {
     let treeID = tree.join('>');
     return setupObject.treeIDToReturnableID[treeID];
   }
-
 
   // create the appliedFilterSelections object by finding all selectors. 
   // also find all columns that have default marked true
