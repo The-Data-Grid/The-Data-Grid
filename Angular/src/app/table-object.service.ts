@@ -42,14 +42,19 @@ export class TableObjectService {
     // construct the column header arrays
     tableObject.returnableIDs.forEach(returnableID => {
       let columnIndex = returnableIDToColumnIndex[returnableID];
+      let curColumn = setupObject.columns[columnIndex];
       let itemPath = returnableIDToItemPath[returnableID].join(">");
-      dataTableColumns.push({
-        name: setupObject.columns[columnIndex].frontendName,
-        type: datatypes[setupObject.columns[columnIndex].datatype],
-        // index: columnIndex,
-        returnableID: returnableID,
-        itemPath: itemPath
-      });
+      if (curColumn.default) {
+        dataTableColumns.push({
+          name: curColumn.frontendName,
+          type: datatypes[curColumn.datatype],
+          // index: columnIndex,
+          returnableID: returnableID,
+          itemPath: itemPath,
+          displayMetaInfo: false
+        });
+      }
+
     });
 
     //add rows to the table one by one
@@ -88,9 +93,6 @@ export class TableObjectService {
       });
       rows.push(newRow);
     });
-
-    console.log("rows:")
-    console.log(rows)
     return rows;
   }
 

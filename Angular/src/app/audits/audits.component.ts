@@ -146,6 +146,11 @@ export class AuditsComponent implements OnInit {
     }
   }
 
+  toggleMetaInfoDisplay(column) {
+    column.displayMetaInfo = !column.displayMetaInfo;
+    console.log(column.displayMetaInfo)
+  }
+
   updateValue(event, columnName, rowIndex) {
     console.log('inline editing rowIndex', rowIndex);
     this.toggleEditingCell(rowIndex, columnName); //stop editing
