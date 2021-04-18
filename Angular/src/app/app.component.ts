@@ -1,12 +1,13 @@
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, ViewChildren, QueryList } from '@angular/core';
 import { ApiService } from './api.service';
 import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { DialogComponent } from './login-dialog/login-dialog.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
-import {MatMenuTrigger} from '@angular/material/menu'
+import {MatMenu, MatMenuTrigger} from '@angular/material/menu'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Clipboard } from '@angular/cdk/clipboard'
+import { black } from 'chalk';
 
 
 const API_URL = environment.apiUrl;
@@ -26,8 +27,35 @@ interface logoutObject {
 export class AppComponent implements OnInit {
 
   title = 'THE DATA GRID';
+
+  style = true
+
+  // for the dropdowns
+  @ViewChildren(MatMenuTrigger) trigger: QueryList<MatMenuTrigger>;
+
   currentWindowWidth;
-  isHover:boolean = false;
+  recheckIfInMenu: boolean;
+  recheckIfInMenu2: boolean;
+
+
+  openResourceMenu(index:number) {
+    this.trigger.toArray()[index].openMenu();
+  }
+
+  closeResourceMenu(index:number) {
+    setTimeout(() => {
+      if (index == 1) {
+        if (this.recheckIfInMenu2 == false) {
+          this.trigger.toArray()[index].closeMenu();
+        }
+      }
+      else {
+        if (this.recheckIfInMenu === false) {
+          this.trigger.toArray()[index].closeMenu();
+        }  
+      }
+    }, 175);
+  }
 
 
   constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private clipboard: Clipboard,) { }
@@ -43,10 +71,38 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // mat-nav bars aren't really designed for dropdowns, so customizing dropdown styles is a bit convoluted. Each index in the dropdownsHovered
+  // array corresponds to a dropdown button (eg 0 index corresponds to mission, 1 to How It Works, etc)
 
-  changeHover() {
-    this.isHover = !this.isHover;
+  dropdownsHovered:Array<boolean> = [false,false,false,false,false,false];
+
+  adjustDropdownHover(index:number) {
+    this.dropdownsHovered[index] = !this.dropdownsHovered[index];
+  } 
+
+  isActiveButton(url:any, index:number) {
+    if (this.router.url === url || this.dropdownsHovered[index]) {
+      return '#F0F0F0';
+    }
+    else {
+      return 'transparent';
+    }
   }
+
+  @HostListener('window:scroll', [])
+  scrollHandler() {
+      for (let index = 0; index < this.trigger.toArray().length; index++) {
+    this.trigger.toArray()[index].closeMenu();
+      }
+  }
+
+  // getHeight() {
+  //   return window.scrollY
+  //   return `${window.scrollY} px`;
+  //   console.log(window.scrollY);
+  // }
+
+  
 
   logOut() {
     this.apiService.signOut()
@@ -82,6 +138,7 @@ export class AppComponent implements OnInit {
     dialogConfig.width = "600px";
     dialogConfig.height = "700px";
     this.currentWindowWidth = window.innerWidth;
+    this.recheckIfInMenu = false;
 
     // this.dialog.open(LockDialogComponent, dialogConfig);
   }
