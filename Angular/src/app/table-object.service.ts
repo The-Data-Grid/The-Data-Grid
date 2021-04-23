@@ -37,20 +37,29 @@ export class TableObjectService {
 
     // map returnable ID to columns
     let returnableIDToColumnIndex = this.getReturnableIDToColumnIndex(setupObject, tableObject);
+    let returnableIDToItemPath = this.getReturnableIDToItemPath(setupObject, tableObject);
 
     // construct the column header arrays
     tableObject.returnableIDs.forEach(returnableID => {
       let columnIndex = returnableIDToColumnIndex[returnableID];
-      dataTableColumns.push({
-        name: setupObject.columns[columnIndex].frontendName,
-        type: datatypes[setupObject.columns[columnIndex].datatype],
-        index: columnIndex
-      });
+      let curColumn = setupObject.columns[columnIndex];
+      let itemPath = returnableIDToItemPath[returnableID].join(">");
+      if (curColumn.default) {
+        dataTableColumns.push({
+          name: curColumn.frontendName,
+          type: datatypes[curColumn.datatype],
+          // index: columnIndex,
+          returnableID: returnableID,
+          itemPath: itemPath,
+          displayMetaInfo: false
+        });
+      }
+
     });
 
     //add rows to the table one by one
     tableObject.rowData.forEach((element, k) => {
-      console.log("hangling data for row " + k)
+      // console.log("hangling data for row " + k)
       newRow = {}
       newRow["_hyperlinks"] = {};
 
@@ -61,45 +70,86 @@ export class TableObjectService {
 
         switch (datatype) {
           case "string": {
-            newRow[columnIndex] = element[i];
-            if (setupObject.columns[columnIndex].frontendName == "User Email") {
-              console.log(returnableID + " " + columnIndex + " " + newRow[columnIndex])
-              // console.log(setupObject.columns[columnIndex].frontendName + " " + datatype + " " + element[i])
-            }
-            break;
+            newRow[returnableID] = element[i]; break;
           }
           case "hyperlink": {
             // newRow[setupObject.columns[columnIndex].frontendName] = element[i].displayString;
             // newRow["_hyperlinks"][columnIndex] = element[i].URL; break;
-            newRow[columnIndex] = element[i];
-            newRow["_hyperlinks"][columnIndex] = element[i]; break;
+            newRow[returnableID] = element[i];
+            newRow["_hyperlinks"][returnableID] = element[i]; break;
           }
           case "bool": {
             if (element[i]) {
-              newRow[columnIndex] = "True";
+              newRow[returnableID] = "True";
             }
             else {
-              newRow[columnIndex] = "False";
+              newRow[returnableID] = "False";
             } break;
           }
           case "date": {
-            newRow[columnIndex] = element[i]; break;
+            newRow[returnableID] = element[i]; break;
           }
         }
       });
-      // console.log(newRow)
       rows.push(newRow);
     });
-    // console.log("setupObject:")
-    // console.log(setupObject)
-    // console.log("dataTableColumns:")
-    // console.log(dataTableColumns)
-    console.log("rows:")
-    console.log(rows)
     return rows;
   }
 
-  //02200
+
+
+  getReturnableIDToItemPath(setupObject, tableObject) {
+    let returnableIDToItemPath = {};
+    tableObject.returnableIDs.forEach(returnableID => {
+      //treeID is an array containing numbers that represent the path through the tree
+      //reverse so we can pop from it like a stack
+      let treeID = setupObject.returnableIDToTreeID[returnableID].split('>').reverse()
+      returnableIDToItemPath[returnableID] = [];
+      let firstIndex = treeID.pop();
+      // we have a global column
+      if (firstIndex == IDX_OF_GLOBAL_ITEM_IDX) {
+        returnableIDToItemPath[returnableID].push("Submission");
+      }
+      // we have a feature column
+      else if (firstIndex == IDX_OF_FEATURES_ARR) {
+        let featureIndex = setupObject.children[IDX_OF_FEATURES_ARR][treeID.pop()];
+        let feature = setupObject.features[featureIndex];
+        returnableIDToItemPath[returnableID].push(feature.frontendName);
+
+        let childArrayIndex = treeID.pop();
+        if (childArrayIndex == IDX_OF_ITEM_IDX) {
+          let itemIndex = feature.children[IDX_OF_ITEM_IDX];
+          returnableIDToItemPath[returnableID].concat( this.getItemPathFromItem(itemIndex, treeID, setupObject));
+        }
+      }
+    });
+    return returnableIDToItemPath;
+  }
+
+  private getItemPathFromItem(itemIndex, treeID, setupObject) {
+    let itemNode = setupObject.items[itemIndex];
+    let partialPath = [];
+    partialPath.push(itemNode.frontendName)
+
+    let childArrayIndex = treeID.pop();
+    let childArrayElementIndex = treeID.pop();
+
+    if (childArrayIndex == IDX_OF_ID_ITEM_IDXS) {
+      let itemChildNodePointer = itemNode.children[IDX_OF_ID_ITEM_IDXS][childArrayElementIndex];
+      partialPath.push(itemChildNodePointer.frontendName)
+      partialPath.concat( this.getItemPathFromItem(itemChildNodePointer.index, treeID, setupObject))
+    }
+    else if (childArrayIndex == IDX_OF_NON_ID_ITEM_IDXS) {
+      let itemChildNodePointer = itemNode.children[IDX_OF_NON_ID_ITEM_IDXS][childArrayElementIndex];
+      partialPath.push(itemChildNodePointer.frontendName)
+      partialPath.concat( this.getItemPathFromItem(itemChildNodePointer.index, treeID, setupObject))
+    }
+
+    return partialPath;
+  }
+
+
+
 
   getReturnableIDToColumnIndex(setupObject, tableObject) {
     let returnableIDToColumnIndex = {};
@@ -108,10 +158,12 @@ export class TableObjectService {
       //reverse so we can pop from it like a stack
       let treeID = setupObject.returnableIDToTreeID[returnableID].split('>').reverse()
       let firstIndex = treeID.pop();
+      // we have a global column
       if (firstIndex == IDX_OF_GLOBAL_ITEM_IDX) {
         let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
         returnableIDToColumnIndex[returnableID] = this.getColumnIndexFromItem(globalItemIndex, treeID, setupObject);
       }
+      // we have a feature column
       else if (firstIndex == IDX_OF_FEATURES_ARR) {
         let featureIndex = setupObject.children[IDX_OF_FEATURES_ARR][treeID.pop()];
         let feature = setupObject.features[featureIndex];
@@ -125,15 +177,10 @@ export class TableObjectService {
         }
       }
     });
-
-    // console.log("returnableIDToColumnIndex:")
-    // console.log(returnableIDToColumnIndex)
     return returnableIDToColumnIndex;
   }
 
-  //https://stackoverflow.com/questions/29605929/remove-first-item-of-the-array-like-popping-from-stack
-
-  // returns columnIndex
+  //// returns columnIndex
   private getColumnIndexFromItem(itemIndex, treeID, setupObject) {
     let itemNode = setupObject.items[itemIndex];
     let childArrayIndex = treeID.pop();
@@ -154,6 +201,9 @@ export class TableObjectService {
       return this.getColumnIndexFromItem(itemChildNodePointer.index, treeID, setupObject)
     }
   }
+
+
+
 
 
 }

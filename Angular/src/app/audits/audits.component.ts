@@ -88,7 +88,8 @@ export class AuditsComponent implements OnInit {
         console.log("using data from express server")
         this.setupObject = res;
         this.parseSetupObject();
-        // console.log(this.setupObject)
+         console.log("setupObject:");
+        console.log(this.setupObject)
       });
     }
   }
@@ -143,6 +144,11 @@ export class AuditsComponent implements OnInit {
         this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
       });
     }
+  }
+
+  toggleMetaInfoDisplay(column) {
+    column.displayMetaInfo = !column.displayMetaInfo;
+    console.log(column.displayMetaInfo)
   }
 
   updateValue(event, columnName, rowIndex) {

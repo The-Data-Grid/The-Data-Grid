@@ -99,32 +99,28 @@ export class SetupObjectService {
     item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_COL_IDXS, i);
-      columns.push({
-        column: setupObject.columns[IDColumnIndex],
-        returnableID: this.getReturnableID(newPath, setupObject)
-      });
+      let curColumn = setupObject.columns[IDColumnIndex];
+      curColumn["_returnableID"] = this.getReturnableID(newPath, setupObject);
+      columns.push(curColumn);
       returnableIDs.push(this.getReturnableID(newPath, setupObject));
     });
     item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_ITEM_IDXS, i);
-      // console.log(itemPointer.index + " ID " + itemPointer.frontendName)
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, returnableIDs, setupObject);
     });
     item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_NON_ID_COL_IDXS, i);
-      columns.push({
-        column: setupObject.columns[NonIDColumnIndex],
-        returnableID: this.getReturnableID(newPath, setupObject)
-      });
+      let curColumn = setupObject.columns[NonIDColumnIndex];
+      curColumn["_returnableID"] = this.getReturnableID(newPath, setupObject);
+      columns.push(curColumn);
       returnableIDs.push(this.getReturnableID(newPath, setupObject));
     });
     item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
-      // console.log(itemPointer.index + " NON id " + itemPointer.frontendName)
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, returnableIDs, setupObject);
     });
@@ -153,11 +149,7 @@ export class SetupObjectService {
       bool: []
     };
 
-    where each element inside the arrays have the form:
-    {
-        column: columnObject
-        returnableID: column's returnableID
-    }
+    where each element inside the arrays is a columnObject
  */////////////////////////////////////////
  getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, returnableIDs, wantFilterSelector: boolean) {
   let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
@@ -189,17 +181,15 @@ export class SetupObjectService {
       // console.log(setupObject.features[featureIndex].frontendName + " " + featureIndex)
       // ...find feature's observation columns
       setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
-        featureColumns.push({
-          column: setupObject.columns[observationColumnIndex],
-          returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject)
-        });
+        let curColumn = setupObject.columns[observationColumnIndex];
+        curColumn["_returnableID"] = this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject);
+        featureColumns.push(curColumn);
       });
       // ...find feature's attribute columns
       setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
-        featureColumns.push({
-          column: setupObject.columns[attributeColumnIndex],
-          returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject)
-        });
+        let curColumn = setupObject.columns[attributeColumnIndex];
+        curColumn["_returnableID"] = this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject)
+        featureColumns.push(curColumn);
       });
       allFeatureSelectors[featureIndex] = this.parseColumns(featureColumns,
         appliedFilterSelections,
@@ -236,13 +226,11 @@ export class SetupObjectService {
     // for each feature...
     setupObject.children[IDX_OF_FEATURES_ARR].forEach((featureIndex, k) => {
       let featureColumns = [];
-      // console.log(childType + " " + setupObject.features[featureIndex].frontendName)
       // ...find feature's observation or attribute columns
       setupObject.features[featureIndex].children[childType].forEach((columnIndex, i) => {
-        featureColumns.push({
-          column: setupObject.columns[columnIndex],
-          returnableID: this.getReturnableID([IDX_OF_FEATURES_ARR, k, childType, i], setupObject)
-        });
+        let curColumn = setupObject.columns[columnIndex];
+        curColumn["_returnableID"] = this.getReturnableID([IDX_OF_FEATURES_ARR, k, childType, i], setupObject)
+        featureColumns.push(curColumn);
       });
       allFeatureInputSelectors[featureIndex] = this.parseColumns(featureColumns,
         appliedFilterSelections,
@@ -273,12 +261,11 @@ export class SetupObjectService {
     return setupObject.treeIDToReturnableID[treeID];
   }
 
-
   // create the appliedFilterSelections object by finding all selectors. 
   // also find all columns that have default marked true
   //fills defaultcolumnIDs with the IDs of default columns
   //wantFilterSelector indicates whether we want to return filterSelectors or inputSelectors
-  private parseColumns(infos, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFilterSelector: boolean): any {
+  private parseColumns(columns, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFilterSelector: boolean): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],
@@ -295,54 +282,54 @@ export class SetupObjectService {
 
     let curColumnSelector = null;
 
-    infos.forEach(info => {
-      wantFilterSelector ? curColumnSelector = info.column.filterSelector : curColumnSelector = info.column.inputSelector;
+    columns.forEach(column => {
+      wantFilterSelector ? curColumnSelector = column.filterSelector : curColumnSelector = column.inputSelector;
       if (curColumnSelector) {
         switch (curColumnSelector.selectorKey) {
           case "dropdown": {
-            selectors.dropdown.push(info);
-            appliedFilterSelections.dropdown[info.returnableID] = null; break;
+            selectors.dropdown.push(column);
+            appliedFilterSelections.dropdown[column._returnableID] = null; break;
           }
           case "numericEqual": {
-            selectors.numericEqual.push(info);
-            appliedFilterSelections.numericEqual[info.returnableID] = null; break;
+            selectors.numericEqual.push(column);
+            appliedFilterSelections.numericEqual[column._returnableID] = null; break;
           }
           case "numericChoice": {
-            selectors.numericChoice.push(info);
-            appliedFilterSelections.numericChoice[info.returnableID] = { relation: null, value: null }; break;
+            selectors.numericChoice.push(column);
+            appliedFilterSelections.numericChoice[column._returnableID] = { relation: null, value: null }; break;
           }
           case "calendarRange": {
-            selectors.calendarRange.push(info);
-            appliedFilterSelections.calendarRange[info.returnableID] = { start: null, end: null }; break;
+            selectors.calendarRange.push(column);
+            appliedFilterSelections.calendarRange[column._returnableID] = { start: null, end: null }; break;
           }
           case "calendarEqual": {
-            selectors.calendarEqual.push(info);
-            appliedFilterSelections.calendarEqual[info.returnableID] = null; break;
+            selectors.calendarEqual.push(column);
+            appliedFilterSelections.calendarEqual[column._returnableID] = null; break;
           }
           case "searchableDropdown": {
-            selectors.searchableDropdown.push(info);
-            appliedFilterSelections.searchableDropdown[info.returnableID] = []; break;
+            selectors.searchableDropdown.push(column);
+            appliedFilterSelections.searchableDropdown[column._returnableID] = []; break;
           }
           case "checklistDropdown": {
-            selectors.checklistDropdown.push(info);
-            appliedFilterSelections.checklistDropdown[info.returnableID] = []; break;
+            selectors.checklistDropdown.push(column);
+            appliedFilterSelections.checklistDropdown[column._returnableID] = []; break;
           }
           case "searchableChecklistDropdown": {
-            selectors.searchableChecklistDropdown.push(info);
-            appliedFilterSelections.searchableChecklistDropdown[info.returnableID] = []; break;
+            selectors.searchableChecklistDropdown.push(column);
+            appliedFilterSelections.searchableChecklistDropdown[column._returnableID] = []; break;
           }
           case "text": {
-            selectors.text.push(info);
-            appliedFilterSelections.text[info.returnableID] = null; break;
+            selectors.text.push(column);
+            appliedFilterSelections.text[column._returnableID] = null; break;
           }
           case "bool": {
-            selectors.bool.push(info);
-            appliedFilterSelections.bool[info.returnableID] = null; break;
+            selectors.bool.push(column);
+            appliedFilterSelections.bool[column._returnableID] = null; break;
           }
         }
       }
-      if (info.column.default) {
-        defaultColumnIDs.push(info.returnableID);
+      if (column.default) {
+        defaultColumnIDs.push(column._returnableID);
       }
     });
     return selectors;

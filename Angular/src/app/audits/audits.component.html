@@ -74,7 +74,7 @@
 
 
             <!-- try an html table ? -->
-            <mat-card *ngIf="tableObject"
+            <!-- <mat-card *ngIf="tableObject"
                 style="width: 85%; border-radius: 0%; margin-right: auto; margin-left: auto; margin-bottom: 20px;">
                 <div style="overflow-x: auto; ">
                     <table style=" margin: 15px; ">
@@ -88,21 +88,31 @@
                         </tr>
                     </table>
                 </div>
-            </mat-card>
+            </mat-card> -->
 
 
             <!-- table -->
             <ngx-datatable *ngIf="tableObject" id="table" #table class="material" [headerHeight]="50"
                 [footerHeight]="50" rowHeight="auto" [limit]="6" [rows]="rows" [scrollbarH]="true">
 
-                <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.index" [name]="col.name">
+                <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.returnableID" [name]="col.name">
                     <!-- header cells -->
                     <ng-template let-column="column" ngx-datatable-header-template>
-                        {{col.name}} {{col.index}}
-                        <button mat-icon-button matTooltip="item">
+                        {{col.name}} {{col.returnableID}} 
+                        <button mat-icon-button  [matTooltip]="'Item Path: ' + col.itemPath" matTooltipPosition="above">
                             <mat-icon style="font-size: 90%;">info</mat-icon>
                         </button>
+                        <!-- <span *ngIf="col.displayMetaInfo==true" style="background-color: pink; overflow: visible;">
+                            yuh
+                           <div >
+                            Item Path: {{col.itemPath}}
+                           </div>
+                        </span>
+                        <button mat-icon-button (click)="toggleMetaInfoDisplay(col)">
+                            <mat-icon style="font-size: 90%;">info</mat-icon>
+                        </button> -->
                     </ng-template>
+
 
                     <!-- row cells -->
                     <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row" let-value="value">
