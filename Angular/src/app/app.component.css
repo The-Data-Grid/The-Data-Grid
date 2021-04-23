@@ -93,6 +93,8 @@ button:focus { outline: none; }
 
 ::ng-deep .customize {
    background: white;
+   width: 150px;
+   margin-left: -10px;
    position: absolute;
    top: 0%;
    display: block;

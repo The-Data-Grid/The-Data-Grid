@@ -38,7 +38,7 @@
                [routerLinkActiveOptions]="{exact: true}" #rla8="routerLinkActive" [active]="rla8.isActive"></app-dropdown> -->
                <div>
                    <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}" #rla7="routerLinkActive"
-                   [active]="rla7.isActive" [routerLink]="'/upload-files'">
+                   [active]="rla7.isActive" [routerLink]="'/upload-audit'">
                    <button
                    [matMenuTriggerFor]="menu"
                    #menuTrigger="matMenuTrigger"
@@ -55,7 +55,7 @@
                    (mouseenter)="recheckIfInMenu = true"
                    (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false"
                    >   
-                   <button mat-menu-item [routerLink]="'/upload-files'" (mouseover)="adjustDropdownHover(4)" (mouseout)="adjustDropdownHover(4)" [ngStyle]="{'background-color': isActiveButton('/upload-files',4)}">
+                   <button mat-menu-item [routerLink]="'/upload-audit'" (mouseover)="adjustDropdownHover(4)" (mouseout)="adjustDropdownHover(4)" [ngStyle]="{'background-color': isActiveButton('/upload-files',4)}">
                        Online Audit
                      </button>
                      <button mat-menu-item [routerLink]="'/download'" (mouseover)="adjustDropdownHover(5)" (mouseout)="adjustDropdownHover(5)" [ngStyle]="{'background-color': isActiveButton('/download',5)}">
@@ -77,7 +77,7 @@
  
                <div>
                    <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}" #rla8="routerLinkActive"
-                   [active]="rla8.isActive" [routerLink]="'/upload-files'" style="overflow: hidden;">
+                   [active]="rla8.isActive" [routerLink]="'/about'" style="overflow: hidden;">
                    <button
                    [matMenuTriggerFor]="menu_"
                    #menuTrigger="matMenuTrigger"
