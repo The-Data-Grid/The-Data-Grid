@@ -65,43 +65,39 @@ const queryParse = (req, res, next) => {
         }
 
         // setting up custom operator
-
+        // req.query parses 42[example]=something as 42: {example: 'something'}
         if (typeof(filter[key]) === 'object') {
-            let content = Object.keys(filter[key])
-            let returnvalueofstring = filter[key][content[0]].split('|');
-            let value = returnvalueofstring.map(e => {
-                if(!isNaN(e)) { //if number parseInt
-                    return parseFloat(e);
-                } else {
-                   return e; //else keep as string
-                }
 
-             })
-            
-            let operation = operation_map(content[0])
+            // Only getting the first operation! Multiple operations is not set up
+            // ex: 42: {lte: 5, gte: 2} only makes the lte filter now
+            // @Yash pls fix
+            let operationKey = Object.keys(filter[key])[0]
+
+            // get value
+            let value = filter[key][operationKey]
+            // get operation name
+            let operation = operation_map(operationKey)
+            // if not a valid operation
             if(operation === null) {
-                return res.status(400).send(`Bad Request 1603: ${content[0]} is not a valid operator`)
-            } else {
+                return res.status(400).send(`Bad Request 1603: ${operationKey} is not a valid operator`)
+            } 
+            // otherwise add as a filter
+            else {
                 filters[key] = {
-                    operation: operation_map(content[0], res),
-                   value: value
+                    operation,
+                    value
                 }
             }
         } else { // if no operator is given use = operator
-            let returnvalueofstring = filter[key].split('|');
 
-            //let value = filter[key][content[0]]
-            let value = returnvalueofstring.map(e => {
-                if(!isNaN(e)) { //if number parseInt
-                    return parseFloat(e);
-                } else {
-                    return e;
-                }
-            })
+            // @Yash OR stuff probably needs to go here too
+
+            let value = filter[key]
 
             filters[key] = {
                 operation: '=', 
-                value: value} 
+                value
+            } 
         }
     }
 
