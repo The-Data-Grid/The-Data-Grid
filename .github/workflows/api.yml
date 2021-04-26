@@ -9,7 +9,7 @@ on:
 
 jobs:
   # Label of the runner job
-  runner-job:
+  API Test Suite:
     # You must use a Linux environment when using service containers or container jobs
     runs-on: ubuntu-latest
 
