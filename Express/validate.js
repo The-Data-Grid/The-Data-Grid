@@ -196,8 +196,6 @@ function validationConstructor(init) {
             let filterIDKeys = Object.keys(res.locals.parsed.filters);    
 
             for(let filter of filterIDKeys) {
-                console.log(filter);
-                
                 // if not a valid filter for this feature and not a global filter and feature validation
                 if(!validate[feature].filter.includes(parseInt(filter)) && (init == 'item' || !globals.filter.includes(parseInt(filter)))) { 
                     return res.status(400).send(`Bad Request 2203: ${filter} is not a valid filter for the ${feature} feature`);
@@ -208,7 +206,7 @@ function validationConstructor(init) {
 
                     // TEXT
                     if(validate[feature]['sqlType'][index] == 'TEXT') {
-                        if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
+                        if(operator != '=' && operator != '~') {
                             return res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`);
                         }
                         for(let item of field) {
@@ -238,26 +236,26 @@ function validationConstructor(init) {
 
             var filters = Object.keys(universalFilters);
             // Validate universalFilters query
-            if (hasDuplicates(filters)) {
-                return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters.`);
-            } else if(filters.includes('sorta') && filters.includes('sortd')) {
-                return res.status(400).send(`Bad Request 2206: Cannot use both sorta and sortd.`);
+            if(filters.includes('sorta') && filters.includes('sortd')) {
+                return res.status(400).send(`Bad Request 2206: Cannot use both sorta and sortd`);
             } else if(filters.includes('offset') && (!filters.includes('sorta') && !filters.includes('sortd'))) {
-                return res.status(400).send(`Bad Request 2207: Offset requires either sorta or sortd.`);
+                return res.status(400).send(`Bad Request 2207: Offset requires either sorta or sortd`);
             } else if(filters.includes('limit') && !filters.includes('offset')) {
-                return res.status(400).send(`Bad Request 2208: Limit requires offset.`);
+                return res.status(400).send(`Bad Request 2208: Limit requires offset`);
             }
 
             // Validate universalFilters input fields
-            for(let filter of filters) {
+            for(let filter in universalFilters) {
                 // Validate field
-                if (filter == 'limit' && !isPositiveIntegerOrZero(universalFilters[filter])) {
-                    return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a postiive integer.`);
-                } else if (filter == 'offset' && !isPositiveInteger(universalFilters[filter])) {
-                    return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a postiive integer.`);
+                if(Array.isArray(universalFilters[filter])) {
+                    return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters`);
+                } else if (filter == 'limit' && !isPositiveInteger(universalFilters[filter])) {
+                    return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
+                } else if (filter == 'offset' && !isPositiveIntegerOrZero(universalFilters[filter])) {
+                    return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a positive integer`);
                 } else if (filter == 'sorta' || filter == 'sortd') {
                     if (!validate[feature].column.includes(parseInt(universalFilters[filter])) && (init == 'item' || !globals.filter.includes(parseInt(universalFilters[filter])))) {
-                        return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer.`);
+                        return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
                     }
                 }
             }

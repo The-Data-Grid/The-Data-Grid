@@ -15,7 +15,7 @@ class QueryCache {
     }
 
     generateKey(req) {
-        return req.path + '/' + Object.values(req.query).map(pair => pair[0] + '=' + pair[1]).join('&')
+        return req.originalUrl
     }
 }
 

@@ -46,6 +46,9 @@ function dataQueryWrapper(queryType) {
     return async function dataQuery(req, res, next) {   
     
         try {
+
+            console.log(res.locals.parsed);
+            
     
             let {
                 allReturnableIDs,
@@ -56,6 +59,8 @@ function dataQueryWrapper(queryType) {
     
             // A lot happens here... The query engine contains an algorithm that trims unneeded joins, asigns aliases to arbitrary columns, stores a lookup of
             // aliases for the where clause, does some SQL formatting, and a bit more.
+            //console.log(allReturnableIDs);
+            
             let {
                 selectClause,
                 joinClauseArray,
@@ -87,7 +92,7 @@ function dataQueryWrapper(queryType) {
             let finalQuery = query.join(' '); 
             
             // DEBUG: Show SQL Query //
-            // console.log(finalQuery); 
+            console.log(finalQuery); 
     
             // Finally querying the database and attaching the result
             res.locals.parsed.finalQuery = await db.result(finalQuery)
