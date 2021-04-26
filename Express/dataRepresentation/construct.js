@@ -1274,7 +1274,7 @@ async function makeAssets(featureOutput) {
     fs.writeFileSync(`${__dirname}/schemaAssets/itemIDColumnLookup.json`, JSON.stringify(itemIDColumnLookup))
     console.log(chalk.whiteBright.bold(`Wrote itemIDColumnLookup.json to schemaAssets`));
 
-    fs.writeFileSync(`${__dirname}/schemaASsets/itemParentLookup.json`, JSON.stringify(itemParentLookup))
+    fs.writeFileSync(`${__dirname}/schemaAssets/itemParentLookup.json`, JSON.stringify(itemParentLookup))
     console.log(chalk.whiteBright.bold(`Wrote itemParentLookup.json to schemaAssets`));
 
     fs.writeFileSync(`${__dirname}/schemaAssets/featureItemLookup.json`, JSON.stringify(featureItemLookup));
