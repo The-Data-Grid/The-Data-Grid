@@ -48,3 +48,8 @@ jobs:
         
       - name: Add Fake Data to the PostgreSQL Database
         run: npm run db-fake
+        
+      - name: Run the development server
+        run: npm run dev
+        env:
+          PGPASSWORD: postgres
