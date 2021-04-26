@@ -1,0 +1,48 @@
+/**
+ *  UCLA WASTE AUDIT SCHEMA DATA COLUMNS
+ *
+ */
+[
+    /**
+     *  VICTOR STANLEY BIN (WIP)
+     */
+
+    { // STREAM TYPE
+        "tableName": "item_vs_bin", // should be able to infer
+        "columnName": "data_stream", // optional, inferred from frontendName
+        "observationTableName": null, // should be able to infer
+        "subobservationTableName": null, // should be able to infer
+        "itemName": "item_vs_bin", // required
+
+        "sqlType": "TEXT", // required
+        "referenceType": "item-non-id", // required
+
+        "frontendName": "Waste Stream", // required
+        "information": "Waste Stream Labelled on Bin", // optional, defaults to null
+        "accuracy": null, // optional, defaults to null
+        "isNullable": false, // required
+        "isDefault": true, // optional, defaults to yes
+        "filterSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
+        "inputSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
+        "frontendType": "string" //infer from sqlType
+    },
+    { // RNG WP STRING IDENTIFIER
+        "tableName": "item_vs_cluster",
+        "columnName": "data_cluster_type",
+        "observationTableName": null,
+        "subobservationTableName": null,
+        "itemName": "item_vs_cluster",
+
+        "sqlType": "TEXT",
+        "referenceType": "item_id",
+
+        "frontendName": "Gallons Per Flush",
+        "information": null,
+        "accuracy": null,
+        "isNullable": false,
+        "isDefault": true,
+        "filterSelectorName": "numericChoice",
+        "inputSelectorName": "numericEqual",
+        "frontendType": "string"
+    }
+]

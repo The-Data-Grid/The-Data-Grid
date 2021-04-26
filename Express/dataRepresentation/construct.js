@@ -100,6 +100,7 @@ else if(process.argv[0] == 'inspect') {
         commandLineArgs.isSummary = process.argv.includes('-s') || process.argv.includes('--summary');
         commandLineArgs.isTree = process.argv.includes('-t') || process.argv.includes('--tree');
         commandLineArgs.isQueryString = process.argv.includes('-qs') || process.argv.includes('--query-string');
+        commandLineArgs.isFullyIdentifyingSet = process.argv.includes('-fis') || process.argv.includes('--fully-identifying-set');
         if(argFilter.length == 1) {
             commandLineArgs.filter = argFilter[0].match(/^--choose=(.*)/)[1];
         } else {
@@ -217,6 +218,19 @@ async function inspectSchema(commandLineArgs) {
                         filter: commandLineArgs.filter
                     }));
                 }
+
+                // if FIS trim to only include FIS returnables
+                /*
+
+                Not done yet because not only item-id returnables must be selected, but also
+                only returnables that traverse ID required items. Going to need to write a handler for this 
+                for upload anyway...
+
+                if(commandLineArgs.isFullyIdentifyingSet) {
+                    out = out.filter(returnable => returnable.rt__type_name == 'item-id')
+                    
+                }
+                */
                 
                 if(commandLineArgs.isSummary) {
                     const originalOut = Array.from(out);
@@ -363,6 +377,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
 
     // Intermezzo: construct the itemParents object
     let itemParentLookup = await makeItemParentLookup();
+    featureOutput.itemParentLookup = itemParentLookup
 
     console.log(chalk.green('Constructed the itemParents object'));
     
@@ -934,7 +949,7 @@ async function generateReturnables(itemArray, returnableArray, itemParentLookup,
         returnableArray = [...returnableArray, ...itemReturnables];
 
         // if item has a parent calculate new path and add to referencedItems array 
-        if(Object.keys(itemParentLookup).includes(itemObject.itemName)) {
+        if(itemObject.itemName in itemParentLookup) {
 
             let parentItemArray = itemParentLookup[itemObject.itemName]
 
@@ -1253,11 +1268,14 @@ function readSchema(file) { // Schema read function
 }
 
 async function makeAssets(featureOutput) {
-    const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup} = featureOutput;
+    const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup, itemParentLookup} = featureOutput;
     
     // Adding files to ./Express/dataRepresentation/schemaAssets
     fs.writeFileSync(`${__dirname}/schemaAssets/itemIDColumnLookup.json`, JSON.stringify(itemIDColumnLookup))
     console.log(chalk.whiteBright.bold(`Wrote itemIDColumnLookup.json to schemaAssets`));
+
+    fs.writeFileSync(`${__dirname}/schemaASsets/itemParentLookup.json`, JSON.stringify(itemParentLookup))
+    console.log(chalk.whiteBright.bold(`Wrote itemParentLookup.json to schemaAssets`));
 
     fs.writeFileSync(`${__dirname}/schemaAssets/featureItemLookup.json`, JSON.stringify(featureItemLookup));
     console.log(chalk.whiteBright.bold(`Wrote featireItemLookup.json to schemaAssets`));
