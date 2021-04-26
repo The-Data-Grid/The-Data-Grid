@@ -11,7 +11,10 @@
     "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
     "construct": "node ./Express/dataRepresentation/construct.js",
     "db-init": "bash ./Express/db/init.sh",
-    "db-fake": "bash ./Express/db/fake.sh"
+    "db-fake": "bash ./Express/db/fake.sh",
+    "db-start": "pg_ctl -D PostgreSQL/data start",
+    "db-stop": "pg_ctl -D PostgreSQL/data stop",
+    "db-status": "pg_ctl -D PostgreSQL/data status"
   },
   "author": "",
   "license": "ISC",
@@ -39,6 +42,7 @@
     "express-session": "^1.17.1",
     "libpq": "^1.8.9",
     "lodash": "^4.17.20",
+    "lru-cache": "^6.0.0",
     "memorystore": "^1.6.4",
     "ng-click-outside": "^7.0.0",
     "ng-multiselect-dropdown": "^0.2.10",

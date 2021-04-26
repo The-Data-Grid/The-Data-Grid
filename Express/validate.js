@@ -6,7 +6,6 @@
 const fs = require('fs')
 
 const {idValidationLookup} = require('./setup.js');
-let featureItemLookup, allItems;
 
 try {
     featureItemLookup = JSON.parse(fs.readFileSync(`${__dirname}/dataRepresentation/schemaAssets/featureItemLookup.json`))
@@ -194,17 +193,20 @@ function validationConstructor(init) {
 
             // Validate filters for feature and operators for filters
 
-            let index = 0;
             let filterIDKeys = Object.keys(res.locals.parsed.filters);    
 
             for(let filter of filterIDKeys) {
+                console.log(filter);
+                
                 // if not a valid filter for this feature and not a global filter and feature validation
                 if(!validate[feature].filter.includes(parseInt(filter)) && (init == 'item' || !globals.filter.includes(parseInt(filter)))) { 
                     return res.status(400).send(`Bad Request 2203: ${filter} is not a valid filter for the ${feature} feature`);
                 } else {
                     let operator = res.locals.parsed.filters[filter]['operation'];
                     let field = res.locals.parsed.filters[filter]['value'];
+                    let index = validate[feature].filter.indexOf(filter)
 
+                    // TEXT
                     if(validate[feature]['sqlType'][index] == 'TEXT') {
                         if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
                             return res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`);
@@ -214,12 +216,16 @@ function validationConstructor(init) {
                                 return res.status(400).send(`Bad Request 1604: Field for id: ${filter} must be text`);
                             }
                         }
+
+                    // NUMBER
                     } else if(validate[feature]['sqlType'][index] == 'NUMERIC') {
                         for(let item of field) {
                             if(!isNumber(item)) {
                                 return res.status(400).send(`Bad Request 1605: Field for id: ${filter} must be numeric`);
                             }
                         }
+
+                    // DATE
                     } else if(validate[feature]['sqlType'][index] == 'TIMESTAMPTZ') {
                         for(let item of field) {
                             if(!isValidDate(item)) {
@@ -228,7 +234,6 @@ function validationConstructor(init) {
                         }
                     }
                 }
-                index++;
             };
 
             var filters = Object.keys(universalFilters);

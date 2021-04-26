@@ -36,30 +36,6 @@ const queryParse = (req, res, next) => {
     // init parsed values
     res.locals.parsed = {};
     
-    // download handling
-    if(req.path.split('/')[4] == 'download') {
-        let {downloadType} = req.params;
-        if(downloadType == 'csv') {
-            res.locals.parsed.download = {
-                status: true,
-                type: 'csv'
-            }
-        } else if(downloadType == 'json') {
-            res.locals.parsed.download = {
-                status: true,
-                type: 'json'
-            }
-        } else {
-            return res.status(400).send(`Bad Request 1604: Download type must be 'json' or 'csv'`)
-        }
-    } else {
-        res.locals.parsed.download = {
-            status: false,
-            type: null
-        }
-    }
-    
-    let {downloadType} = req.params;
 
     // Validate column IDs are numeric
     for(let id of include) {
