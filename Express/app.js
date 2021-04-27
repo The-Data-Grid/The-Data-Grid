@@ -60,6 +60,13 @@ function cycleTimer(req, res, next) {
     next()
 }
 
+//** Observation Key Query **/	
+app.get('/api/audit/observation/key/:feature', 
+    parse.keyQueryParse, 
+    validateObservation, 
+    query.featureQuery, 
+    query.sendKey);
+
 //** Observation Data Query w/ Download **//	
 app.get(['/api/audit/observation/:feature/:include', '/api/audit/observation/download/:downloadType/:feature/:include'],
     parse.queryParse, 
@@ -74,13 +81,13 @@ app.get('/api/audit/observation/distinct/:feature/:include',
     query.featureQuery, 
     query.sendDistinct);
 
-//** Observation Key Query **/	
-app.get('/api/audit/observation/key/:feature/:include', 
-    parse.queryParse, 
-    validateObservation, 
-    query.featureQuery, 
-    query.sendKey);
 
+//** Item Key Query **//	
+app.get('/api/audit/item/key/:feature', 
+    parse.keyQueryParse, 
+    validateItem, 
+    query.itemQuery, 
+    query.sendKey);
 
 //** Item Data Query w/ Download **//	
 app.get(['/api/audit/item/:feature/:include', '/api/audit/item/download/:downloadType/:feature/:include'],
@@ -95,13 +102,6 @@ app.get('/api/audit/item/distinct/:feature/:include',
     validateItem, 
     query.itemQuery, 
     query.sendDistinct);
-
-//** Item Key Query **//	
-app.get('/api/audit/item/key/:feature/:include', 
-    parse.queryParse, 
-    validateItem, 
-    query.itemQuery, 
-    query.sendKey);
 
 
 //** Setup Query **//	

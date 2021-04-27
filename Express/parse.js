@@ -27,118 +27,248 @@ function operation_map(operation) {
     return op
 }
 
-const queryParse = (req, res, next) => {
-    let filter = req.query;
-    let {feature} = req.params; 
-    let {include} = req.params;
-    include = include.split('&');
+function parseConstructor (init) {
 
-    // init parsed values
-    res.locals.parsed = {};
+    return (req, res, next) => {
+        let filter = req.query;
+        let {feature} = req.params; 
+        let include;
+        // if we're doing a key query then include is just null
+        if (init == 'key') {
+            include = []
+        }
+        else {
+            include = req.params.include;
+            include = include.split('&');
+        }
     
-    // download handling
-    if(req.path.split('/')[4] == 'download') {
-        let {downloadType} = req.params;
-        if(downloadType == 'csv') {
-            res.locals.parsed.download = {
-                status: true,
-                type: 'csv'
-            }
-        } else if(downloadType == 'json') {
-            res.locals.parsed.download = {
-                status: true,
-                type: 'json'
+        // init parsed values
+        res.locals.parsed = {};
+        
+        // download handling
+        if(req.path.split('/')[4] == 'download') {
+            let {downloadType} = req.params;
+            if(downloadType == 'csv') {
+                res.locals.parsed.download = {
+                    status: true,
+                    type: 'csv'
+                }
+            } else if(downloadType == 'json') {
+                res.locals.parsed.download = {
+                    status: true,
+                    type: 'json'
+                }
+            } else {
+                return res.status(400).send(`Bad Request 1604: Download type must be 'json' or 'csv'`)
             }
         } else {
-            return res.status(400).send(`Bad Request 1604: Download type must be 'json' or 'csv'`)
-        }
-    } else {
-        res.locals.parsed.download = {
-            status: false,
-            type: null
-        }
-    }
-    
-    let {downloadType} = req.params;
-
-    // Validate column IDs are numeric
-    for(let id of include) {
-        if(isNaN(parseInt(id))) {
-            return res.status(400).send(`Bad Request 1601: ${id} must be numeric`);
-        }
-    }
-
-    // console.log('feature = ', feature);
-    // console.log('includes = ', include);
-    // console.log('filters = ', filter);
-    
-    // Construct object of parsed filters
-    let filters = {};
-    let universalFilters = {};
-    for (const key in filter) {
-
-        // check for universal filters
-        if(['sorta','sortd','limit','offset'].includes(key)) {
-            universalFilters[key] = filter[key]
-            continue
-        }
-
-        // Validate filter IDs are numeric
-        if(isNaN(parseInt(key))) {
-            return res.status(400).send(`Bad Request 1602: filters must be numeric IDs or universals`);
-        }
-
-        // setting up custom operator
-
-        if (typeof(filter[key]) === 'object') {
-            let content = Object.keys(filter[key])
-            let returnvalueofstring = filter[key][content[0]].split('|');
-            let value = returnvalueofstring.map(e => {
-                if(!isNaN(e)) { //if number parseInt
-                    return parseFloat(e);
-                } else {
-                   return e; //else keep as string
-                }
-
-             })
-            
-            let operation = operation_map(content[0])
-            if(operation === null) {
-                return res.status(400).send(`Bad Request 1603: ${content[0]} is not a valid operator`)
-            } else {
-                filters[key] = {
-                    operation: operation_map(content[0], res),
-                   value: value
-                }
+            res.locals.parsed.download = {
+                status: false,
+                type: null
             }
-        } else { // if no operator is given use = operator
-            let returnvalueofstring = filter[key].split('|');
-
-            //let value = filter[key][content[0]]
-            let value = returnvalueofstring.map(e => {
-                if(!isNaN(e)) { //if number parseInt
-                    return parseFloat(e);
-                } else {
-                    return e;
-                }
-            })
-
-            filters[key] = {
-                operation: '=', 
-                value: value} 
         }
-    }
+        
+        let {downloadType} = req.params;
+        // BYPASS: checking that include arent null
+        // Validate column IDs are numeric
+        for(let id of include) {
+            if(isNaN(parseInt(id))) {
+                return res.status(400).send(`Bad Request 1601: ${id} must be numeric`);
+            }
+        }
+    
+        // console.log('feature = ', feature);
+        // console.log('includes = ', include);
+        // console.log('filters = ', filter);
+        
+        // Construct object of parsed filters
+        let filters = {};
+        let universalFilters = {};
+        for (const key in filter) {
+    
+            // check for universal filters
+            if(['sorta','sortd','limit','offset'].includes(key)) {
+                universalFilters[key] = filter[key]
+                continue
+            }
+    
+            // Validate filter IDs are numeric
+            if(isNaN(parseInt(key))) {
+                return res.status(400).send(`Bad Request 1602: filters must be numeric IDs or universals`);
+            }
+    
+            // setting up custom operator
+    
+            if (typeof(filter[key]) === 'object') {
+                let content = Object.keys(filter[key])
+                let returnvalueofstring = filter[key][content[0]].split('|');
+                let value = returnvalueofstring.map(e => {
+                    if(!isNaN(e)) { //if number parseInt
+                        return parseFloat(e);
+                    } else {
+                        return e; //else keep as string
+                    }
+    
+                    })
+                
+                let operation = operation_map(content[0])
+                if(operation === null) {
+                    return res.status(400).send(`Bad Request 1603: ${content[0]} is not a valid operator`)
+                } else {
+                    filters[key] = {
+                        operation: operation_map(content[0], res),
+                        value: value
+                    }
+                }
+            } else { // if no operator is given use = operator
+                let returnvalueofstring = filter[key].split('|');
+    
+                //let value = filter[key][content[0]]
+                let value = returnvalueofstring.map(e => {
+                    if(!isNaN(e)) { //if number parseInt
+                        return parseFloat(e);
+                    } else {
+                        return e;
+                    }
+                })
+    
+                filters[key] = {
+                    operation: '=', 
+                    value: value} 
+            }
+        }
+        
+                
+        
+        // attaching parsed object
+        res.locals.parsed.request = "audit";
+        res.locals.parsed.features = feature
+        res.locals.parsed.columns = include
+        res.locals.parsed.filters = filters
+        res.locals.parsed.universalFilters = universalFilters;
+        next(); // passing to validate.js 
+    };
+
+}
+
+// const queryParse = (req, res, next) => {
+//     let filter = req.query;
+//     let {feature} = req.params; 
+//     // let {include} = req.params;
+//     // include = include.split('&');
+//     //BYPASS: something like
+//     // if(req.params.feature == 'key') {
+//     //     feature = req.params.include
+//         include = []
+//     // }
+//     console.log(req.params)
+
+//     // init parsed values
+//     res.locals.parsed = {};
+    
+//     // download handling
+//     if(req.path.split('/')[4] == 'download') {
+//         let {downloadType} = req.params;
+//         if(downloadType == 'csv') {
+//             res.locals.parsed.download = {
+//                 status: true,
+//                 type: 'csv'
+//             }
+//         } else if(downloadType == 'json') {
+//             res.locals.parsed.download = {
+//                 status: true,
+//                 type: 'json'
+//             }
+//         } else {
+//             return res.status(400).send(`Bad Request 1604: Download type must be 'json' or 'csv'`)
+//         }
+//     } else {
+//         res.locals.parsed.download = {
+//             status: false,
+//             type: null
+//         }
+//     }
+    
+//     let {downloadType} = req.params;
+//     // BYPASS: checking that include arent null
+//     // Validate column IDs are numeric
+//     for(let id of include) {
+//         if(isNaN(parseInt(id))) {
+//             return res.status(400).send(`Bad Request 1601: ${id} must be numeric`);
+//         }
+//     }
+
+//     // console.log('feature = ', feature);
+//     // console.log('includes = ', include);
+//     // console.log('filters = ', filter);
+    
+//     // Construct object of parsed filters
+//     let filters = {};
+//     let universalFilters = {};
+//     for (const key in filter) {
+
+//         // check for universal filters
+//         if(['sorta','sortd','limit','offset'].includes(key)) {
+//             universalFilters[key] = filter[key]
+//             continue
+//         }
+
+//         // Validate filter IDs are numeric
+//         if(isNaN(parseInt(key))) {
+//             return res.status(400).send(`Bad Request 1602: filters must be numeric IDs or universals`);
+//         }
+
+//         // setting up custom operator
+
+//         if (typeof(filter[key]) === 'object') {
+//             let content = Object.keys(filter[key])
+//             let returnvalueofstring = filter[key][content[0]].split('|');
+//             let value = returnvalueofstring.map(e => {
+//                 if(!isNaN(e)) { //if number parseInt
+//                     return parseFloat(e);
+//                 } else {
+//                    return e; //else keep as string
+//                 }
+
+//              })
+            
+//             let operation = operation_map(content[0])
+//             if(operation === null) {
+//                 return res.status(400).send(`Bad Request 1603: ${content[0]} is not a valid operator`)
+//             } else {
+//                 filters[key] = {
+//                     operation: operation_map(content[0], res),
+//                    value: value
+//                 }
+//             }
+//         } else { // if no operator is given use = operator
+//             let returnvalueofstring = filter[key].split('|');
+
+//             //let value = filter[key][content[0]]
+//             let value = returnvalueofstring.map(e => {
+//                 if(!isNaN(e)) { //if number parseInt
+//                     return parseFloat(e);
+//                 } else {
+//                     return e;
+//                 }
+//             })
+
+//             filters[key] = {
+//                 operation: '=', 
+//                 value: value} 
+//         }
+//     }
 
         
 
-    // attaching parsed object
-    res.locals.parsed.request = "audit";
-    res.locals.parsed.features = feature
-    res.locals.parsed.columns = include
-    res.locals.parsed.filters = filters
-    res.locals.parsed.universalFilters = universalFilters;
-    next(); // passing to validate.js 
-};
+//     // attaching parsed object
+//     res.locals.parsed.request = "audit";
+//     res.locals.parsed.features = feature
+//     res.locals.parsed.columns = include
+//     res.locals.parsed.filters = filters
+//     res.locals.parsed.universalFilters = universalFilters;
+//     next(); // passing to validate.js 
+// };
 
 ////// END OF QUERY PARSING //////
 
@@ -204,7 +334,8 @@ function apiDateToUTC(date) {
 
 module.exports = {
     statsParse,
-    queryParse,
+    keyQueryParse: parseConstructor('key'),
+    queryParse: parseConstructor('other'),
     uploadParse,
     templateParse,
     setupParse,
