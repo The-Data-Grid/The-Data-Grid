@@ -6,7 +6,6 @@
 const fs = require('fs')
 
 const {idValidationLookup} = require('./setup.js');
-let featureItemLookup, allItems;
 
 try {
     featureItemLookup = JSON.parse(fs.readFileSync(`${__dirname}/dataRepresentation/schemaAssets/featureItemLookup.json`))
@@ -194,7 +193,6 @@ function validationConstructor(init) {
 
             // Validate filters for feature and operators for filters
 
-            let index = 0;
             let filterIDKeys = Object.keys(res.locals.parsed.filters);    
 
             for(let filter of filterIDKeys) {
@@ -204,9 +202,11 @@ function validationConstructor(init) {
                 } else {
                     let operator = res.locals.parsed.filters[filter]['operation'];
                     let field = res.locals.parsed.filters[filter]['value'];
+                    let index = validate[feature].filter.indexOf(filter)
 
+                    // TEXT
                     if(validate[feature]['sqlType'][index] == 'TEXT') {
-                        if(operator != '=' && operator != 'Exists' && operator != 'Does not exist') {
+                        if(operator != '=' && operator != '~') {
                             return res.status(400).send(`Bad Request 2204: ${operator} is not a valid operator for the ${filter} filter`);
                         }
                         for(let item of field) {
@@ -214,12 +214,16 @@ function validationConstructor(init) {
                                 return res.status(400).send(`Bad Request 1604: Field for id: ${filter} must be text`);
                             }
                         }
+
+                    // NUMBER
                     } else if(validate[feature]['sqlType'][index] == 'NUMERIC') {
                         for(let item of field) {
                             if(!isNumber(item)) {
                                 return res.status(400).send(`Bad Request 1605: Field for id: ${filter} must be numeric`);
                             }
                         }
+
+                    // DATE
                     } else if(validate[feature]['sqlType'][index] == 'TIMESTAMPTZ') {
                         for(let item of field) {
                             if(!isValidDate(item)) {
@@ -228,31 +232,30 @@ function validationConstructor(init) {
                         }
                     }
                 }
-                index++;
             };
 
             var filters = Object.keys(universalFilters);
             // Validate universalFilters query
-            if (hasDuplicates(filters)) {
-                return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters.`);
-            } else if(filters.includes('sorta') && filters.includes('sortd')) {
-                return res.status(400).send(`Bad Request 2206: Cannot use both sorta and sortd.`);
+            if(filters.includes('sorta') && filters.includes('sortd')) {
+                return res.status(400).send(`Bad Request 2206: Cannot use both sorta and sortd`);
             } else if(filters.includes('offset') && (!filters.includes('sorta') && !filters.includes('sortd'))) {
-                return res.status(400).send(`Bad Request 2207: Offset requires either sorta or sortd.`);
+                return res.status(400).send(`Bad Request 2207: Offset requires either sorta or sortd`);
             } else if(filters.includes('limit') && !filters.includes('offset')) {
-                return res.status(400).send(`Bad Request 2208: Limit requires offset.`);
+                return res.status(400).send(`Bad Request 2208: Limit requires offset`);
             }
 
             // Validate universalFilters input fields
-            for(let filter of filters) {
+            for(let filter in universalFilters) {
                 // Validate field
-                if (filter == 'limit' && !isPositiveIntegerOrZero(universalFilters[filter])) {
-                    return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a postiive integer.`);
-                } else if (filter == 'offset' && !isPositiveInteger(universalFilters[filter])) {
-                    return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a postiive integer.`);
+                if(Array.isArray(universalFilters[filter])) {
+                    return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters`);
+                } else if (filter == 'limit' && !isPositiveInteger(universalFilters[filter])) {
+                    return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
+                } else if (filter == 'offset' && !isPositiveIntegerOrZero(universalFilters[filter])) {
+                    return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a positive integer`);
                 } else if (filter == 'sorta' || filter == 'sortd') {
                     if (!validate[feature].column.includes(parseInt(universalFilters[filter])) && (init == 'item' || !globals.filter.includes(parseInt(universalFilters[filter])))) {
-                        return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer.`);
+                        return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
                     }
                 }
             }

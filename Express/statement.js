@@ -31,7 +31,8 @@ const query = {
     whereCondition: '$(select:value) $(operation:value) $(filterValue)',
 
     submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.item_id',
-    global: 'LEFT JOIN item_global on $(feature:name).global_id = item_global.item_id',
+
+    globalItem: 'LEFT JOIN item_global on $(feature:name).global_id = item_global.item_id',
 
     subfeatureJoin: 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id',
 
