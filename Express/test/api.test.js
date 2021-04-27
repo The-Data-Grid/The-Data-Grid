@@ -41,7 +41,7 @@ let o8 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20
 let o9 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=0&offset=10&sorta=70';
 let o10 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=-10&sorta=70';
 let o11 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10&sorta=abc'
-
+let o12 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=abc&sorta=70';
 
 /**
  * OBJECTS
@@ -214,6 +214,17 @@ test('Test for valid number for filter', function (done) {
             if (err) return done(err);
             checkResponse(res, 400);
             expect(res.text).toBe("Bad Request 2210: Field for sorta must be a positive integer");
+            done();
+        });
+});
+
+test('Offset with string', done => {
+    request
+        .get(o12)
+        .end( (err, res) => {
+            if (err) return done(err);
+            checkResponse(res, 400);
+            expect(res.text).toBe('Bad Request 2209: Field for offset must be zero or a positive integer');
             done();
         });
 });
