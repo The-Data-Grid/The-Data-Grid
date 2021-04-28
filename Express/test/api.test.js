@@ -255,7 +255,8 @@ test('Test for observation/key query', function (done) {
             expect(Object.keys(res.body)).toEqual([
                 'primaryKey'
               ])
-        })
+            done();
+        });
 });
 
 // Helper functions
