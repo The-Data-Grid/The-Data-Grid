@@ -27,7 +27,7 @@ interface logoutObject {
 export class AppComponent implements OnInit {
 
   title = 'THE DATA GRID';
-
+  sidenavStatus:boolean = false;
   style = true
 
   // for the dropdowns
@@ -68,6 +68,17 @@ export class AppComponent implements OnInit {
     }
     else {
       return true;
+    }
+  }
+
+  openNav() {
+    if (this.sidenavStatus == true) {
+      document.getElementById("sidenav").style.width="0px";
+      this.sidenavStatus = false;
+    }
+    else {
+      document.getElementById("sidenav").style.width="100%";
+      this.sidenavStatus = true;
     }
   }
 
