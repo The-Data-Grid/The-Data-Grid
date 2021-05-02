@@ -29,6 +29,7 @@ connectPostgreSQL('default');
 const parse = require('./parse.js');
 const {validateObservation, validateItem} = require('./validate.js')
 const query = require('./query/query.js');
+const cacheLayer = require('./query/cacheLayer.js');
 const template = require('./template.js');
 const authRouter = require('./auth/login.js');
 
@@ -60,35 +61,80 @@ function cycleTimer(req, res, next) {
     next()
 }
 
-//** Observation Data Query w/ Download **//	
-app.get(['/api/audit/observation/:feature/:include', '/api/audit/observation/download/:downloadType/:feature/:include'],
+//** Observation Data Query **//	
+app.get('/api/audit/observation/:feature/:include',
+    cacheLayer.hitCacheDefault,
     parse.queryParse, 
     validateObservation, 
-    query.featureQuery, 
+    query.featureQuery,
+    query.formatDefault,
+    cacheLayer.setCache,
     query.sendDefault);
 
+//** Observation Data Query w/ Download **//	
+app.get('/api/audit/download/:downloadType/observation/:feature/:include',
+    cacheLayer.hitCacheDownload, 
+    parse.queryParse, 
+    validateObservation, 
+    query.featureQuery,
+    query.formatDefault,
+    cacheLayer.setCache,
+    query.sendDownload);
+
 //** Observation Distinct Query **/	
-app.get('/api/audit/observation/distinct/:feature/:include', 
+app.get('/api/audit/observation/distinct/:feature/:include',
+    cacheLayer.hitCacheDefault,
     parse.queryParse, 
     validateObservation, 
     query.featureQuery, 
+    query.formatDistinct,
+    cacheLayer.setCache,
     query.sendDistinct);
 
+//** Observation Key Query **/	
+app.get('/api/audit/observation/key/:feature/:include', 
+    parse.queryParse, 
+    validateObservation, 
+    query.featureQuery, 
+    query.sendKey);
+
+
+//** Item Data Query **//	
+app.get('/api/audit/item/:feature/:include',
+    cacheLayer.hitCacheDefault,
+    parse.queryParse, 
+    validateItem, 
+    query.itemQuery,
+    query.formatDefault,
+    cacheLayer.setCache,
+    query.sendDefault);
 
 //** Item Data Query w/ Download **//	
-app.get(['/api/audit/item/:feature/:include', '/api/audit/item/download/:downloadType/:feature/:include'],
+app.get('/api/audit/download/:downloadType/item/:feature/:include',
+    cacheLayer.hitCacheDownload,
     parse.queryParse, 
     validateItem, 
     query.itemQuery, 
-    query.sendDefault);
+    query.formatDefault,
+    cacheLayer.setCache,
+    query.sendDownload);
 
 //** Item Distinct Query **//	
 app.get('/api/audit/item/distinct/:feature/:include', 
+    cacheLayer.hitCacheDefault,
     parse.queryParse, 
     validateItem, 
     query.itemQuery, 
+    query.formatDistinct,
+    cacheLayer.setCache,
     query.sendDistinct);
 
+//** Item Key Query **//	
+app.get('/api/audit/item/key/:feature/:include', 
+    parse.queryParse, 
+    validateItem, 
+    query.itemQuery, 
+    query.sendKey);
 
 
 //** Setup Query **//	

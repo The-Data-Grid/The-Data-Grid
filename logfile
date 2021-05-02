@@ -61,3 +61,11 @@
 2020-07-05 14:18:31.812 PDT [934] WARNING:  could not create listen socket for "localhost"
 2020-07-05 14:18:31.812 PDT [934] FATAL:  could not create any TCP/IP sockets
 2020-07-05 14:18:31.812 PDT [934] LOG:  database system is shut down
+2021-02-22 18:33:44.590 PST [4348] LOG:  starting PostgreSQL 12.6, compiled by Visual C++ build 1914, 64-bit
+2021-02-22 18:33:44.603 PST [4348] LOG:  could not bind IPv6 address "::1": Permission denied
+2021-02-22 18:33:44.603 PST [4348] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2021-02-22 18:33:44.604 PST [4348] LOG:  could not bind IPv4 address "127.0.0.1": Permission denied
+2021-02-22 18:33:44.604 PST [4348] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2021-02-22 18:33:44.604 PST [4348] WARNING:  could not create listen socket for "localhost"
+2021-02-22 18:33:44.605 PST [4348] FATAL:  could not create any TCP/IP sockets
+2021-02-22 18:33:44.605 PST [4348] LOG:  database system is shut down
