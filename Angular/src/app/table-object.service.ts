@@ -37,13 +37,16 @@ export class TableObjectService {
 
     // map returnable ID to columns
     let returnableIDToColumnIndex = this.getReturnableIDToColumnIndex(setupObject, tableObject);
-    let returnableIDToItemPath = this.getReturnableIDToItemPath(setupObject, tableObject);
+    let returnableIDToItemPathArrays = this.getReturnableIDToItemPaths(setupObject, tableObject);
 
     // construct the column header arrays
     tableObject.returnableIDs.forEach(returnableID => {
       let columnIndex = returnableIDToColumnIndex[returnableID];
       let curColumn = setupObject.columns[columnIndex];
-      let itemPath = returnableIDToItemPath[returnableID].join(">");
+      let itemPath = returnableIDToItemPathArrays[returnableID].join(">");
+
+      // let itemName be the last element of itemPath
+      //get column desc
       if (curColumn.default) {
         dataTableColumns.push({
           name: curColumn.frontendName,
@@ -98,32 +101,32 @@ export class TableObjectService {
 
 
 
-  getReturnableIDToItemPath(setupObject, tableObject) {
-    let returnableIDToItemPath = {};
+  getReturnableIDToItemPaths(setupObject, tableObject) {
+    let returnableIDToItemPathArrays = {};
     tableObject.returnableIDs.forEach(returnableID => {
       //treeID is an array containing numbers that represent the path through the tree
       //reverse so we can pop from it like a stack
       let treeID = setupObject.returnableIDToTreeID[returnableID].split('>').reverse()
-      returnableIDToItemPath[returnableID] = [];
+      returnableIDToItemPathArrays[returnableID] = [];
       let firstIndex = treeID.pop();
       // we have a global column
       if (firstIndex == IDX_OF_GLOBAL_ITEM_IDX) {
-        returnableIDToItemPath[returnableID].push("Submission");
+        returnableIDToItemPathArrays[returnableID].push("Submission");
       }
       // we have a feature column
       else if (firstIndex == IDX_OF_FEATURES_ARR) {
         let featureIndex = setupObject.children[IDX_OF_FEATURES_ARR][treeID.pop()];
         let feature = setupObject.features[featureIndex];
-        returnableIDToItemPath[returnableID].push(feature.frontendName);
+        returnableIDToItemPathArrays[returnableID].push(feature.frontendName);
 
         let childArrayIndex = treeID.pop();
         if (childArrayIndex == IDX_OF_ITEM_IDX) {
           let itemIndex = feature.children[IDX_OF_ITEM_IDX];
-          returnableIDToItemPath[returnableID].concat( this.getItemPathFromItem(itemIndex, treeID, setupObject));
+          returnableIDToItemPathArrays[returnableID].concat( this.getItemPathFromItem(itemIndex, treeID, setupObject));
         }
       }
     });
-    return returnableIDToItemPath;
+    return returnableIDToItemPathArrays;
   }
 
   private getItemPathFromItem(itemIndex, treeID, setupObject) {

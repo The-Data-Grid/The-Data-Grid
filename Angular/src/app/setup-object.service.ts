@@ -23,8 +23,8 @@ export class SetupObjectService {
   /* ////////////////////////////////////
      getRootFeatures(setupObject)
 
+     description: extract root feature name and featureIndex from setupObject
      params: setupObject
-
      returns: array containing objects with the following format:
         {
           name: string,   //feature name
@@ -42,7 +42,14 @@ export class SetupObjectService {
     return rootFeatures;
   }
 
-  //gets an array of returnable IDS for feature columns
+    /* ////////////////////////////////////
+     getFeatureReturnableIDs(setupObject, featureIndex)
+
+     description: gets an array of column returnable IDS for a given feature
+     params: setupObject, 
+             featureIndex: the index of the setupObject 'feaures' array for the feature we are interested in
+     returns: array of numbers (returnableIDS)
+  */////////////////////////////////////////
   getFeatureReturnableIDs(setupObject, featureIndex) {
       let returnableIDs = [];
       let ID = null;
@@ -70,8 +77,6 @@ export class SetupObjectService {
       });
       return returnableIDs;
   }
-
-
 
   /* ////////////////////////////////////
     getFeaturesToChildren(setupObject)

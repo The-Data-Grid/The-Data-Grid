@@ -237,3 +237,10 @@ flex: 0 0 auto;
     top:0 !important;
     
 }
+
+
+
+/* for adding newlines to tooltip */
+.my-tooltip {
+  white-space: pre-line;
+}
