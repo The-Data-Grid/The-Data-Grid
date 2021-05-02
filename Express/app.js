@@ -158,6 +158,10 @@ app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="
 //     res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
 // });
 
+app.get('/', function(req,res){
+    res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
+});
+
 app.all('/dist/*', function(req, res){
     //console.log('../Deployment/Angular/dist' + req.path);
     //console.log(req.path);
@@ -167,7 +171,8 @@ app.all('/dist/*', function(req, res){
     //path.join(req.path.split(path.sep).slice(1))
     //req.path.substring(req.path.indexOf(path.sep));
     res.sendFile(path.resolve('../Deployment/Angular' + req.path));
-
+});
+	
 ////// LISTEN //////
 
 if(isDeployment) {
