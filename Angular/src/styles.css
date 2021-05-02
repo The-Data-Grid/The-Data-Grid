@@ -5,6 +5,7 @@
 @import '~@swimlane/ngx-datatable/index.css';
 @import '~@swimlane/ngx-datatable/themes/material.css';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
+/* @import 'bootstrap/dist/css/bootstrap.min.css'; */
 
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
@@ -229,3 +230,17 @@ flex: 0 0 auto;
   padding: 0 !important;
   }
   
+  .cdk-overlay-container{
+    top:50px;
+}
+.cdk-overlay-connected-position-bounding-box{
+    top:0 !important;
+    
+}
+
+
+
+/* for adding newlines to tooltip */
+.my-tooltip {
+  white-space: pre-line;
+}

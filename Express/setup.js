@@ -253,7 +253,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     });
 
     // index of globalObject
-    let submissionItemIndex = itemOrder.indexOf('item_submission');
+    let globalItemIndex = itemOrder.indexOf('item_global');
     // all item indicies
     let itemIndices = itemOrder.map((e,i) => i)
     
@@ -360,7 +360,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // Constructing the final setupObject
     // ==================================================
 
-    setupObject.children = [featureIndices, itemIndices, submissionItemIndex];
+    setupObject.children = [featureIndices, itemIndices, globalItemIndex];
     setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
     setupObject.items = itemNodeObjects;
     setupObject.features = featureNodeObjects;
@@ -382,7 +382,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         let isFilterable = (row['fs__selector_name'] === null ? false : true);
 
-        let isSubmission = (row['non_obs_i__table_name'] === 'item_submission' ? true : false);
+        let isGlobal = (row['non_obs_i__table_name'] === 'item_global' ? true : false);
 
         idValidationLookup[id] = {
             // feature and root feature
@@ -393,7 +393,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             item: row['i__table_name'],
             referenceType: row['rt__type_name'],
             isFilterable: isFilterable,
-            isSubmission: isSubmission,
+            isGlobal,
 
             sqlType: row['sql__type_name'],
             //groundTruthLocation: row['c__is_ground_truth']
@@ -430,7 +430,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         const isObservationReturnable = !isItemReturnable
 
         // See if item and base item are the same
-        const isWithinBaseItem = row['non_obs_i__table_name'] == row['i__table_name'] ? row['i__table_name'] : null
+        const isWithinBaseItem = row['non_obs_i__table_name'] == row['i__table_name']// ? row['i__table_name'] : null
+
+        // Base item table name
+        const baseItem = row['non_obs_i__table_name']
 
         // Get feature table as string
         const feature = row['f__table_name'];
@@ -511,7 +514,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                     ON m2m_$(tableName:raw).item_id = $(pgpParam:raw).item_id \
                                     LEFT JOIN $(tableName:name) AS $(listAlias:name) \
                                     ON $(listAlias:name).list_id = m2m_$(tableName:value).list_id', {
-                                        pgpParam: isWithinBaseItem === null ? '$(alias:name)' : isWithinBaseItem, // a little bit weird
+                                        pgpParam: isWithinBaseItem ? baseItem: '$(alias:name)', // a little bit weird
                                         tableName: tableName,
                                         listAlias: listAlias.join('')
             });
@@ -541,11 +544,11 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             appendSQL = null;
 
             selectSQL = formatSQL('$(pgpParam:raw).$(columnName:name)', {
-                pgpParam: (isItemReturnable ? tableName : '$(alias:name)'),
+                pgpParam: (isWithinBaseItem ? baseItem : '$(alias:name)'),
                 columnName: columnName,
                 returnableID: returnableIDAlias
             });
-
+            
         } else if(referenceType == 'item-location') {
 
             let locationForeignKey = `${tableName}_id`;
@@ -554,7 +557,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                        ON $(locationAlias:name).location_id = $(pgpParam:raw).$(fk:name)', {
                                             locationTable: tableName,
                                             locationAlias: locationAlias.join(''),
-                                            pgpParam: isWithinBaseItem === null ? '$(alias:name)' : isWithinBaseItem,
+                                            pgpParam: isWithinBaseItem ? baseItem : '$(alias:name)',
                                             fk: locationForeignKey
                                        });
 
@@ -575,7 +578,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                        ON $(factorAlias:name).factor_id = $(pgpParam:raw).$(fk:name)', {
                                            factorTableName: tableName,
                                            factorAlias: factorAlias.join(''),
-                                           pgpParam: isWithinBaseItem === null ? '$(alias:name)' : isWithinBaseItem,
+                                           pgpParam: isWithinBaseItem ? baseItem : '$(alias:name)',
                                            fk: factorForeignKey
                                        });
         
@@ -857,8 +860,8 @@ const initialReturnableMapper = (returnable, statics) => {
 
     // if non observational
     if(returnable['f__table_name'] === null) {
-        // is submission / global item?        
-        if(returnable['non_obs_i__table_name'] == 'item_submission') {
+        // is global item?        
+        if(returnable['non_obs_i__table_name'] == 'item_global') {
             treeArray.push(2);
         } 
         // then a standard item
@@ -894,7 +897,7 @@ const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = se
 //console.log(featureParents);
 //console.log(idValidationLookup)
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
-//console.log(returnableIDLookup.filter(el => el.referenceType == 'item-non-id'))
+//console.log(returnableIDLookup['310'])
 //console.log(setupObject)
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
     

@@ -12,7 +12,9 @@ var httpPort;
 var httpsPort;
 
 // Deploying?
-const isDeployment = process.argv[2] == '-d'
+const isDeployment = ['-d', '--deploy'].includes(process.argv[2])
+// Testing?
+const isTesting = ['-t', '--test'].includes(process.argv[2])
 
 if (isDeployment) {
     httpPort = 80;
@@ -119,13 +121,6 @@ app.all('/dist/*', function(req, res){
     //path.join(req.path.split(path.sep).slice(1))
     //req.path.substring(req.path.indexOf(path.sep));
     res.sendFile(path.resolve('../Deployment/Angular' + req.path));
-});
-
-app.all('*', function(req, res){
-    //console.log(req.path);
-    res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
-});
-
 
 ////// LISTEN //////
 
@@ -138,6 +133,11 @@ if(isDeployment) {
         httpApp.all('*', (req, res) => res.redirect(301, 'https://' + req.hostname + req.url));    
         const httpServer = http.createServer(httpApp).listen(httpPort, () => console.log(`TDG Backend Node.js HTTP server is running on port ${httpPort}`));
     }
+}
+// Testing?
+else if(isTesting) {
+    // export the app to the tester
+    module.exports = app
 }
 // Then development
 else {

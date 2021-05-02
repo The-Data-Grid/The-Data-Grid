@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 
 interface Member {
   name: string;
@@ -18,6 +18,9 @@ interface Member {
 })
 
 export class TeamComponent implements OnInit {
+
+  public innerWidth:any;
+  public layout:string;
 
   members:Member[] = [
     {
@@ -77,6 +80,17 @@ export class TeamComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    this.innerWidth = window.innerWidth;
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.innerWidth = window.innerWidth;
+  }
+
+  checkWidth(): string {
+    if (this.innerWidth > 650) {return 'row span'};
+    return 'column';
   }
 
 }

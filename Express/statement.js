@@ -12,9 +12,9 @@ const query = {
 
     referenceSelectionJoin: 'LEFT JOIN $(joinTable:name) AS $(joinAlias:name) ON $(joinAlias:name).$(joinColumn:name) = $(originalAlias:name).$(originalColumn:name)',
 
-    sorta: 'ORDER BY $(columnName:value) ASC',
+    sorta: 'ORDER BY $(columnName:raw) ASC',
 
-    sortd: 'ORDER BY $(columnName:value) DESC',
+    sortd: 'ORDER BY $(columnName:raw) DESC',
 
     limit: 'LIMIT $(limit)',
 
@@ -30,13 +30,14 @@ const query = {
 
     whereCondition: '$(select:value) $(operation:value) $(filterValue)',
 
-    submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.submission_id',
+    submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.item_id',
+    global: 'LEFT JOIN item_global on $(feature:name).global_id = item_global.item_id',
 
     subfeatureJoin: 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id',
 
     rootFeatureJoin: 'FROM $(rootFeature:value)',
 
-    groupBy: 'GROUP BY $(nonListReturnables:raw), $(feature:name).observation_id, item_submission.data_time_submitted'
+    groupBy: 'GROUP BY $(nonListReturnables:raw), $(feature:name).observation_id, $(feature:name).data_time_conducted'
 
 };
 
@@ -189,16 +190,23 @@ const setup = {
 
 const login = {
     password: 'SELECT tdg_p_hash AS password FROM item_user WHERE data_email = $(checkemail)',
-    isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)'
+    isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)',
+    secret : 'SELECT secret_token FROM item_user WHERE data_email = $(checkemail)'
     };   
 
 
 const addingUsers = {
 insertingUsers: `INSERT INTO item_user (item_id, item_organization_id, data_first_name, data_last_name, 
-    data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser) 
-VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false)`
+    data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser, secret_token, is_pending) 
+VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false, NULL, true)`
     };
-    
+
+const updates  = {
+    updateToken: 'UPDATE item_user SET secret_token = ($token) WHERE data_email = $(email)',
+    updateStatus: 'UPDATE item_user SET is_pending = ($status) WHERE data_email = $(email)',
+    updatepassword: 'UPDATE item_user SET tdg_p_hash = ($password) WHERE data_email = $(email)'
+};
+
 
 
 
@@ -207,7 +215,8 @@ module.exports = {
     construct,
     setup,
     login,
-    addingUsers
+    addingUsers,
+    updates
 };
 
 

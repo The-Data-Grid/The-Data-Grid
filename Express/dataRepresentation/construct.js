@@ -99,6 +99,7 @@ else if(process.argv[0] == 'inspect') {
         let argFilter = process.argv.filter(arg => /^--choose=.*/.test(arg));
         commandLineArgs.isSummary = process.argv.includes('-s') || process.argv.includes('--summary');
         commandLineArgs.isTree = process.argv.includes('-t') || process.argv.includes('--tree');
+        commandLineArgs.isQueryString = process.argv.includes('-qs') || process.argv.includes('--query-string');
         if(argFilter.length == 1) {
             commandLineArgs.filter = argFilter[0].match(/^--choose=(.*)/)[1];
         } else {
@@ -230,6 +231,10 @@ async function inspectSchema(commandLineArgs) {
                         // this is just formatting
                         out[r.r__returnable_id] = (r.r__join_object.tables.length > 0 ? `${r.r__join_object.tables.filter((e,i) => (i % 2 == 0 || i+1 == r.r__join_object.tables.length )).join(' > ')}: ${r.r__frontend_name}` : (/^item_.*/.test(commandLineArgs.filter) ? r.non_obs_i__table_name : r.f__table_name) + ': ' + r.r__frontend_name)
                     })
+                } else if(commandLineArgs.isQueryString) {
+                    const originalOut = Array.from(out);
+                    // If you're reading this I'm sorry
+                    out = [originalOut.length, originalOut.map(r => r.r__returnable_id).join('&')]
                 }
                 
             } else {
@@ -244,6 +249,14 @@ async function inspectSchema(commandLineArgs) {
     }
 
     let count = (commandLineArgs.isSummary || commandLineArgs.isTree ? Object.keys(out).length : out.length)
+
+    // handling for query string
+    // I'm really sorry I know this sucks a lot
+    if(commandLineArgs.isQueryString) {
+        count = out[0]
+        out = out[1]        
+    }
+
     console.log(out)
     console.log(chalk.cyanBright.underline(`Count: ${count}`))
 
@@ -1057,7 +1070,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
             }
         };
 
-        // if not submission
+        // if not global
         if(itemObject.featureName !== null) {
             // is it the realGeo column?
             let itemRealGeo = itemRealGeoLookup[featureItemLookup[itemObject.featureName]];
@@ -1080,7 +1093,7 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 rootFeatureID = null;
             }
 
-        } else { // else then submission and no feature or geo information
+        } else { // else then global and no feature or geo information
             isRealGeo = false;
             insertableFeatureID = null;
             rootFeatureID = null;

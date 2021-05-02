@@ -22,6 +22,7 @@
     font-size: 50px;
     color: #569CD7;
     margin: 20px;
+    text-align: center;
 }
 
 .team-member-card {
@@ -29,6 +30,23 @@
     width: 15vw;
     margin-bottom: 20px;
     margin-left: 50px;
+}
+
+@media only screen and (max-width: 650px) {
+    .team-member-card {
+        position: relative;
+        width: 100%;
+        margin-bottom: 20px;
+        /* margin-left: 50px; */
+    }    
+    .member-photo {
+        margin-left: 40%;
+    }
+
+    .team-header {
+        font-size: 34px;
+    }
+
 }
 
 .member-description {
@@ -49,4 +67,21 @@
 .social-button {
     width: 30px;
     height: 30px;
+}
+
+.profilebutton {
+    width: 100%;
+    /* margin-left: 5%; */
+    color:white;
+    background-color: #82B99F;
+    border: 0px;
+    cursor: pointer;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 18px;
+    border-radius: 14px;
+}
+
+.profilebutton:focus {
+    outline: none !important;
 }
