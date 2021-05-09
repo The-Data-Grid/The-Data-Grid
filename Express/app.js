@@ -61,6 +61,13 @@ function cycleTimer(req, res, next) {
     next()
 }
 
+//** Observation Key Query **/	
+app.get('/api/audit/observation/key/:feature', 
+    parse.keyQueryParse, 
+    validateObservation, 
+    query.featureQuery, 
+    query.sendKey);
+
 //** Observation Data Query **//	
 app.get('/api/audit/observation/:feature/:include',
     cacheLayer.hitCacheDefault,
@@ -91,13 +98,13 @@ app.get('/api/audit/observation/distinct/:feature/:include',
     cacheLayer.setCache,
     query.sendDistinct);
 
-//** Observation Key Query **/	
-app.get('/api/audit/observation/key/:feature/:include', 
-    parse.queryParse, 
-    validateObservation, 
-    query.featureQuery, 
-    query.sendKey);
 
+//** Item Key Query **//	
+app.get('/api/audit/item/key/:feature', 
+    parse.keyQueryParse, 
+    validateItem, 
+    query.itemQuery, 
+    query.sendKey);
 
 //** Item Data Query **//	
 app.get('/api/audit/item/:feature/:include',
@@ -128,13 +135,6 @@ app.get('/api/audit/item/distinct/:feature/:include',
     query.formatDistinct,
     cacheLayer.setCache,
     query.sendDistinct);
-
-//** Item Key Query **//	
-app.get('/api/audit/item/key/:feature/:include', 
-    parse.queryParse, 
-    validateItem, 
-    query.itemQuery, 
-    query.sendKey);
 
 
 //** Setup Query **//	
