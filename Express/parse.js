@@ -54,7 +54,7 @@ const queryParse = (req, res, next) => {
     for (const key in filter) {
 
         // check for universal filters
-        if(['sorta','sortd','limit','offset'].includes(key)) {
+        if(['sorta','sortd','limit','offset', 'pk'].includes(key)) {
             universalFilters[key] = filter[key]
             continue
         }
