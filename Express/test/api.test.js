@@ -233,7 +233,6 @@ test('Offset with string', done => {
         });
 });
 
-
 test('Test for item/key query', done => {
     request
         .get(o13)
@@ -241,19 +240,19 @@ test('Test for item/key query', done => {
             if (err) return done(err);
             expect(Object.keys(res.body)).toEqual([
                 'primaryKey'
-            ])
+            ]);
             done();
         });
 });
 
-test('Test for observation/key query', function (done) {
+test('Test for observation/key query', done => {
     request
         .get(o14)
-        .end(function (err, res) {
+        .end( (err, res) => {
             if (err) return done(err);
             expect(Object.keys(res.body)).toEqual([
                 'primaryKey'
-            ])
+            ]);
             done();
         });
 });

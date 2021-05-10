@@ -953,7 +953,7 @@ CREATE FUNCTION add_item_to_item_reference(observable_item regclass,
             EXECUTE FORMAT('ALTER TABLE %I
                             ADD FOREIGN KEY (%I)
                             REFERENCES %I ("item_id")', observable_item, required_item_column, referenced);
-            EXECUTE FORMAT('CREATE INDEX index_for_foreign_key
+            EXECUTE FORMAT('CREATE INDEX 
                             ON %I (%I)', observable_item, required_item_column);
             -- Return the id-column
             RETURN required_item_column;
@@ -1198,8 +1198,9 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("observableitem_id")
                             REFERENCES %I ("item_id")', table_name, observable_item);
-            EXECUTE FORMAT ('CREATE INDEX table_name_index
-                             ON %I', table_name);
+
+            EXECUTE FORMAT ('CREATE INDEX
+                             ON %I ("observableitem_id")', table_name);
             COMMIT;
         END
     $$ LANGUAGE plpgsql;
@@ -1283,7 +1284,10 @@ CREATE PROCEDURE add_list(item_table_name TEXT, table_name TEXT, column_name TEX
             IF is_observational = TRUE THEN
                 -- Create m2m_list_... table with foreign key constraints
                 EXECUTE FORMAT('CREATE TABLE %I (observation_id INTEGER NOT NULL REFERENCES %I, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, observation_table_name, table_name);
-                EXECUTE FORMAT ('CREATE INDEX addlistindex ON %I', m2m_table_name);
+                -- list_id Index
+                EXECUTE FORMAT ('CREATE INDEX ON %I ("list_id")', m2m_table_name);
+                -- observation_id Index
+                EXECUTE FORMAT ('CREATE INDEX ON %I ("observation_id")', m2m_table_name);
             ELSE
                 -- Create m2m_list_... table with foreign key constraints
                 EXECUTE FORMAT('CREATE TABLE %I (item_id INTEGER NOT NULL REFERENCES %I, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, item_table_name, table_name);

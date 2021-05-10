@@ -15,7 +15,9 @@ const {
     globalItem,
     referenceSelectionJoin,
     observationSelect,
-    itemSelect
+    itemSelect,
+    emptyObservationSelect,
+    emptyItemSelect
 } = require('../statement.js').query
 
 /**  
@@ -149,17 +151,31 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
     // Adding commas to select clauses
     selectClauseArray = selectClauseArray.join(', ')
     let selectClause;
-    // different clause depending on whether item or observation query
+    // different clause depending on whether item or observation query or empty
     if(queryType == 'observation') {
-        selectClause = formatSQL(observationSelect, {
-            feature: feature,
-            selectClauses: selectClauseArray
-        });
+        // if empty string
+        if(selectClauseArray.length == 0) {
+            selectClause = formatSQL(emptyObservationSelect, {
+                feature
+            })
+        } else {
+            selectClause = formatSQL(observationSelect, {
+                feature: feature,
+                selectClauses: selectClauseArray
+            });
+        }
     } else if(queryType == 'item') {
-        selectClause = formatSQL(itemSelect, {
-            item: feature,
-            selectClauses: selectClauseArray
-        })
+        // if empty string
+        if(selectClauseArray.length == 0) {
+            selectClause = formatSQL(emptyItemSelect, {
+                item: feature
+            })
+        } else {
+            selectClause = formatSQL(itemSelect, {
+                item: feature,
+                selectClauses: selectClauseArray
+            })
+        }
     }
 
     return({
