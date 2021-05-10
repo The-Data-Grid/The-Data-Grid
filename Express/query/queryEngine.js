@@ -12,7 +12,7 @@ const formatSQL = postgresClient.format;
 
 // alias join and global SQL statements
 const {
-    global,
+    globalItem,
     referenceSelectionJoin,
     observationSelect,
     itemSelect
@@ -40,7 +40,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
 
     // if observation query push the global item reference
     if(queryType == 'observation') {
-        joinClauseArray.push(formatSQL(global, {
+        joinClauseArray.push(formatSQL(globalItem, {
             feature: feature
         }));
     }
