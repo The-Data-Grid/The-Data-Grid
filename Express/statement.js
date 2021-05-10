@@ -24,6 +24,10 @@ const query = {
 
     itemSelect: 'SELECT $(item:name)."item_id" AS item_pkey, $(selectClauses:raw)',
 
+    emptyObservationSelect: 'SELECT $(feature:name)."observation_id" AS observation_pkey',
+
+    emptyItemSelect: 'SELECT $(item:name)."item_id" AS item_pkey',
+
     observationCount: 'INNER JOIN tdg_observation_count on $(feature:name).observation_count_id = tdg_observation_count.observation_count_id',
 
     where: '$(clause:value) ($(condition:raw))',

@@ -275,6 +275,56 @@ INSERT INTO tdg_role_type
             (DEFAULT, 'auditor'),
             (DEFAULT, 'admin');
 
+CREATE INDEX item_building_index
+ON item_building (item_entity_id);
+
+CREATE INDEX item_organization_index
+ON item_organization (item_entity_id);
+
+CREATE INDEX item_entity_index
+ON item_entity (item_city_id);
+
+CREATE INDEX item_city_index
+ON item_city (item_county_id);
+
+CREATE INDEX item_county_index
+ON item_county (item_state_id);
+
+CREATE INDEX item_state_index
+ON item_state (item_country_id);
+
+CREATE INDEX item_sop_index
+ON item_sop (item_organization_id);
+
+CREATE INDEX item_template_index1
+ON item_template (item_user_id);
+
+CREATE INDEX item_template_index2
+ON item_template (item_organization_id);
+
+CREATE INDEX item_user_index
+ON item_user (item_organization_id);
+
+CREATE INDEX item_global_index1
+ON item_global (item_audit_id);
+
+CREATE INDEX item_global_index2
+ON item_global (item_organization_id);
+
+CREATE INDEX item_global_index3
+ON item_global (item_user_id);
+
+CREATE INDEX item_global_index4
+ON item_global (item_template_id);
+
+CREATE INDEX item_audit_index1
+ON item_audit (item_catalog_id);
+
+CREATE INDEX item_audit_index2
+ON item_audit (item_user_id);
+
+CREATE INDEX item_audit_index3
+ON item_audit (item_organization_id);
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                                                                   _______                                       
                                                     ,,                            
@@ -903,7 +953,8 @@ CREATE FUNCTION add_item_to_item_reference(observable_item regclass,
             EXECUTE FORMAT('ALTER TABLE %I
                             ADD FOREIGN KEY (%I)
                             REFERENCES %I ("item_id")', observable_item, required_item_column, referenced);
-        
+            EXECUTE FORMAT('CREATE INDEX 
+                            ON %I (%I)', observable_item, required_item_column);
             -- Return the id-column
             RETURN required_item_column;
         END
@@ -1148,6 +1199,8 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
                             ADD FOREIGN KEY ("observableitem_id")
                             REFERENCES %I ("item_id")', table_name, observable_item);
 
+            EXECUTE FORMAT ('CREATE INDEX
+                             ON %I ("observableitem_id")', table_name);
             COMMIT;
         END
     $$ LANGUAGE plpgsql;
@@ -1231,6 +1284,10 @@ CREATE PROCEDURE add_list(item_table_name TEXT, table_name TEXT, column_name TEX
             IF is_observational = TRUE THEN
                 -- Create m2m_list_... table with foreign key constraints
                 EXECUTE FORMAT('CREATE TABLE %I (observation_id INTEGER NOT NULL REFERENCES %I, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, observation_table_name, table_name);
+                -- list_id Index
+                EXECUTE FORMAT ('CREATE INDEX ON %I ("list_id")', m2m_table_name);
+                -- observation_id Index
+                EXECUTE FORMAT ('CREATE INDEX ON %I ("observation_id")', m2m_table_name);
             ELSE
                 -- Create m2m_list_... table with foreign key constraints
                 EXECUTE FORMAT('CREATE TABLE %I (item_id INTEGER NOT NULL REFERENCES %I, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, item_table_name, table_name);

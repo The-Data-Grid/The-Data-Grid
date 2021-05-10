@@ -43,7 +43,7 @@ var cycleTime = [];
  */
 function dataQueryWrapper(queryType) {
 
-    return async function dataQuery(req, res, next) {   
+    return async (req, res, next) => {   
     
         try {
     
@@ -286,7 +286,7 @@ function sendKey(req, res) {
         });
     }
 
-    res.json({
+    return res.json({
         primaryKey
     });
 }
