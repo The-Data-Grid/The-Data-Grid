@@ -179,7 +179,7 @@ CREATE TABLE item_global (
     item_user_id INTEGER NOT NULL, --fk **
     item_template_id INTEGER --fk ** ???
 );
-
+/*
 CREATE TABLE item_submission (
     item_id SERIAL PRIMARY KEY,
     data_time_submitted TIMESTAMPTZ NOT NULL
@@ -198,7 +198,7 @@ CREATE TABLE tdg_observation_edit (
     submission_edit_id INTEGER NOT NULL, --fk **
     data_edit_description TEXT
 );
-
+*/
 CREATE TABLE m2m_tdg_assigned_auditor (
     item_audit_id SERIAL PRIMARY KEY, --fk **
     item_user_id INTEGER NOT NULL, --fk **
@@ -823,11 +823,11 @@ ALTER TABLE item_global ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE item_global ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit (item_id);
 
 -- Submission
-ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_submission_id) REFERENCES item_submission;
-ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+-- ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_submission_id) REFERENCES item_submission;
+-- ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
-ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
-ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (submission_edit_id) REFERENCES tdg_submission_edit;
+-- ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
+-- ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (submission_edit_id) REFERENCES tdg_submission_edit;
 
 
 -- SOP
@@ -1190,17 +1190,25 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
                             REFERENCES "item_global" ("item_id")', table_name);
 
             -- Submission reference
+            /*
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("submission_id")
                             REFERENCES "item_submission" ("item_id")', table_name);
+            */
             
             -- Observable Item reference
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("observableitem_id")
                             REFERENCES %I ("item_id")', table_name, observable_item);
 
+            -- observation to item index
             EXECUTE FORMAT ('CREATE INDEX
                              ON %I ("observableitem_id")', table_name);
+
+            -- observation to global index
+            EXECUTE FORMAT ('CREATE INDEX
+                             ON %I ("global_id")', table_name); 
+            
             COMMIT;
         END
     $$ LANGUAGE plpgsql;
@@ -1245,7 +1253,17 @@ CREATE FUNCTION create_observational_item_table(feature_name TEXT)
             -- Create the table
             EXECUTE FORMAT('CREATE TABLE %I (
                             item_id SERIAL PRIMARY KEY,
-                            is_existing BOOLEAN NOT NULL)', observable_item);
+                            is_existing BOOLEAN NOT NULL,
+                            global_id INTEGER NOT NULL)', observable_item);
+
+            -- Global reference
+            EXECUTE FORMAT('ALTER TABLE %I 
+                            ADD FOREIGN KEY ("global_id")
+                            REFERENCES "item_global" ("item_id")', observable_item);
+
+            -- observation to global index
+            EXECUTE FORMAT ('CREATE INDEX
+                             ON %I ("global_id")', observable_item); 
 
             -- Return the observable item table name
             RETURN observable_item;
@@ -1433,7 +1451,7 @@ INSERT INTO metadata_item
             (DEFAULT, 'item_sop', 'Standard Operating Procedure', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_template', 'Template', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_user', 'User', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 1),
-            (DEFAULT, 'item_submission', 'Submission', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
+            --(DEFAULT, 'item_submission', 'Submission', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_global', 'Global Item', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_catalog', 'Catalog', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_audit', 'Audit', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2);
@@ -1487,7 +1505,7 @@ CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', T
 CALL "insert_metadata_column"('data_template_json', 'item_template', NULL, NULL, 'item_template', FALSE, FALSE, 'Audit Template JSON', 'searchableDropdown', NULL, 'string', 'JSON representation of an audit input template', NULL, 'JSON', 'item-non-id');
 CALL "insert_metadata_column"('data_template_name', 'item_template', NULL, NULL, 'item_template', TRUE, TRUE, 'Audit Template Name', 'text', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 
-CALL "insert_metadata_column"('data_time_submitted', 'item_submission', NULL, NULL, 'item_submission', TRUE, FALSE, 'Time Audit Submission Submitted', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
+--CALL "insert_metadata_column"('data_time_submitted', 'item_submission', NULL, NULL, 'item_submission', TRUE, FALSE, 'Time Audit Submission Submitted', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
 
 CALL "insert_metadata_column"('data_building_name', 'item_building', NULL, NULL, 'item_building', TRUE, FALSE, 'Building Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 
