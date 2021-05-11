@@ -203,13 +203,20 @@ VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(
     };
 
 const updates  = {
-    updateToken: 'UPDATE item_user SET secret_token = ($token) WHERE data_email = $(email)',
-    updateStatus: 'UPDATE item_user SET is_pending = ($status) WHERE data_email = $(email)',
-    updatepassword: 'UPDATE item_user SET tdg_p_hash = ($password) WHERE data_email = $(email)'
+    updateToken: 'UPDATE item_user SET secret_token = $(token) WHERE data_email = $(email)',
+    updateStatus: 'UPDATE item_user SET is_pending = $(status) WHERE data_email = $(email)',
+    updatepassword: 'UPDATE item_user SET tdg_p_hash = $(password) WHERE data_email = $(email)'
 };
 
-
-
+const profile = { 
+    selectInput: 'DECLARE @columnName AS VARCHAR(400) \
+    SET @columnName = $(column)\
+    SELECT @columnName FROM item_user WHERE data_email = $(email)',
+    
+    updateInput: 'DECLARE @columnName AS VARCHAR(400) \
+    SET @columnName = $(column)\
+    UPDATE item_user SET @columnName = $(value) WHERE data_email = $(email)'
+}
 
 module.exports = {
     query,
@@ -217,7 +224,8 @@ module.exports = {
     setup,
     login,
     addingUsers,
-    updates
+    updates,
+    profile
 };
 
 
