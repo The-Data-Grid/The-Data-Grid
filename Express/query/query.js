@@ -230,9 +230,12 @@ function formatDistinct(req, res, next) {
         // kind of a hack but it works
         if(['obs-list', 'item-list', 'special'].includes(returnableIDLookup[returnableIDs[i]].referenceType) && res.locals.parsed.finalQuery.fields[i+1].dataTypeID == 1009) {
             
-            res.locals.parsed.finalQuery.rows.forEach(row => {        
-                columnData[i].push([...new Set(row[key])]) 
+            let allPossible = []
+            res.locals.parsed.finalQuery.rows.forEach(row => {      
+                allPossible = [...allPossible, ...row[key]]
             })
+            columnData[i] = [...new Set(allPossible)]
+            
         } else {
             res.locals.parsed.finalQuery.rows.forEach(row => {            
                 columnData[i].push(row[key]) 
