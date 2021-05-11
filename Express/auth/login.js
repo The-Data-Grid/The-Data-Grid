@@ -16,7 +16,7 @@ const db = postgresClient.getConnection.db;
 // get SQL formatter
 const formatSQL = postgresClient.format;
 
-const {isValidEmail, isValidDate, isValidPassword} = require('../validate.js');
+const {isValidEmail, isValidDate, isValidPassword, requestObject} = require('../validate.js');
 
 const {apiDateToUTC} = require('../parse.js');
 
