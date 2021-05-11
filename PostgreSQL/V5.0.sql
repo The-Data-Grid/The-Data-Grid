@@ -709,6 +709,34 @@ CREATE TABLE metadata_feature (
 );
 
 
+CREATE TABLE metadata_observation_history_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL
+);
+
+INSERT INTO metadata_observation_history_type
+    (type_id, type_name)
+    VALUES
+        (DEFAULT, 'create'),
+        (DEFAULT, 'update'),
+        (DEFAULT, 'delete');
+
+CREATE TABLE metadata_item_history_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL
+);
+
+INSERT INTO metadata_item_history_type
+    (type_id, type_name)
+    VALUES
+        (DEFAULT, 'create'),
+        (DEFAULT, 'update'),
+        (DEFAULT, 'remove'),
+        (DEFAULT, 'request permanent deletion');
+
+
+
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
