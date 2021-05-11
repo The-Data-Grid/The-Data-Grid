@@ -38,21 +38,22 @@ CREATE TABLE location_path (
 
 -- Room, Building
 
-/*
-in construct.js
+-- Submission and Globals
 
-CREATE TABLE item_room (
+CREATE TABLE item_global (
     item_id SERIAL PRIMARY KEY,
-    data_room_number TEXT NOT NULL,
-    item_building_id INTEGER NOT NULL --fk **
+    item_audit_id INTEGER NOT NULL, --fk **
+    item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
+    item_user_id INTEGER NOT NULL, --fk **
+    item_template_id INTEGER --fk ** ???
 );
-*/
 
 CREATE TABLE item_building (
     item_id SERIAL PRIMARY KEY, 
 	data_building_name TEXT NOT NULL,
     item_entity_id INTEGER NOT NULL, --fk **    
     location_region_id INTEGER NOT NULL, --fk **
+    global_id INTEGER NOT NULL REFERENCES item_global, --fk ** (NOTE: Not in metadata because should not be included in the item requirement tree)
     UNIQUE(data_building_name, item_entity_id)
 );
 
@@ -169,16 +170,7 @@ CREATE TABLE m2m_user_organization (
 );
 */
 
--- Submission and Globals
 
-CREATE TABLE item_global (
-    item_id SERIAL PRIMARY KEY,
-
-    item_audit_id INTEGER NOT NULL, --fk **
-    item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
-    item_user_id INTEGER NOT NULL, --fk **
-    item_template_id INTEGER --fk ** ???
-);
 /*
 CREATE TABLE item_submission (
     item_id SERIAL PRIMARY KEY,
@@ -209,6 +201,7 @@ CREATE TABLE item_catalog (
     item_id SERIAL PRIMARY KEY,
     data_title TEXT NOT NULL,
     data_description TEXT,
+    global_id INTEGER NOT NULL REFERENCES item_global, --fk ** (NOTE: Not in metadata because should not be included in the item requirement tree)
     is_discoverable BOOLEAN NOT NULL
 );
 
@@ -1486,12 +1479,12 @@ INSERT INTO metadata_item
         VALUES
             --('item_room', (SELECT type_id FROM metadata_item_type WHERE type_name = 'observable'), 4), --construct.js
             (DEFAULT, 'item_building', 'Building', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 2),
-            (DEFAULT, 'item_organization', 'Organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_entity', 'Entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_city', 'City', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_county', 'County', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_state', 'State', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_country', 'Country', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
+            (DEFAULT, 'item_organization', 'Organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_entity', 'Entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_city', 'City', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_county', 'County', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_state', 'State', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_country', 'Country', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
             (DEFAULT, 'item_sop', 'Standard Operating Procedure', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_template', 'Template', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_user', 'User', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 1),
@@ -1505,13 +1498,12 @@ INSERT INTO metadata_item
 -- observable_item TEXT, referenced TEXT, isID BOOLEAN, isNullable BOOLEAN, frontendName TEXT, information TEXT
 -- potential-observable
 CALL "insert_m2m_metadata_item"('item_building', 'item_entity', TRUE, FALSE, 'Entity of Building', NULL);
+-- non-observable
 CALL "insert_m2m_metadata_item"('item_organization', 'item_entity', TRUE, FALSE, 'Entity of Organization', NULL);
 CALL "insert_m2m_metadata_item"('item_entity', 'item_city', FALSE, TRUE, 'City of Entity', NULL);
 CALL "insert_m2m_metadata_item"('item_city', 'item_county', TRUE, FALSE, 'County of City', NULL);
 CALL "insert_m2m_metadata_item"('item_county', 'item_state', TRUE, FALSE, 'State of County', NULL);
 CALL "insert_m2m_metadata_item"('item_state', 'item_country', TRUE, FALSE, 'Country of State', NULL);
-
--- non-observable
 CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
 CALL "insert_m2m_metadata_item"('item_template', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
 CALL "insert_m2m_metadata_item"('item_template', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
