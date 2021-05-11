@@ -1192,6 +1192,7 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
     $$
         DECLARE
             observable_item regclass := regexp_replace(table_name, '^observation', 'item');
+            history_table_name TEXT := concat('history_', table_name);
         BEGIN
             -- Create the table
             EXECUTE FORMAT('CREATE TABLE %I (
@@ -1236,6 +1237,13 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
             -- observation to global index
             EXECUTE FORMAT ('CREATE INDEX
                              ON %I ("global_id")', table_name); 
+
+            -- history table
+            EXECUTE FORMAT ('CREATE TABLE %I (
+                                history_id SERIAL PRIMARY KEY,
+                                type_id INTEGER NOT NULL REFERENCES metadata_observation_history_type,
+                                observation_id INTEGER NOT NULL REFERENCES %I,
+                                time_submitted TIMESTAMPTZ NOT NULL)', history_table_name, table_name);
             
             COMMIT;
         END
@@ -1272,6 +1280,7 @@ CREATE FUNCTION create_observational_item_table(feature_name TEXT)
     $$
         DECLARE
             observable_item TEXT := regexp_replace(feature_name, '^observation', 'item');
+            history_table_name TEXT := concat('history_', observable_item);
         BEGIN
             -- Naming convention constraint
             IF feature_name NOT LIKE 'observation\_%' THEN
@@ -1292,6 +1301,13 @@ CREATE FUNCTION create_observational_item_table(feature_name TEXT)
             -- observation to global index
             EXECUTE FORMAT ('CREATE INDEX
                              ON %I ("global_id")', observable_item); 
+
+            -- history table
+            EXECUTE FORMAT ('CREATE TABLE %I (
+                                history_id SERIAL PRIMARY KEY,
+                                type_id INTEGER NOT NULL REFERENCES metadata_item_history_type,
+                                item_id INTEGER NOT NULL REFERENCES %I,
+                                time_submitted TIMESTAMPTZ NOT NULL)', history_table_name, observable_item);
 
             -- Return the observable item table name
             RETURN observable_item;
