@@ -50,7 +50,8 @@ const {insert_m2m_metadata_item,
        makeItemReturbablesItemQuery, 
        makeItemReturnablesSubobservationQuery, 
        insert_metadata_returnable, 
-       checkAuditorNameTrigger} = require('../statement.js').construct
+       checkAuditorNameTrigger,
+       insertPresetValues} = require('../statement.js').construct
     
 const {allItems} = require('../statement.js').setup
 
@@ -782,6 +783,9 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                     }));
 
                     console.log(chalk.green(`Column Construction: Created ${column.tableName} tables with ${column.columnName} column for ${column.itemName}`));
+
+                    await insertPresets(column, 'item-factor')
+
                     break;
 
                 case 'item-location':
@@ -815,6 +819,9 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                     }));
 
                     console.log(chalk.green(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
+
+                    await insertPresets(column, 'item-factor')
+
                     break;
 
                 case 'obs':
@@ -849,6 +856,9 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                     }));
 
                     console.log(chalk.green(`Column Construction: Created ${column.tableName} tables with ${column.columnName} column for ${column.itemName}`));
+
+                    await insertPresets(column, 'obs-list')
+
                     break;
 
                 case 'obs-factor':
@@ -867,6 +877,9 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                     }));
 
                     console.log(chalk.green(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
+
+                    await insertPresets(column, 'obs-factor')
+
                     break;
 
                 case 'special':
@@ -893,6 +906,23 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                 default:
                     throw `column ${column.columnName} has an invalid reference type of ${column.referenceType}`
             }
+
+            // preset value inserter
+            async function insertPresets(column, type) {
+                // insert all the preset values
+                if(!Array.isArray(column.presetValues)) {
+                    throw `${type} data columns must have an array of presetValues. This array can be empty`
+                }
+                for(let value of column.presetValues) {
+                    await db.none(formatSQL(insertPresetValues, {
+                        tableName: column.tableName,
+                        columnName: column.columnName,
+                        value
+                    }))
+                    console.log(chalk.green(`Column Construction: Inserted '${value}' into ${column.columnName} for ${column.itemName}`));
+                }
+            }
+
         } catch(sqlError) {
             return constructjsError(sqlError);
         };

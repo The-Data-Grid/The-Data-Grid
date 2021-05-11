@@ -102,7 +102,9 @@ const construct = {
         
     // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
     checkAuditorNameTrigger: 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \
-    FOR EACH ROW EXECUTE FUNCTION check_auditor_name()'
+    FOR EACH ROW EXECUTE FUNCTION check_auditor_name()',
+
+    insertPresetValues: 'INSERT INTO $(tableName:name) ($(columnName:name)) VALUES ($(value))'
 
 };
 

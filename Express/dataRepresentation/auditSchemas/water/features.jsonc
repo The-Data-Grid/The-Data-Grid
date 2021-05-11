@@ -96,7 +96,9 @@
             "frontendName": "Room",
             "creationPrivilege": 2
         }
-    },
+    }
+    /*
+    ,
     {
         "tableName": "subobservation_toilet_sensor",
         "parentTableName": "observation_toilet",
@@ -137,4 +139,5 @@
         "information": "Privacy barriers between adjacent urinals",
         "observableItem": null
     }
+    */
 ]
