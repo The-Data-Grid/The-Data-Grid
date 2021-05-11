@@ -67,16 +67,40 @@ VALUES
     (default, 2, 1, 3);
 
 
+-- audit_id, catalog_id, data_audit_name, user_id, data_time_created
+INSERT INTO item_audit 
+("item_id",
+"item_catalog_id",
+"data_audit_name",
+"item_user_id",
+"item_organization_id",
+"data_time_created")
+VALUES
+    (default, NULL, 'Powell Sinks', 2, 1, NOW()),
+    (default, NULL, 'YRL Sinks', 1, 1, NOW());
+
+
+-- "submission_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name"
+INSERT INTO item_global
+("item_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id")
+VALUES
+    (default, 1, 1, 1, NULL),
+    (default, 1, 1, 2, NULL),
+    (default, 2, 1, 3, NULL),
+    (default, 2, 1, 2, NULL);
+
+
 -- actual features
 INSERT INTO item_building 
 ("item_id",
 "data_building_name",
 "item_entity_id",
+"global_id",
 "location_region_id")
 VALUES
-    (default, 'Powell Library', 1, 1),
-    (default, 'Young Research Library', 1, 2),
-    (default, 'Boelter Hall', 1, 3);
+    (default, 'Powell Library', 1, 1, 1),
+    (default, 'Young Research Library', 1, 1, 2),
+    (default, 'Boelter Hall', 1, 2, 3);
 
 INSERT INTO item_room 
 ("item_id",
@@ -84,22 +108,23 @@ INSERT INTO item_room
 "item_building_id",
 "data_room_number",
 "data_exhaust_vent",
+"global_id",
 "data_access_panel")
 VALUES
-    (default, true, 1, '1234A', true, false),
-    (default, true, 1, '1235B', false, false),
-    (default, true, 1, '1236C', true, true),
-    (default, true, 1, '1237D', false, true),
+    (default, true, 1, '1234A', true, 2, false),
+    (default, true, 1, '1235B', false, 2, false),
+    (default, true, 1, '1236C', true, 2, true),
+    (default, true, 1, '1237D', false, 2, true),
 
-    (default, true, 2, '1234A', true, false),
-    (default, true, 2, '1235B', false, false),
-    (default, true, 2, '1236C', true, true),
-    (default, true, 2, '1237D', false, true),
+    (default, true, 2, '1234A', true, 2, false),
+    (default, true, 2, '1235B', false, 2, false),
+    (default, true, 2, '1236C', true, 2, true),
+    (default, true, 2, '1237D', false, 2, true),
 
-    (default, true, 3, '1234A', true, false),
-    (default, true, 3, '1235B', false, false),
-    (default, true, 3, '1236C', true, true),
-    (default, true, 3, '1237D', false, true);
+    (default, true, 3, '1234A', true, 2, false),
+    (default, true, 3, '1235B', false, 2, false),
+    (default, true, 3, '1236C', true, 2, true),
+    (default, true, 3, '1237D', false, 2, true);
 
 INSERT INTO attribute_sink_basin_brand
 ("attribute_id",
@@ -150,34 +175,35 @@ INSERT INTO item_sink
 "item_room_id",
 "data_clockwise_integer",
 "attribute_sink_basin_brand_id",
+"global_id",
 "attribute_sink_faucet_brand_id")
 VALUES
-    (default, true, 1, 1, 1, 1),
-    (default, true, 1, 2, 2, 1),
-    (default, true, 2, 1, 3, 3),
-    (default, true, 2, 2, 2, 3),
-    (default, true, 3, 1, 1, 1),
-    (default, true, 3, 2, 2, 2),
-    (default, true, 4, 1, 1, 2),
-    (default, true, 4, 2, 2, 1),
+    (default, true, 1, 1, 1, 3, 1),
+    (default, true, 1, 2, 2, 3, 1),
+    (default, true, 2, 1, 3, 3, 3),
+    (default, true, 2, 2, 2, 3, 3),
+    (default, true, 3, 1, 1, 3, 1),
+    (default, true, 3, 2, 2, 3, 2),
+    (default, true, 4, 1, 1, 3, 2),
+    (default, true, 4, 2, 2, 3, 1),
 
-    (default, true, 5, 1, 1, 1),
-    (default, true, 5, 2, 2, 1),
-    (default, true, 6, 1, 3, 3),
-    (default, true, 6, 2, 2, 3),
-    (default, true, 7, 1, 1, 1),
-    (default, true, 7, 2, 2, 2),
-    (default, true, 8, 1, 1, 2),
-    (default, true, 8, 2, 2, 1),
+    (default, true, 5, 1, 1, 3, 1),
+    (default, true, 5, 2, 2, 3, 1),
+    (default, true, 6, 1, 3, 3, 3),
+    (default, true, 6, 2, 2, 3, 3),
+    (default, true, 7, 1, 1, 3, 1),
+    (default, true, 7, 2, 2, 3, 2),
+    (default, true, 8, 1, 1, 3, 2),
+    (default, true, 8, 2, 2, 3, 1),
 
-    (default, true, 9, 1, 1, 1),
-    (default, true, 9, 2, 2, 1),
-    (default, true, 10, 1, 3, 3),
-    (default, true, 10, 2, 2, 3),
-    (default, true, 11, 1, 1, 1),
-    (default, true, 11, 2, 2, 2),
-    (default, true, 12, 1, 1, 2),
-    (default, true, 12, 2, 2, 1);
+    (default, true, 9, 1, 1, 3, 1),
+    (default, true, 9, 2, 2, 3, 1),
+    (default, true, 10, 1, 3, 4, 3),
+    (default, true, 10, 2, 2, 4, 3),
+    (default, true, 11, 1, 1, 4, 1),
+    (default, true, 11, 2, 2, 4, 2),
+    (default, true, 12, 1, 1, 4, 2),
+    (default, true, 12, 2, 2, 4, 1);
 
 
 
@@ -186,36 +212,6 @@ VALUES
 /*********************
 Observation based data
 */
-
--- audit_id, catalog_id, data_audit_name, user_id, data_time_created
-INSERT INTO item_audit 
-("item_id",
-"item_catalog_id",
-"data_audit_name",
-"item_user_id",
-"data_time_created")
-VALUES
-    (default, NULL, 'Powell Sinks', 2, NOW()),
-    (default, NULL, 'YRL Sinks', 1, NOW());
-
-
--- "submission_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name"
-INSERT INTO item_global
-("item_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id")
-VALUES
-    (default, 1, 1, 1, NULL),
-    (default, 1, 1, 2, NULL),
-    (default, 2, 1, 3, NULL),
-    (default, 2, 1, 2, NULL);
-
-INSERT INTO item_submission
-("data_time_submitted")
-VALUES
-    (NOW()),
-    (NOW()),
-    (NOW()),
-    (NOW());
-
 
 INSERT INTO observation_sink 
 ("observation_id",
