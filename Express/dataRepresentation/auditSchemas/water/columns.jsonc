@@ -49,7 +49,7 @@
         "tableName": "list_toilet_stall_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_toilet_stall",
+        "subobservationTableName": null,
         "itemName": "item_toilet",
 
         "sqlType": "TEXT",
@@ -106,7 +106,7 @@
         "tableName": "list_toilet_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_toilet_sensor",
+        "subobservationTableName": null,
         "itemName": "item_toilet",
 
         "sqlType": "TEXT",
@@ -306,7 +306,7 @@
         "tableName": "list_urinal_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_urinal_sensor",
+        "subobservationTableName": null,
         "itemName": "item_urinal",
 
         "sqlType": "TEXT",
@@ -325,7 +325,7 @@
         "tableName": "list_urinal_divider_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_urinal_divider",
+        "subobservationTableName": null,
         "itemName": "item_urinal",
 
         "sqlType": "TEXT",
@@ -501,7 +501,7 @@
         "tableName": "list_sink_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_sink_sensor",
+        "subobservationTableName": null,
         "itemName": "item_sink",
 
         "sqlType": "TEXT",
