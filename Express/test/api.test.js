@@ -47,6 +47,8 @@ let o12 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-2
 let o13 = '/api/audit/item/key/user?limit=10&offset=1&sorta=264'
 let o14 = '/api/audit/observation/key/sink?limit=10&offset=1&sorta=66'
 
+let o15 = '/user/get?email=abc123@gmail.com'
+
 /**
  * OBJECTS
  */
@@ -254,6 +256,23 @@ test('Test for observation/key query', done => {
                 'primaryKey'
             ]);
             done();
+        });
+});
+
+test('Test for get user profile', done => {
+    request
+        .get(o15)
+        .end( (err, res) => {
+            if(err) return done(err)
+            expect(Object.keys(res.body)).toEqual([
+                'data_first_name',
+                'data_last_name',
+                'data_date_of_birth',
+                'data_email',
+                'data_is_email_public',
+                'data_is_quarterly_updates'
+            ])
+            done()
         });
 });
 
