@@ -205,18 +205,20 @@ VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(
 const updates  = {
     updateToken: 'UPDATE item_user SET secret_token = $(token) WHERE data_email = $(email)',
     updateStatus: 'UPDATE item_user SET is_pending = $(status) WHERE data_email = $(email)',
-    updatepassword: 'UPDATE item_user SET tdg_p_hash = $(password) WHERE data_email = $(email)'
+    updatepassword: 'UPDATE item_user SET tdg_p_hash = $(password) WHERE data_email = $(email)',
+    updateFirstName: 'UPDATE item_user SET data_first_name = $(firstname) WHERE data_email = $(email)',
+    updateLastName: 'UPDATE item_user SET data_last_name = $(lastname) WHERE data_email = $(email)',
+    updateDOB: 'UPDATE item_user SET data_date_of_birth = $(dateofbirth) WHERE data_email = $(email)'
 };
 
+//    secret : 'SELECT secret_token FROM item_user WHERE data_email = $(checkemail)'
+
 const profile = { 
-    selectInput: 'DECLARE @columnName AS VARCHAR(400) \
-    SET @columnName = $(column)\
-    SELECT @columnName FROM item_user WHERE data_email = $(email)',
-    
-    updateInput: 'DECLARE @columnName AS VARCHAR(400) \
-    SET @columnName = $(column)\
-    UPDATE item_user SET @columnName = $(value) WHERE data_email = $(email)'
-}
+    selectPassword: 'SELECT tdg_p_hash FROM item_user WHERE data_email = $(email)',
+    selectFirstName: 'SELECT data_first_name FROM item_user WHERE data_email = $(email)',
+    selectLastName: 'SELECT data_last_name FROM item_user WHERE data_email = $(email)',
+    selectDOB: 'SELECT data_date_of_birth FROM item_user WHERE data_email = $(email)'
+};
 
 module.exports = {
     query,
