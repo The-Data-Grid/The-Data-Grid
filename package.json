@@ -5,16 +5,16 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./Express/app.js",
-    "test": "jest api.test.js",
+    "test": "jest api.test.js --forceExit",
     "test:watch": "jest --watch",
     "testOLD": "echo \"Error: no test specified\" && exit 1",
     "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
     "construct": "node ./Express/dataRepresentation/construct.js",
     "db-init": "bash ./Express/db/init.sh",
     "db-fake": "bash ./Express/db/fake.sh",
-    "db-start": "pg_ctl -D PostgreSQL/data start",
-    "db-stop": "pg_ctl -D PostgreSQL/data stop",
-    "db-status": "pg_ctl -D PostgreSQL/data status"
+    "db-status": "bash ./Express/db/status.sh",
+    "db-start": "bash ./Express/db/start.sh",
+    "db-stop": "bash ./Express/db/stop.sh"
   },
   "author": "",
   "license": "ISC",
@@ -41,6 +41,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "jest-to-match-shape-of": "^1.3.1",
+    "joi": "^17.4.0",
     "libpq": "^1.8.9",
     "lodash": "^4.17.20",
     "lru-cache": "^6.0.0",

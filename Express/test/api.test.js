@@ -41,7 +41,11 @@ let o8 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20
 let o9 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=0&offset=10&sorta=70';
 let o10 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=-10&sorta=70';
 let o11 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10&sorta=abc'
+
 let o12 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=abc&sorta=70';
+
+let o13 = '/api/audit/item/key/user?limit=10&offset=1&sorta=264'
+let o14 = '/api/audit/observation/key/sink?limit=10&offset=1&sorta=66'
 
 /**
  * OBJECTS
@@ -225,6 +229,30 @@ test('Offset with string', done => {
             if (err) return done(err);
             checkResponse(res, 400);
             expect(res.text).toBe('Bad Request 2209: Field for offset must be zero or a positive integer');
+            done();
+        });
+});
+
+test('Test for item/key query', done => {
+    request
+        .get(o13)
+        .end( (err, res) => {
+            if (err) return done(err);
+            expect(Object.keys(res.body)).toEqual([
+                'primaryKey'
+            ]);
+            done();
+        });
+});
+
+test('Test for observation/key query', done => {
+    request
+        .get(o14)
+        .end( (err, res) => {
+            if (err) return done(err);
+            expect(Object.keys(res.body)).toEqual([
+                'primaryKey'
+            ]);
             done();
         });
 });

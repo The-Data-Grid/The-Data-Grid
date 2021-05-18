@@ -4,6 +4,7 @@
  ********************/
 
 const fs = require('fs')
+const Joi = require('joi')
 
 const {idValidationLookup} = require('./setup.js');
 
@@ -327,6 +328,43 @@ function isValidPassword(password) {
     return true; 
 }
 
+async function updateUserObject(req, res, next) {
+    // define the object
+    const obj = Joi.object({
+        "firstName": Joi.string().allow(undefined),
+        "lastName": Joi.string().allow(undefined),
+        "email": Joi.string().allow(undefined),
+        "dateOfBirth": Joi.string().allow(undefined), //in MM-DD-YYYY format
+        "isEmailPublic": Joi.boolean().allow(undefined),
+        "isQuarterlyUpdates": Joi.boolean().allow(undefined)     
+    })
+
+    // validate on it
+    const { error } = await obj.validateAsync(req.body)
+    if(error) {
+        return res.status(400).send('Bad Request 3700: Request Object invalid')
+    }
+
+    next()
+}
+
+async function setRoleObject(req, res, next) {
+    // define the object
+    const obj = Joi.object({
+        "organizationID": Joi.number().integer(),
+        "userID": Joi.number().integer(),
+        "role": Joi.allow('auditor', 'admin') // 'auditor' or 'admin'     
+    })
+
+    // validate on it
+    const { error } = await obj.validateAsync(req.body)
+    if(error) {
+        return res.status(400).send('Bad Request 3700: Request Object invalid')
+    }
+
+    next()
+}
+
 module.exports = {
     validateObservation: validationConstructor('observation'),
     validateItem: validationConstructor('item'),
@@ -335,5 +373,9 @@ module.exports = {
     isNumber,
     isValidDate,
     isValidEmail,
-    isValidPassword 
+    isValidPassword,
+    requestObject: {
+        updateUserObject,
+        setRoleObject
+    }
 };
