@@ -9,6 +9,7 @@ import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { DownloadComponent } from './download/download.component';
@@ -28,6 +29,10 @@ import { MaterialModule } from './material.module';
 import { RootFeaturesComponent } from './upload-audit/root-features/root-features.component';
 import { GlobalPresetsComponent} from './upload-audit/global-presets/global-presets.component';
 import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audit.component';
+import { SetupObjectService } from './setup-object.service';
+import { TableObjectService } from './table-object.service';
+import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
+import { TeamComponent } from './team/team.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +51,9 @@ import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audi
     ViewAuditComponent,
     RootFeaturesComponent,
     GlobalPresetsComponent,
-    FeatureAuditComponent
+    FeatureAuditComponent,
+    ReusableTemplateComponent,
+    TeamComponent
   ],
   imports: [
     BrowserModule,
@@ -59,9 +66,10 @@ import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audi
     NgxDatatableModule,
     NgMultiSelectDropDownModule.forRoot(),
     ClickOutsideModule,
-    MaterialModule
+    MaterialModule,
+    MatTooltipModule,
   ],
-  providers: [ApiService, DatePipe],
+  providers: [ApiService, DatePipe, SetupObjectService, TableObjectService],
   bootstrap: [AppComponent],
   entryComponents: [DialogComponent]
 })

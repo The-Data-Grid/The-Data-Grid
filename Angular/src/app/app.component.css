@@ -2,6 +2,7 @@ html {
    height: 100%;
    margin: 0;
    padding: 0;
+   background-color: green;
 }
 
 body {
@@ -30,45 +31,72 @@ body {
 
 /* dropdowns on mat-tab */
 .nav-dropdown-option {
-   display: block;
+   display: inline-block;
    height: 35px;
    padding-right: 0;
    padding-left: 0;
 }
 
-.bottomBar {
-   position: fixed;
-   bottom: 0;
-   margin-top: 100%;
-   height: 45px;
+.bottom-bar {
+   background-color: #9EACB8;
+   height: 150px;
+   padding-top: 30px;
 }
 
-.ig {
+.bottom-card {
+   background-color: inherit;
+   width: 20%;
+}
+
+.bot-text {
+   font-size: 16px;
+   line-height: 15px;
+   color: #ffffff;
+}
+
+
+.bot-logo {
+   font-family: IBM Plex Mono;
+   font-style: normal;
+   font-weight: 500;
+   font-size: 25px;
+   line-height: 30px;
+   color: #ffffff;
+}
+
+.social-button {
+   height: 40px;
+   margin: 5px;
+}
+
+.mat-button.mat-primary .mat-button-focus-overlay {
+   background-color: transparent;
+ }
+ 
+ ::ng-deep .link-btn .mat-button-focus-overlay {
+   background-color:transparent;
+}
+
+.upload {
+   width: 150%;
+   height: 100%;
+   background-color: transparent;
+   border: none;
+   cursor: pointer;
+}
+
+button:focus { outline: none; }
+
+.mat-menu-content {
+   background-color: 'red' !important;
+}
+
+::ng-deep .customize {
+   background: white;
+   width: 150px;
+   margin-left: -10px;
    position: absolute;
-   margin-left: 8%;
+   top: 0%;
+   display: block;
 }
-
-.fb {
-   position: absolute;
-   margin-left: 33%;
-}
-
-.sub {
-   position: absolute;
-   margin-left: 59%;
-}
-
-.donate {
-   position: absolute;
-   margin-left: 80%;
-}
-
-.activeButton {
-   opacity: 1;
-}
-
-hr.bottom_separator {
-   margin-top: 15px;
-   /* border-top: 1px solid #569CD7; */
-   border-top: 1px solid #C8C8C8;
-}
+ 

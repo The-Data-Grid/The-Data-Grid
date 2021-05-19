@@ -18,7 +18,7 @@
                 "columnName": "data_region"
             },
             "frontendName": "Toilet",
-            "creationPrivilege": 3
+            "creationPrivilege": 2
         }
     },
     {
@@ -37,7 +37,7 @@
                 "columnName": "data_region"
             },
             "frontendName": "Urinal",
-            "creationPrivilege": 3
+            "creationPrivilege": 2
         }
     },
     {
@@ -56,7 +56,7 @@
                 "columnName": "data_region"
             },
             "frontendName": "Sink",
-            "creationPrivilege": 3
+            "creationPrivilege": 2
         }
     },
     {
@@ -75,7 +75,7 @@
                 "columnName": "data_region"
             },
             "frontendName": "Mirror",
-            "creationPrivilege": 3
+            "creationPrivilege": 2
         }
     },
     {
@@ -94,9 +94,11 @@
                 "columnName": "data_region"
             },
             "frontendName": "Room",
-            "creationPrivilege": 4
+            "creationPrivilege": 2
         }
-    },
+    }
+    /*
+    ,
     {
         "tableName": "subobservation_toilet_sensor",
         "parentTableName": "observation_toilet",
@@ -137,4 +139,5 @@
         "information": "Privacy barriers between adjacent urinals",
         "observableItem": null
     }
+    */
 ]

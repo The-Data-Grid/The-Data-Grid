@@ -1,6 +1,12 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from '../../api.service';
+import { SetupObjectService } from '../../setup-object.service';
+import { SetupObject, TableObject } from '../../responses'
+import { environment } from '../../../environments/environment';
+const USE_FAKE_DATA = environment.useFakeData;
+import { AppliedFilterSelections } from '../../models'
+
 
 interface Data {
   name: string,
@@ -10,28 +16,48 @@ interface Data {
 @Component({
   selector: 'app-global-presets',
   templateUrl: './global-presets.component.html',
-  styleUrls: ['./global-presets.component.css']
+  styleUrls: ['./global-presets.component.css'],
 })
 export class GlobalPresetsComponent implements OnInit {
 
   constructor(private apiService: ApiService, public dialogRef: MatDialogRef<GlobalPresetsComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Data) { }
+    @Inject(MAT_DIALOG_DATA) public data: Data, private setupObjectService: SetupObjectService) { }
 
   setupObject;
   globalSelectors;
+  appliedFilterSelections: AppliedFilterSelections = {
+    numericChoice: {},
+    numericEqual: {},
+    calendarRange: {},
+    calendarEqual: {},
+    dropdown: {},
+    searchableDropdown: [],
+    checklistDropdown: [],
+    searchableChecklistDropdown: [],
+    text: {},
+    bool: {},
+    _placeholder: "placeholder"
+  };
+  defaultColumns = [];
+  selectorsLoaded: boolean = false;
+  globalReturnableIDs = [];
+
 
   ngOnInit(): void {
     this.getSetupTableObject();
   }
 
   getSetupTableObject() {
-    this.apiService.getSetupTableObject(null).subscribe((res) => {
-      this.setupObject = res;
-
-      // parse global columns
-      this.globalSelectors = this.setupObject.globalColumns;
-
-      console.log(this.globalSelectors);
+    this.apiService.getSetupTableObject().subscribe((res) => {
+      USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
+      this.globalSelectors = this.setupObjectService.getGlobalSelectors(
+        this.setupObject,
+        this.appliedFilterSelections,
+        this.defaultColumns, 
+        this.globalReturnableIDs,
+        false);
+      console.log(this.globalSelectors)
+      this.selectorsLoaded = true;
     });
   }
 

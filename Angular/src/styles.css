@@ -5,6 +5,7 @@
 @import '~@swimlane/ngx-datatable/index.css';
 @import '~@swimlane/ngx-datatable/themes/material.css';
 @import '~@swimlane/ngx-datatable/assets/icons.css';
+/* @import 'bootstrap/dist/css/bootstrap.min.css'; */
 
 html * {
   font-family: 'IBM Plex Sans', sans-serif;
@@ -29,8 +30,6 @@ html, body {
 .mat-toolbar {
   background-color: rgb(86, 156, 215);
   color: white;
-  /* background-color: lightgray; */
-  /* color: gray; */
   width: 100%;
   z-index: 9999;
 }
@@ -56,7 +55,6 @@ html, body {
   cursor: pointer;
   transition: 0.3s;
 }
-
 
 #app {
   text-align: center;
@@ -94,14 +92,15 @@ html, body {
 
 /* the following selectors are for ng multiselect */
 
-.multi .multiselect-dropdown {
+.selector .multiselect-dropdown {
   outline: none !important;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 25px;
+  margin-bottom: 25px;
   color: rgb(228, 228, 228) !important;
+
 }
 
-.multi .multiselect-dropdown .dropdown-btn {
+.selector .multiselect-dropdown .dropdown-btn {
   display: inline-block;
   width: 85% !important;
   text-align: left !important;
@@ -118,7 +117,7 @@ html, body {
   outline: none !important;
 }
 
-.multi .dropdown-list {
+.selector .dropdown-list {
   width: 90% !important;
   margin-left: 5% !important;
   margin-top: 0 !important;
@@ -129,7 +128,7 @@ html, body {
 
 }
 
-.multi .filter-textbox {
+.selector .filter-textbox {
   padding-left: 0 !important;
   width: auto !important;
   text-align: left !important;
@@ -137,11 +136,11 @@ html, body {
   margin-left: 0px !important;
 }
 
-.multi .filter-textbox input {
+.selector .filter-textbox input {
   padding-left: 10px !important;
 }
 
-.multi .multiselect-dropdown .dropdown-btn span {
+.selector .multiselect-dropdown .dropdown-btn span {
   height: 100% !important;
   padding-right: 5px !important;
   float: none !important;
@@ -149,7 +148,7 @@ html, body {
 }
 
 /* the little arrow symbol when pointing down */
-.multi .multiselect-dropdown .dropdown-btn .dropdown-down {
+.selector .multiselect-dropdown .dropdown-btn .dropdown-down {
   padding: 0 !important;
   margin: 0 !important;
   border-top: 5px solid rgb(228, 228, 228) !important;
@@ -158,13 +157,31 @@ html, body {
 }
 
 /* the little arrow symbol when pointing up */
-.multi .multiselect-dropdown .dropdown-btn .dropdown-up {
+.selector .multiselect-dropdown .dropdown-btn .dropdown-up {
   padding: 0 !important;
   margin: 0 !important;
   border-bottom: 5px solid rgb(228, 228, 228) !important;
   border-left: 5px solid transparent !important;
   border-right: 5px solid transparent !important;
 }
+
+
+/* datetime picker */
+.datetime-picker{
+  text-align: center;
+  font-size: x-small;
+  color: rgb(228, 228, 228) !important;
+}
+
+::-webkit-calendar-picker-indicator {
+  width: 12px;
+  height: 15px;
+}
+
+/* set calendar icon color. do not delete */
+/* ::-webkit-calendar-picker-indicator {
+  background: url(/assets/calendar_white.png) no-repeat !important;
+} */
 
 
 /* radio button */
@@ -187,6 +204,10 @@ html, body {
   color: rgb(228, 228, 228) !important;
 }
 
+.mat-expansion-panel {
+  border-radius: 0 !important;
+}
+
 
 /* the bar at the bottom of a tab on the nav bar */
 .mat-ink-bar {
@@ -194,4 +215,32 @@ html, body {
   background-color: rgb(86, 156, 215) !important;
   visibility: visible !important;
   display: block;
+}
+
+
+.right-aligned-header > .mat-content {
+  justify-content: space-between;
+}
+
+.mat-content > mat-panel-title, .mat-content > mat-panel-description {
+flex: 0 0 auto;
+}
+
+.mat-dialog-container {
+  padding: 0 !important;
+  }
+  
+  .cdk-overlay-container{
+    top:50px;
+}
+.cdk-overlay-connected-position-bounding-box{
+    top:0 !important;
+    
+}
+
+
+
+/* for adding newlines to tooltip */
+.my-tooltip {
+  white-space: pre-line;
 }

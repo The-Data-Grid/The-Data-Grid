@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body >
+    <!-- Team Page Header -->
+    <div class="team-header-container">
+        <img style="width: 100%; opacity:.5;" src="assets/TeamPageCover.png" alt="teamHeader">
+        <p class="team-header" style="color:#569CD7;">MEET THE <span style="color:#82B99F">TEAM</span></p>
+    </div>
+
+    <!-- Set of team member descriptions -->
+    <p class="team-section-header">FRONTEND DEVELOPERS</p>
+
+    <!-- this fxLayout allows the cards to flow down to the next row if they get squished -->
+    <div style="margin-left: 10%; margin-right: 10%; " fxLayout={{checkWidth()}} fxLayoutAlign="space-around center">
+
+        <ng-template ngFor [ngForOf]="members" let-member>
+            <div class="team-member-card">
+                <div
+                    class=".member-description">
+                    <img src="assets/random.png" alt="person" class="member-photo">
+                    <p style="color:#569CD7; font-weight: bolder; text-align: center;"> {{ member.name }} </p>
+                    <p style="color:#569CD7; font-style: italic;text-align: center;"> {{ member.team }} </p>
+                    <p style="text-align:center"> {{ member.bio }} </p>
+                    <button class="profilebutton">Profile</button>
+                    <!-- we don't yet have the right logo pics, so i just used a drop-shadow-->
+                    <div fxLayoutAlign="space-between stretch" style="margin: 10%;">
+                        <a href="https://www.facebook.com/thedatagrid">
+                            <img src="assets/facebookblue.png" alt="Facebook" class="social-button">
+                        </a>
+                        <a href="https://www.instagram.com/thedatagrid/">
+                            <img src="assets/linkedinblue.png" alt="Instagram" class="social-button">
+                        </a>
+                        <a href="https://www.linkedin.com/company/the-data-grid/">
+                            <img src="assets/instablue.png" alt="LinkedIn" class="social-button">
+                        </a>
+                        <a href="https://www.linkedin.com/company/the-data-grid/">
+                            <img src="assets/emailblue.png" alt="LinkedIn" class="social-button">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+</body>

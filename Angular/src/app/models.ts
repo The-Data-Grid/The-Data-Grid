@@ -1,64 +1,49 @@
-// export class SwimlaneColumn {
-//     name: string;
-//     constructor(name: string) {
-//       this.name = name;
-//     }
-//   }
-
-/* audit submission model */
-export class AuditSubmission {
-    timeConducted: number;
-    timeSubmitted: number;
-    sopID: number;
-    userID: number;
-    organizationID: number;
+export interface AppliedFilterSelections {
+    numericChoice: any;
+    numericEqual: any;
+    calendarRange: any;
+    calendarEqual: any;
+    dropdown: any;
+    searchableDropdown: Array<multiselectOption[]>;  // array of multiselectoptions arrays
+    checklistDropdown: Array<multiselectOption[]>; 
+    searchableChecklistDropdown: Array<multiselectOption[]>; 
+    text: any;
+    bool: any;
+    _placeholder?: any;
 }
 
-/* feature models */
-export class MirrorObject {
-    objectType: "mirror";
-    mirrorConditionID: number;
-    comment: string;
+export interface ReturnableIDObject {
+    all: number[];
+    default: number[];
 }
 
-export class ToiletObject {
-    objectType: "toilet";
-    gpf: number;
-    flushometerBrand: string;
-    basinBrand: string;
-    ADAstall: Boolean
-    basinConditionID: number;
-    flushometerConditionID: number;
-    comment: string;
-    dateConducted: string;
-
-    constructor(values: Object = {}) {
-        Object.assign(this, values);
-    }
+export interface multiselectOption { 
+    item_id: number;
+    item_text: String;
 }
 
-export class UrinalObject {
-    objectType: "urinal";
-    gpf: number;
-    flushometerBrand: string;
-    basinBrand: string;
-    conditionID: number;
-    basinConditionID: number;
-    flushometerConditionID: number;
-    comment: string;
-}
-
-export class SinkObject {
-    objectType: "sink";
-    gpm: number;
-    faucetBrand: string;
-    conditionID: number;
-    faucetConditionID: number;
-    basinConditionID: number;
-    comment: string;
-}
+// export interface Selectors  {
+//     numericChoice: any[],
+//     numericEqual: any[],
+//     calendarRange: any[],
+//     calendarEqual: any[],
+//     dropdown: any[],
+//     searchableDropdown: any[],
+//     checklistDropdown: any[],
+//     searchableChecklistDropdown: any[],
+//     text: any[],
+//     bool: any[],
+//     _placeholder?: any
+//   };
 
 
+
+
+
+
+
+
+///////no longer up to date:///////////////////
 export class SetupTableObject {
     globalSelectors: FilterSelector[];
     featureFilters: {

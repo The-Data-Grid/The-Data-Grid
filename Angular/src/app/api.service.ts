@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http'
+import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http'
 import { environment } from '../environments/environment';
 import { Observable, observable, Subscribable } from 'rxjs';
 import { map, catchError, filter, switchMap } from 'rxjs/operators';
-import { ToiletObject, TableObject, SetupTableObject } from './models';
+import { TableObject, SetupTableObject, AppliedFilterSelections } from './models';
 import { error } from '@angular/compiler/src/util';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-const API_URL = environment.apiUrl;
-const fakeServerURL = "https://my-json-server.typicode.com/tanyazhong/the-data-grid-mock-server";
+const API_URL = environment.apiUrl; //this should default to environment.ts in dev and environment.prod.ts in production
 const PORT = environment.port;
 
 @Injectable({
@@ -17,44 +16,116 @@ const PORT = environment.port;
 export class ApiService {
   constructor(private http: HttpClient) { }
 
-  suffix: string;
-  columnsString;
-
-  makeColumnsString(array): string {
-    return array.join('&');
-  }
-
-  public getSetupTableObject(lastModified: string): Observable<SetupTableObject> {
-    // return this.http.get<FilterConfig>(API_URL + '/s/filter');
-    // var url = API_URL + '/setup';
-    var url = fakeServerURL + '/setup';
-    var lastModifiedObject = {
-      lastModified: lastModified
-    }
+  public getSetupTableObject(): Observable<SetupTableObject> {
+    var url = API_URL + '/setup';
+    // var url = API_URL + '/audit/setup';
 
     return this.http.get<SetupTableObject>(url, {
       observe: 'response',
-      // params: lastModifiedObject
     })
       .pipe(map((response: any) => {
         console.log("Server Status: " + response.status + ":::::" + response.statusText);
+        console.log(response.body);
         return response.body;
       }));
   }
 
-  public getTableObject(feature: string, columns: any, qsparams: any): any {
-    // var url = API_URL + "/audit/" + feature;
-    this.columnsString = this.makeColumnsString(columns);
-    if (this.columnsString) {
-      url = url + "/" + this.columnsString;
-    }
-    // return this.http.get<TableObject>(url, { params: qsparams });
-    // console.log(url);
+  public getTableObject(feature: string, defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections, returnableIDs): any {
+    //DON'T DELETE. once sink is the only feature we can get dropdown info for.
+    //we wil need this stuff once sink and default columns are no longer hardcoded
+    // var url = API_URL + "/audit/observation/" + feature;
 
-    
-    var url = fakeServerURL + '/table';
+    // sink as feature and default columns are hardcoded:
+    //rn form queryurl just forms the filters part. in the future i might make it create the whole url.
+    // var url = API_URL + '/audit/observation/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161'
+    var url = API_URL + '/audit/observation/sink/' + returnableIDs.join('&') 
+      +  this.formQueryURL(defaultColumnIDs, appliedFilterSelections);
+
+
     return this.http.get<TableObject>(url);
+
   }
 
+  // arg returnableIDS is an array of IDS for which you want to get options
+  public getDropdownOptions(returnableIDs): Observable<any> {
+    // var url = API_URL + '/audit/observation/distinct';
+    // var url = API_URL + '/audit/observation/distinct/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161&188';
+    var url = API_URL + '/audit/observation/distinct/sink/' + returnableIDs.join('&');
+
+    return this.http.get<any>(url, {
+      observe: 'response',
+    })
+      .pipe(map((response: any) => {
+        return response.body;
+      }));
+  }
+
+
+  private formQueryURL(defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections) {
+    // create the "columns" part of the query by joining the default column IDS with '&'
+    let columnsString = defaultColumnIDs.join('&');
+    let colAndFilterSeparater = "?";
+
+    //each element consists of a returnable, "=", and its user selections
+    //ex: 42=Toyota, 58=red|blue
+    let filterStings = []
+
+    for (const [ID, input] of Object.entries(appliedFilterSelections.dropdown)) {
+      if (input) { filterStings.push(ID + "=" + input) }
+    }
+    for (const [ID, input] of Object.entries(appliedFilterSelections.numericEqual)) {
+      if (input) { filterStings.push(ID + "=" + input) }
+    }
+    for (const [ID, inputObject] of Object.entries(appliedFilterSelections.numericChoice)) {
+    }
+    for (const [ID, inputObject] of Object.entries(appliedFilterSelections.calendarRange)) {
+    }
+    for (const [ID, input] of Object.entries(appliedFilterSelections.calendarEqual)) {
+      if (input) { filterStings.push(ID + "=" + input) }
+    }
+    for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableDropdown)) {
+      inputArray.forEach(option => { filterStings.push(ID + "=" + option.item_text) });
+    }
+    for (const [ID, inputArray] of Object.entries(appliedFilterSelections.checklistDropdown)) {
+      inputArray.forEach(option => { filterStings.push(ID + "=" + option.item_text) });
+    }
+    for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableChecklistDropdown)) {
+      let optionStrings = [];
+      inputArray.forEach(option => {
+        optionStrings.push(option.item_text);
+      });
+      // if there are no options, don't add this filter's id to the URL
+      if (optionStrings.length != 0) {
+        filterStings.push(ID + "=" + optionStrings.join('|'));
+      }
+    }
+    for (const [ID, input] of Object.entries(appliedFilterSelections.text)) {
+      if (input) { filterStings.push(ID + "=" + input) }
+    }
+    for (const [ID, input] of Object.entries(appliedFilterSelections.bool)) {
+      if (input) { filterStings.push(ID + "=" + input) }
+    }
+
+    // console.log(columnsString + colAndFilterSeparater + filterStings.join('&'));
+    if (filterStings.length != 0) {
+      return colAndFilterSeparater + filterStings.join('&');
+    }
+    else return "";
+
+  }
+
+  // POST REQUESTS
+
+  attemptLogin(loginObject, withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+
+  signOut(withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/logout`, {
+    }, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
 
 }

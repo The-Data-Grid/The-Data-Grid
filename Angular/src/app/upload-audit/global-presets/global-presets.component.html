@@ -1,18 +1,22 @@
-<body style="position: relative;">
+<body style="overflow-x: hidden;">
     <div class="top_decoration"></div>
-    <p style="font-weight: 600;">Global Presets</p>
-    <div class="primary_separator"></div>
-    <div *ngFor="let selector of globalSelectors">
-        {{selector.columnFrontendName}}:
-        <div class="secondary_separator"></div>
+    <div style="margin-left: 20px;">
+        <h3>Global Presets</h3>
+
+        <div *ngIf="selectorsLoaded">
+            <app-reusable-template [feature]="globalSelectors" [appliedFilterSelections]="appliedFilterSelections"
+                [returnableIDs]="globalReturnableIDs">
+            </app-reusable-template>
+        </div>
     </div>
-    <div style="position: absolute; bottom: 0px; right: 0px;">
-        <button mat-button (click)="close()" style="margin-right: 10px; ">
+
+
+    <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
+        <button mat-button (click)="close()" style="margin-right: 10px;">
             Cancel
         </button>
         <button mat-button (click)="close()" style="background-color: #569CD7; color: white;">
             Save
         </button>
     </div>
-
 </body>

@@ -23,7 +23,8 @@ let {returnableQuery,
        allFeatures} = require('./statement.js').setup
 
 
-returnableQuery = syncdb.querySync(returnableQuery);
+// returnableQuery = syncdb.querySync(returnableQuery);
+returnableQuery = syncdb.querySync('select * from returnable_view');
 columnQuery = syncdb.querySync(columnQuery);
 allItems = syncdb.querySync(allItems);
 itemM2M = syncdb.querySync(itemM2M);
@@ -251,8 +252,10 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         });
     });
 
-    let submissionItemIndex = itemOrder.indexOf('item_submission');
-
+    // index of globalObject
+    let globalItemIndex = itemOrder.indexOf('item_global');
+    // all item indicies
+    let itemIndices = itemOrder.map((e,i) => i)
     
 
     // Construct featureNodeObject
@@ -357,7 +360,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // Constructing the final setupObject
     // ==================================================
 
-    setupObject.children = [featureIndices, submissionItemIndex];
+    setupObject.children = [featureIndices, itemIndices, globalItemIndex];
     setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
     setupObject.items = itemNodeObjects;
     setupObject.features = featureNodeObjects;
@@ -365,7 +368,8 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     setupObject.datatypes = datatypeArray;
     setupObject.returnableIDToTreeID = returnableIDToTreeIDObject;
     setupObject.treeIDToReturnableID = treeIDToReturnableIDObject;
-    setupObject.lastModified = Date.now();
+    // Not sending this because it should be in header
+    // setupObject.lastModified = Date.now();
     // yay
 
 
@@ -378,7 +382,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         let isFilterable = (row['fs__selector_name'] === null ? false : true);
 
-        let isSubmission = (row['r__feature_id'] === null ? true : false);
+        let isGlobal = (row['non_obs_i__table_name'] === 'item_global' ? true : false);
 
         idValidationLookup[id] = {
             // feature and root feature
@@ -389,10 +393,11 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             item: row['i__table_name'],
             referenceType: row['rt__type_name'],
             isFilterable: isFilterable,
-            isSubmission: isSubmission,
+            isGlobal,
 
             sqlType: row['sql__type_name'],
             //groundTruthLocation: row['c__is_ground_truth']
+            baseItem: row['non_obs_i__table_name']
         }
     }
 
@@ -419,6 +424,16 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         //  console.log(row)  //
         let selectSQL = null;
         let appendSQL = null;
+
+        // See if an item or observation returnable
+        const isItemReturnable = row['non_obs_i__table_name'] !== null
+        const isObservationReturnable = !isItemReturnable
+
+        // See if item and base item are the same
+        const isWithinBaseItem = row['non_obs_i__table_name'] == row['i__table_name']// ? row['i__table_name'] : null
+
+        // Base item table name
+        const baseItem = row['non_obs_i__table_name']
 
         // Get feature table as string
         const feature = row['f__table_name'];
@@ -499,7 +514,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                     ON m2m_$(tableName:raw).item_id = $(pgpParam:raw).item_id \
                                     LEFT JOIN $(tableName:name) AS $(listAlias:name) \
                                     ON $(listAlias:name).list_id = m2m_$(tableName:value).list_id', {
-                                        pgpParam: '$(alias:name)', // a little bit weird
+                                        pgpParam: isWithinBaseItem ? baseItem: '$(alias:name)', // a little bit weird
                                         tableName: tableName,
                                         listAlias: listAlias.join('')
             });
@@ -529,11 +544,11 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             appendSQL = null;
 
             selectSQL = formatSQL('$(pgpParam:raw).$(columnName:name)', {
-                pgpParam: (tableName == 'item_submission' ? 'item_submission' : '$(alias:name)'),
+                pgpParam: (isWithinBaseItem ? baseItem : '$(alias:name)'),
                 columnName: columnName,
                 returnableID: returnableIDAlias
             });
-
+            
         } else if(referenceType == 'item-location') {
 
             let locationForeignKey = `${tableName}_id`;
@@ -542,7 +557,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                        ON $(locationAlias:name).location_id = $(pgpParam:raw).$(fk:name)', {
                                             locationTable: tableName,
                                             locationAlias: locationAlias.join(''),
-                                            pgpParam: '$(alias:name)',
+                                            pgpParam: isWithinBaseItem ? baseItem : '$(alias:name)',
                                             fk: locationForeignKey
                                        });
 
@@ -563,7 +578,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                                        ON $(factorAlias:name).factor_id = $(pgpParam:raw).$(fk:name)', {
                                            factorTableName: tableName,
                                            factorAlias: factorAlias.join(''),
-                                           pgpParam: '$(alias:name)',
+                                           pgpParam: isWithinBaseItem ? baseItem : '$(alias:name)',
                                            fk: factorForeignKey
                                        });
         
@@ -843,13 +858,19 @@ const initialReturnableMapper = (returnable, statics) => {
     //console.log(returnable['r__join_object'])
     let currentPath = Array.from(returnable['r__join_object'].tables);
 
-    // if submission
+    // if non observational
     if(returnable['f__table_name'] === null) {
-        treeArray.push(1);
-        // get index of item_submission
-        // let referencedItemIndex = itemOrder.indexOf('item_submission');
-        // push index to treeArray
-        // treeArray.push(referencedItemIndex);
+        // is global item?        
+        if(returnable['non_obs_i__table_name'] == 'item_global') {
+            treeArray.push(2);
+        } 
+        // then a standard item
+        else {
+            // push item array index
+            treeArray.push(1)
+            // get index
+            treeArray.push(itemOrder.indexOf(returnable['non_obs_i__table_name']))
+        }
         // calling itemReturnableMapper
         return itemReturnableMapper(returnable, currentPath, treeArray, statics);
     } else {
@@ -876,7 +897,7 @@ const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = se
 //console.log(featureParents);
 //console.log(idValidationLookup)
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
-//console.log(returnableIDLookup.filter(el => el.referenceType == 'item-non-id'))
+//console.log(returnableIDLookup['310'])
 //console.log(setupObject)
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
     

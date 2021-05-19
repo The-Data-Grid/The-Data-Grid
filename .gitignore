@@ -1,11 +1,16 @@
 node_modules/*
 PostgreSQL/data/*
+PostgreSQL/logs/*
+Deployment/*
+
 # exclude
 !node_modules/.gitkeep
 !PostgreSQL/data/.gitkeep
+!Deployment/Angular/dist/.gitkeep
+!Deployment/Express/.gitkeep
+!Deployment/Authentication/.gitkeep
 
-.env
-
+# .env
 .DS_Store
 
 # computed returnables

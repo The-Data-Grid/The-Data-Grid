@@ -5,90 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
-  <div *ngIf="modal=='sign_in'">
+<body style="overflow-y: scroll;">
+  <div *ngIf="modal=='sign_in'" style="padding:15px;margin-top:10px;">
   <mat-dialog-actions>
     <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
   </mat-dialog-actions>
 
   <img src="assets/logo.png" alt="The Data Grid Logo" class="logo" style="top: -40px; right: -2%;">
-    <h2 class="logIn" style="font-size: 30px; font-weight: 5; position:relative; right: -5%; top: -30px; font-weight: 400;">Log In</h2>
+    <h2 class="logIn" style="font-size: 40px; font-weight: 5; position:relative; right: -5%; top: -50px; font-weight: 400;">Log In</h2>
     <p>
-        <mat-form-field appearance="outline" style="top: -10px; left: 5%; font-size: 14px;">
-          <mat-label>Email</mat-label>
-          <input id="username_attempt" matInput (input) = "checkForms()" placeholder="">
+        <mat-form-field appearance="outline" class="formField">
+          <mat-label>Username or Email</mat-label>
+          <input id="username_attempt" matInput (input) = "checkForms()" [(ngModel)]="loginEmail" placeholder="">
         </mat-form-field>
     </p>
     <p>
-            <mat-form-field appearance="outline" style="top: 15px; left: 5%; font-size: 14px;">
+            <mat-form-field appearance="outline" class="formField" style="top: -60px">
               <mat-label>Password</mat-label>
-              <input type="password" id="password_attempt" matInput (input)="checkForms()" placeholder="">
+              <input type="password" id="password_attempt" matInput [(ngModel)]="loginPassword" (input)="checkForms()" placeholder="">
             </mat-form-field>
         </p>
-        <a style="font-size: 10px; position: relative; top: -20px; right: -18px;" href="">Forgot Password?</a>
+        <a class="password" style="top: -70px;" href="">Forgot Password?</a>
 
         
-  <div style="position: absolute; margin-top:60px">
-    <button (click)="sign_up_modal()" style="position:absolute; width:500px; outline: none; font-size:11px; background-color: transparent; border:0px; color: #581f8d; text-decoration: underline; cursor: pointer; margin-left:-40px; margin-top:10px;">SIGN UP</button>
+  <div style="margin-top:60px; float: right; margin-left: -25px;">
+    <button (click)="sign_up_modal()" class="signUpButton" style="margin-left: -170px;">SIGN UP</button>
+    <!-- <button (click)="sign_up_modal()" class="signUpModal">SIGN UP</button> -->
     <!-- <button (click)="sign_up_modal()" mat-button style="font-size:11px;position: absolute; background-color:white; color: #4d79ff; margin-left: 170px; text-decoration: underline;">SIGN UP</button> -->
-    <button mat-button color="primary" style="position: absolute; background-color:#569CD7; color: white; margin-left: 250px;">SIGN IN</button>
+    <button mat-button color="primary" class="signInButton" style="margin-left: 15px;" (click)="signIn()">SIGN IN</button>
   </div>
 
 </div>
 
-<div *ngIf="modal=='sign_up'">
+
+<div *ngIf="modal=='sign_up'" style="padding:15px;margin-top:10px;">
   <mat-dialog-actions>
-    <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
+    <button class="closeButton" (click)="close()">✕</button>
   </mat-dialog-actions>
 
 
   <mat-dialog-actions>
-    <img src="assets/logo.png" alt="The Data Grid Logo" class="logo" style="top: -60px; right: 0%;">
-    <button class="closeButton" (click)="close()" style="margin-top:-10%; right: -92%; position: relative;">✕</button>
+    <img src="assets/logo.png" alt="The Data Grid Logo" class="logo logoPositioning">
+    <button class="closeButton" (click)="close()">✕</button>
   </mat-dialog-actions>
   <h1 class="sign_up_label">Sign Up</h1>
 
   <p>
-    <mat-form-field appearance="outline" style="font-size: 14px; width:160px; font-size:12px; margin-top: -5px;">
+    <mat-form-field appearance="outline" style="font-size: 14px; width:43%; font-size:12px; margin-top: -5px; margin-left: 3%;">
       <mat-label>First Name</mat-label>
       <input id="first_name" matInput placeholder="">
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="font-size: 14px; width:160px; margin-left:20px; font-size:12px; margin-top: -5px;">
+    <mat-form-field appearance="outline" style="font-size: 14px; width:43%; margin-left:20px; font-size:12px; margin-top: -5px;">
       <mat-label>Last Name</mat-label>
       <input id="last_name" matInput placeholder="">
     </mat-form-field>
 </p>
 
 <p>
-  <mat-form-field class="sign_up_colors" appearance="outline" style="font-size: 14px; width:340px; font-size:12px; margin-top:-25px;">
-    <mat-label>Email</mat-label>
+  <mat-form-field class="sign_up_colors" appearance="outline" style="font-size: 14px; width:90%; font-size:12px; margin-top:-12px; margin-left: 3%">
+    <mat-label>Username</mat-label>
     <input id="signup_email" matInput placeholder="">
   </mat-form-field>
 
 </p>
 
 <p>
-  <mat-form-field appearance="outline" style="font-size: 14px; width:160px; font-size:12px; margin-top:-25px;">
+  <mat-form-field appearance="outline" style="font-size: 14px; width:43%; font-size:12px; margin-top:-12px;margin-left: 3%">
     <mat-label>Password</mat-label>
-    <input type="password" id="password_1" matInput placeholder="">
+    <input type="password" id="password_1" matInput [(ngModel)]="signUpPassword" placeholder="">
   </mat-form-field>
 
-  <mat-form-field appearance="outline" style="font-size: 14px; width:160px; margin-left:20px; font-size:12px; margin-top:-25px;">
+  <mat-form-field appearance="outline" style="font-size: 14px; width:43%; margin-left:20px; font-size:12px; margin-top:-12px;">
     <mat-label>Confirm Password</mat-label>
-    <input type="password" id="password_2" matInput placeholder="" [disabled]="isPasswordAttempted()">
+    <input type="password" id="password_2" matInput [(ngModel)]="matchPassword" placeholder="" (input)="checkPasswords()" [disabled]="!canConfirmPassword()">
   </mat-form-field>
 </p>
-<div *ngIf="!passwords_match()">
+<div *ngIf="!shouldDisplayWarning()">
+  <p style="font-size:8px; margin-top:-30px; margin-left: 15px; color:red; position:absolute">Passwords must be at least 10 characters <br> and contain at least 1 letter and number</p>
+</div>
+
+<div *ngIf="!checkPasswords()">
   <p style="font-size:8px; margin-top:-30px; margin-left: 185px; color:red; position:absolute">Passwords don't match!</p>
 </div>
 
 <div>
-  <p style="margin-top: -20px; font-size: 12px; color: #707070">Date of Birth</p>
+  <p style="margin-top: -10px; font-size: 12px; color: #707070;margin-left: 3%">Date of Birth</p>
 </div>
 
-<div style="margin-top: -5px;">
-<mat-form-field appearance="fill" style="font-size: 12px; width:110px;background:transparent !important;color: white !important;">
+<div style="margin-top: -5px;margin-left: 3%">
+<mat-form-field appearance="fill" style="font-size: 12px; width:29%;background:transparent !important;color: white !important;">
   <mat-label>Month</mat-label>
   <mat-select>
     <mat-option *ngFor="let month of months" [value]="month.value">
@@ -97,23 +103,29 @@
   </mat-select>
 </mat-form-field>
 
-<mat-form-field appearance="outline" style="font-size: 14px; font-size:12px;width:100px;margin-left:15px;top:-2px;">
+<mat-form-field appearance="outline" style="font-size: 14px; font-size:12px;width:29%;margin-left:15px;top:-2px;">
   <mat-label>Day</mat-label>
   <input id="birthday_day" matInput placeholder="">
 </mat-form-field>
 
-<mat-form-field appearance="outline" style="font-size: 14px; font-size:12px;width:100px;margin-left:15px;top:-2px;">
+<mat-form-field appearance="outline" style="font-size: 14px; font-size:12px;width:29%;margin-left:15px;top:-2px;">
   <mat-label>Year</mat-label>
   <input id="birthday_day" matInput placeholder="">
 </mat-form-field>
 
-<div style="margin-left: 0px; margin-top: 0px;">
+<!-- <div style="margin-left: 0px; margin-top: 0px;">
   <div class='wrapper'>
   <label class="container" id="gpf">Email Me Quarterly Updates
       <input class="checkmarklocation" type="checkbox">
       <span class="checkmark"></span>
   </label>
 </div>
+</div> -->
+<div style="margin-top: 110px; float: right;">
+  <button (click)="checkSuccess()" mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white;margin-left: -115px">REGISTER</button>
+</div>
+<div style="margin-top: 110px; float: left;">
+  <button (click)="sign_in_modal()" mat-button color="primary" style="position: absolute; background-color:#BEBEBE; color: white;">BACK</button>  
 </div>
 
 
@@ -130,8 +142,12 @@
 <div>
 
 </div>
-    <button (click)="checkSuccess()" mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white; margin-left: 240px; margin-top:20px;">REGISTER</button>
-    <button (click)="sign_in_modal()" mat-button color="primary" style="position: absolute; background-color:#BEBEBE; color: white; margin-left: 5px; margin-top:20px;">BACK</button>
+<!-- <div style="margin-left:3%;">
+  <button (click)="checkSuccess()" mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white; margin-left: 50%;">REGISTER</button>
+  <button (click)="sign_in_modal()" mat-button color="primary" style="position: absolute; background-color:#BEBEBE; color: white;">BACK</button>
+</div> -->
+    <!-- <button (click)="checkSuccess()" mat-button color="primary" style="position: absolute; background-color: #5FA784; color: white; margin-left: 240px; margin-top:20px;">REGISTER</button>
+    <button (click)="sign_in_modal()" mat-button color="primary" style="position: absolute; background-color:#BEBEBE; color: white; margin-left: 5px; margin-top:20px;">BACK</button> -->
 
 </div>
 

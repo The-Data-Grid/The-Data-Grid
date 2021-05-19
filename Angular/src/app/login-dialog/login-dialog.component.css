@@ -1,7 +1,13 @@
-.login {
-    font-size: 48px;
+.logIn {
+    /* font-size: 48px; */
     font-family: 'IBM Plex Sans', sans-serif;
     position: relative;
+    font-size: 30px; 
+    font-weight: 5; 
+    position:relative; 
+    right: -5%; 
+    top: -30px; 
+    font-weight: 400;
 }
 
 body {
@@ -47,7 +53,8 @@ mat-form-field {
 .sign_up_label {
     font-size:30px;
     font-family: 'IBM Plex Sans', sans-serif;
-    margin-top:-70px;
+    margin-top:-60px;
+    margin-left: 3%;
 }
 
 /* .sign_up_button:hover {
@@ -147,12 +154,51 @@ mat-label {
     height: 20px;
     width: 20px;
     background-color: #eee;
+  } 
+  
+  .formField {
+    top: -45px; left: 5%; font-size: 14px
   }
- 
 
+  .password {
+    font-size: 13px; position: relative; top: -20px; right: -18px; margin-left: 15px;
+  }
+
+  .signUpModal {
+    position:absolute; outline: none; font-size:11px; background-color: transparent; border:0px; color: #581f8d; text-decoration: underline; cursor: pointer;
+  }
+
+  .signUpButton {
+    font-size:11px; background-color: transparent; border:0px; color: #581f8d; text-decoration: underline; cursor: pointer; margin-top: 10px;
+  }
+
+  .signInButton {
+    position: absolute; background-color:#569CD7; color: white; padding-left: 15px; padding-right: 15px; font-weight: 100;
+  }
+
+  .signInButton .mat-form-field-custom {
+    font-weight: 100;
+  }
+  
+
+  .closeButton {
+    margin-top:-10%; right: -92%; position: relative
+  }
+
+  .logoPositioning {
+    top: -60px; right: 0%; margin-left: 3%
+  }
   
   
-  
+  ::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
+
 
   
   

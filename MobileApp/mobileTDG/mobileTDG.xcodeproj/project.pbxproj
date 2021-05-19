@@ -1,0 +1,482 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 51;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03138BE9A82B3717340374A6 /* Pods_mobileTDG.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4C15021EA2C6F497778AF69 /* Pods_mobileTDG.framework */; };
+		F62A30C7258F20DE00A16C14 /* mobileTDG.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */; };
+		F649FDCB25A1BEF600A1A67C /* auditDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */; };
+		F680463925A199F3005B5855 /* persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = F680463825A199F3005B5855 /* persistence.swift */; };
+		F68EE89925C75E3900E27E15 /* communicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68EE89825C75E3900E27E15 /* communicationView.swift */; };
+		F68EE89D25C760B800E27E15 /* globalPresetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68EE89C25C760B800E27E15 /* globalPresetsView.swift */; };
+		F68EE8A025C768BB00E27E15 /* addRootFeaturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68EE89F25C768BB00E27E15 /* addRootFeaturesView.swift */; };
+		F68EE8A825C7782D00E27E15 /* testSetupObject.json in Resources */ = {isa = PBXBuildFile; fileRef = F68EE8A725C7782D00E27E15 /* testSetupObject.json */; };
+		F69A17A425D924D000FE0A83 /* AuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69A17A325D924D000FE0A83 /* AuditsView.swift */; };
+		F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */; };
+		F6A90DC62561C2840067AAA1 /* loginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DC52561C2840067AAA1 /* loginView.swift */; };
+		F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DC72561C2860067AAA1 /* Assets.xcassets */; };
+		F6A90DCB2561C2860067AAA1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */; };
+		F6A90DDB2564ED140067AAA1 /* IBM_Plex_Sans in Resources */ = {isa = PBXBuildFile; fileRef = F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */; };
+		F6A90DEC25650C6E0067AAA1 /* settingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEB25650C6E0067AAA1 /* settingsView.swift */; };
+		F6A90DEF25774D8F0067AAA1 /* reusableStylings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEE25774D8F0067AAA1 /* reusableStylings.swift */; };
+		F6A90DF625775C770067AAA1 /* tabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DF525775C770067AAA1 /* tabView.swift */; };
+		F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */; };
+		F6A90DFC25775CDA0067AAA1 /* unsubmittedAuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */; };
+		F6A90DFF257766AF0067AAA1 /* homeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DFE257766AF0067AAA1 /* homeView.swift */; };
+		F6A90E03257767BF0067AAA1 /* motherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90E02257767BF0067AAA1 /* motherView.swift */; };
+		F6A90E07257769C30067AAA1 /* viewRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90E06257769C30067AAA1 /* viewRouter.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3BE960B070013A9C1D1B14A7 /* Pods-mobileTDG.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobileTDG.debug.xcconfig"; path = "Target Support Files/Pods-mobileTDG/Pods-mobileTDG.debug.xcconfig"; sourceTree = "<group>"; };
+		A4C0F7915A8AE339A1CD8925 /* Pods-mobileTDG.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobileTDG.release.xcconfig"; path = "Target Support Files/Pods-mobileTDG/Pods-mobileTDG.release.xcconfig"; sourceTree = "<group>"; };
+		E4C15021EA2C6F497778AF69 /* Pods_mobileTDG.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mobileTDG.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F62A30C6258F20DE00A16C14 /* mobileTDG.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = mobileTDG.xcdatamodel; sourceTree = "<group>"; };
+		F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = auditDetailView.swift; sourceTree = "<group>"; };
+		F680463825A199F3005B5855 /* persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = persistence.swift; sourceTree = "<group>"; };
+		F68EE89825C75E3900E27E15 /* communicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = communicationView.swift; sourceTree = "<group>"; };
+		F68EE89C25C760B800E27E15 /* globalPresetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = globalPresetsView.swift; sourceTree = "<group>"; };
+		F68EE89F25C768BB00E27E15 /* addRootFeaturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = addRootFeaturesView.swift; sourceTree = "<group>"; };
+		F68EE8A725C7782D00E27E15 /* testSetupObject.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = testSetupObject.json; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.json; };
+		F69A17A325D924D000FE0A83 /* AuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuditsView.swift; sourceTree = "<group>"; };
+		F6A90DC02561C2840067AAA1 /* mobileTDG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobileTDG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mobileTDGApp.swift; sourceTree = "<group>"; };
+		F6A90DC52561C2840067AAA1 /* loginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loginView.swift; sourceTree = "<group>"; };
+		F6A90DC72561C2860067AAA1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F6A90DCC2561C2860067AAA1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */ = {isa = PBXFileReference; lastKnownFileType = folder; name = IBM_Plex_Sans; path = ../../../../../Downloads/IBM_Plex_Sans; sourceTree = "<group>"; };
+		F6A90DEB25650C6E0067AAA1 /* settingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsView.swift; sourceTree = "<group>"; };
+		F6A90DEE25774D8F0067AAA1 /* reusableStylings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reusableStylings.swift; sourceTree = "<group>"; };
+		F6A90DF525775C770067AAA1 /* tabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tabView.swift; sourceTree = "<group>"; };
+		F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = submittedAuditsView.swift; sourceTree = "<group>"; };
+		F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = unsubmittedAuditsView.swift; sourceTree = "<group>"; };
+		F6A90DFE257766AF0067AAA1 /* homeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = homeView.swift; sourceTree = "<group>"; };
+		F6A90E02257767BF0067AAA1 /* motherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = motherView.swift; sourceTree = "<group>"; };
+		F6A90E06257769C30067AAA1 /* viewRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewRouter.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F6A90DBD2561C2840067AAA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03138BE9A82B3717340374A6 /* Pods_mobileTDG.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4970A2B1AA4AA2F53F0AAEE7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E4C15021EA2C6F497778AF69 /* Pods_mobileTDG.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C756108B55A6D6597B13404B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3BE960B070013A9C1D1B14A7 /* Pods-mobileTDG.debug.xcconfig */,
+				A4C0F7915A8AE339A1CD8925 /* Pods-mobileTDG.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		F6A90DB72561C2840067AAA1 = {
+			isa = PBXGroup;
+			children = (
+				F6A90DC22561C2840067AAA1 /* mobileTDG */,
+				F6A90DC12561C2840067AAA1 /* Products */,
+				C756108B55A6D6597B13404B /* Pods */,
+				4970A2B1AA4AA2F53F0AAEE7 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		F6A90DC12561C2840067AAA1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F6A90DC02561C2840067AAA1 /* mobileTDG.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F6A90DC22561C2840067AAA1 /* mobileTDG */ = {
+			isa = PBXGroup;
+			children = (
+				F6A90E06257769C30067AAA1 /* viewRouter.swift */,
+				F6A90E02257767BF0067AAA1 /* motherView.swift */,
+				F6A90DC52561C2840067AAA1 /* loginView.swift */,
+				F6A90DF525775C770067AAA1 /* tabView.swift */,
+				F6A90DFE257766AF0067AAA1 /* homeView.swift */,
+				F68EE89825C75E3900E27E15 /* communicationView.swift */,
+				F69A17A325D924D000FE0A83 /* AuditsView.swift */,
+				F68EE89C25C760B800E27E15 /* globalPresetsView.swift */,
+				F68EE89F25C768BB00E27E15 /* addRootFeaturesView.swift */,
+				F649FDCA25A1BEF600A1A67C /* auditDetailView.swift */,
+				F6A90DEB25650C6E0067AAA1 /* settingsView.swift */,
+				F680463825A199F3005B5855 /* persistence.swift */,
+				F6A90DEE25774D8F0067AAA1 /* reusableStylings.swift */,
+				F6A90DC32561C2840067AAA1 /* mobileTDGApp.swift */,
+				F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */,
+				F6A90DCC2561C2860067AAA1 /* Info.plist */,
+				F68EE8A725C7782D00E27E15 /* testSetupObject.json */,
+				F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */,
+				F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */,
+				F6A90DC72561C2860067AAA1 /* Assets.xcassets */,
+				F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */,
+				F6A90DC92561C2860067AAA1 /* Preview Content */,
+			);
+			path = mobileTDG;
+			sourceTree = "<group>";
+		};
+		F6A90DC92561C2860067AAA1 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				F6A90DCA2561C2860067AAA1 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F6A90DBF2561C2840067AAA1 /* mobileTDG */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6A90DCF2561C2860067AAA1 /* Build configuration list for PBXNativeTarget "mobileTDG" */;
+			buildPhases = (
+				572CA0D1024BB04826DF7DB3 /* [CP] Check Pods Manifest.lock */,
+				F6A90DBC2561C2840067AAA1 /* Sources */,
+				F6A90DBD2561C2840067AAA1 /* Frameworks */,
+				F6A90DBE2561C2840067AAA1 /* Resources */,
+				C7609D4B005C410508363177 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mobileTDG;
+			productName = mobileTDG;
+			productReference = F6A90DC02561C2840067AAA1 /* mobileTDG.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F6A90DB82561C2840067AAA1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1220;
+				LastUpgradeCheck = 1220;
+				TargetAttributes = {
+					F6A90DBF2561C2840067AAA1 = {
+						CreatedOnToolsVersion = 12.2;
+					};
+				};
+			};
+			buildConfigurationList = F6A90DBB2561C2840067AAA1 /* Build configuration list for PBXProject "mobileTDG" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F6A90DB72561C2840067AAA1;
+			productRefGroup = F6A90DC12561C2840067AAA1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F6A90DBF2561C2840067AAA1 /* mobileTDG */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F6A90DBE2561C2840067AAA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F68EE8A825C7782D00E27E15 /* testSetupObject.json in Resources */,
+				F6A90DCB2561C2860067AAA1 /* Preview Assets.xcassets in Resources */,
+				F6A90DC82561C2860067AAA1 /* Assets.xcassets in Resources */,
+				F6A90DDB2564ED140067AAA1 /* IBM_Plex_Sans in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		572CA0D1024BB04826DF7DB3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-mobileTDG-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C7609D4B005C410508363177 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mobileTDG/Pods-mobileTDG-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mobileTDG/Pods-mobileTDG-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mobileTDG/Pods-mobileTDG-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F6A90DBC2561C2840067AAA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F69A17A425D924D000FE0A83 /* AuditsView.swift in Sources */,
+				F62A30C7258F20DE00A16C14 /* mobileTDG.xcdatamodeld in Sources */,
+				F680463925A199F3005B5855 /* persistence.swift in Sources */,
+				F6A90DEC25650C6E0067AAA1 /* settingsView.swift in Sources */,
+				F68EE89925C75E3900E27E15 /* communicationView.swift in Sources */,
+				F6A90E07257769C30067AAA1 /* viewRouter.swift in Sources */,
+				F6A90DC62561C2840067AAA1 /* loginView.swift in Sources */,
+				F649FDCB25A1BEF600A1A67C /* auditDetailView.swift in Sources */,
+				F6A90DEF25774D8F0067AAA1 /* reusableStylings.swift in Sources */,
+				F6A90DFC25775CDA0067AAA1 /* unsubmittedAuditsView.swift in Sources */,
+				F6A90E03257767BF0067AAA1 /* motherView.swift in Sources */,
+				F6A90DF625775C770067AAA1 /* tabView.swift in Sources */,
+				F6A90DFF257766AF0067AAA1 /* homeView.swift in Sources */,
+				F68EE8A025C768BB00E27E15 /* addRootFeaturesView.swift in Sources */,
+				F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */,
+				F68EE89D25C760B800E27E15 /* globalPresetsView.swift in Sources */,
+				F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F6A90DCD2561C2860067AAA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F6A90DCE2561C2860067AAA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F6A90DD02561C2860067AAA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3BE960B070013A9C1D1B14A7 /* Pods-mobileTDG.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"mobileTDG/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = mobileTDG/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "The-Data-Grid.mobileTDG";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F6A90DD12561C2860067AAA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A4C0F7915A8AE339A1CD8925 /* Pods-mobileTDG.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"mobileTDG/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = mobileTDG/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "The-Data-Grid.mobileTDG";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F6A90DBB2561C2840067AAA1 /* Build configuration list for PBXProject "mobileTDG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6A90DCD2561C2860067AAA1 /* Debug */,
+				F6A90DCE2561C2860067AAA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6A90DCF2561C2860067AAA1 /* Build configuration list for PBXNativeTarget "mobileTDG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6A90DD02561C2860067AAA1 /* Debug */,
+				F6A90DD12561C2860067AAA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				F62A30C6258F20DE00A16C14 /* mobileTDG.xcdatamodel */,
+			);
+			currentVersion = F62A30C6258F20DE00A16C14 /* mobileTDG.xcdatamodel */;
+			path = mobileTDG.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = F6A90DB82561C2840067AAA1 /* Project object */;
+}

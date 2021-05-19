@@ -7,8 +7,9 @@ const SyncClient = require('pg-native');
 pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
 pgp.pg.types.setTypeParser(1184, require('../parse.js').timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
 
-var tdgdbname = 'v4';
+var tdgdbname = 'v5';
 var tdgdbuser = 'postgres';
+var tdgpassword = process.env.PGPASSWORD ? process.env.PGPASSWORD : null
 
 const postgresClient = {
     format: pgp.as.format
@@ -21,7 +22,7 @@ function connectPostgreSQL(config) {
 
         // sync setup connection
         const syncdb = new SyncClient;
-        syncdb.connectSync(`host=localhost port=5432 dbname=${tdgdbname} connect_timeout=5 user=${tdgdbuser}`);
+        syncdb.connectSync(`host=localhost port=5432 dbname=${tdgdbname} connect_timeout=5 user=${tdgdbuser} ${tdgpassword !== null ? 'password=' + tdgpassword : ''}`);
         console.log(`New PostgreSQL Connection: setup`)
 
         // Default runtime database connection
@@ -30,7 +31,7 @@ function connectPostgreSQL(config) {
             port: 5432,
             database: tdgdbname,
             user: tdgdbuser,
-            password: null,
+            password: tdgpassword,
             max: 30 // use up to 30 connections
         };
         const db = pgp(defaultConnection);
@@ -50,7 +51,7 @@ function connectPostgreSQL(config) {
             port: 5432,
             database: tdgdbname,
             user: tdgdbuser,
-            password: null,
+            password: tdgpassword,
             max: 1, // use only one connection
             idleTimeoutMillis: 1 // disconnect right after
         };
