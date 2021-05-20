@@ -209,13 +209,19 @@ VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(
     };
 
 const updates  = {
-    updateToken: 'UPDATE item_user SET secret_token = ($token) WHERE data_email = $(email)',
-    updateStatus: 'UPDATE item_user SET is_pending = ($status) WHERE data_email = $(email)',
-    updatepassword: 'UPDATE item_user SET tdg_p_hash = ($password) WHERE data_email = $(email)'
+    updateToken: 'UPDATE item_user SET secret_token = $(token) WHERE data_email = $(email)',
+    updateStatus: 'UPDATE item_user SET is_pending = $(status) WHERE data_email = $(email)',
+    updatepassword: 'UPDATE item_user SET tdg_p_hash = $(password) WHERE data_email = $(email)',
 };
 
-
-
+const profile = { 
+    //gets and updates
+    selectProfile: 'SELECT data_email, data_first_name, data_last_name, data_date_of_birth, data_is_email_public, data_is_quarterly_updates \
+    FROM item_user WHERE data_email = $(useremail)',
+    updateProfile: 'UPDATE item_user SET data_email = $(useremail), data_first_name = $(userfirstname), \
+    data_last_name = $(userlastname), data_date_of_birth = $(userdateofbirth), data_is_email_public = $(useremailpreference)\
+    data_is_quarterly_updates = $(userisquarterlyupdates) WHERE data_email = $(useremail)'
+};
 
 module.exports = {
     query,
@@ -223,7 +229,8 @@ module.exports = {
     setup,
     login,
     addingUsers,
-    updates
+    updates,
+    profile
 };
 
 
