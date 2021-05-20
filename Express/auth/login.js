@@ -24,6 +24,7 @@ const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 
 const updating = require('../statement.js').updates;
+const select = require('../statement.js').profile;
 
 
 // session store init
@@ -31,6 +32,8 @@ let Store = require('memorystore')(session);
 let MyStore = new Store({checkPeriod: 1000000});
 
 // router.use(corsOptions);
+
+router.use('/user/patch', requestObject.updateUserObject);
 
 // Session on every route
 router.use(session({
@@ -231,6 +234,55 @@ router.post('ResetPassword', async (req, res) => {
                 password: hashedPassword
         }))
         res.status(200).send("Password reset successfully");
+    } catch(error) {
+        console.log('ERROR:', error);
+        res.status(500).send('service internal error');
+    }
+});
+
+// GET ~/user endpoint
+router.get('/user/get', async (req, res) => {
+    try {
+        data = await db.one(formatSQL(select.selectProfile, {
+                useremail: req.body.email
+        }))
+        res.send(data);
+    } catch(error) {
+        console.log('ERROR:', error);
+        res.status(500).send('service internal error');
+    }
+});
+
+// PATCH ~/user endpoint
+router.post('/user/patch', async (req, res) => {
+    try {
+        data = await db.one(formatSQL(select.selectProfile, {
+                useremail: req.body.email
+        }))
+        if (req.body.firstName !== undefined) {
+                data.data_first_name = req.body.firstName
+        }
+        if (req.body.lastName !== undefined) {
+                data.data_last_name = req.body.lastName
+        }
+        if (req.body.dateOfBirth !== undefined) {
+                data.data_date_of_birth = req.body.dateOfBirth
+        }
+        if (req.body.emailPreference !== undefined) {
+                data.data_is_email_public = req.body.isEmailPublic
+        }
+        if (req.body.quarterlyUpdates !== undefined) {
+                data.data_is_quarterly_updates = req.body.isQuarterlyUpdates
+        }
+        await db.none(formatSQL(select.updateProfile, {
+                useremail: req.body.email,
+                userfirstname: data.data_first_name, 
+                userlastname: data.data_last_name,
+                userdateofbirth: data.data_date_of_birth,
+                useremailpreference: data.data_is_email_public,
+                userisquarterlyupdates: data.data_is_quarterly_updates
+        }))
+        res.status(200).send("userProfile reset successfully");
     } catch(error) {
         console.log('ERROR:', error);
         res.status(500).send('service internal error');
