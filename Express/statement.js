@@ -206,16 +206,15 @@ const updates  = {
     updateToken: 'UPDATE item_user SET secret_token = $(token) WHERE data_email = $(email)',
     updateStatus: 'UPDATE item_user SET is_pending = $(status) WHERE data_email = $(email)',
     updatepassword: 'UPDATE item_user SET tdg_p_hash = $(password) WHERE data_email = $(email)',
-    updateFirstName: 'UPDATE item_user SET data_first_name = $(firstname) WHERE data_email = $(email)',
-    updateLastName: 'UPDATE item_user SET data_last_name = $(lastname) WHERE data_email = $(email)',
-    updateDOB: 'UPDATE item_user SET data_date_of_birth = $(dateofbirth) WHERE data_email = $(email)'
 };
 
 const profile = { 
-    selectPassword: 'SELECT tdg_p_hash FROM item_user WHERE data_email = $(email)',
-    selectFirstName: 'SELECT data_first_name FROM item_user WHERE data_email = $(email)',
-    selectLastName: 'SELECT data_last_name FROM item_user WHERE data_email = $(email)',
-    selectDOB: 'SELECT data_date_of_birth FROM item_user WHERE data_email = $(email)'
+    //gets and updates
+    selectProfile: 'SELECT data_email, data_first_name, data_last_name, data_date_of_birth, data_is_email_public, data_is_quarterly_updates \
+    FROM item_user WHERE data_email = $(useremail)',
+    updateProfile: 'UPDATE item_user SET data_email = $(useremail), data_first_name = $(userfirstname), \
+    data_last_name = $(userlastname), data_date_of_birth = $(userdateofbirth), data_is_email_public = $(useremailpreference)\
+    data_is_quarterly_updates = $(userisquarterlyupdates) WHERE data_email = $(useremail)'
 };
 
 module.exports = {
