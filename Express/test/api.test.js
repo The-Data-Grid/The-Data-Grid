@@ -48,6 +48,7 @@ let o13 = '/api/audit/item/key/user?limit=10&offset=1&sorta=264'
 let o14 = '/api/audit/observation/key/sink?limit=10&offset=1&sorta=66'
 
 let o15 = '/user/get?email=abc123@gmail.com'
+let o16 = '/user/patch?email=abc123@gmail.com'
 
 /**
  * OBJECTS

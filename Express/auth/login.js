@@ -24,6 +24,7 @@ const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 
 const updating = require('../statement.js').updates;
+const select = require('../statement.js').profile;
 
 
 // session store init
@@ -240,9 +241,9 @@ router.post('ResetPassword', async (req, res) => {
 });
 
 // GET ~/user endpoint
-router.get('/user/get', (req, res) => {
+router.get('/user/get', async (req, res) => {
     try {
-        data = await db.one(formatSQL(userSQL.getUserProfile, {
+        data = await db.one(formatSQL(select.selectProfile, {
                 useremail: req.body.email
         }))
         res.send(data);
@@ -253,9 +254,9 @@ router.get('/user/get', (req, res) => {
 });
 
 // PATCH ~/user endpoint
-router.post('/user/patch', (req, res) => {
+router.post('/user/patch', async (req, res) => {
     try {
-        data = await db.one(formatSQL(userSQL.getUserProfile, {
+        data = await db.one(formatSQL(select.selectProfile, {
                 useremail: req.body.email
         }))
         if (req.body.firstName !== undefined) {
@@ -273,7 +274,7 @@ router.post('/user/patch', (req, res) => {
         if (req.body.quarterlyUpdates !== undefined) {
                 data.data_is_quarterly_updates = req.body.isQuarterlyUpdates
         }
-        await db.none(formatSQL(userSQL.updateUserProfile, {
+        await db.none(formatSQL(select.updateProfile, {
                 useremail: req.body.email,
                 userfirstname: data.data_first_name, 
                 userlastname: data.data_last_name,
