@@ -211,8 +211,6 @@ const updates  = {
     updateDOB: 'UPDATE item_user SET data_date_of_birth = $(dateofbirth) WHERE data_email = $(email)'
 };
 
-//    secret : 'SELECT secret_token FROM item_user WHERE data_email = $(checkemail)'
-
 const profile = { 
     selectPassword: 'SELECT tdg_p_hash FROM item_user WHERE data_email = $(email)',
     selectFirstName: 'SELECT data_first_name FROM item_user WHERE data_email = $(email)',
