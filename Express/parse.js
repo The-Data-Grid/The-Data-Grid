@@ -52,20 +52,20 @@ function parseConstructor (init) {
             }
         }
 
-        // console.log('feature = ', feature);
-        // console.log('includes = ', include);
-        // console.log('filters = ', filter);
-  
-        // Construct object of parsed filters
-        let filters = {};
-        let universalFilters = {};
-        for (const key in filter) {
+    // console.log('feature = ', feature);
+    // console.log('includes = ', include);
+    // console.log('filters = ', filter);
+    
+    // Construct object of parsed filters
+    let filters = {};
+    let universalFilters = {};
+    for (const key in filter) {
 
-            // check for universal filters
-            if(['sorta','sortd','limit','offset'].includes(key)) {
-                universalFilters[key] = filter[key]
-                continue
-            }
+        // check for universal filters
+        if(['sorta','sortd','limit','offset', 'pk'].includes(key)) {
+            universalFilters[key] = filter[key]
+            continue
+        }
 
             // Validate filter IDs are numeric
             if(isNaN(parseInt(key))) {

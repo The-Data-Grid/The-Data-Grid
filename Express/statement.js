@@ -20,6 +20,8 @@ const query = {
 
     offset: 'OFFSET $(offset)',
 
+    pk: 'WHERE item_id = $(key)',
+
     observationSelect: 'SELECT $(feature:name)."observation_id" AS observation_pkey, $(selectClauses:raw)',
 
     itemSelect: 'SELECT $(item:name)."item_id" AS item_pkey, $(selectClauses:raw)',
