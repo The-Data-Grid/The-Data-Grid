@@ -4,15 +4,48 @@
 <body >
     <!-- Team Page Header -->
     <div class="team-header-container">
-        <img style="width: 100%; opacity:.5;" src="assets/TeamPageCover.png" alt="teamHeader">
-        <p class="team-header" style="color:#569CD7;">MEET THE <span style="color:#82B99F">TEAM</span></p>
+        <img class="mainImage" src="assets/TeamPageCoverUpdated.png" alt="teamHeader">
+        <p class="team-header" style="color:#569CD7;">About Us</p>
     </div>
 
+    <p class="structure">Structure of the Data Grid</p>
+    <p style="text-align: center; font-size: 22px; margin-top: -20px;">The Data Grid is composed of multiple “branches” focused on solving <br> different sustainability problems. To explore them all visit The Data Grid Core.</p>
+
+    <p class="mission">The Audit Branch's Mission</p>
+    <div class="flex-container">
+        <div>
+            <img src="assets/placeholder.jpeg" class="featuredImage">
+        </div>
+        <div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+        <!-- <div class="flex-item-left">
+            <img src="assets/placeholder.jpeg" style="width: 640px; height: 360px;">
+        </div>
+        <div class="flex-item-right">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+        </div>       -->
+    </div>
+
+    <p class="structure">Structure of the Data Grid</p>
+
+    <div class="flex-container">
+        <div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+        <div>
+            <img src="assets/placeholder.jpeg" class="featuredImage">
+        </div>
+    </div>
+
+    <p class="structure">Meet Our Team!</p>
+
     <!-- Set of team member descriptions -->
-    <p class="team-section-header">FRONTEND DEVELOPERS</p>
+    <p class="team-section-header" style="color: #82B99F;">FRONTEND DEVELOPERS</p>
 
     <!-- this fxLayout allows the cards to flow down to the next row if they get squished -->
-    <div style="margin-left: 10%; margin-right: 10%; " fxLayout={{checkWidth()}} fxLayoutAlign="space-around center">
+    <div class="cards" fxLayout={{checkWidth()}} fxLayoutAlign="space-around center">
 
         <ng-template ngFor [ngForOf]="members" let-member>
             <div class="team-member-card">

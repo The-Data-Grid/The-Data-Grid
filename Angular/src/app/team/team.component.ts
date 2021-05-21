@@ -63,16 +63,16 @@ export class TeamComponent implements OnInit {
       linkedin: null,
       email: null,
     },
-    {
-      name: 'Jeremy Doe',
-      team: 'Frontend Development, Backend Development',
-      bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum quis sapien porttitor, feugiat tellus nec, sagittis nulla. Sed at venenatis diam, sed lacinia lacus. Mauris ac risus facilisis nulla imperdiet tincidunt. Nulla diam nibh.',
-      photo: 'string', // path;
-      facebook: null,
-      instagram: null,
-      linkedin: null,
-      email: null,
-    }
+    // {
+    //   name: 'Jeremy Doe',
+    //   team: 'Frontend Development, Backend Development',
+    //   bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum quis sapien porttitor, feugiat tellus nec, sagittis nulla. Sed at venenatis diam, sed lacinia lacus. Mauris ac risus facilisis nulla imperdiet tincidunt. Nulla diam nibh.',
+    //   photo: 'string', // path;
+    //   facebook: null,
+    //   instagram: null,
+    //   linkedin: null,
+    //   email: null,
+    // }
 
 
 

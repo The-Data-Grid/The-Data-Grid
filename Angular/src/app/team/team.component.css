@@ -1,4 +1,13 @@
 /* Container holding the image and the text */
+html {
+    background-color: white;
+}
+
+.mainImage {
+    height: 80vh;
+    width: 100%;
+}
+
 .team-header-container {
     position: relative;
     text-align: center;
@@ -12,17 +21,173 @@
     position: absolute;
     top: 40%;
     left: 50%;
+    background-color: rgb(228,228,228, .5);
+    padding: 50px;
     transform: translate(-50%, -50%);
 }
+
+.AboutUsContainer {
+    background-color: pink;
+    width:20px;
+    height:10px;
+    font-size: 64px;
+    position: absolute;
+    top: 40%;
+    left: 20%;
+}
+
+.structure {
+    margin-top: 8vh;
+    font-weight: bold;
+    font-size: 44px;
+    text-align: center;
+    color:#569CD7
+}
+
+.mission {
+    margin-top: 12vh;
+    font-weight: bold;
+    font-size: 44px;
+    text-align: center;
+    color:#5FA784;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    margin-left: 10%;
+    /* flex-direction: row;
+    width: 90%;
+    margin-left: 5%;
+    justify-content: center; */
+}
+
+.flex-container > div {
+    /* background-color: #f1f1f1; */
+    margin: 10px;
+    padding: 20px;
+    font-size: 2.5vh;
+  }  
+
+.featuredImage {
+    width: 70vh;
+    height: 40vh;
+}
+
+@media (orientation: portrait) {
+    .flex-container {
+        margin-left: 0%;
+        width: 90%;
+        flex-direction: column;
+    }
+    .featuredImage {
+        width: 90vw;
+        margin-left: 5%;
+    }
+
+    .flex-container > div {
+      /* background-color: #f1f1f1; */
+      text-align: center;
+      padding: 0px;
+      font-size: 2.5vh;
+    }  
+
+    .structure {
+        font-size: 22px;
+    }
+
+    .mission {
+        font-size: 22px;
+    }
+    .team-section-header {
+        text-align: center;
+        font-size: 12px;
+        color: pink;
+    }
+
+    .cards {
+        /* margin-left: -1%; */
+        width: 80%;
+    }
+
+    .mainImage {
+        height: 50vh;
+    }
+}
+
+  @media only screen and (max-width: 650px) {
+      .flex-container {
+          margin-left: 0%;
+          width: 90%;
+          flex-direction: column;
+      }
+      .featuredImage {
+          width: 90vw;
+          margin-left: 5%;
+      }
+
+      .flex-container > div {
+        /* background-color: #f1f1f1; */
+        text-align: center;
+        padding: 0px;
+        font-size: 2.5vh;
+      }  
+
+      .structure {
+          font-size: 22px;
+      }
+
+      .mission {
+          font-size: 22px;
+      }
+      .team-section-header {
+          text-align: center;
+          font-size: 12px;
+          color: pink;
+      }
+
+      .cards {
+          width: 80%;
+      }
+
+      .mainImage {
+        height: 50vh;
+    }
+
+    
+  }
+
+.flex-item-left {
+    flex: 70%;
+  }
+  
+  .flex-item-right {
+    font-size: 24px;
+    text-align: center;
+    flex: 30%;
+  }
+  
+
+.highlighted {
+    font-weight: bold;
+    font-size: 64px;
+    position: absolute;
+    left: 50%;
+    left: 30%;
+    background-color: rgba(232, 236, 241, .5);
+    transform: translate(-50%, -50%);
+}
+
 
 .team-section-header {
     font-family: IBM Plex Sans;
     font-style: normal;
     font-weight: 500;
-    font-size: 50px;
-    color: #569CD7;
-    margin: 20px;
-    text-align: center;
+    font-size: 30px;
+    color: #82B99F;
+    margin-left: 5%;
+    /* text-align: left; */
 }
 
 .team-member-card {
