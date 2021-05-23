@@ -22,7 +22,7 @@ import { UploadComponent } from './upload/upload.component';
 import { ViewAuditComponent } from './upload-audit/view-audit/view-audit.component';
 import { AboutComponent } from './about/about.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
-import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { SettingsComponent } from './settings/settings.component';
 import { PasswordAuthenticationComponent } from './password-authentication/password-authentication.component';
 import { ClickOutsideModule } from 'ng-click-outside'
 import { MaterialModule } from './material.module';
@@ -45,7 +45,7 @@ import { TeamComponent } from './team/team.component';
     DownloadComponent,
     UploadDialogComponent,
     LockDialogComponent,
-    ProfilePageComponent,
+    SettingsComponent,
     PasswordAuthenticationComponent,
     UploadAuditComponent,
     ViewAuditComponent,

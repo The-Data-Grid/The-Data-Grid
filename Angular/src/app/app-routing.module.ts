@@ -8,7 +8,7 @@ import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { UploadAuditComponent } from './upload-audit/upload-audit.component';
 import {ViewAuditComponent} from './upload-audit/view-audit/view-audit.component'
 import { DownloadComponent } from './download/download.component'
-import { ProfilePageComponent } from './profile-page/profile-page.component'
+import { SettingsComponent } from './settings/settings.component'
 import { TeamComponent } from './team/team.component';
 
 const routes: Routes = [
@@ -21,7 +21,7 @@ const routes: Routes = [
   { path: 'upload-audit', component: UploadAuditComponent },
   { path: 'view-audit/:id', component: ViewAuditComponent },
   { path: 'download', component: DownloadComponent },
-  { path: 'profile-page', component: ProfilePageComponent },
+  { path: 'settings', component: SettingsComponent },
   { path: 'team', component: TeamComponent },
 
 ];
