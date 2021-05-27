@@ -42,7 +42,7 @@
     <p class="structure">Meet Our Team!</p>
 
     <!-- Set of team member descriptions -->
-    <p class="team-section-header" style="color: #82B99F;">FRONTEND DEVELOPERS</p>
+    <!-- <p class="team-section-header" style="color: #82B99F;">BACKEND DEVELOPERS</p> -->
 
     <!-- this fxLayout allows the cards to flow down to the next row if they get squished -->
     <div class="cards" fxLayout={{checkWidth()}} fxLayoutAlign="space-around center">
@@ -51,23 +51,25 @@
             <div class="team-member-card">
                 <div
                     class=".member-description">
-                    <img src="assets/random.png" alt="person" class="member-photo">
+                    <img src="{{ member.photo }}" alt="person" class="member-photo">
                     <p style="color:#569CD7; font-weight: bolder; text-align: center;"> {{ member.name }} </p>
                     <p style="color:#569CD7; font-style: italic;text-align: center;"> {{ member.team }} </p>
                     <p style="text-align:center"> {{ member.bio }} </p>
+                    <br>
+                    <p style="text-align: center;">{{ member.work }}</p>
                     <button class="profilebutton">Profile</button>
                     <!-- we don't yet have the right logo pics, so i just used a drop-shadow-->
                     <div fxLayoutAlign="space-between stretch" style="margin: 10%;">
-                        <a href="https://www.facebook.com/thedatagrid">
+                        <a target="_blank" href="{{ member.facebook }}">
                             <img src="assets/facebookblue.png" alt="Facebook" class="social-button">
                         </a>
-                        <a href="https://www.instagram.com/thedatagrid/">
+                        <a target="_blank" href="{{ member.linkedin }}">
                             <img src="assets/linkedinblue.png" alt="Instagram" class="social-button">
                         </a>
-                        <a href="https://www.linkedin.com/company/the-data-grid/">
+                        <a target="_blank" href="{{ member.instagram }}">
                             <img src="assets/instablue.png" alt="LinkedIn" class="social-button">
                         </a>
-                        <a href="https://www.linkedin.com/company/the-data-grid/">
+                        <a target="_blank" href="{{ member.email }}">
                             <img src="assets/emailblue.png" alt="LinkedIn" class="social-button">
                         </a>
                     </div>
