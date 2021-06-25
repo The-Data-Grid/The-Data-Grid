@@ -22,7 +22,8 @@ struct settingsView: View {
     @State private var autoSync = UserDefaults.standard.bool(forKey: "async")
     
     private var name = UserDefaults.standard.string(forKey: "username")
-    
+
+   
     var body: some View {
         VStack(alignment: .leading) {
             Text("Settings").font(.largeTitle).padding()
