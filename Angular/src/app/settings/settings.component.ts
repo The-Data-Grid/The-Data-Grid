@@ -37,11 +37,11 @@ const ELEMENT_DATA: PeriodicElement[] = [
 
 
 @Component({
-  selector: 'app-profile-page',
-  templateUrl: './profile-page.component.html',
-  styleUrls: ['./profile-page.component.css']
+  selector: 'settings',
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.css']
 })
-export class ProfilePageComponent implements OnInit {
+export class SettingsComponent implements OnInit {
 
   constructor(public dialog: MatDialog) { 
     this.fetch(data => {

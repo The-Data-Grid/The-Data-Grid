@@ -12,27 +12,32 @@ const query = {
 
     referenceSelectionJoin: 'LEFT JOIN $(joinTable:name) AS $(joinAlias:name) ON $(joinAlias:name).$(joinColumn:name) = $(originalAlias:name).$(originalColumn:name)',
 
-    sorta: 'ORDER BY $(columnName:value) ASC',
+    sorta: 'ORDER BY $(columnName:raw) ASC',
 
-    sortd: 'ORDER BY $(columnName:value) DESC',
+    sortd: 'ORDER BY $(columnName:raw) DESC',
 
     limit: 'LIMIT $(limit)',
 
     offset: 'OFFSET $(offset)',
 
-    select: 'SELECT $(feature:name)."observation_id" AS obspkey, $(selectClauses:raw)',
+    observationSelect: 'SELECT $(feature:name)."observation_id" AS observation_pkey, $(selectClauses:raw)',
+
+    itemSelect: 'SELECT $(item:name)."item_id" AS item_pkey, $(selectClauses:raw)',
+
+    observationCount: 'INNER JOIN tdg_observation_count on $(feature:name).observation_count_id = tdg_observation_count.observation_count_id',
 
     where: '$(clause:value) ($(condition:raw))',
 
     whereCondition: '$(select:value) $(operation:value) $(filterValue)',
 
-    submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.submission_id',
+    submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.item_id',
+    global: 'LEFT JOIN item_global on $(feature:name).global_id = item_global.item_id',
 
     subfeatureJoin: 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id',
 
     rootFeatureJoin: 'FROM $(rootFeature:value)',
 
-    groupBy: 'GROUP BY $(nonListReturnables:raw), $(feature:name).observation_id, item_submission.data_time_submitted'
+    groupBy: 'GROUP BY $(nonListReturnables:raw), $(feature:name).observation_id, $(feature:name).data_time_conducted'
 
 };
 
@@ -83,10 +88,12 @@ const construct = {
     makeItemReturnablesColumnQuery: 'SELECT c.column_id AS columnID, c.column_name AS columnName, c.table_name AS tableName, c.subobservation_table_name AS subobservationTableName, c.frontend_name AS frontendName, r.type_name AS ReferenceTypeName FROM metadata_column AS c INNER JOIN metadata_reference_type AS r ON c.reference_type = r.type_id WHERE c.metadata_item_id = (SELECT i.item_id FROM metadata_item AS i WHERE i.table_name = $(itemName))',
     
     makeItemReturnablesFeatureQuery: 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(featureName)',
+
+    makeItemReturbablesItemQuery: 'SELECT i.item_id AS itemID FROM metadata_item AS i WHERE i.table_name = $(itemName)',
     
     makeItemReturnablesSubobservationQuery: 'SELECT f.feature_id AS featureID FROM metadata_feature AS f WHERE f.table_name = $(subobservationTableName)',
     
-    insert_metadata_returnable: 'SELECT "insert_metadata_returnable"($(columnID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject), $(isRealGeo)) AS returnableid',
+    insert_metadata_returnable: 'SELECT "insert_metadata_returnable"($(columnID), $(itemID), $(featureID), $(rootFeatureID), $(frontendName), $(isUsed), $(joinObject), $(isRealGeo)) AS returnableid',
         
     // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
     checkAuditorNameTrigger: 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \
@@ -183,16 +190,23 @@ const setup = {
 
 const login = {
     password: 'SELECT tdg_p_hash AS password FROM item_user WHERE data_email = $(checkemail)',
-    isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)'
+    isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)',
+    secret : 'SELECT secret_token FROM item_user WHERE data_email = $(checkemail)'
     };   
 
 
 const addingUsers = {
 insertingUsers: `INSERT INTO item_user (item_id, item_organization_id, data_first_name, data_last_name, 
-    data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser) 
-VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false)`
+    data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser, secret_token, is_pending) 
+VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false, NULL, true)`
     };
-    
+
+const updates  = {
+    updateToken: 'UPDATE item_user SET secret_token = ($token) WHERE data_email = $(email)',
+    updateStatus: 'UPDATE item_user SET is_pending = ($status) WHERE data_email = $(email)',
+    updatepassword: 'UPDATE item_user SET tdg_p_hash = ($password) WHERE data_email = $(email)'
+};
+
 
 
 
@@ -201,7 +215,8 @@ module.exports = {
     construct,
     setup,
     login,
-    addingUsers
+    addingUsers,
+    updates
 };
 
 

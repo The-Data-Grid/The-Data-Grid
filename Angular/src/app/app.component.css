@@ -2,6 +2,7 @@ html {
    height: 100%;
    margin: 0;
    padding: 0;
+   background-color: green;
 }
 
 body {
@@ -30,7 +31,7 @@ body {
 
 /* dropdowns on mat-tab */
 .nav-dropdown-option {
-   display: block;
+   display: inline-block;
    height: 35px;
    padding-right: 0;
    padding-left: 0;
@@ -66,4 +67,45 @@ body {
 .social-button {
    height: 40px;
    margin: 5px;
+}
+
+.mat-button.mat-primary .mat-button-focus-overlay {
+   background-color: transparent;
+ }
+ 
+ ::ng-deep .link-btn .mat-button-focus-overlay {
+   background-color:transparent;
+}
+
+.upload {
+   width: 150%;
+   height: 100%;
+   background-color: transparent;
+   border: none;
+   cursor: pointer;
+}
+
+button:focus { outline: none; }
+
+.mat-menu-content {
+   background-color: 'red' !important;
+}
+
+::ng-deep .customize {
+   background: white;
+   width: 150px;
+   margin-left: -10px;
+   position: absolute;
+   top: 0%;
+   display: block;
+   box-sizing: border-box;
+   border-top: 1px solid #569CD7;
+}
+ 
+.dropdown-btn {
+   font-size: 13px;
+   color: #989898;
+   text-align: center;
+   /* margin-left: -10%; */
+   margin-top: -5px;
 }

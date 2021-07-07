@@ -88,7 +88,8 @@ export class AuditsComponent implements OnInit {
         console.log("using data from express server")
         this.setupObject = res;
         this.parseSetupObject();
-        // console.log(this.setupObject)
+         console.log("setupObject:");
+        console.log(this.setupObject)
       });
     }
   }
@@ -117,10 +118,10 @@ export class AuditsComponent implements OnInit {
 
     // console.log("global selectors:");
     // console.log(this.globalSelectors);
-    // console.log("feature selectors:");
-    // console.log(this.featureSelectors);
-    // console.log("applied filter selections:");
-    // console.log(this.appliedFilterSelections);
+    console.log("feature selectors:");
+    console.log(this.featureSelectors);
+    console.log("applied filter selections:");
+    console.log(this.appliedFilterSelections);
     // console.log("defaultColumnIDs:");
     // console.log(this.defaultColumnIDs);
     // console.log("featuresToChildren:");
@@ -137,11 +138,17 @@ export class AuditsComponent implements OnInit {
       this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
     }
     else {
-      this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections).subscribe((res) => {
+      this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections, this.globalReturnableIDs.concat(this.featureReturnableIDs)).subscribe((res) => {
         this.tableObject = res;
+        console.log(this.tableObject)
         this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
       });
     }
+  }
+
+  toggleMetaInfoDisplay(column) {
+    column.displayMetaInfo = !column.displayMetaInfo;
+    console.log(column.displayMetaInfo)
   }
 
   updateValue(event, columnName, rowIndex) {
@@ -203,6 +210,7 @@ export class AuditsComponent implements OnInit {
 
   onFeatureSelection() {
     this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.selectedFeature.index);
+    console.log("this.featureReturnableIDs:")
     console.log(this.featureReturnableIDs)
   }
 
