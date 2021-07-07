@@ -9,6 +9,8 @@ import SwiftUI
 
 struct auditDetailView: View {
     @EnvironmentObject var viewRouter: ViewRouter
+    @ObservedObject var a = audit(name: "audit 1",
+                                  rootFeatures: [feature(add: false, name: "Toilet")])
     @State private var auditName = "Audit Submission 1"
     @State private var editingName = false
     @State var showGlobalPresets = false
@@ -50,10 +52,17 @@ struct auditDetailView: View {
                             .foregroundColor(Color.black)
                             .cornerRadius(20)
                     }).sheet(isPresented: $showAddRoot, content: {
-                        addRootFeaturesView()
+                        addRootFeaturesView(a: self.a)
                     })
                 }.padding([.top,.bottom], 5)
                 Divider()
+                List{
+                    ForEach(a.rootFeatures) { f in
+                        HStack {
+                            Text(f.name)
+                        }
+                    }
+                }.listStyle(PlainListStyle())
                 Spacer()
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -76,5 +85,20 @@ struct auditDetailView: View {
 struct AuditDetailView_Previews: PreviewProvider {
     static var previews: some View {
         auditDetailView()
+    }
+}
+
+class audit: Identifiable, Equatable, ObservableObject {
+    let id = UUID()
+    var name: String
+    @Published var rootFeatures: [feature]
+    
+    init(name: String, rootFeatures: [feature] ) {
+        self.name = name
+        self.rootFeatures = rootFeatures
+    }
+    
+    static func == (lhs: audit, rhs: audit) -> Bool {
+        return lhs.id == rhs.id
     }
 }
