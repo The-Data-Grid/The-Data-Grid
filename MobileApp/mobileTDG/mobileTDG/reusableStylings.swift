@@ -25,9 +25,10 @@ struct CheckboxToggleStyle: ToggleStyle {
 struct LabellessToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         return HStack {
-            Image(systemName: configuration.isOn ? "checkmark.square" : "square")
+            Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
                 .resizable()
-                .frame(width: 20, height: 20)
+                .frame(width: 25, height: 25)
+                .foregroundColor(configuration.isOn ? .blue : .gray)
                 .onTapGesture { configuration.isOn.toggle() }
         }
     }

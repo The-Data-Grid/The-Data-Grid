@@ -53,15 +53,14 @@ struct settingsView: View {
                             Text("Name")
                             Divider()
                         }
-                    }
-    */
+                    } */
+                
                     DisclosureGroup("Photos and Videos", isExpanded: $showPVSettings) {
                         Toggle("Sync photos", isOn: $photoSync).toggleStyle(CheckboxToggleStyle())
                     }.accentColor(Color.black)
                     
                     Toggle("Auto-Sync", isOn: $autoSync)
                         .toggleStyle(CheckboxToggleStyle())
-                     
             }
             .background(Color.white)
             Text("Terms").padding(.leading)

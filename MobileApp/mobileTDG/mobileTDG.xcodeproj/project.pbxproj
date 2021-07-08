@@ -24,8 +24,6 @@
 		F6A90DEC25650C6E0067AAA1 /* settingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEB25650C6E0067AAA1 /* settingsView.swift */; };
 		F6A90DEF25774D8F0067AAA1 /* reusableStylings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DEE25774D8F0067AAA1 /* reusableStylings.swift */; };
 		F6A90DF625775C770067AAA1 /* tabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DF525775C770067AAA1 /* tabView.swift */; };
-		F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */; };
-		F6A90DFC25775CDA0067AAA1 /* unsubmittedAuditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */; };
 		F6A90DFF257766AF0067AAA1 /* homeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90DFE257766AF0067AAA1 /* homeView.swift */; };
 		F6A90E03257767BF0067AAA1 /* motherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90E02257767BF0067AAA1 /* motherView.swift */; };
 		F6A90E07257769C30067AAA1 /* viewRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A90E06257769C30067AAA1 /* viewRouter.swift */; };
@@ -53,8 +51,6 @@
 		F6A90DEB25650C6E0067AAA1 /* settingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsView.swift; sourceTree = "<group>"; };
 		F6A90DEE25774D8F0067AAA1 /* reusableStylings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reusableStylings.swift; sourceTree = "<group>"; };
 		F6A90DF525775C770067AAA1 /* tabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tabView.swift; sourceTree = "<group>"; };
-		F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = submittedAuditsView.swift; sourceTree = "<group>"; };
-		F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = unsubmittedAuditsView.swift; sourceTree = "<group>"; };
 		F6A90DFE257766AF0067AAA1 /* homeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = homeView.swift; sourceTree = "<group>"; };
 		F6A90E02257767BF0067AAA1 /* motherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = motherView.swift; sourceTree = "<group>"; };
 		F6A90E06257769C30067AAA1 /* viewRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewRouter.swift; sourceTree = "<group>"; };
@@ -127,8 +123,6 @@
 				F62A30C5258F20DE00A16C14 /* mobileTDG.xcdatamodeld */,
 				F6A90DCC2561C2860067AAA1 /* Info.plist */,
 				F68EE8A725C7782D00E27E15 /* testSetupObject.json */,
-				F6A90DF825775CC20067AAA1 /* submittedAuditsView.swift */,
-				F6A90DFB25775CDA0067AAA1 /* unsubmittedAuditsView.swift */,
 				F6A90DC72561C2860067AAA1 /* Assets.xcassets */,
 				F6A90DDA2564ED140067AAA1 /* IBM_Plex_Sans */,
 				F6A90DC92561C2860067AAA1 /* Preview Content */,
@@ -268,12 +262,10 @@
 				F6A90DC62561C2840067AAA1 /* loginView.swift in Sources */,
 				F649FDCB25A1BEF600A1A67C /* auditDetailView.swift in Sources */,
 				F6A90DEF25774D8F0067AAA1 /* reusableStylings.swift in Sources */,
-				F6A90DFC25775CDA0067AAA1 /* unsubmittedAuditsView.swift in Sources */,
 				F6A90E03257767BF0067AAA1 /* motherView.swift in Sources */,
 				F6A90DF625775C770067AAA1 /* tabView.swift in Sources */,
 				F6A90DFF257766AF0067AAA1 /* homeView.swift in Sources */,
 				F68EE8A025C768BB00E27E15 /* addRootFeaturesView.swift in Sources */,
-				F6A90DF925775CC20067AAA1 /* submittedAuditsView.swift in Sources */,
 				F68EE89D25C760B800E27E15 /* globalPresetsView.swift in Sources */,
 				F6A90DC42561C2840067AAA1 /* mobileTDGApp.swift in Sources */,
 			);
