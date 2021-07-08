@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct loginView: View {
     @EnvironmentObject var viewRouter: ViewRouter
@@ -72,4 +73,35 @@ struct submitButtonContent: View {
             .foregroundColor(.white)
             .cornerRadius(10)
     }
+}
+
+
+//model for data
+struct loginData: Codable, Identifiable {
+   let id = UUID()
+   let email: String
+   let password: String
+}
+
+// apiCall Class
+class apiCall {
+   // function to get login info
+   func getLoginInfo(completion: @escaping([loginData]) -> ()){
+      //check to see if url is valid
+      guard let url = URL(string: "thedatagrid.org/api/login") else { return }
+
+      //URL session to call data form URL
+      URLSession.shared.dataTask(with: url) { (data, _, _) in
+         //info variable to store info of decoded json object
+         let info = try! JSONDecoder().decode([loginData].self, from: data!)
+
+         print(info)
+
+         DispatchQueue.main.async{
+            completion(info)
+         }
+      }
+      // need resume to run the API call to URL
+      .resume()
+   }
 }
