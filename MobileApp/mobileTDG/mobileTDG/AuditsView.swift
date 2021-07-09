@@ -59,25 +59,29 @@ struct auditsView: View {
                 .onChange(of: submitStateFilter, perform: { value in
                     filterAudits()
                 })
+                .onChange(of: selecting, perform: { value in
+                    filterAudits()
+                })
                 .pickerStyle(SegmentedPickerStyle())
                 .padding([.leading, .trailing], /*@START_MENU_TOKEN@*/10/*@END_MENU_TOKEN@*/).padding(.top, -5)
-                Divider()
+                Divider().padding([.bottom], 10)
                 ScrollView {
                     ForEach(audits.indices, id: \.self){ idx in
-                    HStack() {
+                        HStack(alignment: .center) {
 
                         if(selecting) {
                             Toggle("", isOn: $audits[idx].selected).toggleStyle(LabellessToggleStyle()).padding(.trailing, 8)
                         }
                         Text(audits[idx].audit.name!).font(.title)
                         Spacer()
-                        VStack {
-                            Text("Last updated").fontWeight(.light)
-                            Text(audits[idx].audit.lastUpdated!, formatter: dateFormatter).fontWeight(.light)
+                            VStack(alignment: .trailing) {
+                                // figure out how to have text right above divider
+                                    Text("Last updated").fontWeight(.light)
+                                Text(audits[idx].audit.lastUpdated!, formatter: DateFormatter()).fontWeight(.light)
                         }
                     }.padding([.leading,.trailing])
-                    Divider()
-                }
+                        Divider().padding([.bottom], 10)
+                    }
                 }
                 Spacer()
                 if(selecting) {
@@ -89,6 +93,7 @@ struct auditsView: View {
                                     audit.audit.submitted = true
                                 }
                             }
+                            selecting = false
                         }, label: {
                             Text("Submit Selected")
                         })
@@ -98,6 +103,7 @@ struct auditsView: View {
                                 if allAudits[id].selected {
                                     // allAudits.remove(at: id)
                                     // come back to fix
+                                    selecting = false
                                 }
                                 filterAudits()
                             }
@@ -110,16 +116,18 @@ struct auditsView: View {
             }
             .onAppear(perform: formatForDisplay)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(
-                leading:
-                    Button(action: {viewRouter.currentTab = .home}, label: {
-            Image(systemName: "arrow.backward").accentColor(.black)}),
-                trailing:
-                    Button(action: {selecting = !selecting}, label: {
-                        Text(!selecting ? "Select" : "Cancel").accentColor(.black)
-                }))
-        }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading)
+                    {
+                    Button(action: {viewRouter.currentTab = .home}, label: {Image(systemName: "arrow.backward").accentColor(.black)})}
+                ToolbarItemGroup(placement: .navigationBarTrailing)
+                    {
+                    Button(action: {selecting = !selecting}, label: { Text(!selecting ? "Select" : "Cancel").accentColor(.black)})
+                    Button(action: {print("new audit!")}, label:{Image(systemName:"plus").accentColor(.black)})
+                    }
+            }
     }
+}
 }
 
 struct auditsView_Previews: PreviewProvider {

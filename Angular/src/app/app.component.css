@@ -98,5 +98,14 @@ button:focus { outline: none; }
    position: absolute;
    top: 0%;
    display: block;
+   box-sizing: border-box;
+   border-top: 1px solid #569CD7;
 }
  
+.dropdown-btn {
+   font-size: 13px;
+   color: #989898;
+   text-align: center;
+   /* margin-left: -10%; */
+   margin-top: -5px;
+}
