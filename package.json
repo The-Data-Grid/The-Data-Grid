@@ -11,6 +11,7 @@
     "start": "cd Angular && ng serve --proxy-config proxy.conf.json",
     "construct": "node ./Express/dataRepresentation/construct.js",
     "db-init": "bash ./Express/db/init.sh",
+    "db-make-server": "bash ./Express/db/make-server.sh",
     "db-fake": "bash ./Express/db/fake.sh",
     "db-status": "bash ./Express/db/status.sh",
     "db-start": "bash ./Express/db/start.sh",
