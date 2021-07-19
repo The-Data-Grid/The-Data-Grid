@@ -1478,7 +1478,9 @@ INSERT INTO metadata_item
     (item_id, table_name, frontend_name, item_type, creation_privilege)
         VALUES
             --('item_room', (SELECT type_id FROM metadata_item_type WHERE type_name = 'observable'), 4), --construct.js
+            -- obs
             (DEFAULT, 'item_building', 'Building', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 2),
+            -- non-obs
             (DEFAULT, 'item_organization', 'Organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
             (DEFAULT, 'item_entity', 'Entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
             (DEFAULT, 'item_city', 'City', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),

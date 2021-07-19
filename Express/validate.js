@@ -15,6 +15,9 @@ try {
     throw Error('Error reading schema assets. Have you constructed the schema yet? Use `npm run construct -- make-schema ...` or `bash ./Express/db/init.sh`')
 }
 
+let a = Object.values(idValidationLookup).map(e => [e.feature, e.baseItem])
+console.log([...new Set(a.map(e => e[0] + ' ' + e[1]))])
+
 /*
 Below is a bunch of generated validation objects which are used in the middleware function below. Validation
 is different for the observation query and the item query

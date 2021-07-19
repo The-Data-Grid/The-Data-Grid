@@ -785,7 +785,8 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
                 isDefault: returnable['r__is_used']
             })
         } else {
-            throw Error('This shouldn\'t happen... uwu')
+            console.log(returnable)
+            throw Error('This shouldn\'t happen...')
         }
     } else { // then returnable is not in item
         let fromItem = currentPath[0];

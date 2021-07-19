@@ -411,8 +411,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     // for non observable items generate returnables
     // first get all non observable items
     const nonObservableItems = await db.many('SELECT * FROM non_observable_item_view');
-    
-    for(let item of nonObservableItems.map(item => item.i__table_name)) {
+    const allItems2 = await db.many(allItems)
+    for(let item of allItems2.map(item => item.i__table_name)) {
         console.log(chalk.whiteBright.bold(`Constructing returnables for the ${item} item`));
         let itemArray = [
             {
@@ -1077,10 +1077,8 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 joinObject.columns.push('observableitem_id', 'item_id');
                 //joinObject.columns.push('item_id');
             } else {
-                // push foreign key column
+                // push foreign key, primary key column
                 joinObject.columns.push(`${itemObject.path[n+1]}_id`, 'item_id');
-                // push primary key column
-                //joinObject.columns.push('item_id');
             }
         }
     }
