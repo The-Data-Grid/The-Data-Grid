@@ -258,6 +258,10 @@ function validationConstructor(init) {
                     if (!validate[feature].column.includes(parseInt(universalFilters[filter])) && (init == 'item' || !globals.filter.includes(parseInt(universalFilters[filter])))) {
                         return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
                     }
+                } else if (filter == 'pk') {
+                    if (filter == 'pk' && !isPositiveInteger(universalFilters[filter])) {
+                        return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
+                    }
                 }
             }
 

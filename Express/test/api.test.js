@@ -46,6 +46,7 @@ let o12 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-2
 
 let o13 = '/api/audit/item/key/user?limit=10&offset=1&sorta=264'
 let o14 = '/api/audit/observation/key/sink?limit=10&offset=1&sorta=66'
+let o15 = '/api/audit/item/user/265?pk=4'
 
 /**
  * OBJECTS
@@ -253,6 +254,20 @@ test('Test for observation/key query', done => {
             expect(Object.keys(res.body)).toEqual([
                 'primaryKey'
             ]);
+            done();
+        });
+});
+
+test('Testing universal pk filter', function (done) {
+    request
+        .get(o15)
+        .end(function (err, res) {
+            if (err) return done(err);
+            expect(Object.keys(res.body)).toEqual([
+                'returnableIDs',
+                'rowData',
+                'primaryKey'
+            ])
             done();
         });
 });
