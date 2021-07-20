@@ -774,7 +774,9 @@ CREATE VIEW returnable_view AS (SELECT
         LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id 
         LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id 
         LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id 
-        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id);
+        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id
+            ORDER BY r__returnable_id ASC;
+        );
 
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                          
@@ -1586,6 +1588,18 @@ create materialized view lookup_column_returnable as
     select r.returnable_id, c.column_id from metadata_returnable as r left join metadata_column as c on r.column_id = c.column_id;
 
 
+create view metadata_item_columns as
+    select 
+        array_agg(c.column_id) c__column_id, 
+        array_agg(c.column_name) c__column_name, 
+        array_agg(c.table_name) c__table_name, 
+        array_agg(c.is_nullable) c__is_nullable,
+        array_agg(r.type_name) r__type_name,
+        i.table_name i__table_name 
+            from metadata_column c 
+            left join metadata_item i on c.metadata_item_id = i.item_id
+            left join metadata_reference_type r on c.reference_type = r.type_id
+                group by i__table_name;
 
 -- SET DEFAULTS --
 

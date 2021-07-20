@@ -16,7 +16,7 @@ try {
 }
 
 let a = Object.values(idValidationLookup).map(e => [e.feature, e.baseItem])
-console.log([...new Set(a.map(e => e[0] + ' ' + e[1]))])
+// console.log([...new Set(a.map(e => e[0] + ' ' + e[1]))])
 
 /*
 Below is a bunch of generated validation objects which are used in the middleware function below. Validation

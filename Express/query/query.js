@@ -117,7 +117,7 @@ function formatDefault(req, res, next) {
     
 
     // fuck .fill(), all my homies hate .fill() 
-    // (we don't use it here because it fills the array with references to a single array, instead of multiple arrays)
+    // (we don't use .fill([]) here because it fills the array with references to a single array, instead of multiple arrays)
     let rowData = Array(res.locals.parsed.finalQuery.rows.length).fill().map(e => [])
 
     let primaryKey = Array(res.locals.parsed.finalQuery.rows.length).fill(null)

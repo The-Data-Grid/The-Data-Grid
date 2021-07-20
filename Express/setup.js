@@ -15,7 +15,7 @@ const formatSQL = postgresClient.format;
 // QUERIES //
 // ==================================================
 
-let {returnableQuery, 
+let {returnableQuery,  // defunct, now a view
        columnQuery, 
        allItems, 
        itemM2M, 
@@ -23,7 +23,8 @@ let {returnableQuery,
        allFeatures} = require('./statement.js').setup
 
 
-// returnableQuery = syncdb.querySync(returnableQuery);
+
+const itemColumnObject = syncdb.querySync('select * from metadata_item_columns');
 returnableQuery = syncdb.querySync('select * from returnable_view');
 columnQuery = syncdb.querySync(columnQuery);
 allItems = syncdb.querySync(allItems);
@@ -38,8 +39,9 @@ syncdb.end()
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, ID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, appendAlias) {
+    constructor(feature, ID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, appendAlias) {
         this.ID = ID;
+        this.columnID = columnID;
         this.feature = feature;
         this.columnName = columnName;
         this.frontendName = frontendName;
@@ -454,7 +456,9 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         // Get column tree
         const columnTree = row['r__join_object'].columns;
-        //console.log(columnTree) 
+        
+        // Get column ID
+        const columnID = row['c__column_id'];
 
         // Get table tree
         const tableTree = row['r__join_object'].tables;
@@ -649,7 +653,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup[returnableID] = new ReturnableID(feature, returnableID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName)
+        returnableIDLookup[returnableID] = new ReturnableID(feature, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName)
 
     }
 
@@ -869,18 +873,19 @@ const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = se
 
 
 //console.log(featureParents);
-//console.log(idValidationLookup)
+//console.log(itemColumnObject)
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
-//console.log(returnableIDLookup['310'])
+//console.log(Object.keys(returnableIDLookup))
 //console.log(setupObject)
+console.log(allItems)    
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
-    
 module.exports = {
     returnableIDLookup,
     idValidationLookup,
     featureParents,
     setupObject,
     allItems,
-    itemM2M
+    itemM2M,
+    itemColumnObject
 }
 
