@@ -16,6 +16,7 @@
 
         "sqlType": "INTEGER", // required
         "referenceType": "item-id", // required
+        "presetValues": null,
 
         "frontendName": "Clockwise Integer", // required
         "information": "Number of toilet based on a clockwise count looking down on the room starting from the door", // optional, defaults to null
@@ -35,6 +36,7 @@
 
         "sqlType": "NUMERIC",
         "referenceType": "obs",
+        "presetValues": null,
 
         "frontendName": "Gallons Per Flush",
         "information": null,
@@ -49,11 +51,12 @@
         "tableName": "list_toilet_stall_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_toilet_stall",
+        "subobservationTableName": null,
         "itemName": "item_toilet",
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Stall Condition",
         "information": null,
@@ -73,6 +76,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "attribute",
+        "presetValues": null,
 
         "frontendName": "Basin Brand",
         "information": null,
@@ -92,6 +96,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Basin Condition",
         "information": null,
@@ -106,11 +111,12 @@
         "tableName": "list_toilet_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_toilet_sensor",
+        "subobservationTableName": null,
         "itemName": "item_toilet",
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Sensor Condition",
         "information": null,
@@ -130,6 +136,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "attribute",
+        "presetValues": null,
 
         "frontendName": "Flushometer Brand",
         "information": null,
@@ -149,6 +156,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Flushometer Condition",
         "information": null,
@@ -173,6 +181,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "item-id",
+        "presetValues": null,
 
         "frontendName": "Room Number",
         "information": null,
@@ -192,6 +201,7 @@
 
         "sqlType": "BOOLEAN",
         "referenceType": "item-non-id",
+        "presetValues": null,
 
         "frontendName": "Exhaust Vent Existence",
         "information": null,
@@ -211,6 +221,7 @@
 
         "sqlType": "BOOLEAN",
         "referenceType": "item-non-id",
+        "presetValues": null,
 
         "frontendName": "Access Panel Existence",
         "information": null,
@@ -235,6 +246,7 @@
 
         "sqlType": "INTEGER",
         "referenceType": "item-id",
+        "presetValues": null,
 
         "frontendName": "Clockwise Integer",
         "information": "Number of urinal based on a clockwise count looking down on the room starting from the door",
@@ -254,6 +266,7 @@
 
         "sqlType": "NUMERIC",
         "referenceType": "obs",
+        "presetValues": null,
 
         "frontendName": "Gallons Per Flush",
         "information": null,
@@ -273,6 +286,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "attribute",
+        "presetValues": null,
 
         "frontendName": "Basin Brand",
         "information": null,
@@ -292,6 +306,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Basin Condition",
         "information": null,
@@ -306,11 +321,12 @@
         "tableName": "list_urinal_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_urinal_sensor",
+        "subobservationTableName": null,
         "itemName": "item_urinal",
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Sensor Condition",
         "information": null,
@@ -325,11 +341,12 @@
         "tableName": "list_urinal_divider_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_urinal_divider",
+        "subobservationTableName": null,
         "itemName": "item_urinal",
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Divider Condition",
         "information": null,
@@ -349,6 +366,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "attribute",
+        "presetValues": null,
 
         "frontendName": "Flushometer Brand",
         "information": null,
@@ -368,6 +386,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Flushometer Condition",
         "information": null,
@@ -392,6 +411,7 @@
 
         "sqlType": "INTEGER",
         "referenceType": "item-id",
+        "presetValues": null,
 
         "frontendName": "Clockwise Integer",
         "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
@@ -411,6 +431,7 @@
 
         "sqlType": "NUMERIC",
         "referenceType": "obs",
+        "presetValues": null,
 
         "frontendName": "Gallons Per Minute",
         "information": null,
@@ -430,6 +451,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "attribute",
+        "presetValues": null,
 
         "frontendName": "Basin Brand",
         "information": null,
@@ -449,6 +471,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Basin Condition",
         "information": null,
@@ -468,6 +491,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "attribute",
+        "presetValues": null,
 
         "frontendName": "Faucet Brand",
         "information": null,
@@ -487,6 +511,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Faucet Condition",
         "information": null,
@@ -501,11 +526,12 @@
         "tableName": "list_sink_sensor_condition",
         "columnName": "data_element",
         "observationTableName": null,
-        "subobservationTableName": "subobservation_sink_sensor",
+        "subobservationTableName": null,
         "itemName": "item_sink",
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Sensor Condition",
         "information": null,
@@ -530,6 +556,7 @@
 
         "sqlType": "INTEGER",
         "referenceType": "item-id",
+        "presetValues": null,
 
         "frontendName": "Clockwise Integer",
         "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
@@ -549,6 +576,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
+        "presetValues": [],
 
         "frontendName": "Condition",
         "information": null,

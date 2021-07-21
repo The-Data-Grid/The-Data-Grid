@@ -1,6 +1,10 @@
 node_modules/*
 PostgreSQL/data/*
+PostgreSQL/logs/*
 Deployment/*
+pg_upgrade_internal.log
+pg_upgrade_server.log
+pg_upgrade_utility.log
 
 # exclude
 !node_modules/.gitkeep
@@ -9,7 +13,7 @@ Deployment/*
 !Deployment/Express/.gitkeep
 !Deployment/Authentication/.gitkeep
 
-# .env
+.env
 .DS_Store
 
 # computed returnables

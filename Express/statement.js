@@ -20,9 +20,15 @@ const query = {
 
     offset: 'OFFSET $(offset)',
 
+    pk: 'WHERE item_id = $(key)',
+
     observationSelect: 'SELECT $(feature:name)."observation_id" AS observation_pkey, $(selectClauses:raw)',
 
     itemSelect: 'SELECT $(item:name)."item_id" AS item_pkey, $(selectClauses:raw)',
+
+    emptyObservationSelect: 'SELECT $(feature:name)."observation_id" AS observation_pkey',
+
+    emptyItemSelect: 'SELECT $(item:name)."item_id" AS item_pkey',
 
     observationCount: 'INNER JOIN tdg_observation_count on $(feature:name).observation_count_id = tdg_observation_count.observation_count_id',
 
@@ -31,7 +37,8 @@ const query = {
     whereCondition: '$(select:value) $(operation:value) $(filterValue)',
 
     submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.item_id',
-    global: 'LEFT JOIN item_global on $(feature:name).global_id = item_global.item_id',
+
+    globalItem: 'LEFT JOIN item_global on $(feature:name).global_id = item_global.item_id',
 
     subfeatureJoin: 'INNER JOIN $(subfeature:value) ON $(subfeature:value).parent_id = $(feature:value).observation_id',
 
@@ -97,7 +104,9 @@ const construct = {
         
     // use PROCEDURE instead of FUNCTION for PostgreSQL v10 and below
     checkAuditorNameTrigger: 'CREATE TRIGGER $(tableName:value)_check_auditor_name BEFORE INSERT OR UPDATE ON $(tableName:name) \
-    FOR EACH ROW EXECUTE FUNCTION check_auditor_name()'
+    FOR EACH ROW EXECUTE FUNCTION check_auditor_name()',
+
+    insertPresetValues: 'INSERT INTO $(tableName:name) ($(columnName:name)) VALUES ($(value))'
 
 };
 

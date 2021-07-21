@@ -29,6 +29,7 @@ connectPostgreSQL('default');
 const parse = require('./parse.js');
 const {validateObservation, validateItem} = require('./validate.js')
 const query = require('./query/query.js');
+const cacheLayer = require('./query/cacheLayer.js');
 const template = require('./template.js');
 const authRouter = require('./auth/login.js');
 
@@ -60,35 +61,80 @@ function cycleTimer(req, res, next) {
     next()
 }
 
-//** Observation Data Query w/ Download **//	
-app.get(['/api/audit/observation/:feature/:include', '/api/audit/observation/download/:downloadType/:feature/:include'],
-    parse.queryParse, 
+//** Observation Key Query **/	
+app.get('/api/audit/observation/key/:feature', 
+    parse.keyQueryParse, 
     validateObservation, 
     query.featureQuery, 
+    query.sendKey);
+
+//** Observation Data Query **//	
+app.get('/api/audit/observation/:feature/:include',
+    cacheLayer.hitCacheDefault,
+    parse.queryParse, 
+    validateObservation, 
+    query.featureQuery,
+    query.formatDefault,
+    cacheLayer.setCache,
     query.sendDefault);
 
+//** Observation Data Query w/ Download **//	
+app.get('/api/audit/download/:downloadType/observation/:feature/:include',
+    cacheLayer.hitCacheDownload, 
+    parse.queryParse, 
+    validateObservation, 
+    query.featureQuery,
+    query.formatDefault,
+    cacheLayer.setCache,
+    query.sendDownload);
+
 //** Observation Distinct Query **/	
-app.get('/api/audit/observation/distinct/:feature/:include', 
+app.get('/api/audit/observation/distinct/:feature/:include',
+    cacheLayer.hitCacheDefault,
     parse.queryParse, 
     validateObservation, 
     query.featureQuery, 
+    query.formatDistinct,
+    cacheLayer.setCache,
     query.sendDistinct);
 
 
+//** Item Key Query **//	
+app.get('/api/audit/item/key/:feature', 
+    parse.keyQueryParse, 
+    validateItem, 
+    query.itemQuery, 
+    query.sendKey);
+
+//** Item Data Query **//	
+app.get('/api/audit/item/:feature/:include',
+    cacheLayer.hitCacheDefault,
+    parse.queryParse, 
+    validateItem, 
+    query.itemQuery,
+    query.formatDefault,
+    cacheLayer.setCache,
+    query.sendDefault);
+
 //** Item Data Query w/ Download **//	
-app.get(['/api/audit/item/:feature/:include', '/api/audit/item/download/:downloadType/:feature/:include'],
+app.get('/api/audit/download/:downloadType/item/:feature/:include',
+    cacheLayer.hitCacheDownload,
     parse.queryParse, 
     validateItem, 
     query.itemQuery, 
-    query.sendDefault);
+    query.formatDefault,
+    cacheLayer.setCache,
+    query.sendDownload);
 
 //** Item Distinct Query **//	
 app.get('/api/audit/item/distinct/:feature/:include', 
+    cacheLayer.hitCacheDefault,
     parse.queryParse, 
     validateItem, 
     query.itemQuery, 
+    query.formatDistinct,
+    cacheLayer.setCache,
     query.sendDistinct);
-
 
 
 //** Setup Query **//	
@@ -102,19 +148,31 @@ app.get('/api/stats/', parse.statsParse, query.statsQuery);
 // Easter Egg	
 app.get('/api/coffee', (req, res) => res.status(418).send(`<center><h3><a href="https://tools.ietf.org/html/rfc2324#section-2.3.2">418 I\'m a teapot</a></h3></center><hr><center><small>&copy TDG ${new Date().getFullYear()}</small></center>`))
 
-//Default to web app paths
-/*
-app.all('/', function(req, res){
+// //Default to web app paths
+// app.all('/', function(req, res){
+//     res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
+// });
+// app.all('*', function(req, res){
+//     //console.log('../Deployment/Angular/dist' + req.path);
+//     //console.log('../Deployment/Angular/dist' + req.path);
+//     res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
+// });
+
+app.get('/', function(req,res){
     res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
 });
-app.all('*', function(req, res){
+
+app.all('/dist/*', function(req, res){
     //console.log('../Deployment/Angular/dist' + req.path);
-    //console.log('../Deployment/Angular/dist' + req.path);
-    res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
+    //console.log(req.path);
+    //console.log('../Deployment/Angular/dist' + path.join(req.path.split(path.sep).slice(1)));
+    //req.path.split(path.sep)
+    //console.log(req.path.split(path.sep).slice(1))
+    //path.join(req.path.split(path.sep).slice(1))
+    //req.path.substring(req.path.indexOf(path.sep));
+    res.sendFile(path.resolve('../Deployment/Angular' + req.path));
 });
-*/
-
-
+	
 ////// LISTEN //////
 
 if(isDeployment) {

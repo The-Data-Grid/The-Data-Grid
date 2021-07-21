@@ -38,21 +38,22 @@ CREATE TABLE location_path (
 
 -- Room, Building
 
-/*
-in construct.js
+-- Submission and Globals
 
-CREATE TABLE item_room (
+CREATE TABLE item_global (
     item_id SERIAL PRIMARY KEY,
-    data_room_number TEXT NOT NULL,
-    item_building_id INTEGER NOT NULL --fk **
+    item_audit_id INTEGER NOT NULL, --fk **
+    item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
+    item_user_id INTEGER NOT NULL, --fk **
+    item_template_id INTEGER --fk ** ???
 );
-*/
 
 CREATE TABLE item_building (
     item_id SERIAL PRIMARY KEY, 
 	data_building_name TEXT NOT NULL,
     item_entity_id INTEGER NOT NULL, --fk **    
     location_region_id INTEGER NOT NULL, --fk **
+    global_id INTEGER NOT NULL REFERENCES item_global, --fk ** (NOTE: Not in metadata because should not be included in the item requirement tree)
     UNIQUE(data_building_name, item_entity_id)
 );
 
@@ -169,17 +170,8 @@ CREATE TABLE m2m_user_organization (
 );
 */
 
--- Submission and Globals
 
-CREATE TABLE item_global (
-    item_id SERIAL PRIMARY KEY,
-
-    item_audit_id INTEGER NOT NULL, --fk **
-    item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
-    item_user_id INTEGER NOT NULL, --fk **
-    item_template_id INTEGER --fk ** ???
-);
-
+/*
 CREATE TABLE item_submission (
     item_id SERIAL PRIMARY KEY,
     data_time_submitted TIMESTAMPTZ NOT NULL
@@ -198,7 +190,7 @@ CREATE TABLE tdg_observation_edit (
     submission_edit_id INTEGER NOT NULL, --fk **
     data_edit_description TEXT
 );
-
+*/
 CREATE TABLE m2m_tdg_assigned_auditor (
     item_audit_id SERIAL PRIMARY KEY, --fk **
     item_user_id INTEGER NOT NULL, --fk **
@@ -209,6 +201,7 @@ CREATE TABLE item_catalog (
     item_id SERIAL PRIMARY KEY,
     data_title TEXT NOT NULL,
     data_description TEXT,
+    global_id INTEGER NOT NULL REFERENCES item_global, --fk ** (NOTE: Not in metadata because should not be included in the item requirement tree)
     is_discoverable BOOLEAN NOT NULL
 );
 
@@ -275,6 +268,56 @@ INSERT INTO tdg_role_type
             (DEFAULT, 'auditor'),
             (DEFAULT, 'admin');
 
+CREATE INDEX item_building_index
+ON item_building (item_entity_id);
+
+CREATE INDEX item_organization_index
+ON item_organization (item_entity_id);
+
+CREATE INDEX item_entity_index
+ON item_entity (item_city_id);
+
+CREATE INDEX item_city_index
+ON item_city (item_county_id);
+
+CREATE INDEX item_county_index
+ON item_county (item_state_id);
+
+CREATE INDEX item_state_index
+ON item_state (item_country_id);
+
+CREATE INDEX item_sop_index
+ON item_sop (item_organization_id);
+
+CREATE INDEX item_template_index1
+ON item_template (item_user_id);
+
+CREATE INDEX item_template_index2
+ON item_template (item_organization_id);
+
+CREATE INDEX item_user_index
+ON item_user (item_organization_id);
+
+CREATE INDEX item_global_index1
+ON item_global (item_audit_id);
+
+CREATE INDEX item_global_index2
+ON item_global (item_organization_id);
+
+CREATE INDEX item_global_index3
+ON item_global (item_user_id);
+
+CREATE INDEX item_global_index4
+ON item_global (item_template_id);
+
+CREATE INDEX item_audit_index1
+ON item_audit (item_catalog_id);
+
+CREATE INDEX item_audit_index2
+ON item_audit (item_user_id);
+
+CREATE INDEX item_audit_index3
+ON item_audit (item_organization_id);
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                                                                   _______                                       
                                                     ,,                            
@@ -659,6 +702,34 @@ CREATE TABLE metadata_feature (
 );
 
 
+CREATE TABLE metadata_observation_history_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL
+);
+
+INSERT INTO metadata_observation_history_type
+    (type_id, type_name)
+    VALUES
+        (DEFAULT, 'create'),
+        (DEFAULT, 'update'),
+        (DEFAULT, 'delete');
+
+CREATE TABLE metadata_item_history_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name TEXT NOT NULL
+);
+
+INSERT INTO metadata_item_history_type
+    (type_id, type_name)
+    VALUES
+        (DEFAULT, 'create'),
+        (DEFAULT, 'update'),
+        (DEFAULT, 'remove'),
+        (DEFAULT, 'request permanent deletion');
+
+
+
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -773,11 +844,11 @@ ALTER TABLE item_global ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE item_global ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit (item_id);
 
 -- Submission
-ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_submission_id) REFERENCES item_submission;
-ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+-- ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_submission_id) REFERENCES item_submission;
+-- ALTER TABLE tdg_submission_edit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
-ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
-ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (submission_edit_id) REFERENCES tdg_submission_edit;
+-- ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
+-- ALTER TABLE tdg_observation_edit ADD FOREIGN KEY (submission_edit_id) REFERENCES tdg_submission_edit;
 
 
 -- SOP
@@ -903,7 +974,8 @@ CREATE FUNCTION add_item_to_item_reference(observable_item regclass,
             EXECUTE FORMAT('ALTER TABLE %I
                             ADD FOREIGN KEY (%I)
                             REFERENCES %I ("item_id")', observable_item, required_item_column, referenced);
-        
+            EXECUTE FORMAT('CREATE INDEX 
+                            ON %I (%I)', observable_item, required_item_column);
             -- Return the id-column
             RETURN required_item_column;
         END
@@ -1113,6 +1185,7 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
     $$
         DECLARE
             observable_item regclass := regexp_replace(table_name, '^observation', 'item');
+            history_table_name TEXT := concat('history_', table_name);
         BEGIN
             -- Create the table
             EXECUTE FORMAT('CREATE TABLE %I (
@@ -1139,15 +1212,32 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
                             REFERENCES "item_global" ("item_id")', table_name);
 
             -- Submission reference
+            /*
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("submission_id")
                             REFERENCES "item_submission" ("item_id")', table_name);
+            */
             
             -- Observable Item reference
             EXECUTE FORMAT('ALTER TABLE %I 
                             ADD FOREIGN KEY ("observableitem_id")
                             REFERENCES %I ("item_id")', table_name, observable_item);
 
+            -- observation to item index
+            EXECUTE FORMAT ('CREATE INDEX
+                             ON %I ("observableitem_id")', table_name);
+
+            -- observation to global index
+            EXECUTE FORMAT ('CREATE INDEX
+                             ON %I ("global_id")', table_name); 
+
+            -- history table
+            EXECUTE FORMAT ('CREATE TABLE %I (
+                                history_id SERIAL PRIMARY KEY,
+                                type_id INTEGER NOT NULL REFERENCES metadata_observation_history_type,
+                                observation_id INTEGER NOT NULL REFERENCES %I,
+                                time_submitted TIMESTAMPTZ NOT NULL)', history_table_name, table_name);
+            
             COMMIT;
         END
     $$ LANGUAGE plpgsql;
@@ -1183,6 +1273,7 @@ CREATE FUNCTION create_observational_item_table(feature_name TEXT)
     $$
         DECLARE
             observable_item TEXT := regexp_replace(feature_name, '^observation', 'item');
+            history_table_name TEXT := concat('history_', observable_item);
         BEGIN
             -- Naming convention constraint
             IF feature_name NOT LIKE 'observation\_%' THEN
@@ -1192,7 +1283,24 @@ CREATE FUNCTION create_observational_item_table(feature_name TEXT)
             -- Create the table
             EXECUTE FORMAT('CREATE TABLE %I (
                             item_id SERIAL PRIMARY KEY,
-                            is_existing BOOLEAN NOT NULL)', observable_item);
+                            is_existing BOOLEAN NOT NULL,
+                            global_id INTEGER NOT NULL)', observable_item);
+
+            -- Global reference
+            EXECUTE FORMAT('ALTER TABLE %I 
+                            ADD FOREIGN KEY ("global_id")
+                            REFERENCES "item_global" ("item_id")', observable_item);
+
+            -- observation to global index
+            EXECUTE FORMAT ('CREATE INDEX
+                             ON %I ("global_id")', observable_item); 
+
+            -- history table
+            EXECUTE FORMAT ('CREATE TABLE %I (
+                                history_id SERIAL PRIMARY KEY,
+                                type_id INTEGER NOT NULL REFERENCES metadata_item_history_type,
+                                item_id INTEGER NOT NULL REFERENCES %I,
+                                time_submitted TIMESTAMPTZ NOT NULL)', history_table_name, observable_item);
 
             -- Return the observable item table name
             RETURN observable_item;
@@ -1231,6 +1339,10 @@ CREATE PROCEDURE add_list(item_table_name TEXT, table_name TEXT, column_name TEX
             IF is_observational = TRUE THEN
                 -- Create m2m_list_... table with foreign key constraints
                 EXECUTE FORMAT('CREATE TABLE %I (observation_id INTEGER NOT NULL REFERENCES %I, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, observation_table_name, table_name);
+                -- list_id Index
+                EXECUTE FORMAT ('CREATE INDEX ON %I ("list_id")', m2m_table_name);
+                -- observation_id Index
+                EXECUTE FORMAT ('CREATE INDEX ON %I ("observation_id")', m2m_table_name);
             ELSE
                 -- Create m2m_list_... table with foreign key constraints
                 EXECUTE FORMAT('CREATE TABLE %I (item_id INTEGER NOT NULL REFERENCES %I, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, item_table_name, table_name);
@@ -1366,17 +1478,19 @@ INSERT INTO metadata_item
     (item_id, table_name, frontend_name, item_type, creation_privilege)
         VALUES
             --('item_room', (SELECT type_id FROM metadata_item_type WHERE type_name = 'observable'), 4), --construct.js
+            -- obs
             (DEFAULT, 'item_building', 'Building', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 2),
-            (DEFAULT, 'item_organization', 'Organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_entity', 'Entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_city', 'City', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_county', 'County', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_state', 'State', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
-            (DEFAULT, 'item_country', 'Country', (SELECT type_id FROM metadata_item_type WHERE type_name = 'potential-observable'), 3),
+            -- non-obs
+            (DEFAULT, 'item_organization', 'Organization', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_entity', 'Entity', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_city', 'City', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_county', 'County', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_state', 'State', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
+            (DEFAULT, 'item_country', 'Country', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 3),
             (DEFAULT, 'item_sop', 'Standard Operating Procedure', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_template', 'Template', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_user', 'User', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 1),
-            (DEFAULT, 'item_submission', 'Submission', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
+            --(DEFAULT, 'item_submission', 'Submission', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_global', 'Global Item', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_catalog', 'Catalog', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2),
             (DEFAULT, 'item_audit', 'Audit', (SELECT type_id FROM metadata_item_type WHERE type_name = 'non-observable'), 2);
@@ -1386,13 +1500,12 @@ INSERT INTO metadata_item
 -- observable_item TEXT, referenced TEXT, isID BOOLEAN, isNullable BOOLEAN, frontendName TEXT, information TEXT
 -- potential-observable
 CALL "insert_m2m_metadata_item"('item_building', 'item_entity', TRUE, FALSE, 'Entity of Building', NULL);
+-- non-observable
 CALL "insert_m2m_metadata_item"('item_organization', 'item_entity', TRUE, FALSE, 'Entity of Organization', NULL);
 CALL "insert_m2m_metadata_item"('item_entity', 'item_city', FALSE, TRUE, 'City of Entity', NULL);
 CALL "insert_m2m_metadata_item"('item_city', 'item_county', TRUE, FALSE, 'County of City', NULL);
 CALL "insert_m2m_metadata_item"('item_county', 'item_state', TRUE, FALSE, 'State of County', NULL);
 CALL "insert_m2m_metadata_item"('item_state', 'item_country', TRUE, FALSE, 'Country of State', NULL);
-
--- non-observable
 CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
 CALL "insert_m2m_metadata_item"('item_template', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
 CALL "insert_m2m_metadata_item"('item_template', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
@@ -1413,26 +1526,37 @@ CALL "insert_m2m_metadata_item"('item_audit', 'item_organization', FALSE, TRUE, 
 -- Inserting Columns into metadata
 -- Item columns 
 -- column_name,  table_name_,  observation_table_name,  subobservation_table_name, item_table_name, is_default, is_nullable, frontend_name, filter_selector_name, input_selector_name, frontend_type_name, information, accuracy, sql_type_name, reference_type_name
-CALL "insert_metadata_column"('data_time_created', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Time Audit Created', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
-CALL "insert_metadata_column"('data_population', 'item_city', NULL, NULL, 'item_city', TRUE, TRUE, 'City Population', 'numericEqual', NULL, 'string', NULL, NULL, 'NUMERIC', 'item-non-id');
-CALL "insert_metadata_column"('data_fips_code', 'item_county', NULL, NULL, 'item_county', TRUE, TRUE, 'FIPS County Code', 'numericEqual', NULL, 'string', 'Five digit number which uniquely identify counties and county equivalents', NULL, 'NUMERIC', 'item-non-id');
-CALL "insert_metadata_column"('data_time_uploaded', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Time SOP Uploaded', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
-CALL "insert_metadata_column"('data_template_json', 'item_template', NULL, NULL, 'item_template', FALSE, FALSE, 'Audit Template JSON', 'searchableDropdown', NULL, 'string', 'JSON representation of an audit input template', NULL, 'JSON', 'item-non-id');
-CALL "insert_metadata_column"('data_time_submitted', 'item_submission', NULL, NULL, 'item_submission', TRUE, FALSE, 'Time Audit Submission Submitted', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
-CALL "insert_metadata_column"('data_description', 'item_catalog', NULL, NULL, 'item_catalog', FALSE, TRUE, 'Audit Description', NULL, 'text', 'string', 'A description of the audit which will appear in the catalog', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_building_name', 'item_building', NULL, NULL, 'item_building', TRUE, FALSE, 'Building Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_time_created', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Time Audit Created', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-id');
+CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id');
+
 CALL "insert_metadata_column"('data_entity_name', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Name', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 CALL "insert_metadata_column"('data_entity_address', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Address', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_city_name', 'item_city', NULL, NULL, 'item_city', TRUE, FALSE, 'City Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
---CALL "insert_metadata_column"('data_submission_name', 'item_submission', NULL, NULL, 'item_submission', TRUE, TRUE, 'Audit Submission Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+
+CALL "insert_metadata_column"('data_fips_code', 'item_county', NULL, NULL, 'item_county', TRUE, TRUE, 'FIPS County Code', 'numericEqual', NULL, 'string', 'Five digit number which uniquely identify counties and county equivalents', NULL, 'NUMERIC', 'item-non-id');
 CALL "insert_metadata_column"('data_county_name', 'item_county', NULL, NULL, 'item_county', TRUE, FALSE, 'County Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_state_name', 'item_state', NULL, NULL, 'item_state', TRUE, FALSE, 'State Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+
 CALL "insert_metadata_column"('data_country_name', 'item_country', NULL, NULL, 'item_country', TRUE, FALSE, 'Country Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+
+CALL "insert_metadata_column"('data_time_uploaded', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Time SOP Uploaded', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
+CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+
+CALL "insert_metadata_column"('data_template_json', 'item_template', NULL, NULL, 'item_template', FALSE, FALSE, 'Audit Template JSON', 'searchableDropdown', NULL, 'string', 'JSON representation of an audit input template', NULL, 'JSON', 'item-non-id');
+CALL "insert_metadata_column"('data_template_name', 'item_template', NULL, NULL, 'item_template', TRUE, TRUE, 'Audit Template Name', 'text', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+
+--CALL "insert_metadata_column"('data_time_submitted', 'item_submission', NULL, NULL, 'item_submission', TRUE, FALSE, 'Time Audit Submission Submitted', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
+
+CALL "insert_metadata_column"('data_building_name', 'item_building', NULL, NULL, 'item_building', TRUE, FALSE, 'Building Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+
+CALL "insert_metadata_column"('data_population', 'item_city', NULL, NULL, 'item_city', TRUE, TRUE, 'City Population', 'numericEqual', NULL, 'string', NULL, NULL, 'NUMERIC', 'item-non-id');
+CALL "insert_metadata_column"('data_city_name', 'item_city', NULL, NULL, 'item_city', TRUE, FALSE, 'City Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+
+--CALL "insert_metadata_column"('data_submission_name', 'item_submission', NULL, NULL, 'item_submission', TRUE, TRUE, 'Audit Submission Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_state_name', 'item_state', NULL, NULL, 'item_state', TRUE, FALSE, 'State Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+
 CALL "insert_metadata_column"('data_organization_name_text', 'item_organization', NULL, NULL, 'item_organization', TRUE, FALSE, 'Organization Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 CALL "insert_metadata_column"('data_organization_name_link', 'item_organization', NULL, NULL, 'item_organization', TRUE, TRUE, 'Organization Website', NULL, NULL, 'hyperlink', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_template_name', 'item_template', NULL, NULL, 'item_template', TRUE, TRUE, 'Audit Template Name', 'text', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+
+CALL "insert_metadata_column"('data_description', 'item_catalog', NULL, NULL, 'item_catalog', FALSE, TRUE, 'Audit Description', NULL, 'text', 'string', 'A description of the audit which will appear in the catalog', NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_title', 'item_catalog', NULL, NULL, 'item_catalog', TRUE, FALSE, 'Audit Title', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 --     user
 CALL "insert_metadata_column"('data_is_email_public', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Email visible to Public', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');

@@ -50,7 +50,8 @@ const {insert_m2m_metadata_item,
        makeItemReturbablesItemQuery, 
        makeItemReturnablesSubobservationQuery, 
        insert_metadata_returnable, 
-       checkAuditorNameTrigger} = require('../statement.js').construct
+       checkAuditorNameTrigger,
+       insertPresetValues} = require('../statement.js').construct
     
 const {allItems} = require('../statement.js').setup
 
@@ -100,6 +101,7 @@ else if(process.argv[0] == 'inspect') {
         commandLineArgs.isSummary = process.argv.includes('-s') || process.argv.includes('--summary');
         commandLineArgs.isTree = process.argv.includes('-t') || process.argv.includes('--tree');
         commandLineArgs.isQueryString = process.argv.includes('-qs') || process.argv.includes('--query-string');
+        commandLineArgs.isFullyIdentifyingSet = process.argv.includes('-fis') || process.argv.includes('--fully-identifying-set');
         if(argFilter.length == 1) {
             commandLineArgs.filter = argFilter[0].match(/^--choose=(.*)/)[1];
         } else {
@@ -217,6 +219,19 @@ async function inspectSchema(commandLineArgs) {
                         filter: commandLineArgs.filter
                     }));
                 }
+
+                // if FIS trim to only include FIS returnables
+                /*
+
+                Not done yet because not only item-id returnables must be selected, but also
+                only returnables that traverse ID required items. Going to need to write a handler for this 
+                for upload anyway...
+
+                if(commandLineArgs.isFullyIdentifyingSet) {
+                    out = out.filter(returnable => returnable.rt__type_name == 'item-id')
+                    
+                }
+                */
                 
                 if(commandLineArgs.isSummary) {
                     const originalOut = Array.from(out);
@@ -363,6 +378,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
 
     // Intermezzo: construct the itemParents object
     let itemParentLookup = await makeItemParentLookup();
+    featureOutput.itemParentLookup = itemParentLookup
 
     console.log(chalk.green('Constructed the itemParents object'));
     
@@ -395,8 +411,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, command
     // for non observable items generate returnables
     // first get all non observable items
     const nonObservableItems = await db.many('SELECT * FROM non_observable_item_view');
-    
-    for(let item of nonObservableItems.map(item => item.i__table_name)) {
+    const allItems2 = await db.many(allItems)
+    for(let item of allItems2.map(item => item.i__table_name)) {
         console.log(chalk.whiteBright.bold(`Constructing returnables for the ${item} item`));
         let itemArray = [
             {
@@ -767,6 +783,9 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                     }));
 
                     console.log(chalk.green(`Column Construction: Created ${column.tableName} tables with ${column.columnName} column for ${column.itemName}`));
+
+                    await insertPresets(column, 'item-factor')
+
                     break;
 
                 case 'item-location':
@@ -800,6 +819,9 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                     }));
 
                     console.log(chalk.green(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
+
+                    await insertPresets(column, 'item-factor')
+
                     break;
 
                 case 'obs':
@@ -834,6 +856,9 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                     }));
 
                     console.log(chalk.green(`Column Construction: Created ${column.tableName} tables with ${column.columnName} column for ${column.itemName}`));
+
+                    await insertPresets(column, 'obs-list')
+
                     break;
 
                 case 'obs-factor':
@@ -852,6 +877,9 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                     }));
 
                     console.log(chalk.green(`Column Construction: Created ${column.tableName} table with ${column.columnName} column for ${column.itemName}`));
+
+                    await insertPresets(column, 'obs-factor')
+
                     break;
 
                 case 'special':
@@ -878,6 +906,23 @@ async function addDataColumns(columns, features, itemIDColumnLookup, featureItem
                 default:
                     throw `column ${column.columnName} has an invalid reference type of ${column.referenceType}`
             }
+
+            // preset value inserter
+            async function insertPresets(column, type) {
+                // insert all the preset values
+                if(!Array.isArray(column.presetValues)) {
+                    throw `${type} data columns must have an array of presetValues. This array can be empty`
+                }
+                for(let value of column.presetValues) {
+                    await db.none(formatSQL(insertPresetValues, {
+                        tableName: column.tableName,
+                        columnName: column.columnName,
+                        value
+                    }))
+                    console.log(chalk.green(`Column Construction: Inserted '${value}' into ${column.columnName} for ${column.itemName}`));
+                }
+            }
+
         } catch(sqlError) {
             return constructjsError(sqlError);
         };
@@ -934,7 +979,7 @@ async function generateReturnables(itemArray, returnableArray, itemParentLookup,
         returnableArray = [...returnableArray, ...itemReturnables];
 
         // if item has a parent calculate new path and add to referencedItems array 
-        if(Object.keys(itemParentLookup).includes(itemObject.itemName)) {
+        if(itemObject.itemName in itemParentLookup) {
 
             let parentItemArray = itemParentLookup[itemObject.itemName]
 
@@ -1032,10 +1077,8 @@ async function makeItemReturnables(itemObject, itemRealGeoLookup, featureItemLoo
                 joinObject.columns.push('observableitem_id', 'item_id');
                 //joinObject.columns.push('item_id');
             } else {
-                // push foreign key column
+                // push foreign key, primary key column
                 joinObject.columns.push(`${itemObject.path[n+1]}_id`, 'item_id');
-                // push primary key column
-                //joinObject.columns.push('item_id');
             }
         }
     }
@@ -1253,11 +1296,14 @@ function readSchema(file) { // Schema read function
 }
 
 async function makeAssets(featureOutput) {
-    const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup} = featureOutput;
+    const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup, itemParentLookup} = featureOutput;
     
     // Adding files to ./Express/dataRepresentation/schemaAssets
     fs.writeFileSync(`${__dirname}/schemaAssets/itemIDColumnLookup.json`, JSON.stringify(itemIDColumnLookup))
     console.log(chalk.whiteBright.bold(`Wrote itemIDColumnLookup.json to schemaAssets`));
+
+    fs.writeFileSync(`${__dirname}/schemaAssets/itemParentLookup.json`, JSON.stringify(itemParentLookup))
+    console.log(chalk.whiteBright.bold(`Wrote itemParentLookup.json to schemaAssets`));
 
     fs.writeFileSync(`${__dirname}/schemaAssets/featureItemLookup.json`, JSON.stringify(featureItemLookup));
     console.log(chalk.whiteBright.bold(`Wrote featireItemLookup.json to schemaAssets`));

@@ -25,7 +25,8 @@ const {
     sorta,
     sortd,
     limit,
-    offset
+    offset,
+    pk
 } = require('../statement.js').query;
 
 const {returnableIDLookup, featureParents} = require('../setup.js')
@@ -182,7 +183,7 @@ function makeWhereClauseArray(whereLookup, filters) {
 // UNIVERSAL FILTERS
 // ==================================================
 function makeUniversalFilters(whereLookup, universalFilters, feature, queryType) {
-    // Applying sorta, sortd, limit, and offset universal filters
+    // Applying sorta, sortd, limit, offset, and pk universal filters
     let universalFilterArray = [];
 
     // default limit of 100 rows
@@ -219,7 +220,7 @@ function makeUniversalFilters(whereLookup, universalFilters, feature, queryType)
         });
     }
     
-
+    let universalKey
     if(Object.keys(universalFilters).length > 0) {
         for(universal in universalFilters) {
             if(universal === 'sorta') {
@@ -238,11 +239,15 @@ function makeUniversalFilters(whereLookup, universalFilters, feature, queryType)
                 universalOffset = formatSQL(offset, {
                     offset: universalFilters[universal]
                 })
+            } else if(universal === 'pk') {
+                universalKey = formatSQL(pk, {
+                    key: universalFilters[universal]
+                })
             }
         }
     } 
 
-    universalFilterArray.push(universalSort, universalLimit, universalOffset);
+    universalFilterArray.push(universalKey, universalSort, universalLimit, universalOffset);
 
     return universalFilterArray;
 }

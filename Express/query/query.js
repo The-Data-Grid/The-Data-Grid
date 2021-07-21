@@ -43,7 +43,7 @@ var cycleTime = [];
  */
 function dataQueryWrapper(queryType) {
 
-    return async function dataQuery(req, res, next) {   
+    return async (req, res, next) => {   
     
         try {
     
@@ -87,7 +87,7 @@ function dataQueryWrapper(queryType) {
             let finalQuery = query.join(' '); 
             
             // DEBUG: Show SQL Query //
-            console.log(finalQuery); 
+            // console.log(finalQuery); 
     
             // Finally querying the database and attaching the result
             res.locals.parsed.finalQuery = await db.result(finalQuery)
@@ -109,11 +109,11 @@ function dataQueryWrapper(queryType) {
 
 // SEND OBSERVATION DATA
 // ============================================================
-function sendDefault(req, res) {
+function formatDefault(req, res, next) {
     // This is row-major data
 
     /* DEBUG */
-    //console.log(res.locals.parsed.finalQuery);
+    // console.log(res.locals.parsed.finalQuery);
     
 
     // fuck .fill(), all my homies hate .fill() 
@@ -150,51 +150,71 @@ function sendDefault(req, res) {
         }  
     });
 
-    if(res.locals.parsed.download.status) {
-        if(res.locals.parsed.download.type == 'csv') {
-            // add header
-            let csvData = [['Observation Primary Key', ...returnableIDs]]
-            // format rows with primary keys
-            rowData.forEach((row, i) => row.unshift(primaryKey[i]))
-            // add rows to csv
-            rowData.forEach(row => csvData.push(row))
-            
-            // write to buffer and send
-            writeToBuffer(csvData).then(data => {
-                res.writeHead(200, {
-                    'Content-Disposition': `attachment; filename="TDG-Download.csv"`,
-                    'Content-Type': 'text/csv',
-                })
+    // attach to formattedResponse
+    res.locals.formattedResponse = {
+        returnableIDs,
+        rowData,
+        primaryKey
+    }
 
-                res.end(data)
-            })
-        } else if(res.locals.parsed.download.type == 'json') {
+    next()
+
+    
+};
+
+function sendDefault(req, res) {
+    return res.json(res.locals.formattedResponse)
+}
+
+
+function sendDownload(req, res) {
+
+    // first unpack formattedResponse
+    let {
+        returnableIDs,
+        rowData,
+        primaryKey
+    } = res.locals.formattedResponse
+
+    // get download type from url
+    let { downloadType } = req.params;
+    if(downloadType == 'csv') {
+        // add header
+        let csvData = [['Observation Primary Key', ...returnableIDs]]
+        // format rows with primary keys
+        rowData.forEach((row, i) => row.unshift(primaryKey[i]))
+        // add rows to csv
+        rowData.forEach(row => csvData.push(row))
+        
+        // write to buffer and send
+        writeToBuffer(csvData).then(data => {
             res.writeHead(200, {
-                'Content-Disposition': `attachment; filename="TDG-Download.json"`,
-                'Content-Type': 'application/json',
+                'Content-Disposition': `attachment; filename="TDG-Download.csv"`,
+                'Content-Type': 'text/csv',
             })
 
-            res.end(JSON.stringify({
-                returnableIDs,
-                rowData,
-                primaryKey
-            }))
-        } else {
-            res.status(500).send('Download Parse Error')
-        }
-    } else {
-        res.json({
+            res.end(data)
+        })
+    } else if(downloadType == 'json') {
+        res.writeHead(200, {
+            'Content-Disposition': `attachment; filename="TDG-Download.json"`,
+            'Content-Type': 'application/json',
+        })
+
+        res.end(JSON.stringify({
             returnableIDs,
             rowData,
             primaryKey
-        });
+        }))
+    } else {
+        res.status(400).send('Not a valid download type. Must be json or csv')
     }
-};
+}
 
 
 // SEND DISTINCT OBSERVATION DATA
 // ============================================================
-function sendDistinct(req, res) {
+function formatDistinct(req, res, next) {
     // This is column-major data
 
     let keys = res.locals.parsed.finalQuery.fields.map(field => field.name).filter(key => key !== 'observation_pkey' && key !== 'item_pkey');
@@ -210,9 +230,12 @@ function sendDistinct(req, res) {
         // kind of a hack but it works
         if(['obs-list', 'item-list', 'special'].includes(returnableIDLookup[returnableIDs[i]].referenceType) && res.locals.parsed.finalQuery.fields[i+1].dataTypeID == 1009) {
             
-            res.locals.parsed.finalQuery.rows.forEach(row => {        
-                columnData[i].push([...new Set(row[key])]) 
+            let allPossible = []
+            res.locals.parsed.finalQuery.rows.forEach(row => {      
+                allPossible = [...allPossible, ...row[key]]
             })
+            columnData[i] = [...new Set(allPossible)]
+            
         } else {
             res.locals.parsed.finalQuery.rows.forEach(row => {            
                 columnData[i].push(row[key]) 
@@ -230,16 +253,45 @@ function sendDistinct(req, res) {
         }
     })
 
-    res.json({
+    // attach to formattedResponse
+    res.locals.formattedResponse = {
         returnableIDs,
         columnData
-    })
+    }
+
+    next()
+
+}
+
+function sendDistinct(req, res) {
+    return res.json(res.locals.formattedResponse)
 }
 
 // SEND ID DATA
 // ============================================================
 function sendKey(req, res) {
+    // query data is passed to the function via res.locals.parsed.finalQuery
+    // finalQuery is one row
 
+    /* DEBUG */
+    // console.log(res.locals.parsed.finalQuery);
+
+    let primaryKey = null
+
+    if(res.locals.parsed.finalQuery.rows.length == 1) {
+        let keys = res.locals.parsed.finalQuery.fields.map(field => field.name);
+        keys.forEach((key) => {
+        
+            // handle primary keys
+            if(key === 'observation_pkey' || key === 'item_pkey') {
+                primaryKey = row[key]
+            }
+        });
+    }
+
+    return res.json({
+        primaryKey
+    });
 }
 
 
@@ -302,8 +354,11 @@ module.exports = {
     itemQuery: dataQueryWrapper('item'),
     statsQuery,
     cycleTime,
+    formatDefault,
     sendDefault,
+    formatDistinct,
     sendDistinct,
+    sendDownload,
     sendSetup,
     sendKey
 };
