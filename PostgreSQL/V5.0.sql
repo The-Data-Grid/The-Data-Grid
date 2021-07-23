@@ -513,6 +513,17 @@ CREATE TABLE metadata_item (
     UNIQUE(table_name)
 );
 
+CREATE VIEW required_item_view
+    AS
+    SELECT 
+        i1.table_name item_table_name, 
+        array_agg(i2.table_name) required_item_table_name, 
+        array_agg(m2m.is_nullable) is_nullable 
+            from metadata_item i1 
+            left join m2m_metadata_item m2m on i1.item_id = m2m.item_id 
+            left join metadata_item i2 on i2.item_id = m2m.referenced_item_id 
+                group by item_table_name;
+
 CREATE VIEW non_observable_item_view
     AS 
     SELECT i.table_name i__table_name
@@ -775,7 +786,7 @@ CREATE VIEW returnable_view AS (SELECT
         LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id 
         LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id 
         LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id
-            ORDER BY r__returnable_id ASC;
+            ORDER BY r__returnable_id ASC
         );
 
 
@@ -1599,6 +1610,21 @@ create view metadata_item_columns as
             from metadata_column c 
             left join metadata_item i on c.metadata_item_id = i.item_id
             left join metadata_reference_type r on c.reference_type = r.type_id
+            where c.observation_table_name is null
+                group by i__table_name;
+
+create view metadata_observation_columns as
+    select 
+        array_agg(c.column_id) c__column_id, 
+        array_agg(c.column_name) c__column_name, 
+        array_agg(c.table_name) c__table_name, 
+        array_agg(c.is_nullable) c__is_nullable,
+        array_agg(r.type_name) r__type_name,
+        i.table_name i__table_name 
+            from metadata_column c 
+            left join metadata_item i on c.metadata_item_id = i.item_id
+            left join metadata_reference_type r on c.reference_type = r.type_id
+            where c.observation_table_name is not null
                 group by i__table_name;
 
 -- SET DEFAULTS --

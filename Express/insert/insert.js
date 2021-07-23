@@ -25,62 +25,63 @@ const createItem = require('./item/createItem.js');
  * @param {submissionObject} submissionObject 
  */
 async function insertSubmission(submissionObject) {
-    try {
-        
-        const createItemObjectArray = submissionObject.items.create
-        const updateItemObjectArray = submissionObject.items.update
-        const deleteItemObjectArray = submissionObject.items.delete
-        const requestPermanentDeletionItemObjectArray = submissionObject.items.requestPermanentDeletion
-        const createObservationObjectArray = submissionObject.observations.create
-        const updateObservationObjectArray = submissionObject.observations.update
-        const deleteObservationObjectArray = submissionObject.observations.delete
 
-        // JSON representation of item_history & observation_history
-        let uploadReceipt = {}
+    const createItemObjectArray = submissionObject.items.create
+    const updateItemObjectArray = submissionObject.items.update
+    const deleteItemObjectArray = submissionObject.items.delete
+    const requestPermanentDeletionItemObjectArray = submissionObject.items.requestPermanentDeletion
+    const createObservationObjectArray = submissionObject.observations.create
+    const updateObservationObjectArray = submissionObject.observations.update
+    const deleteObservationObjectArray = submissionObject.observations.delete
 
-        // PostgreSQL transaction
-        // must pass transaction database object to each helper
-        await db.tx(async transaction => {
-            
-            await updateItem({
-                updateItemObjectArray,
-                transaction
-            })
-            
-            await deleteItem({
-                deleteItemObjectArray,
-                requestPermanentDeletionItemObjectArray,
-                transaction
-            })
+    // JSON representation of item_history & observation_history
+    let uploadReceipt = {}
 
-            await updateObservation({
-                updateObservationObjectArray,
-                transaction
-            })
+    console.log(createItemObjectArray)
 
-            await deleteObservation({
-                deleteObservationObjectArray,
-                transaction
-            })
-
-            const insertedItemPrimaryKeyLookup = await createItem({
-                createItemObjectArray,
-                transaction
-            })
-
-            await createObservation({
-                createObservationObjectArray,
-                insertedItemPrimaryKeyLookup,
-                transaction
-            })
-
-            // clear the query cacheLayer
-            // update dataColumnPresetLookup
-
+    // PostgreSQL transaction
+    // must pass transaction database object to each helper
+    await db.tx(async transaction => {
+        /*
+        await updateItem({
+            updateItemObjectArray,
+            transaction
         })
-    } catch(err) {
-        return err
-    }
+        
+        await deleteItem({
+            deleteItemObjectArray,
+            requestPermanentDeletionItemObjectArray,
+            transaction
+        })
+
+        await updateObservation({
+            updateObservationObjectArray,
+            transaction
+        })
+
+        await deleteObservation({
+            deleteObservationObjectArray,
+            transaction
+        })
+
+        */
+        const insertedItemPrimaryKeyLookup = await createItem({
+            createItemObjectArray,
+            transaction
+        })
+
+        /*
+        await createObservation({
+            createObservationObjectArray,
+            insertedItemPrimaryKeyLookup,
+            transaction
+        })
+        */
+
+        // clear the query cacheLayer
+        // update dataColumnPresetLookup
+
+    })
 }
 
 async function insertSubmissionHandler(req, res, next) {
@@ -88,6 +89,8 @@ async function insertSubmissionHandler(req, res, next) {
         await insertSubmission(req.body);
         return res.status(201).end();
     } catch(err) {
+        console.log("ERROR: ", err)
+        if(err.msg instanceof Error) err.msg = err.msg.message;
         return res.status(err.code).send(err.msg);
     }
 }

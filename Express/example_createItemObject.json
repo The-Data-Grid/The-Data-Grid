@@ -1,0 +1,55 @@
+{
+    "items": {
+        "create": [
+            {
+                "itemTypeID": 15,
+                "requiredItems": [],
+                "newRequiredItemIndices": [1],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": 2,
+                "data": {
+                    "returnableIDs": [
+                        483,
+                        484,
+                        485
+                    ],
+                    "data": [
+                        1,
+                        "Tesla",
+                        "Lockheed Martin"
+                    ]
+                }
+            },
+            {
+                "itemTypeID": 17,
+                "requiredItems": [{
+                    "itemTypeID": 1,
+                    "primaryKey": 1
+                }],
+                "newRequiredItemIndices": [],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": 2,
+                "data": {
+                    "returnableIDs": [
+                        523,
+                        524,
+                        525
+                    ],
+                    "data": [
+                        9000,
+                        true,
+                        false
+                    ]
+                }
+            }
+        ],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": []
+    }
+}

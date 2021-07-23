@@ -24,13 +24,40 @@ let {returnableQuery,  // defunct, now a view
 
 
 
-const itemColumnObject = syncdb.querySync('select * from metadata_item_columns');
+const metadataItemColums = syncdb.querySync('select * from metadata_item_columns');
+const itemColumnObject = {};
+metadataItemColums.forEach(item => {
+    itemColumnObject[item.i__table_name] = {...item};
+});
 returnableQuery = syncdb.querySync('select * from returnable_view');
 columnQuery = syncdb.querySync(columnQuery);
 allItems = syncdb.querySync(allItems);
 itemM2M = syncdb.querySync(itemM2M);
 frontendTypes = syncdb.querySync(frontendTypes);
 allFeatures = syncdb.querySync(allFeatures);
+/**
+ * Validation lookup to verify proper item insertion
+ * @typedef {Object} requiredItemLookup
+ * @property {Object} [tableName] Reprsents a single item and all of its required items. Property should exist for every item in the schema
+ * @property {Number[]} tableName.nullable
+ * @property {Number[]} tableName.nonNullable
+ */
+let requiredItemLookup = {}
+const requiredItemView = syncdb.querySync('SELECT * FROM required_item_view')
+requiredItemView.forEach(item => {
+    requiredItemLookup[item.item_table_name] = {
+        nullable: [],
+        nonNullable: []
+    };
+    item.required_item_table_name.forEach((requiredItem, i) => {
+        if(item.is_nullable[i]) {
+            requiredItemLookup[item.item_table_name].nullable.push(requiredItem);
+        } else {
+            requiredItemLookup[item.item_table_name].nonNullable.push(requiredItem);
+        }
+    })
+});
+
 
 // closing db connection
 console.log('Closed PostgreSQL Connection: setup');
@@ -873,11 +900,11 @@ const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = se
 
 
 //console.log(featureParents);
-//console.log(itemColumnObject)
+console.log(Object.values(returnableIDLookup).filter(id => [34, 44, 49].includes(id.columnID)))
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
 //console.log(Object.keys(returnableIDLookup))
 //console.log(setupObject)
-console.log(allItems)    
+//console.log(allItems)    
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
 module.exports = {
     returnableIDLookup,
@@ -886,6 +913,7 @@ module.exports = {
     setupObject,
     allItems,
     itemM2M,
-    itemColumnObject
+    itemColumnObject,
+    requiredItemLookup
 }
 

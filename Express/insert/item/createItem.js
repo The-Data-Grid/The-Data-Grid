@@ -1,12 +1,30 @@
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../../db/pg.js');
 const formatSQL = postgresClient.format;
 const type = require('@melgrove/type');
 const {
     returnableIDLookup,
     itemM2M,
     allItems,
+    requiredItemLookup,
     itemColumnObject
-} = require('./setup.js');
+} = require('../../setup.js');
+
+class CreateItemError extends Error {
+    constructor(errObject, ...params) {
+      // Pass remaining arguments (including vendor specific ones) to parent constructor
+      super(...params)
+  
+      // Maintains proper stack trace for where our error was thrown (only available on V8)
+      if (Error.captureStackTrace) {
+        Error.captureStackTrace(this, CreateItemError)
+      }
+  
+      this.name = 'CreateItemError'
+      // Custom debugging information
+      this.code = errObject.code
+      this.msg = errObject.msg
+    }
+  }
 
 /****************************
     Request Object Definition
@@ -54,21 +72,7 @@ const sqlToJavascriptLookup = {
 }
 
 // from setupObject, identifies type of item (ex. item_sink vs item_mirror) based on index
-const itemTableNames = allItems.map(item => item['i__table_name'])
-
-/**
- * Validation lookup to verify proper item insertion
- * @typedef {Object} requiredItemLookup
- * @property {Object} tableName Reprsents a single item and all of its required items. Property should exist for every item in the schema
- * @property {Number[]} tableName.nullable
- * @property {Number[]} tableName.nonNullable
- */
-const requiredItemLookup = {
-    tableName: {
-        nullable: [],
-        nonNullable: []
-    }
-}
+const itemTableNames = allItems.map(item => item['i__table_name']);
 
 /*
 DEPRECATED, THIS VALIDATION IS DONE ON INSERT
@@ -92,6 +96,7 @@ module.exports = createItem
  * @param {Array.<createItemObject>} options.createItemObjectArray
  * @param {Object} options.transaction database transaction
  * @returns {Array.<Number[]>} insertedItemPrimaryKeyLookup
+ * @throws {{err: Number, msg: String}} HTTP error code and message
  * 
  * Steps:
  *   1. validateRequiredItems()
@@ -106,23 +111,33 @@ async function createItem(options) {
    } = options
 
    // Validate reqiured items and data fields for every item
-   for(let createItemObject of createItemObjectArray) {
-       const tableName = itemTableNames[createItemObject.itemTypeID]
-       if(tableName === undefined) {
-           throw Error({code: 400, msg: `itemTypeID: ${createItemObject.itemTypeID} is not valid`})
+   try {
+       for(let createItemObject of createItemObjectArray) {
+           const tableName = itemTableNames[createItemObject.itemTypeID]
+           if(tableName === undefined) {
+               throw new CreateItemError({code: 400, msg: `itemTypeID: ${createItemObject.itemTypeID} is not valid`})
+           }
+    
+           // TODO: make requiredItemLookup
+           // 1. Validate required items
+           validateRequiredItems([
+               ...createItemObject.requiredItems.map(el => itemTableNames[el.itemTypeID]), 
+               ...createItemObject.newRequiredItemIndices.map(el => itemTableNames[createItemObjectArray[el].itemTypeID])
+           ], tableName)
+    
+           // TODO: make dataColumnPresetLookup, add handling for mutible reference types
+           // 2. Validate data columns
+           validateDataColumns(createItemObject.data, tableName)
        }
-
-       // TODO: make requiredItemLookup
-       // 1. Validate required items
-       validateRequiredItems([
-           ...createItemObject.requiredItems.map(el => itemTableNames[el.itemTypeID]), 
-           ...createItemObject.newRequiredItemIndices.map(el => itemTableNames[createItemObjectArray[el].itemTypeID])
-       ], tableName)
-
-       // TODO: make dataColumnPresetLookup, add handling for mutible reference types
-       // 2. Validate data columns
-       validateDataColumns(createItemObject.data, tableName)
+   } catch(err) {
+       if(err instanceof CreateItemError) {
+           throw new CreateItemError({code: err.code, msg: err.msg})
+       } else {
+           throw new CreateItemError({code: 500, msg: err})
+       }
    }
+
+   console.log('validated');
 
    // 3. Insert every item
    let currentInsertedItemPrimaryKeyLookup = createItemObjectArray.map(el => null)
@@ -132,8 +147,10 @@ async function createItem(options) {
 
    // sanity check
    if(currentInsertedItemPrimaryKeyLookup.some(el => el === null)) {
-       throw Error({code: 500, msg: `Computer did not insert all the items! Here is the array: ${currentInsertedItemPrimaryKeyLookup}`})
+       throw new CreateItemError({code: 500, msg: `Computer did not insert all the items! Here is the array: ${currentInsertedItemPrimaryKeyLookup}`})
    }
+
+   console.log(currentInsertedItemPrimaryKeyLookup)
 
    return currentInsertedItemPrimaryKeyLookup;
 }
@@ -155,7 +172,7 @@ async function createItem(options) {
  * calls itself to insert that item first and get its primary key 
  * Steps:
  *   1. Handle global item reference
- *   2. Handle self reference
+ *   2. Handle createItemObject self reference
  *   3. Insert external columns and get primary keys
  *   4. Make SQL statement
  *   5. Insert item into database with internal and external columns
@@ -198,7 +215,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
             // insert and update lookup
             insertedItemPrimaryKeyLookup = createIndividualItem(index, createItemObjectArray, insertedItemPrimaryKeyLookup, db);
             // sanity check
-            if(insertedItemPrimaryKeyLookup[index] === null) throw Error({code: 500, msg: `Error in required item recursion, createItemObject at index ${index} never got inserted`});
+            if(insertedItemPrimaryKeyLookup[index] === null) throw new CreateItemError({code: 500, msg: `Error in required item recursion, createItemObject at index ${index} never got inserted`});
         }
         // add to requiredItems
         requiredItems.push({
@@ -208,7 +225,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     }
 
     // Get all of the columns needed to insert the item
-    let itemColumns = itemColumnObject.filter(item => item['i__table_name'] == tableName)[0];
+    let itemColumns = itemColumnObject[tableName];
     itemColumns = itemColumns['c__column_id'].map((id, i) => ({
         columnID: id,
         columnName: itemColumns['c__column_name'][i],
@@ -225,7 +242,9 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, db),
         'item-factor': externalColumnInsertGenerator('factor_id', false, db),
         'item-location-mutable': externalColumnInsertGenerator('location_id', true, db),
-        'item-location': externalColumnInsertGenerator('location_id', false, db)
+        'item-location': externalColumnInsertGenerator('location_id', false, db),
+        'item-list': externalColumnInsertGenerator('list_id', false, db),
+        'item-list-mutable': externalColumnInsertGenerator('list_id', true, db)
     };
 
     // 3. Go through user supplied data columns and add column names and column values
@@ -235,7 +254,8 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     //    external table
     let columnNamesAndValues = [];
     let listColumnsAndValues = [];
-    createItemObject.data.returnableIDs.forEach((id, i) => {
+    let i = 0
+    for(let id of createItemObject.data.returnableIDs) {
         // Convert returnableID to columnID
         const columnID = returnableIDLookup[id].columnID;
         // if the returnable is valid
@@ -249,6 +269,8 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
             const itemColumn = itemColumns.filter(col => col.columnID == columnID)[0];
             // get the user passed insertion value
             const columnValue = createItemObject.data.data[i];
+
+
             // if the column is external call the proper insertion function based on reference type and pass metadata and value
             if(itemColumn.referenceType in insertExternalColumn) {
                 const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue);
@@ -268,12 +290,13 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
             }
         // then not valid
         } else {
-            throw Error({code: 400, msg: `returnableID ${id} is not valid for ${tableName}`});
+            throw new CreateItemError({code: 400, msg: `returnableID ${id} is not valid for ${tableName}`});
         }
-    })
+        i++;
+    }
     // If not all the non-nullable columns have been included then throw 
     //////// will maybe have to handle inputSelectorType = null here?
-    if(nonNullableColumnIDs.length !== 0) throw Error({code: 400, msg: `Missing (${nonNullableColumnIDs.join(', ')}) non nullable column IDs for ${tableName}`});
+    if(nonNullableColumnIDs.length !== 0) throw new CreateItemError({code: 400, msg: `Missing (${nonNullableColumnIDs.join(', ')}) non nullable column IDs for ${tableName}`});
 
     // 4. Make the finished SQL statement
     const fullSQLStatement = makeItemSQLStatement(tableName, columnNamesAndValues, globalReference);
@@ -282,11 +305,18 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     const itemPrimaryKey = await db.one(fullSQLStatement);
 
     // 6. Insert list values and list many to many values
-    listColumnsAndValues.forEach(col => {
-        // 1. I think I can use the old function
-    })
+    for(let columnsAndValues of listColumnsAndValues) {
+        const {itemColumn, columnValue} = columnsAndValues;
+
+        // 1. Insert into the list_... table
+        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue);
+
+        // insert into the many to many table
+        await insertManyToMany(primaryKeyOfInsertedValue, itemPrimaryKey, listTableName, db);
+    }
 
     // 7. Insert insertion record into history tables
+    // ??
 
     // Update the primary key lookup and return it
     insertedItemPrimaryKeyLookup[currentIndex] = itemPrimaryKey;
@@ -349,63 +379,155 @@ function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference) 
 
 /**
  * Composes an external column insertion function
- * @param {*} primaryKeyColumnName 
- * @param {*} isMutable 
+ * @param {String} primaryKeyColumnName 
+ * @param {Boolean} isMutable 
+ * @param {Number} isList 
+ * @param {Object} db 
  */
-function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, db) {
+function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, isList, db) {
     /**
      * @param {String} tableName 
      * @param {String} columnName 
-     * @param {String|Number|Date|Object|Boolean} data 
+     * @param {String|Number|Date|Object|Boolean|Array} data 
+     * @returns {<{columnName: String, primaryKey: Number | Array.<Number>}>}
+     * // Array of values if list reference type
      */
     return async (tableName, columnName, data) => {
         let primaryKey;
         const foreignKeyColumnName = tableName + '_id';
-        // 1. see if the value already exists
-        try {
-            primaryKey = await db.many(`
-                SELECT $(primaryKeyColumnName:name)
-                FROM $(tableName:name)
-                WHERE $(columnName:name) = $(data)
-            `, {
-                tableName,
-                columnName,
-                data,
-                primaryKeyColumnName
-            })[0];
-        // then record doesn't exist yet
-        } catch(err) {
-            // if it's not mutable then throw
-            if(!isMutable) {
-                const validValues = await db.any(`
-                    SELECT $(primaryKeyColumnName:name)
-                    FROM $(tableName:name)
+        // List Handling
+        if(isList) {
+            // check to see if all values are valid
+            try {
+                primaryKey = await db.many(formatSQL(`
+                    select list_id
+                    from $(tableName:name)
+                    WHERE $(columnName:name) = ANY ($(data:array))
                 `, {
                     tableName,
                     columnName,
-                    primaryKeyColumnName
-                }).map(v => v[primaryKeyColumnName]).join(', ');
-                throw Error({code: 400, msg: `The value ${data} is not one of the valid values (${validValues}) for ${tableName}`});
+                    data,
+                }));
+            } catch(err) {
+                throw new CreateItemError({code: 500, msg: `Error when getting current list values from ${tableName}`});
             }
-            primaryKey = await db.one(`
-                INSERT INTO $(tableName:name) 
-                    ($(columnName:name))
-                    VALUES
-                    ($(data))
-                        RETURNING $(primaryKeyColumnName:name)
-            `, {
-                tableName,
-                columnName,
-                data,
-                primaryKeyColumnName
-            });
+            // if there are new values
+            if(primaryKey.length != data.length) {
+                const newValues = data.length.filter(value => !primaryKey.includes(value));
+                if(!isMutable) {
+                    throw new CreateItemError({code: 400, msg: `Value(s) ${newValues} from list input ${data.length} are not valid for the column ${columnName} and table ${tableName}`})
+                } else {
+                    // insert new values
+                    let newPrimaryKeys = [];
+                    try {
+                        for(let value of newValues) {
+                            // Now insert
+                            const newKey = await db.one(formatSQL(`
+                                INSERT INTO $(tableName:name) 
+                                    ($(columnName:name))
+                                    VALUES
+                                    ($(value))
+                                        RETURNING $(primaryKeyColumnName:name)
+                            `, {
+                                tableName,
+                                columnName,
+                                value,
+                                primaryKeyColumnName
+                            }));
+                            newPrimaryKeys.push(newKey);
+                        }
+                        primaryKey = [...primaryKey, ...newPrimaryKeys];
+                    } catch(err) {
+                        throw new CreateItemError({code: 500, msg: `Error when inserting ${newValues} into ${tableName}`})
+                    }
+                }
+            }
+        // Factor, Attribute, Location handling
+        } else {
+            try {
+                // note db.many here, we are deciding not to throw
+                // if more than one record is returned with the
+                // value. This is to prevent upload from breaking
+                // if duplicates are found in list, attribute, location,
+                // or factor tables
+                primaryKey = await db.many(formatSQL(`
+                    SELECT $(primaryKeyColumnName:name)
+                    FROM $(tableName:name)
+                    WHERE $(columnName:name) = $(data)
+                `, {
+                    tableName,
+                    columnName,
+                    data,
+                    primaryKeyColumnName
+                }))[0];
+            } catch(err) {
+                if(!isMutable) {
+                    const validValues = await db.any(formatSQL(`
+                        SELECT $(primaryKeyColumnName:name)
+                        FROM $(tableName:name)
+                    `, {
+                        tableName,
+                        columnName,
+                        primaryKeyColumnName
+                    })).map(v => v[primaryKeyColumnName]).join(', ');
+                    throw new CreateItemError({code: 400, msg: `The value ${data} is not one of the valid values (${validValues}) for ${tableName}`});
+                }
+
+                // Now insert
+                try {
+                    primaryKey = await db.one(formatSQL(`
+                        INSERT INTO $(tableName:name) 
+                            ($(columnName:name))
+                            VALUES
+                            ($(data))
+                                RETURNING $(primaryKeyColumnName:name)
+                    `, {
+                        tableName,
+                        columnName,
+                        data,
+                        primaryKeyColumnName
+                    }));
+                } catch(err) {
+                    throw new CreateItemError({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
+                }
+            }
+                
         }
-        
         return {
+            // Foreign key column name and value inside the item_... table
             columnName: foreignKeyColumnName,
-            columnValue: primaryKey
+            primaryKeyOfInsertedValue: primaryKey
         };
     };
+}
+
+/**
+ * Insert item_id and list_id into a m2m table
+ * @param {Number} primaryKeyOfInsertedValue 
+ * @param {Number} itemPrimaryKey 
+ * @param {String} listTableName 
+ * @param {Object} db 
+ */
+async function insertManyToMany(primaryKeyOfInsertedValue, itemPrimaryKey, listTableName, db) {
+    const manyToManyTableName = 'm2m_' + listTableName;
+    if(type(primaryKeyOfInsertedValue) !== 'array') {
+        primaryKeyOfInsertedValue = [primaryKeyOfInsertedValue];
+    }
+    for(let key of primaryKeyOfInsertedValue) {
+        try {
+            await db.none(formatSQL(`INSERT INTO $(manyToManyTableName:name) 
+                (list_id, item_id)
+                VALUES
+                ($(primaryKeyOfInsertedValue), $(itemPrimaryKey))
+            `, {
+                manyToManyTableName,
+                primaryKeyOfInsertedValue: key,
+                itemPrimaryKey
+            }));        
+        } catch(err) {
+            throw new CreateItemError({code: 500, msg: `Error when inserting key ${key} and ${itemPrimaryKey} into ${manyToManyTableName}`});
+        }
+    }
 }
 
 /**
@@ -426,12 +548,12 @@ function validateRequiredItems(requiredItemTableNames, tableName) {
             nonNullableCurrentAmount ++;
         // if not in the nullable set either then throw
         } else if(!requiredItemLookup[tableName].nullable.includes(table)) {
-            throw Error({code: 400, msg: `${table} is not a required item of ${tableName}`});
+            throw new CreateItemError({code: 400, msg: `${table} is not a required item of ${tableName}`});
         }
     }
     // Make sure all non nullables have been included
     if(nonNullableCurrentAmount !== nonNullableNeededAmount) {
-        throw Error({code: 400, msg: `Not all non-nullable required items have been included for ${tableName}`});
+        throw new CreateItemError({code: 400, msg: `Not all non-nullable required items have been included for ${tableName}`});
     }
 }
 
@@ -446,40 +568,46 @@ function validateRequiredItems(requiredItemTableNames, tableName) {
  */
 function validateDataColumns(dataObject, tableName) {
     const {returnableIDs, data} = dataObject
-    const {
-        allDataColumns,
-        nonNullableReturnableIDs
-    } = returnableIDLookup[tableName]
+    const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
+    // Get all of the columns needed to insert the item
+    let itemColumns = itemColumnObject[tableName];
+    itemColumns = itemColumns['c__column_id'].map((id, i) => ({
+        columnID: id,
+        isNullable: itemColumns['c__is_nullable'][i]
+    }));
+    const allDataColumns = itemColumns.map(col => col.id);
+    const nonNullableColumnIDs = itemColumns.filter(col => !col.isNullable).map(col => col.columnID);
+
     // make sure all non nullable fields are included
-    if(!nonNullableReturnableIDs.every(id => returnableIDs.includes(id))) throw Error({code: 400, msg: `Did not include a required field for ${tableName}`})
+    if(!nonNullableColumnIDs.every(id => columnIDs.includes(id))) throw new CreateItemError({code: 400, msg: `Must include columnIDs ${nonNullableColumnIDs} and only included ${columnIDs} for ${tableName}`})
     // check each field
     returnableIDs.forEach((id, i) => {
         // is it one of the data columns?
         if(allDataColumns.includes(id)) {
             // list
             if(['item-list', 'obs-list'].includes(returnableIDLookup[id].rt__type_name)) {
-                if(type(data[i]) !== 'array') throw Error({code: 400, msg: `returnableID ${id} must be of type: array`})
+                if(type(data[i]) !== 'array') throw new CreateItemError({code: 400, msg: `returnableID ${id} must be of type: array`})
                 // preset values
-                data[i].forEach(val => {
-                    if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(val)) throw Error({code: 400, msg: `${val} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})
-                })
+                //data[i].forEach(val => {
+                //    if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(val)) throw new CreateItemError({code: 400, msg: `${val} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})
+                //})
             }
             // factor
             else if(['item-factor', 'obs-factor'].includes(returnableIDLookup[id].rt__type_name)) {
                 // preset values
-                if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(data[i])) throw Error({code: 400, msg: `${data[i]} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})
+                // if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(data[i])) throw new CreateItemError({code: 400, msg: `${data[i]} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})
             }
             // attribute
             else if(returnableIDLookup[id].rt__type_name === 'attribute') {
-                if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(data[i])) throw Error({code: 400, msg: `${data[i]} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})     
+                // if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(data[i])) throw new CreateItemError({code: 400, msg: `${data[i]} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})     
             }
             // other
             else {
                 let correctType = sqlToJavascriptLookup[returnableIDLookup[id].sql__type_name.toLowerCase()]
-                if(type(data[i]) !== correctType) throw Error({code: 400, msg: `returnableID ${id} must of of type: ${correctType}`})
+                if(type(data[i]) !== correctType) throw new CreateItemError({code: 400, msg: `returnableID ${id} must of of type: ${correctType}`})
             }
         } else {
-            throw Error({code: 400, msg: `returnableID ${id} is not valid for ${tableName}`})
+            throw new CreateItemError({code: 400, msg: `returnableID ${id} is not valid for ${tableName}`})
         }
     })
 }
