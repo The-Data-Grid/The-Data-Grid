@@ -18,7 +18,6 @@ export class ApiService {
 
   public getSetupTableObject(): Observable<SetupTableObject> {
     var url = API_URL + '/setup';
-    // var url = API_URL + '/audit/setup';
 
     return this.http.get<SetupTableObject>(url, {
       observe: 'response',
@@ -36,21 +35,19 @@ export class ApiService {
     // var url = API_URL + "/audit/observation/" + feature;
 
     // sink as feature and default columns are hardcoded:
-    //rn form queryurl just forms the filters part. in the future i might make it create the whole url.
+    //rn formQueryURL just forms the filters part. in the future i might make it create the whole url.
     // var url = API_URL + '/audit/observation/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161'
-    var url = API_URL + '/audit/observation/sink/' + returnableIDs.join('&') 
-      +  this.formQueryURL(defaultColumnIDs, appliedFilterSelections);
-
+    var url = API_URL + '/audit/observation/sink/' + returnableIDs.filter(s => s).join('&')
+      + this.formQueryURL(defaultColumnIDs, appliedFilterSelections);
 
     return this.http.get<TableObject>(url);
-
   }
 
   // arg returnableIDS is an array of IDS for which you want to get options
   public getDropdownOptions(returnableIDs): Observable<any> {
     // var url = API_URL + '/audit/observation/distinct';
     // var url = API_URL + '/audit/observation/distinct/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161&188';
-    var url = API_URL + '/audit/observation/distinct/sink/' + returnableIDs.join('&');
+    var url = API_URL + '/audit/observation/distinct/sink/' + returnableIDs.filter(s => s).join('&');
 
     return this.http.get<any>(url, {
       observe: 'response',
@@ -68,26 +65,26 @@ export class ApiService {
 
     //each element consists of a returnable, "=", and its user selections
     //ex: 42=Toyota, 58=red|blue
-    let filterStings = []
+    let filterStrings = []
 
     for (const [ID, input] of Object.entries(appliedFilterSelections.dropdown)) {
-      if (input) { filterStings.push(ID + "=" + input) }
+      if (input) { filterStrings.push(ID + "=" + input) }
     }
     for (const [ID, input] of Object.entries(appliedFilterSelections.numericEqual)) {
-      if (input) { filterStings.push(ID + "=" + input) }
+      if (input) { filterStrings.push(ID + "=" + input) }
     }
     for (const [ID, inputObject] of Object.entries(appliedFilterSelections.numericChoice)) {
     }
     for (const [ID, inputObject] of Object.entries(appliedFilterSelections.calendarRange)) {
     }
     for (const [ID, input] of Object.entries(appliedFilterSelections.calendarEqual)) {
-      if (input) { filterStings.push(ID + "=" + input) }
+      if (input) { filterStrings.push(ID + "=" + input) }
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableDropdown)) {
-      inputArray.forEach(option => { filterStings.push(ID + "=" + option.item_text) });
+      inputArray.forEach(option => { filterStrings.push(ID + "=" + option.item_text) });
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.checklistDropdown)) {
-      inputArray.forEach(option => { filterStings.push(ID + "=" + option.item_text) });
+      inputArray.forEach(option => { filterStrings.push(ID + "=" + option.item_text) });
     }
     for (const [ID, inputArray] of Object.entries(appliedFilterSelections.searchableChecklistDropdown)) {
       let optionStrings = [];
@@ -96,19 +93,21 @@ export class ApiService {
       });
       // if there are no options, don't add this filter's id to the URL
       if (optionStrings.length != 0) {
-        filterStings.push(ID + "=" + optionStrings.join('|'));
+        filterStrings.push(ID + "=" + optionStrings.join('|'));
       }
     }
     for (const [ID, input] of Object.entries(appliedFilterSelections.text)) {
-      if (input) { filterStings.push(ID + "=" + input) }
+      if (input) { filterStrings.push(ID + "=" + input) }
     }
     for (const [ID, input] of Object.entries(appliedFilterSelections.bool)) {
-      if (input) { filterStings.push(ID + "=" + input) }
+      if (input) { filterStrings.push(ID + "=" + input) }
     }
 
-    // console.log(columnsString + colAndFilterSeparater + filterStings.join('&'));
-    if (filterStings.length != 0) {
-      return colAndFilterSeparater + filterStings.join('&');
+    // console.log(columnsString + colAndFilterSeparater + filterStrings.join('&'));
+    if (filterStrings.length != 0) {
+      // filter to remove empty strings
+      return colAndFilterSeparater + filterStrings.filter(s => s).join('&');
+
     }
     else return "";
 

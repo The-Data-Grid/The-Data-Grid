@@ -1,303 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
- 
+
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="icon" type="image/x-icon" href="../../favicon.png" />
-   <title>Document</title>
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
-   <script src='https://kit.fontawesome.com/a076d05399.js'></script>
- 
- 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../../favicon.png" />
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+
+
 </head>
- 
+
 <body style="background-color: #FBFBFB;">
-   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
- 
-   <div id="wrapper">
-       <header>
-           <!-- green bar that oliver likes: -->
-           <!-- <div style="background-color: rgb(95, 167, 132); width: 100%; height: 1.5px;"></div> -->
-           <nav mat-tab-nav-bar>              
-               <a mat-tab-link [routerLink]="'/'" id="logo-button" routerLinkActive="activeButton"
-                   [routerLinkActiveOptions]="{exact: true}" #rla1="routerLinkActive" [active]="rla1.isActive">
-                   <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px;">
-                   <span *ngIf="currentWindowWidth >= 700"> the data grid </span>
-               </a>
-               <a mat-tab-link [routerLink]="'/audits'" routerLinkActive="activeButton"
-                   [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive">
-                   <span *ngIf="currentWindowWidth >= 700"> Data </span>
-                   <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
-               </a>
-               <!-- <app-dropdown [routerLink]="'/about'" routerLinkActive="activeButton"
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <div id="wrapper">
+        <header>
+            <nav mat-tab-nav-bar>
+                <a mat-tab-link [routerLink]="'/'" id="logo-button" routerLinkActive="activeButton"
+                    [routerLinkActiveOptions]="{exact: true}" #rla1="routerLinkActive" [active]="rla1.isActive">
+                    <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px;">
+                    <span *ngIf="currentWindowWidth >= 700"> the data grid </span>
+                </a>
+                <a mat-tab-link [routerLink]="'/audits'" routerLinkActive="activeButton"
+                    [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive">
+                    <span *ngIf="currentWindowWidth >= 700"> Data </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
+                </a>
+                <!-- <app-dropdown [routerLink]="'/about'" routerLinkActive="activeButton"
                [routerLinkActiveOptions]="{exact: true}" #rla5="routerLinkActive" [active]="rla5.isActive"></app-dropdown> -->
 
-               <!-- <app-dropdown mat-tab-link [routerLink]="'/upload-files'" id="logo-button" routerLinkActive="activeButton"
+                <!-- <app-dropdown mat-tab-link [routerLink]="'/upload-files'" id="logo-button" routerLinkActive="activeButton"
                [routerLinkActiveOptions]="{exact: true}" #rla8="routerLinkActive" [active]="rla8.isActive"></app-dropdown> -->
-               <div>
-                   <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}" #rla7="routerLinkActive"
-                   [active]="rla7.isActive" [routerLink]="'/upload-audit'">
-                   <button
-                   [matMenuTriggerFor]="menu"
-                   #menuTrigger="matMenuTrigger"
-                   (mouseenter)="openResourceMenu(0); recheckIfInMenu = true"
-                   (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false" class="upload">
-                   <span *ngIf="currentWindowWidth >= 700">Upload</span>
-                   <i *ngIf="currentWindowWidth < 700" class="fa fa-cloud-upload" style="font-size: 20px;"></i>
+                <div>
+                    <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
+                        #rla7="routerLinkActive" [active]="rla7.isActive" [routerLink]="'/upload-audit'">
+                        <button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
+                            (mouseenter)="openResourceMenu(0); recheckIfInMenu = true"
+                            (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false" class="upload">
+                            <span *ngIf="currentWindowWidth >= 700">Upload</span>
+                            <i *ngIf="currentWindowWidth < 700" class="fa fa-cloud-upload" style="font-size: 20px;"></i>
 
-                 </button>
+                        </button>
 
-                
-                 <mat-menu #menu="matMenu" [overlapTrigger]="true" class="customize" style="position: absolute;">
-                   <span
-                   (mouseenter)="recheckIfInMenu = true"
-                   (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false"
-                   >   
-                   <button mat-menu-item [routerLink]="'/upload-audit'" (mouseover)="adjustDropdownHover(4)" (mouseout)="adjustDropdownHover(4)" [ngStyle]="{'background-color': isActiveButton('/upload-files',4)}">
-                       Online Audit
-                     </button>
-                     <button mat-menu-item [routerLink]="'/download'" (mouseover)="adjustDropdownHover(5)" (mouseout)="adjustDropdownHover(5)" [ngStyle]="{'background-color': isActiveButton('/download',5)}">
-                       Offline Audit
-                     </button>
-                   </span>
-                 </mat-menu>
 
-                 <mat-menu #_menu="matMenu" [overlapTrigger]="true" class="customize" style="position: absolute;">
-                    <span
-                    (mouseenter)="recheckIfInMenu3 = true"
-                    (mouseleave)="closeResourceMenu(3); recheckIfInMenu3 = false"
-                    >   
-                    <button mat-menu-item [routerLink]="'/upload-audit'" (mouseover)="adjustDropdownHover(4)" (mouseout)="adjustDropdownHover(4)" [ngStyle]="{'background-color': isActiveButton('/upload-files',4)}">
-                        Online Audit
-                      </button>
-                      <button mat-menu-item [routerLink]="'/download'" (mouseover)="adjustDropdownHover(5)" (mouseout)="adjustDropdownHover(5)" [ngStyle]="{'background-color': isActiveButton('/download',5)}">
-                        Offline Audit
-                      </button>
-                    </span>
-                  </mat-menu> 
- 
- 
-                   </a>
-               </div>
+                        <mat-menu #menu="matMenu" [overlapTrigger]="true" class="customize" style="position: absolute;">
+                            <span (mouseenter)="recheckIfInMenu = true"
+                                (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false">
+                                <button mat-menu-item [routerLink]="'/upload-audit'"
+                                    (mouseover)="adjustDropdownHover(4)" (mouseout)="adjustDropdownHover(4)"
+                                    [ngStyle]="{'background-color': isActiveButton('/upload-files',4)}">
+                                    Online Audit
+                                </button>
+                                <button mat-menu-item [routerLink]="'/download'" (mouseover)="adjustDropdownHover(5)"
+                                    (mouseout)="adjustDropdownHover(5)"
+                                    [ngStyle]="{'background-color': isActiveButton('/download',5)}">
+                                    Offline Audit
+                                </button>
+                            </span>
+                        </mat-menu>
 
-               <a mat-tab-link routerLinkActive="activeButton"
-               [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive">
-               <span *ngIf="currentWindowWidth >= 700"> Get Involved </span>
-               <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
-           </a>
- 
-               <!-- <a mat-tab-link [routerLink]="'/upload-files'" routerLinkActive="activeButton"
+                        <mat-menu #_menu="matMenu" [overlapTrigger]="true" class="customize"
+                            style="position: absolute;">
+                            <span (mouseenter)="recheckIfInMenu3 = true"
+                                (mouseleave)="closeResourceMenu(3); recheckIfInMenu3 = false">
+                                <button mat-menu-item [routerLink]="'/upload-audit'"
+                                    (mouseover)="adjustDropdownHover(4)" (mouseout)="adjustDropdownHover(4)"
+                                    [ngStyle]="{'background-color': isActiveButton('/upload-files',4)}">
+                                    Online Audit
+                                </button>
+                                <button mat-menu-item [routerLink]="'/download'" (mouseover)="adjustDropdownHover(5)"
+                                    (mouseout)="adjustDropdownHover(5)"
+                                    [ngStyle]="{'background-color': isActiveButton('/download',5)}">
+                                    Offline Audit
+                                </button>
+                            </span>
+                        </mat-menu>
+
+
+                    </a>
+                </div>
+
+                <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
+                    #rla2="routerLinkActive" [active]="rla2.isActive">
+                    <span *ngIf="currentWindowWidth >= 700"> Get Involved </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
+                </a>
+
+                <!-- <a mat-tab-link [routerLink]="'/upload-files'" routerLinkActive="activeButton"
                [routerLinkActiveOptions]="{exact: true}" #rla8="routerLinkActive" [active]="rla8.isActive">
                <span *ngIf="currentWindowWidth >= 700"> DataCheckit </span>
                <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
            </a> -->
- 
-               <div>
-                   <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}" #rla8="routerLinkActive"
-                   [active]="rla8.isActive" [routerLink]="'/team'" style="overflow: hidden;">
-                   <button
-                   [matMenuTriggerFor]="menu_"
-                   #menuTrigger="matMenuTrigger"
-                   (mouseenter)="openResourceMenu(1); recheckIfInMenu2 = true"
-                   (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false" class="upload">
-                   <span *ngIf="currentWindowWidth >= 700"> About </span>
-                   <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
 
-                 </button>
-                
-                 <mat-menu #menu_="matMenu" [overlapTrigger]="false" class="customize">
-                   <span
-                   (mouseenter)="recheckIfInMenu2 = true"
-                   (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false"
-                   >
-                   <button mat-menu-item [routerLink]="'/team'" (mouseover)="adjustDropdownHover(0)" (mouseout)="adjustDropdownHover(0)" [ngStyle]="{'background-color': isActiveButton('/about',0)}">
-                    About
-                  </button>
-                  <button mat-menu-item [routerLink]="'/team'" (mouseover)="adjustDropdownHover(1)" (mouseout)="adjustDropdownHover(1)" [ngStyle]="{'background-color': isActiveButton('/throwaway',1)}">
-                    How it Works
-                  </button>
-                  <!-- <button mat-menu-item [routerLink]="'/team'" (mouseover)="adjustDropdownHover(2)" (mouseout)="adjustDropdownHover(2)" [ngStyle]="{'background-color': isActiveButton('/team',2)}">
+                <div>
+                    <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
+                        #rla8="routerLinkActive" [active]="rla8.isActive" [routerLink]="'/team'"
+                        style="overflow: hidden;">
+                        <button [matMenuTriggerFor]="menu_" #menuTrigger="matMenuTrigger"
+                            (mouseenter)="openResourceMenu(1); recheckIfInMenu2 = true"
+                            (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false" class="upload">
+                            <span *ngIf="currentWindowWidth >= 700"> About </span>
+                            <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
+
+                        </button>
+
+                        <mat-menu #menu_="matMenu" [overlapTrigger]="false" class="customize">
+                            <span (mouseenter)="recheckIfInMenu2 = true"
+                                (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false">
+                                <button mat-menu-item [routerLink]="'/team'" (mouseover)="adjustDropdownHover(0)"
+                                    (mouseout)="adjustDropdownHover(0)"
+                                    [ngStyle]="{'background-color': isActiveButton('/about',0)}">
+                                    About
+                                </button>
+                                <button mat-menu-item [routerLink]="'/team'" (mouseover)="adjustDropdownHover(1)"
+                                    (mouseout)="adjustDropdownHover(1)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',1)}">
+                                    How it Works
+                                </button>
+                                <!-- <button mat-menu-item [routerLink]="'/team'" (mouseover)="adjustDropdownHover(2)" (mouseout)="adjustDropdownHover(2)" [ngStyle]="{'background-color': isActiveButton('/team',2)}">
                     Team
                   </button> -->
-                  <button mat-menu-item [routerLink]="'/about'" (mouseover)="adjustDropdownHover(3)" (mouseout)="adjustDropdownHover(3)" [ngStyle]="{'background-color': isActiveButton('/throwaway2',3)}">
-                    Contact
-                  </button>
+                                <button mat-menu-item [routerLink]="'/about'" (mouseover)="adjustDropdownHover(3)"
+                                    (mouseout)="adjustDropdownHover(3)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway2',3)}">
+                                    Contact
+                                </button>
 
-                   </span>
-                 </mat-menu>
+                            </span>
+                        </mat-menu>
 
-                 <mat-menu #__menu="matMenu" [overlapTrigger]="false" class="customize">
-                    <span
-                    (mouseenter)="recheckIfInMenu3 = true"
-                    (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false"
-                    >
-                      <button [routerLink]="'/settings'" class="dropdown-btn" mat-menu-item (mouseover)="adjustDropdownHover(7)" (mouseout)="adjustDropdownHover(7)" [ngStyle]="{'background-color': isActiveButton('/throwaway',7)}">
-                        Settings
-                      </button>
-                      <button (click)="logOut()" class="dropdown-btn" mat-menu-item (mouseover)="adjustDropdownHover(8)" (mouseout)="adjustDropdownHover(8)" [ngStyle]="{'background-color': isActiveButton('/throwaway',8)}">
-                        Log Out
-                      </button>
-  
-                    </span>
-                  </mat-menu>
- 
- 
- 
-                   </a>
-               </div>
- 
-              
-               <!-- <a *ngIf="checkStorage()" mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton"
+                        <mat-menu #__menu="matMenu" [overlapTrigger]="false" class="customize">
+                            <span (mouseenter)="recheckIfInMenu3 = true"
+                                (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false">
+                                <button [routerLink]="'/settings'" class="dropdown-btn" mat-menu-item
+                                    (mouseover)="adjustDropdownHover(7)" (mouseout)="adjustDropdownHover(7)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',7)}">
+                                    Settings
+                                </button>
+                                <button (click)="logOut()" class="dropdown-btn" mat-menu-item
+                                    (mouseover)="adjustDropdownHover(8)" (mouseout)="adjustDropdownHover(8)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',8)}">
+                                    Log Out
+                                </button>
+
+                            </span>
+                        </mat-menu>
+
+
+
+                    </a>
+                </div>
+
+
+                <!-- <a *ngIf="checkStorage()" mat-tab-link [routerLink]="'/profile-page'" routerLinkActive="activeButton"
                    [routerLinkActiveOptions]="{exact: true}" #rla7="routerLinkActive" [active]="rla7.isActive">
                    <span *ngIf="currentWindowWidth >= 700"> My Profile </span>
                    <i *ngIf="currentWindowWidth < 700" class="fa fa-address-card" style="font-size: 20px;"></i>
                </a> -->
-               <span class="example-spacer"></span>
-               <a *ngIf="!checkStorage()" mat-tab-link (click)="openDialog()">
-                   <span  *ngIf="currentWindowWidth >= 700"> Log In </span>
-                   <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
-               </a>
-               <a *ngIf="checkStorage()" mat-tab-link (click)="logOut()">
-                   <button class="upload"
-                   [matMenuTriggerFor]="__menu"
-                   #menuTrigger="matMenuTrigger"
-                   (mouseenter)="openResourceMenu(2); recheckIfInMenu3 = true"
-                   (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false">
-                   <span *ngIf="currentWindowWidth >= 700" style="text-align: center; font-weight: bold;">
-                    My Account &nbsp;&nbsp; <span style="font-size: 8px;">▼</span> </span>
-                    <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>    
+                <span class="example-spacer"></span>
+                <a *ngIf="!checkStorage()" mat-tab-link (click)="openDialog()">
+                    <span *ngIf="currentWindowWidth >= 700"> Log In </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
+                </a>
+                <a *ngIf="checkStorage()" mat-tab-link (click)="logOut()">
+                    <button class="upload" [matMenuTriggerFor]="__menu" #menuTrigger="matMenuTrigger"
+                        (mouseenter)="openResourceMenu(2); recheckIfInMenu3 = true"
+                        (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false">
+                        <span *ngIf="currentWindowWidth >= 700" style="text-align: center; font-weight: bold;">
+                            My Account &nbsp;&nbsp; <span style="font-size: 8px;">▼</span> </span>
+                        <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
 
-                   </button>
-            </a>
+                    </button>
+                </a>
 
-               <!-- <a *ngIf="checkStorage()" mat-tab-link (click)="logOut()">
+                <!-- <a *ngIf="checkStorage()" mat-tab-link (click)="logOut()">
                    <span *ngIf="currentWindowWidth >= 700"> Log Out </span>
                    <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
                </a> -->
-           </nav>
-       </header>
-       <router-outlet></router-outlet>
-       <footer *ngIf="currentWindowWidth > 700" id="footer">
-           <nav>
-               <hr class="bottom_separator">
-               <div fxLayout="row" fxLayoutAlign="space-around start" class="bottom-bar">
-                   <div style="width: 25%;">
-                       <div class="bot-logo" fxLayoutAlign="center center">
-                           <img src="../../favicon.png" alt="tdg logo" style="height: 35px; width: 35px; margin:5px;">
-                           <span> the data grid </span>
-                       </div>
-                       <div fxLayoutAlign="center center">
-                           <a href="https://www.facebook.com/thedatagrid">
-                               <img src="assets/_facebook.png" alt="Facebook" class="social-button">
-                           </a>
-                           <a href="https://www.instagram.com/thedatagrid/">
-                               <img src="assets/instalogo.png" alt="Instagram" class="social-button">
-                           </a>
-                           <a href="https://www.linkedin.com/company/the-data-grid/">
-                               <img src="assets/LinkedIn.png" alt="LinkedIn" class="social-button" style="height: 41px; margin-left: 8px; margin-top: 8px;">
-                           </a>
-                       </div>
-                   </div>
-                   <div class="bottom-card">
-                       <p class="bot-text" style="font-weight: 500;">Contact us</p>
-                       <button
-                           mat-button
-                           matTooltip="Copy Email"
-                           (click)="copyEmail()"
-                           style="text-align: left;">
-                           <div>
-                               <a class="bot-text" style="vertical-align: middle; padding-right: 5px;">thedatagrid@gmail.com </a>
-                               <a>
-                                   <img src="assets/copy_icon.png" alt="Copy"
-                                   style="height: 18px; vertical-align: middle;">
-                               </a>
-                           </div>
-                       </button>
-                   </div>
-                   <div class="bottom-card">
-                       <p class="bot-text" style="font-weight: 500;">Support Us</p>
-                       <div>
-                           <a href="https://www.paypal.com">
-                               <img src="assets/donate.png" alt="Donate" style="height: 16px;">
-                           </a>
-                           <a href="https://www.paypal.com" mat-button class="bot-text" style="padding: 5px;">Donate</a>
-                       </div>                       
-                       <div>
-                           <a>
-                               <img src="assets/subscribe.png" alt="Subscribe"
-                                   style="height: 15px; width: 20px;">
-                           </a>
-                           <a mat-button class="bot-text"
-                               style="padding: 6px">Subscribe</a>
-                       </div>
-                   </div>
-                   <div class="bottom-card">
-                       <p class="bot-text" style="font-weight: 500;">Careers</p>
-                       <p class="bot-text" style="font-weight: 500;">Terms of Use</p>
-                       <p class="bot-text" style="font-weight: 500;">Privacy Policy</p>
-                   </div>
-               </div>
-           </nav>
-       </footer>
-   </div>
- 
-   <!-- Previous Bottom Bar
-       <mat-toolbar style="height: 32px; position: absolute; overflow: hidden; bottom:-25px; background-color: #FBFBFB; color: gray">
-                   <div class="ig">
-                       <a href="https://www.instagram.com">
-                           <img src="assets/_instagram_.png" alt="Instagram"
-                               style="margin-bottom: -3px; width: 20px; height: 20px;">
-                       </a>
-                       <a href="https://www.instagram.com" mat-button
-                           style="margin-bottom: 3px; font-size: 14px; padding: 6px;">Instagram</a>
-                   </div>
-                   <div class="fb">
-                       <a href="https://www.facebook.com">
-                           <img src="assets/facebook_.png" alt="Facebook"
-                               style="margin-bottom: -3px; height: 20px; width: 20px;">
-                       </a>
-                       <a href="https://www.facebook.com" mat-button
-                           style="font-size: 14px; padding: 6px;">Facebook</a>
-                   </div>
-                   <div class="sub">
-                       <a>
-                           <img src="assets/_subscribe.png" alt="Subscribe"
-                               style="margin-bottom: -2px; height: 15px; width: 20px;">
-                       </a>
-                       <a mat-button class="subscribeButton"
-                           style="font-size: 14px; padding: 6px; margin-bottom: 0px;">Subscribe</a>
-                   </div>
-                   <div class="donate">
-                       <a href="https://www.paypal.com">
-                           <img src="assets/donate_.png" alt="Donate" style="height: 20px; margin-bottom: -3px;">
-                       </a>
-                       <a href="https://www.paypal.com" mat-button style="font-size: 14px; padding: 6px;">Donate</a>
-                   </div>
-               </mat-toolbar>
-   -->
- 
-   <!-- <div *ngIf="currentWindowWidth < 700" id="wrapper">          
-     <header>
-             <nav>
-                     <mat-toolbar style="height: 30px;">
-                             <h1 style="margin-left: 35%;">THE DATA GRID</h1>
-             </mat-toolbar>
-             </nav>
-     </header>
-     <router-outlet></router-outlet>
-     <footer id="footer">
-             <nav>                        
-                     <mat-toolbar style="height: 52px">
-                             <p style="margin-left: 47%;">2020</p>
-                     </mat-toolbar>
-             </nav>    
-               
-     </footer>         
-  
-</div> -->
+            </nav>
+        </header>
+        <router-outlet></router-outlet>
+        <footer *ngIf="currentWindowWidth > 700" id="footer">
+            <nav>
+                <div fxLayout="row" fxLayoutAlign="space-around start" class="bottom-bar">
+                    <div style="width: 25%;">
+                        <div class="bot-logo" fxLayoutAlign="center center">
+                            <img src="../../favicon.png" alt="tdg logo" style="height: 35px; width: 35px; margin:5px;">
+                            <span> the data grid </span>
+                        </div>
+                        <div fxLayoutAlign="center center">
+                            <a href="https://www.facebook.com/thedatagrid">
+                                <img src="assets/_facebook.png" alt="Facebook" class="social-button">
+                            </a>
+                            <a href="https://www.instagram.com/thedatagrid/">
+                                <img src="assets/instalogo.png" alt="Instagram" class="social-button">
+                            </a>
+                            <a href="https://www.linkedin.com/company/the-data-grid/">
+                                <img src="assets/LinkedIn.png" alt="LinkedIn" class="social-button"
+                                    style="height: 41px; margin-left: 8px; margin-top: 8px;">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="bottom-card">
+                        <p class="bot-text" style="font-weight: 500;">Contact us</p>
+                        <button mat-button matTooltip="Copy Email" (click)="copyEmail()" style="text-align: left;">
+                            <div>
+                                <a class="bot-text"
+                                    style="vertical-align: middle; padding-right: 5px;">thedatagrid@gmail.com </a>
+                                <a>
+                                    <img src="assets/copy_icon.png" alt="Copy"
+                                        style="height: 18px; vertical-align: middle;">
+                                </a>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="bottom-card">
+                        <p class="bot-text" style="font-weight: 500;">Support Us</p>
+                        <div>
+                            <a href="https://www.paypal.com">
+                                <img src="assets/donate.png" alt="Donate" style="height: 16px;">
+                            </a>
+                            <a href="https://www.paypal.com" mat-button class="bot-text"
+                                style="padding: 5px;">Donate</a>
+                        </div>
+                        <div>
+                            <a>
+                                <img src="assets/subscribe.png" alt="Subscribe" style="height: 15px; width: 20px;">
+                            </a>
+                            <a mat-button class="bot-text" style="padding: 6px">Subscribe</a>
+                        </div>
+                    </div>
+                    <div class="bottom-card">
+                        <p class="bot-text" style="font-weight: 500;">Careers</p>
+                        <p class="bot-text" style="font-weight: 500;">Terms of Use</p>
+                        <p class="bot-text" style="font-weight: 500;">Privacy Policy</p>
+                    </div>
+                </div>
+            </nav>
+        </footer>
+    </div>
 </body>
- 
-</html>
 
+</html>

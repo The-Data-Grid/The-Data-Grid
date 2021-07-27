@@ -17,10 +17,10 @@ body {
 }
 
 #footer {
-   height: 27px;
+   height: 150px;
    width: 100%;
    position: absolute;
-   bottom: 25px;
+   bottom: 0px;
 }
 
 .mat-tab-nav-bar {
