@@ -9,10 +9,30 @@
 }
 
 #observations {
-    background-color: rgba(73, 73, 73, .4);
+    display: inline-block;
     width: 30%;
     height: 100%;
-    display: inline-block;
+    background-color: #9f9f9f;
+    overflow-y: scroll;
+}
+
+.observation-panel {
+    width: 100%; 
+    height:15%; 
+    border-top: 1px solid black;
+    padding-bottom: 2px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.observation-panel:hover {
+    background-color: rgb(216, 216, 216);
+}
+
+.observation-panel-blank {
+    width: 100%; 
+    height:15%; 
+    border-top: 1px solid black;
 }
 
 #querybuilder {

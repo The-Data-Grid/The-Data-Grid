@@ -1,6 +1,29 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
+    </head>      
 <div class="body">
     <div id="filterbox">
         <div id="observations">
+            <div class="observation-panel">
+                <p style="margin-left: 15%;"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;&nbsp; My Observations</p>
+            </div>
+            <div class="observation-panel-blank">
+                <p>  </p>
+            </div>
+            <div class="observation-panel">
+                <p style="margin-left: 15%;"> <i class="fa fa-sitemap" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;&nbsp; My Organization's Observations</p>
+            </div>
+
+            <div class="observation-panel">
+                <p style="margin-left: 15%;"> <i class="fa fa-bath" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;&nbsp; My Organization's Audits</p>
+            </div>
+
+            <div class="observation-panel" style="border-bottom: 1px solid black;">
+                <p style="margin-left: 15%;"><i class="fa fa-user" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;&nbsp; My Audits</p>
+            </div>
+
 
         </div>
         <div id="querybuilder">
@@ -49,7 +72,6 @@
                 <button id="apply-button" mat-button (click)="applyFilters()">APPLY</button>
             </div>
         </div>
-
     </div>
 
     <div id="main-content">
@@ -151,3 +173,4 @@
         </ngx-datatable>
     </div>
 </div>
+</html>
