@@ -1,24 +1,23 @@
 #body {
-    position: absolute;
-    left: 0;
-    right: 0;
+    /* position: absolute; */
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
     top: 50px;
     bottom: 30px;
 }
 
 #table-buttons {
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 70%;
+    margin: 10px;
 }
 
-#table {
-    margin-bottom: 40px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-    width: 70%;
+#select-button {
+    background-color: rgba(223, 223, 223, 0.47);
+    margin-right: 10px;
+}
+
+.mat-table {
+    margin-top: 20px;
 }
 
 .mat-column-uploadStatus {
