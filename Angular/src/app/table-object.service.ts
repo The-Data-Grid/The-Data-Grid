@@ -22,54 +22,54 @@ export class TableObjectService {
     private setupObjectService: SetupObjectService
   ) { }
 
-
   /* ////////////////////////////////////
      getRows(setupObject, tableObject, dataTableColumns)
 
-     params: setupObject, tableObject, dataTableColumns
+     params: setupObject, 
+            tableObject, 
+            dataTableColumns: initially empty array, this function fills it with 
+                              objects, each object containing info related to one column
 
-     returns: rows
+     returns: an array of objects in which each object is a row
   */////////////////////////////////////////
   getRows(setupObject, tableObject, dataTableColumns) {
     let rows = []
     let datatypes = setupObject.datatypes;
     let newRow = {};
 
-    // map returnable ID to columns
+    // Map returnable ID to columns
     let returnableIDToColumnIndex = this.getReturnableIDToColumnIndex(setupObject, tableObject);
     let returnableIDToItemPathArrays = this.getReturnableIDToItemPaths(setupObject, tableObject);
 
-    // construct the column header arrays
+    // Construct the column header arrays
     tableObject.returnableIDs.forEach(returnableID => {
       let columnIndex = returnableIDToColumnIndex[returnableID];
       let curColumn = setupObject.columns[columnIndex];
       let itemPath = returnableIDToItemPathArrays[returnableID].join(">");
 
       // let itemName be the last element of itemPath
-      //get column desc
+      // get column desc
       if (curColumn.default) {
         dataTableColumns.push({
           name: curColumn.frontendName,
-          type: datatypes[curColumn.datatype],
-          // index: columnIndex,
+          type: datatypes[curColumn.datatypeKey],
           returnableID: returnableID,
           itemPath: itemPath,
           displayMetaInfo: false
         });
       }
-
     });
 
-    //add rows to the table one by one
+    // Add rows to the table one by one
     tableObject.rowData.forEach((element, k) => {
-      // console.log("hangling data for row " + k)
+      // console.log("handling data for row " + k)
       newRow = {}
       newRow["_hyperlinks"] = {};
 
       // fill out the row object
       tableObject.returnableIDs.forEach((returnableID, i) => {
         let columnIndex = returnableIDToColumnIndex[returnableID];
-        let datatype = datatypes[setupObject.columns[columnIndex].datatype];
+        let datatype = datatypes[setupObject.columns[columnIndex].datatypeKey];
 
         switch (datatype) {
           case "string": {
@@ -94,12 +94,11 @@ export class TableObjectService {
           }
         }
       });
+
       rows.push(newRow);
     });
     return rows;
   }
-
-
 
   getReturnableIDToItemPaths(setupObject, tableObject) {
     let returnableIDToItemPathArrays = {};
@@ -151,9 +150,6 @@ export class TableObjectService {
     return partialPath;
   }
 
-
-
-
   getReturnableIDToColumnIndex(setupObject, tableObject) {
     let returnableIDToColumnIndex = {};
     tableObject.returnableIDs.forEach(returnableID => {
@@ -204,9 +200,4 @@ export class TableObjectService {
       return this.getColumnIndexFromItem(itemChildNodePointer.index, treeID, setupObject)
     }
   }
-
-
-
-
-
 }

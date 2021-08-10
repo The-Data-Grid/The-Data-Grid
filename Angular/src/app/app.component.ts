@@ -36,6 +36,7 @@ export class AppComponent implements OnInit {
   currentWindowWidth;
   recheckIfInMenu: boolean;
   recheckIfInMenu2: boolean;
+  recheckIfInMenu3:boolean;
 
 
   openResourceMenu(index:number) {
@@ -49,8 +50,15 @@ export class AppComponent implements OnInit {
           this.trigger.toArray()[index].closeMenu();
         }
       }
-      else {
+
+      else if (index == 0) {
         if (this.recheckIfInMenu === false) {
+          this.trigger.toArray()[index].closeMenu();
+        }  
+
+      }
+      else {
+        if (this.recheckIfInMenu3 === false) {
           this.trigger.toArray()[index].closeMenu();
         }  
       }
@@ -74,7 +82,7 @@ export class AppComponent implements OnInit {
   // mat-nav bars aren't really designed for dropdowns, so customizing dropdown styles is a bit convoluted. Each index in the dropdownsHovered
   // array corresponds to a dropdown button (eg 0 index corresponds to mission, 1 to How It Works, etc)
 
-  dropdownsHovered:Array<boolean> = [false,false,false,false,false,false];
+  dropdownsHovered:Array<boolean> = [false,false,false,false,false,false,false,false];
 
   adjustDropdownHover(index:number) {
     this.dropdownsHovered[index] = !this.dropdownsHovered[index];
@@ -105,12 +113,12 @@ export class AppComponent implements OnInit {
   
 
   logOut() {
+    // localStorage.removeItem("userEmail");
     this.apiService.signOut()
       .subscribe((res) => {
         localStorage.removeItem("userEmail");
         console.log("signed out!")
       })
-    // console.log("loggin out!")
   }
 
   openDialog() {

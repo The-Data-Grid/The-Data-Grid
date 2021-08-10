@@ -8,8 +8,6 @@ import { AppliedFilterSelections } from '../models'
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
 import { SetupObject, TableObject } from '../responses'
-// import { TableObject } from '../responses';
-// import { SetupObject} from '../setupObjectTry1';
 import { environment } from '../../environments/environment';
 const USE_FAKE_DATA = environment.useFakeData;
 
@@ -20,9 +18,9 @@ const USE_FAKE_DATA = environment.useFakeData;
 })
 
 export class AuditsComponent implements OnInit {
-  // variables for table 
+  // Variables for table 
   dataTableColumns = [];
-  rows = [];
+  tableRows = [];
   tableObject;
   currentlyEditingCell = {};
   cellEdited = {};
@@ -31,10 +29,10 @@ export class AuditsComponent implements OnInit {
   oldCellEdited = {};
   page = "AuditsPage"
 
-  // variables for filtering sidebar
+  // Variables for filtering 
   filterBy = "Feature";
   setupObject;
-  defaultColumnIDs = []; //default denotes which return columns are to be included in queries by default
+  defaultColumnIDs = []; // Default denotes which columns are to be included in queries by default
   globalReturnableIDs = [];
   featureReturnableIDs = [];
   rootFeatures = [];
@@ -60,8 +58,7 @@ export class AuditsComponent implements OnInit {
     placeholder: "hello"
   };
 
-  // the following variables are for multiselect dropdowns:
-  // dropdownList = FakeData;
+  // Variables for multiselect dropdowns:
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
@@ -76,7 +73,6 @@ export class AuditsComponent implements OnInit {
     this.getSetupObject();
   }
 
-
   getSetupObject() {
     if (USE_FAKE_DATA) {
       console.log("using data from responses.ts")
@@ -88,7 +84,7 @@ export class AuditsComponent implements OnInit {
         console.log("using data from express server")
         this.setupObject = res;
         this.parseSetupObject();
-         console.log("setupObject:");
+        console.log("setupObject:");
         console.log(this.setupObject)
       });
     }
@@ -118,10 +114,10 @@ export class AuditsComponent implements OnInit {
 
     // console.log("global selectors:");
     // console.log(this.globalSelectors);
-    console.log("feature selectors:");
-    console.log(this.featureSelectors);
-    console.log("applied filter selections:");
-    console.log(this.appliedFilterSelections);
+    // console.log("feature selectors:");
+    // console.log(this.featureSelectors);
+    // console.log("applied filter selections:");
+    // console.log(this.appliedFilterSelections);
     // console.log("defaultColumnIDs:");
     // console.log(this.defaultColumnIDs);
     // console.log("featuresToChildren:");
@@ -135,13 +131,15 @@ export class AuditsComponent implements OnInit {
     this.dataTableColumns = [];
     if (USE_FAKE_DATA) {
       this.tableObject = TableObject;
-      this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
+      this.tableRows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
     }
     else {
       this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections, this.globalReturnableIDs.concat(this.featureReturnableIDs)).subscribe((res) => {
         this.tableObject = res;
         console.log(this.tableObject)
-        this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
+        this.tableRows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
+  console.log(this.tableRows)
+  console.log(this.dataTableColumns)
       });
     }
   }
@@ -158,11 +156,11 @@ export class AuditsComponent implements OnInit {
     this.oldRowInfo.push({
       rowIndex: rowIndex,
       columnName: columnName,
-      previousValue: this.rows[rowIndex][columnName]
+      previousValue: this.tableRows[rowIndex][columnName]
     });
     this.cellEdited[rowIndex + columnName] = true;
-    this.rows[rowIndex][columnName] = event.target.value;
-    console.log('UPDATED!', this.rows[rowIndex][columnName]);
+    this.tableRows[rowIndex][columnName] = event.target.value;
+    console.log('UPDATED!', this.tableRows[rowIndex][columnName]);
   }
 
   toggleEditingCell(rowIndex, columnName) {
@@ -194,8 +192,8 @@ export class AuditsComponent implements OnInit {
     this.toggleEditingMode();
     // restore cellEdited object and row info to previous state
     this.oldRowInfo.forEach(obj => {
-      this.rows[obj.rowIndex][obj.columnName] = obj.previousValue;
-      this.rows = [...this.rows];
+      this.tableRows[obj.rowIndex][obj.columnName] = obj.previousValue;
+      this.tableRows = [...this.tableRows];
     });
     this.cellEdited = Object.assign({}, this.oldCellEdited);
     console.log(this.oldCellEdited);
@@ -214,10 +212,9 @@ export class AuditsComponent implements OnInit {
     console.log(this.featureReturnableIDs)
   }
 
-
   applyDateFilter = (val: string) => {
     val = this.datepipe.transform(val, 'MM-dd-yyyy');
-    // this.rows = this.filteredData.filter(function (item) {
+    // this.tableRows = this.filteredData.filter(function (item) {
     //   if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
     //     return true;
     //   }
@@ -231,5 +228,4 @@ export class AuditsComponent implements OnInit {
   onSelectAll(items: any) {
     // console.log(items);
   }
-
 }

@@ -22,7 +22,8 @@ struct settingsView: View {
     @State private var autoSync = UserDefaults.standard.bool(forKey: "async")
     
     private var name = UserDefaults.standard.string(forKey: "username")
-    
+
+   
     var body: some View {
         VStack(alignment: .leading) {
             Text("Settings").font(.largeTitle).padding()
@@ -52,15 +53,14 @@ struct settingsView: View {
                             Text("Name")
                             Divider()
                         }
-                    }
-    */
+                    } */
+                
                     DisclosureGroup("Photos and Videos", isExpanded: $showPVSettings) {
                         Toggle("Sync photos", isOn: $photoSync).toggleStyle(CheckboxToggleStyle())
                     }.accentColor(Color.black)
                     
                     Toggle("Auto-Sync", isOn: $autoSync)
                         .toggleStyle(CheckboxToggleStyle())
-                     
             }
             .background(Color.white)
             Text("Terms").padding(.leading)

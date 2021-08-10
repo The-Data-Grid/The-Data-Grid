@@ -33,7 +33,7 @@ export class SetupObjectService {
   */////////////////////////////////////////
   getRootFeatures(setupObject) {
     let rootFeatures = []
-    for (let j = 0; j < setupObject.subfeatureStartIndex; j++) {
+    for (let j = 0; j < setupObject.features.length; j++) {
       rootFeatures.push({
         name: setupObject.features[setupObject.children[IDX_OF_FEATURES_ARR][j]].frontendName,
         index: j
