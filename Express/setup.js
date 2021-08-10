@@ -32,7 +32,6 @@ const metadataItemColums = syncdb.querySync('select * from metadata_item_columns
 const itemColumnObject = {};
 metadataItemColums.forEach(item => {
     itemColumnObject[item.i__table_name] = {...item};
-
     itemColumnObject[item.i__table_name].isItem = item.r__type_name.map(type => referenceTypes.item.includes(type));
     itemColumnObject[item.i__table_name].isObservation = item.r__type_name.map(type => referenceTypes.observation.includes(type));
 });

@@ -25,7 +25,7 @@ class CreateItemError extends Error {
       this.code = errObject.code
       this.msg = errObject.msg
     }
-  }
+}
 
 /****************************
     Request Object Definition
@@ -93,7 +93,7 @@ module.exports = createItem
  * @param {Object} options
  * @param {Array.<createItemObject>} options.createItemObjectArray
  * @param {Object} options.transaction database transaction
- * @returns {Array.<Number[]>} insertedItemPrimaryKeyLookup
+ * @returns {Number[]} insertedItemPrimaryKeyLookup
  * @throws {{err: Number, msg: String}} HTTP error code and message
  * 
  * Steps:
@@ -241,7 +241,6 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', db),
         'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor-mutable', db),
         'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', db),
-        'item-location-mutable': externalColumnInsertGenerator('location_id', true, 'item-location-mutable', db),
         'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', db),
         'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', db),
         'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list-mutable', db)
@@ -384,188 +383,10 @@ function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, 
     return fullInsertSQL;
 }
 
-/**
- * Composes an external column insertion function
- * @param {String} primaryKeyColumnName 
- * @param {Boolean} isMutable 
- * @param {String} referenceType 
- * @param {Object} db 
- */
-function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenceType, db) {
-    /**
-     * @param {String} tableName 
-     * @param {String} columnName 
-     * @param {String|Number|Date|Object|Boolean|Array} data 
-     * @returns {<{columnName: String, primaryKey: Number | Array.<Number>}>}
-     * // Array of values if list reference type
-     */
-    return async (tableName, columnName, data) => {
-        let primaryKey;
-        const foreignKeyColumnName = tableName + '_id';
-        // List Handling
-        if(referenceType === 'item-list') {
-            // check to see if all values are valid
-            try {
-                primaryKey = await db.many(formatSQL(`
-                    select list_id
-                    from $(tableName:name)
-                    WHERE $(columnName:name) = ANY ($(data:array))
-                `, {
-                    tableName,
-                    columnName,
-                    data,
-                }));
-                
-            } catch(err) {
-                throw new CreateItemError({code: 500, msg: `Error when getting current list values from ${tableName}`});
-            }
-            // if there are new values
-            if(primaryKey.length != data.length) {
-                const newValues = data.length.filter(value => !primaryKey.includes(value));
-                if(!isMutable) {
-                    throw new CreateItemError({code: 400, msg: `Value(s) ${newValues} from list input ${data.length} are not valid for the column ${columnName} and table ${tableName}`})
-                } else {
-                    // insert new values
-                    let newPrimaryKeys = [];
-                    try {
-                        for(let value of newValues) {
-                            // Now insert
-                            const newKey = (await db.one(formatSQL(`
-                                INSERT INTO $(tableName:name) 
-                                    ($(columnName:name))
-                                    VALUES
-                                    ($(value))
-                                        RETURNING $(primaryKeyColumnName:name)
-                            `, {
-                                tableName,
-                                columnName,
-                                value,
-                                primaryKeyColumnName
-                            })))[primaryKeyColumnName];
-                            newPrimaryKeys.push(newKey);
-                        }
-                        primaryKey = [...primaryKey, ...newPrimaryKeys];
-                    } catch(err) {
-                        throw new CreateItemError({code: 500, msg: `Error when inserting ${newValues} into ${tableName}`})
-                    }
-                }
-            }
-        // Factor, Attribute, Location handling
-        } 
-        else if(referenceType == 'item-location') {
-            // Now insert
-            try {
-                primaryKey = (await db.one(formatSQL(`
-                    INSERT INTO $(tableName:name) 
-                        ($(columnName:name))
-                        VALUES
-                        (ST_GeomFromGeoJSON($(data)))
-                            RETURNING $(primaryKeyColumnName:name)
-                `, {
-                    tableName,
-                    columnName,
-                    data,
-                    primaryKeyColumnName
-                })))[primaryKeyColumnName];
-            } catch(err) {
-                throw new CreateItemError({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
-            }
 
-            return {
-                // Foreign key column name and value inside the item_... table
-                columnName: foreignKeyColumnName,
-                columnValue: primaryKey
-            };
-            
-        } else {
-            let dataValue = formatSQL('$(data)', {
-                data
-            });
-            try {
-                // note db.many here, we are deciding not to throw
-                // if more than one record is returned with the
-                // value. This is to prevent upload from breaking
-                // if duplicates are found in list, attribute, location,
-                // or factor tables
-                primaryKey = (await db.many(formatSQL(`
-                    SELECT $(primaryKeyColumnName:name)
-                    FROM $(tableName:name)
-                    WHERE $(columnName:name) = $(dataValue:raw)
-                `, {
-                    tableName,
-                    columnName,
-                    dataValue,
-                    primaryKeyColumnName
-                })))[0][primaryKeyColumnName];
 
-            } catch(err) {
-                if(!isMutable) {
-                    const validValues = (await db.any(formatSQL(`
-                        SELECT $(columnName:name)::json
-                        FROM $(tableName:name)
-                    `, {
-                        tableName,
-                        columnName
-                    }))).map(v => v[columnName]).join(', ');
-                    throw new CreateItemError({code: 400, msg: `The value ${data} is not one of the valid values (${validValues}) for ${tableName}`});
-                }
 
-                // Now insert
-                try {
-                    primaryKey = (await db.one(formatSQL(`
-                        INSERT INTO $(tableName:name) 
-                            ($(columnName:name))
-                            VALUES
-                            ($(data))
-                                RETURNING $(primaryKeyColumnName:name)
-                    `, {
-                        tableName,
-                        columnName,
-                        data,
-                        primaryKeyColumnName
-                    })))[primaryKeyColumnName];
-                } catch(err) {
-                    throw new CreateItemError({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
-                }
-            }
-                
-        }
-        return {
-            // Foreign key column name and value inside the item_... table
-            columnName: foreignKeyColumnName,
-            columnValue: primaryKey
-        };
-    };
-}
 
-/**
- * Insert item_id and list_id into a m2m table
- * @param {Number} primaryKeyOfInsertedValue 
- * @param {Number} itemPrimaryKey 
- * @param {String} listTableName 
- * @param {Object} db 
- */
-async function insertManyToMany(primaryKeyOfInsertedValue, itemPrimaryKey, listTableName, db) {
-    const manyToManyTableName = 'm2m_' + listTableName;
-    if(type(primaryKeyOfInsertedValue) !== 'array') {
-        primaryKeyOfInsertedValue = [primaryKeyOfInsertedValue];
-    }
-    for(let key of primaryKeyOfInsertedValue) {
-        try {
-            await db.none(formatSQL(`INSERT INTO $(manyToManyTableName:name) 
-                (list_id, item_id)
-                VALUES
-                ($(primaryKeyOfInsertedValue), $(itemPrimaryKey))
-            `, {
-                manyToManyTableName,
-                primaryKeyOfInsertedValue: key,
-                itemPrimaryKey
-            }));        
-        } catch(err) {
-            throw new CreateItemError({code: 500, msg: `Error when inserting key ${key} and ${itemPrimaryKey} into ${manyToManyTableName}`});
-        }
-    }
-}
 
 /**
  * Validate the required items are correct. Throws an error if not
@@ -595,15 +416,16 @@ function validateRequiredItems(requiredItemTableNames, tableName) {
 }
 
 
-
-////////////////////////// Pretty sure I can remove the preset stuff because it's handled during insertion!
+function validateDataColumnsGenerator(isObservation) {
+    
+}
 /**
  * Validate data types and preset values of data fields. Throws an error if not
  * @param {createItemObject.data} dataObject
  * @param {string} tableName
  * @returns {undefined} 
  */
-function validateDataColumns(dataObject, tableName) {
+function validateDataColumns(dataObject, tableName, ErrorClass) {
     const {returnableIDs, data} = dataObject
     const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
     // Get all of the columns needed to insert the item
@@ -614,49 +436,41 @@ function validateDataColumns(dataObject, tableName) {
         isItem: itemColumns.isItem[i],
         isObservation: itemColumns.isObservation[i]
     }));
+
     const relevantColumnObjects = itemColumns.filter(col => col.isItem)
 
     const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID)
 
     // make sure all non nullable fields are included
     const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
-    if(!nonNullableColumnIDs.every(id => columnIDs.includes(id))) throw new CreateItemError({code: 400, msg: `Must include columnIDs ${nonNullableColumnIDs} and only included ${columnIDs} for ${tableName}`})
+    if(!nonNullableColumnIDs.every(id => columnIDs.includes(id))) throw new ErrorClass({code: 400, msg: `Must include columnIDs ${nonNullableColumnIDs} and only included ${columnIDs} for ${tableName}`})
     
     // handle generated columns
     // handle Auditor Name
 
     
-    // check each field
+    // check type of each field
     returnableIDs.forEach((returnableID, i) => {
         // convert id to returnableID
-
         id = returnableIDLookup[returnableID].columnID
         // is it one of the data columns?
         if(relevantColumnIDs.includes(id)) {
-            // list
+            // get correct type
+            let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType.toLowerCase()]
+            // make sure it's an array
             if(['item-list', 'obs-list'].includes(returnableIDLookup[id].rt__type_name)) {
-                if(type(data[i]) !== 'array') throw new CreateItemError({code: 400, msg: `returnableID ${id} must be of type: array`})
-                // preset values
-                //data[i].forEach(val => {
-                //    if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(val)) throw new CreateItemError({code: 400, msg: `${val} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})
-                //})
+                if(type(data[i]) !== 'array') throw new ErrorClass({code: 400, msg: `returnableID ${id} must be of type: array`})
+                // check type for every value
+                data[i].forEach((listElement, i) => {
+                    if(type(element) !== correctType) throw new ErrorClass({code: 400, msg: `Element ${listElement} (index: ${i}) of returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
+                });
             }
-            // factor
-            else if(['item-factor', 'obs-factor'].includes(returnableIDLookup[id].referenceType)) {
-                // preset values
-                // if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(data[i])) throw new CreateItemError({code: 400, msg: `${data[i]} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})
-            }
-            // attribute
-            else if(returnableIDLookup[id].referenceType === 'attribute') {
-                // if(!dataColumnPresetLookup[returnableIDLookup[id].c__column_id].includes(data[i])) throw new CreateItemError({code: 400, msg: `${data[i]} is not a valid value for ${returnableIDLookup[id].c__frontend_name} of ${tableName}`})     
-            }
-            // other
+            // check type for others
             else {
-                let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType.toLowerCase()]
-                if(type(data[i]) !== correctType) throw new CreateItemError({code: 400, msg: `returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
+                if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
             }
         } else {
-            throw new CreateItemError({code: 400, msg: `returnableID ${returnableID} of columnID ${id} is not valid for ${tableName}`})
+            throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${id} is not valid for ${tableName}`})
         }
     })
 }
