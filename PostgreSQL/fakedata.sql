@@ -96,11 +96,12 @@ INSERT INTO item_building
 "data_building_name",
 "item_entity_id",
 "global_id",
+"is_existing",
 "location_region_id")
 VALUES
-    (default, 'Powell Library', 1, 1, 1),
-    (default, 'Young Research Library', 1, 1, 2),
-    (default, 'Boelter Hall', 1, 2, 3);
+    (default, 'Powell Library', 1, 1, true, 1),
+    (default, 'Young Research Library', 1, 1, true, 2),
+    (default, 'Boelter Hall', 1, 2, true, 3);
 
 INSERT INTO item_room 
 ("item_id",

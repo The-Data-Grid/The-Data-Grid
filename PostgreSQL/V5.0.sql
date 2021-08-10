@@ -53,6 +53,7 @@ CREATE TABLE item_building (
 	data_building_name TEXT NOT NULL,
     item_entity_id INTEGER NOT NULL, --fk **    
     location_region_id INTEGER NOT NULL, --fk **
+    is_existing BOOLEAN NOT NULL,
     global_id INTEGER NOT NULL REFERENCES item_global, --fk ** (NOTE: Not in metadata because should not be included in the item requirement tree)
     UNIQUE(data_building_name, item_entity_id)
 );
