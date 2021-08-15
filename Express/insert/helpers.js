@@ -1,6 +1,81 @@
 /**
  * Insertion helper functions
  */
+const {
+    observationHistory,
+    itemHistory
+} = require('../setup.js');
+
+const {postgresClient} = require('../db/pg.js');
+const formatSQL = postgresClient.format;
+
+class CreateItemError extends Error {
+    constructor(errObject, ...params) {
+      // Pass remaining arguments (including vendor specific ones) to parent constructor
+      super(...params)
+  
+      // Maintains proper stack trace for where our error was thrown (only available on V8)
+      if (Error.captureStackTrace) {
+        Error.captureStackTrace(this, CreateItemError)
+      }
+  
+      this.name = 'CreateItemError'
+      // Custom debugging information
+      this.code = errObject.code
+      this.msg = errObject.msg
+    }
+}
+
+class CreateObservationError extends Error {
+    constructor(errObject, ...params) {
+        // Pass remaining arguments (including vendor specific ones) to parent constructor
+        super(...params)
+    
+        // Maintains proper stack trace for where our error was thrown (only available on V8)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, CreateItemError);
+        }
+    
+        this.name = 'CreateItemError';
+        // Custom debugging information
+        this.code = errObject.code;
+        this.msg = errObject.msg;
+    }
+}
+
+class DeleteObservationError extends Error {
+    constructor(errObject, ...params) {
+        // Pass remaining arguments (including vendor specific ones) to parent constructor
+        super(...params)
+    
+        // Maintains proper stack trace for where our error was thrown (only available on V8)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, CreateItemError);
+        }
+    
+        this.name = 'DeleteObservationError';
+        // Custom debugging information
+        this.code = errObject.code;
+        this.msg = errObject.msg;
+    }
+}
+
+class DeleteItemError extends Error {
+    constructor(errObject, ...params) {
+        // Pass remaining arguments (including vendor specific ones) to parent constructor
+        super(...params)
+    
+        // Maintains proper stack trace for where our error was thrown (only available on V8)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, CreateItemError);
+        }
+    
+        this.name = 'DeleteItemError';
+        // Custom debugging information
+        this.code = errObject.code;
+        this.msg = errObject.msg;
+    }
+}
 
 /**
  * Composes a many to many table insertion function
@@ -55,8 +130,8 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
      * @param {String} tableName 
      * @param {String} columnName 
      * @param {String|Number|Date|Object|Boolean|Array} data 
-     * @returns {<{columnName: String, primaryKey: Number | Array.<Number>}>}
-     * // Array of values if list reference type
+     * @returns {<{columnName: String, primaryKey: Number | Number[]}>}
+     * // Array of primary keys if list reference type
      */
     return async (tableName, columnName, data) => {
         let primaryKey;
@@ -109,9 +184,9 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                     }
                 }
             }
-        // Factor, Attribute, Location handling
+        // Location handling
         } 
-        else if(referenceType == 'item-location' || referenceType == 'obs-location') {
+        else if(referenceType == 'item-location') {
             // Now insert
             try {
                 primaryKey = (await db.one(formatSQL(`
@@ -127,6 +202,8 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                     primaryKeyColumnName
                 })))[primaryKeyColumnName];
             } catch(err) {
+                // This can probably be a 400 because this should only throw when the
+                // geojson isn't valid
                 throw new CreateItemError({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
             }
 
@@ -136,7 +213,9 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                 columnValue: primaryKey
             };
             
-        } else {
+        } 
+        // Factor, Attribute handling
+        else {
             let dataValue = formatSQL('$(data)', {
                 data
             });
@@ -198,9 +277,109 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
 }
 
 
+const sqlToJavascriptLookup = {
+    numeric: 'number',
+    integer: 'number',
+    timestamptz: 'date',
+    boolean: 'boolean',
+    json: 'object',
+    point: 'object',
+    linestring: 'object',
+    polygon: 'object',
+    text: 'string'
+};
+function validateDataColumnsGenerator(isObservation, ErrorClass) {
+    /**
+     * Validate data types and preset values of data fields. Throws an error if not
+     * @param {createItemObject.data} dataObject
+     * @param {string} tableName
+     * @returns {undefined} 
+     */
+    return function validateDataColumns(dataObject, tableName) {
+        const {returnableIDs, data} = dataObject
+        const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
+        // Get all of the columns needed to insert the item
+        let itemColumns = itemColumnObject[tableName];
+        itemColumns = itemColumns['c__column_id'].map((id, i) => ({
+            columnID: id,
+            isNullable: itemColumns['c__is_nullable'][i],
+            isItem: itemColumns.isItem[i],
+            isObservation: itemColumns.isObservation[i]
+        }));
+
+        let relevantColumnObjects;
+        if(isObservation) {
+            relevantColumnObjects = itemColumns.filter(col => col.isObservation);
+        } else {
+            relevantColumnObjects = itemColumns.filter(col => col.isItem);
+        }
+
+        const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID);
+
+        // make sure all non nullable fields are included
+        const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
+
+        if(!nonNullableColumnIDs.every(id => columnIDs.includes(id))) throw new ErrorClass({code: 400, msg: `Must include columnIDs ${nonNullableColumnIDs} and only included ${columnIDs} for ${tableName}`});
+        
+        // check type of each field
+        returnableIDs.forEach((returnableID, i) => {
+            // convert id to returnableID
+            id = returnableIDLookup[returnableID].columnID
+            // is it one of the data columns?
+            if(relevantColumnIDs.includes(id)) {
+                // get correct type
+                let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType.toLowerCase()]
+                // make sure it's an array if list reference type
+                if(['item-list', 'obs-list'].includes(returnableIDLookup[id].rt__type_name)) {
+                    if(type(data[i]) !== 'array') throw new ErrorClass({code: 400, msg: `returnableID ${id} must be of type: array`})
+                    // check type for every value
+                    data[i].forEach((listElement, i) => {
+                        if(type(element) !== correctType) throw new ErrorClass({code: 400, msg: `Element ${listElement} (index: ${i}) of returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
+                    });
+                }
+                // check type for others
+                else {
+                    if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
+                }
+            } else {
+                throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${id} is not valid for ${tableName}`})
+            }
+        })
+    }
+}
+
+function insertHistoryGenerator(isObservation) {
+    const historyLookup = isObservation ? observationHistory : itemHistory;
+    const foreignKeyColumnName = isObservation ? 'observation_id' : 'item_id';
+
+    return async function insertHistory(baseTableName, historyType, primaryKey) {
+        const historyTableName = 'history_' + baseTableName;
+        const typeID = historyLookup[historyType];
+
+        await db.none(formatSQL(`
+            insert into $(baseTableName:name)
+            (type_id, $(foreignKeyColumnName:raw), time_submitted)
+            values
+            ($(typeID), $(primaryKey), NOW())
+        `, {
+            baseTableName,
+            typeID,
+            primaryKey,
+            foreignKeyColumnName
+        }))
+    }
+}
 
 module.exports = {
     insertItemManyToMany: insertManyToManyGenerator(false),
     insertObservationManyToMany: insertManyToManyGenerator(true),
-    externalColumnInsertGenerator
+    externalColumnInsertGenerator,
+    validateItemDataColumns: validateDataColumnsGenerator(true, CreateObservationError),
+    validateObservationDataColumns: validateDataColumnsGenerator(false, CreateItemError),
+    CreateItemError,
+    CreateObservationError,
+    DeleteObservationError,
+    DeleteItemError,
+    insertItemHistory: insertHistoryGenerator(false),
+    insertObservationHistory: insertHistoryGenerator(true)
 };

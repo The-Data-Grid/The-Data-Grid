@@ -203,7 +203,6 @@ const login = {
     secret : 'SELECT secret_token FROM item_user WHERE data_email = $(checkemail)'
     };   
 
-
 const addingUsers = {
 insertingUsers: `INSERT INTO item_user (item_id, item_organization_id, data_first_name, data_last_name, 
     data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser, secret_token, is_pending) 

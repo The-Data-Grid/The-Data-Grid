@@ -4,6 +4,7 @@ const {postgresClient} = require('../db/pg.js');
 const db = postgresClient.getConnection.db
 // individual object handlers
 const createItem = require('./item/createItem.js');
+const { clearCache } = require('../query/cacheLayer.js');
 
 
 /**
@@ -24,7 +25,7 @@ const createItem = require('./item/createItem.js');
  * Creates/Updates/Deletes items and/or observations from the database
  * @param {submissionObject} submissionObject 
  */
-async function insertSubmission(submissionObject) {
+async function insertSubmission(submissionObject, sessionObject) {
 
     const createItemObjectArray = submissionObject.items.create
     const updateItemObjectArray = submissionObject.items.update
@@ -45,48 +46,55 @@ async function insertSubmission(submissionObject) {
         /*
         await updateItem({
             updateItemObjectArray,
-            transaction
+            transaction,
+            sessionObject
         })
+        */
         
         await deleteItem({
             deleteItemObjectArray,
             requestPermanentDeletionItemObjectArray,
-            transaction
+            transaction,
+            sessionObject
         })
 
+        /*
         await updateObservation({
             updateObservationObjectArray,
-            transaction
+            transaction,
+            sessionObject
         })
+        */
 
         await deleteObservation({
             deleteObservationObjectArray,
-            transaction
+            transaction,
+            sessionObject
         })
 
-        */
+        
         const insertedItemPrimaryKeyLookup = await createItem({
             createItemObjectArray,
-            transaction
+            transaction,
+            sessionObject
         })
 
         
         await createObservation({
             createObservationObjectArray,
             insertedItemPrimaryKeyLookup,
-            transaction
+            transaction,
+            sessionObject
         })
         
-
         // clear the query cacheLayer
-        // update dataColumnPresetLookup
-
+        clearCache();
     })
 }
 
 async function insertSubmissionHandler(req, res, next) {
     try {
-        await insertSubmission(req.body);
+        await insertSubmission(req.body, req.session);
         return res.status(201).end();
     } catch(err) {
         console.log("ERROR: ", err)

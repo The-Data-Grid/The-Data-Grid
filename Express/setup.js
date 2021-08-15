@@ -29,6 +29,16 @@ const referenceTypes = {
 }
 
 const metadataItemColums = syncdb.querySync('select * from metadata_item_columns');
+let observationHistory;
+syncdb.querySync('select * from observation_history_type').forEach(el => observationHistory[el.type_name] = el.type_id);
+let itemHistory;
+syncdb.querySync('select * from item_history_type').forEach(el => itemHistory[el.type_name] = el.type_id);
+let observationItemTableNameLookup
+let itemObservationTableNameLookup
+syncdb.querySync('select * from observation_item_table_name_lookup').forEach(el => {
+    observationItemTableNameLookup[el.observation] = el.item;
+    itemObservationTableNameLookup[el.item] = el.observation;
+});
 const itemColumnObject = {};
 metadataItemColums.forEach(item => {
     itemColumnObject[item.i__table_name] = {...item};
@@ -932,6 +942,10 @@ module.exports = {
     itemM2M,
     itemColumnObject,
     requiredItemLookup,
-    itemTableNames
+    itemTableNames,
+    observationHistory,
+    itemHistory,
+    observationItemTableNameLookup,
+    itemObservationTableNameLookup
 }
 

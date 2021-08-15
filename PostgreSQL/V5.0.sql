@@ -120,7 +120,7 @@ CREATE TABLE tdg_observation_count (
 
 CREATE TABLE item_sop (
     item_id SERIAL PRIMARY KEY, 
-    tdg_filepath TEXT NOT NULL,
+    data_body TEXT NOT NULL,
     data_name TEXT NOT NULL,
     data_time_uploaded TIMESTAMPTZ NOT NULL,
     item_organization_id INTEGER NOT NULL --fk **
@@ -192,11 +192,6 @@ CREATE TABLE tdg_observation_edit (
     data_edit_description TEXT
 );
 */
-CREATE TABLE m2m_tdg_assigned_auditor (
-    item_audit_id SERIAL PRIMARY KEY, --fk **
-    item_user_id INTEGER NOT NULL, --fk **
-    user_instructions TEXT
-);
 
 CREATE TABLE item_catalog (
     item_id SERIAL PRIMARY KEY,
@@ -713,6 +708,11 @@ CREATE TABLE metadata_feature (
     frontend_name TEXT NOT NULL
 );
 
+create view observation_item_table_name_lookup as
+    select f.table_name as observation, i.table_name as item
+    from metadata_feature as f
+    inner join metadata_item as i on f.observable_item_id = i.item_id; 
+
 
 CREATE TABLE metadata_observation_history_type (
     type_id SERIAL PRIMARY KEY,
@@ -736,10 +736,16 @@ INSERT INTO metadata_item_history_type
     VALUES
         (DEFAULT, 'create'),
         (DEFAULT, 'update'),
-        (DEFAULT, 'remove'),
-        (DEFAULT, 'request permanent deletion');
+        (DEFAULT, 'delete'), -- Does not 'delete', just sets is_existing to false
+        (DEFAULT, 'permanent-deletion');
 
+create view observation_history_type as
+    select type_id, type_name
+    from metadata_observation_history_type;
 
+create view item_history_type as
+    select type_id, type_name
+    from metadata_item_history_type;
 
 
 CREATE TABLE users (
@@ -866,7 +872,7 @@ ALTER TABLE item_global ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit (i
 
 
 -- SOP
-ALTER TABLE m2m_item_sop ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
+ALTER TABLE m2m_item_sop ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count ON DELETE CASCADE;
 ALTER TABLE m2m_item_sop ADD FOREIGN KEY (item_sop_id) REFERENCES item_sop;
 ALTER TABLE item_sop ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
@@ -877,14 +883,11 @@ ALTER TABLE item_template ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
 
 -- Auditor
-ALTER TABLE m2m_auditor ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
-ALTER TABLE m2m_auditor ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count;
+ALTER TABLE m2m_auditor ADD FOREIGN KEY (item_user_id) REFERENCES item_user; -- not going to do this because no deleting users
+ALTER TABLE m2m_auditor ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_observation_count ON DELETE CASCADE;
 
 
 -- Audit
-ALTER TABLE m2m_tdg_assigned_auditor ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
-ALTER TABLE m2m_tdg_assigned_auditor ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit;
-
 ALTER TABLE item_audit ADD FOREIGN KEY (item_catalog_id) REFERENCES item_catalog;
 ALTER TABLE item_audit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE item_audit add FOREIGN KEY (item_organization_id) REFERENCES item_organization;
@@ -1214,10 +1217,12 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
                             REFERENCES "tdg_observation_count" ("observation_count_id")', table_name);
 
             -- Observation Count Trigger
+            /*
             EXECUTE FORMAT('CREATE TRIGGER trig_copy
                             BEFORE INSERT ON %I
                             FOR EACH ROW
                             EXECUTE PROCEDURE update_observation_count()', table_name);
+            */
         
             -- Global reference
             EXECUTE FORMAT('ALTER TABLE %I 
@@ -1351,14 +1356,14 @@ CREATE PROCEDURE add_list(item_table_name TEXT, table_name TEXT, column_name TEX
             -- If linked to observation_... table else linked to item_... table
             IF is_observational = TRUE THEN
                 -- Create m2m_list_... table with foreign key constraints
-                EXECUTE FORMAT('CREATE TABLE %I (observation_id INTEGER NOT NULL REFERENCES %I, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, observation_table_name, table_name);
+                EXECUTE FORMAT('CREATE TABLE %I (observation_id INTEGER NOT NULL REFERENCES %I ON DELETE CASCADE, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, observation_table_name, table_name);
                 -- list_id Index
                 EXECUTE FORMAT ('CREATE INDEX ON %I ("list_id")', m2m_table_name);
                 -- observation_id Index
                 EXECUTE FORMAT ('CREATE INDEX ON %I ("observation_id")', m2m_table_name);
             ELSE
                 -- Create m2m_list_... table with foreign key constraints
-                EXECUTE FORMAT('CREATE TABLE %I (item_id INTEGER NOT NULL REFERENCES %I, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, item_table_name, table_name);
+                EXECUTE FORMAT('CREATE TABLE %I (item_id INTEGER NOT NULL REFERENCES %I ON DELETE CASCADE, list_id INTEGER NOT NULL REFERENCES %I)', m2m_table_name, item_table_name, table_name);
             END IF;
 
             COMMIT;
@@ -1468,6 +1473,7 @@ CREATE FUNCTION check_auditor_name() RETURNS TRIGGER AS $check_auditor_name$
 
 -- tdg_observation_count updation trigger
 
+/*
 CREATE FUNCTION update_observation_count() RETURNS TRIGGER AS
 $$
     BEGIN
@@ -1482,7 +1488,7 @@ LANGUAGE plpgsql;
 
 -- this is weird
 select nextval('tdg_observation_count_observation_count_id_seq');
-
+*/
 
 -- Inserting into metadata
 
@@ -1606,6 +1612,7 @@ create view metadata_item_columns as
         array_agg(c.table_name) c__table_name, 
         array_agg(c.is_nullable) c__is_nullable,
         array_agg(r.type_name) r__type_name,
+        array_agg(c.frontend_name) c__frontend_name,
         i.table_name i__table_name 
             from metadata_column c 
             left join metadata_item i on c.metadata_item_id = i.item_id

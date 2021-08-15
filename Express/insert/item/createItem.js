@@ -10,22 +10,9 @@ const {
     itemTableNames
 } = require('../../setup.js');
 
-class CreateItemError extends Error {
-    constructor(errObject, ...params) {
-      // Pass remaining arguments (including vendor specific ones) to parent constructor
-      super(...params)
-  
-      // Maintains proper stack trace for where our error was thrown (only available on V8)
-      if (Error.captureStackTrace) {
-        Error.captureStackTrace(this, CreateItemError)
-      }
-  
-      this.name = 'CreateItemError'
-      // Custom debugging information
-      this.code = errObject.code
-      this.msg = errObject.msg
-    }
-}
+const {
+    insertItemHistory
+} = require('../helpers.js');
 
 /****************************
     Request Object Definition
@@ -56,33 +43,6 @@ class CreateItemError extends Error {
  * @property {Number} i__item_id 2
  */
 
-/*****************
-    Static Objects
-*/
-
-const sqlToJavascriptLookup = {
-    numeric: 'number',
-    integer: 'number',
-    timestamptz: 'date',
-    boolean: 'boolean',
-    json: 'object',
-    point: 'object',
-    linestring: 'object',
-    polygon: 'object',
-    text: 'string'
-}
-
-/*
-DEPRECATED, THIS VALIDATION IS DONE ON INSERT
-Includes for all attribute, list, and factor
-{
-    columnID: [JS value, ...]
-}
-*/
-const dataColumnPresetLookup = {
-
-}
-
 /********************
     Exported Function
 */
@@ -103,47 +63,48 @@ module.exports = createItem
  */
 async function createItem(options) {
 
-   const {
-       createItemObjectArray,
-       transaction
-   } = options
+    const {
+        createItemObjectArray,
+        transaction
+    } = options
 
-   // Validate reqiured items and data fields for every item
-   try {
-       for(let createItemObject of createItemObjectArray) {
-           const tableName = itemTableNames[createItemObject.itemTypeID]
-           if(tableName === undefined) {
-               throw new CreateItemError({code: 400, msg: `itemTypeID: ${createItemObject.itemTypeID} is not valid`})
-           }
-           // TODO: make requiredItemLookup
-           // 1. Validate required items
-           validateRequiredItems([
-               ...createItemObject.requiredItems.map(el => itemTableNames[el.itemTypeID]), 
-               ...createItemObject.newRequiredItemIndices.map(el => itemTableNames[createItemObjectArray[el].itemTypeID])
-           ], tableName)
-    
-           // TODO: make dataColumnPresetLookup, add handling for mutible reference types
-           // 2. Validate data columns
-           validateDataColumns(createItemObject.data, tableName)
-       }
+    // Validate reqiured items and data fields for every item
+    try {
+        for(let createItemObject of createItemObjectArray) {
+            const tableName = itemTableNames[createItemObject.itemTypeID]
+            if(tableName === undefined) {
+                throw new CreateItemError({code: 400, msg: `itemTypeID: ${createItemObject.itemTypeID} is not valid`})
+            }
+            // TODO: make requiredItemLookup
+            // 1. Validate required items
+            validateRequiredItems([
+                ...createItemObject.requiredItems.map(el => itemTableNames[el.itemTypeID]), 
+                ...createItemObject.newRequiredItemIndices.map(el => itemTableNames[createItemObjectArray[el].itemTypeID])
+            ], tableName)
+        
+            // TODO: make dataColumnPresetLookup, add handling for mutible reference types
+            // 2. Validate data columns
+            validateDataColumns(createItemObject.data, tableName)
+        }
 
-   console.log('Validated');
+        console.log('Validated');
 
-   // 3. Insert every item
-   let currentInsertedItemPrimaryKeyLookup = createItemObjectArray.map(el => null)
-   for(let i = 0; i < createItemObjectArray.length; i++) {
-       currentInsertedItemPrimaryKeyLookup = await createIndividualItem(i, createItemObjectArray, currentInsertedItemPrimaryKeyLookup, transaction)
-   }
+        // 3. Insert every item
+        let currentInsertedItemPrimaryKeyLookup = createItemObjectArray.map(el => null)
+        for(let i = 0; i < createItemObjectArray.length; i++) {
+            currentInsertedItemPrimaryKeyLookup = await createIndividualItem(i, createItemObjectArray, currentInsertedItemPrimaryKeyLookup, transaction)
+        }
 
-   // sanity check
-   if(currentInsertedItemPrimaryKeyLookup.some(el => el === null)) {
-       throw new CreateItemError({code: 500, msg: `Computer did not insert all the items! Here is the array: ${currentInsertedItemPrimaryKeyLookup}`})
-   }
+        // sanity check
+        if(currentInsertedItemPrimaryKeyLookup.some(el => el === null)) {
+            throw new CreateItemError({code: 500, msg: `Computer did not insert all the items! Here is the array: ${currentInsertedItemPrimaryKeyLookup}`})
+        }
 
-   return currentInsertedItemPrimaryKeyLookup;
+        return currentInsertedItemPrimaryKeyLookup;
+
     } catch(err) {
         if(err instanceof CreateItemError) {
-            throw new CreateItemError({code: err.code, msg: err.msg})
+            throw err
         } else {
             throw new CreateItemError({code: 500, msg: err})
         }
@@ -236,14 +197,21 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
 
     // Generate external column insertion functions
+    /**
+     * @param {String} tableName 
+     * @param {String} columnName 
+     * @param {String|Number|Date|Object|Boolean|Array} data 
+     * @returns {<{columnName: String, primaryKey: Number | Number[]}>}
+     * // Array of primary keys if list reference type
+     */
     const insertExternalColumn = {
-        'attribute-mutable': externalColumnInsertGenerator('attribute_id', true, 'attribute-mutable', db),
+        'attribute-mutable': externalColumnInsertGenerator('attribute_id', true, 'attribute', db),
         'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', db),
-        'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor-mutable', db),
+        'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor', db),
         'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', db),
         'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', db),
         'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', db),
-        'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list-mutable', db)
+        'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list', db)
     };
 
     // 3. Go through user supplied data columns and add column names and column values
@@ -258,7 +226,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         // Convert returnableID to columnID
         const columnID = returnableIDLookup[id].columnID;
         // if the returnable is valid
-        if(itemColumns.map(col => col.columnID).includes(columnID)) {
+        if(relevantColumnIDs.includes(columnID)) {
             // if nullable then remove from nullable list
             if(nonNullableColumnIDs.includes(columnID)) {
                 const removalIndex = nonNullableColumnIDs.indexOf(columnID);
@@ -271,14 +239,16 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
 
             // if the column is external call the proper insertion function based on reference type and pass metadata and value
             if(itemColumn.referenceType in insertExternalColumn) {
+                // if list add to list array and handle after item insert
+                if(['item-list', 'item-list-mutable'].includes(itemColumn.referenceType)) {
+                    listColumnsAndValues.push({
+                        itemColumn,
+                        columnValue
+                    });
+                    continue;
+                }
                 const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue);
                 columnNamesAndValues.push(primaryKeyAndColumnName);
-            // if list add to list array and handle after item insert
-            } else if(['item-list', 'item-list-mutable'].includes(itemColumn.referenceType)) {
-                listColumnsAndValues.push({
-                    itemColumn,
-                    columnValue
-                });
             // then a local column
             } else {
                 columnNamesAndValues.push({
@@ -294,6 +264,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     }
     // If not all the non-nullable columns have been included then throw 
     //////// will maybe have to handle inputSelectorType = null here?
+    //////// ^^ I don't think they exist!
     if(nonNullableColumnIDs.length !== 0) throw new CreateItemError({code: 400, msg: `Missing (${nonNullableColumnIDs.join(', ')}) non nullable column IDs for ${tableName}`});
 
     // 4. Make the finished SQL statement
@@ -310,16 +281,20 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue);
 
         // insert into the many to many table
-        await insertManyToMany(primaryKeyOfInsertedValue, itemPrimaryKey, listTableName, db);
+        await insertItemManyToMany(primaryKeyOfInsertedValue, itemPrimaryKey, itemColumn.tableName, db);
     }
 
     // 7. Insert insertion record into history tables
-    // ??
+    await insertItemHistory(tableName, 'insert', itemPrimaryKey);
 
     // Update the primary key lookup and return it
     insertedItemPrimaryKeyLookup[currentIndex] = itemPrimaryKey;
     return insertedItemPrimaryKeyLookup;
 }
+
+/**
+ * Helpers
+ */
 
 /**
  * Makes the complete insertion SQL statement
@@ -385,9 +360,6 @@ function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, 
 
 
 
-
-
-
 /**
  * Validate the required items are correct. Throws an error if not
  * @param {Array} requiredItemTableNames 
@@ -413,64 +385,4 @@ function validateRequiredItems(requiredItemTableNames, tableName) {
     if(nonNullableCurrentAmount !== nonNullableNeededAmount) {
         throw new CreateItemError({code: 400, msg: `Not all non-nullable required items have been included for ${tableName}. Needed ${[...requiredItemLookup[tableName].nonNullable, 'item_global']} and got ${requiredItemTableNames}`});
     }
-}
-
-
-function validateDataColumnsGenerator(isObservation) {
-    
-}
-/**
- * Validate data types and preset values of data fields. Throws an error if not
- * @param {createItemObject.data} dataObject
- * @param {string} tableName
- * @returns {undefined} 
- */
-function validateDataColumns(dataObject, tableName, ErrorClass) {
-    const {returnableIDs, data} = dataObject
-    const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
-    // Get all of the columns needed to insert the item
-    let itemColumns = itemColumnObject[tableName];
-    itemColumns = itemColumns['c__column_id'].map((id, i) => ({
-        columnID: id,
-        isNullable: itemColumns['c__is_nullable'][i],
-        isItem: itemColumns.isItem[i],
-        isObservation: itemColumns.isObservation[i]
-    }));
-
-    const relevantColumnObjects = itemColumns.filter(col => col.isItem)
-
-    const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID)
-
-    // make sure all non nullable fields are included
-    const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
-    if(!nonNullableColumnIDs.every(id => columnIDs.includes(id))) throw new ErrorClass({code: 400, msg: `Must include columnIDs ${nonNullableColumnIDs} and only included ${columnIDs} for ${tableName}`})
-    
-    // handle generated columns
-    // handle Auditor Name
-
-    
-    // check type of each field
-    returnableIDs.forEach((returnableID, i) => {
-        // convert id to returnableID
-        id = returnableIDLookup[returnableID].columnID
-        // is it one of the data columns?
-        if(relevantColumnIDs.includes(id)) {
-            // get correct type
-            let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType.toLowerCase()]
-            // make sure it's an array
-            if(['item-list', 'obs-list'].includes(returnableIDLookup[id].rt__type_name)) {
-                if(type(data[i]) !== 'array') throw new ErrorClass({code: 400, msg: `returnableID ${id} must be of type: array`})
-                // check type for every value
-                data[i].forEach((listElement, i) => {
-                    if(type(element) !== correctType) throw new ErrorClass({code: 400, msg: `Element ${listElement} (index: ${i}) of returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
-                });
-            }
-            // check type for others
-            else {
-                if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
-            }
-        } else {
-            throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${id} is not valid for ${tableName}`})
-        }
-    })
 }
