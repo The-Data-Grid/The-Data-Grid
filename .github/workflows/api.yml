@@ -50,6 +50,6 @@ jobs:
         run: npm run db-fake
 
       - name: Run the Test Suite
-        run: npm run test -- --forceExit --detectOpenHandles
+        run: npm run test -- api --forceExit --detectOpenHandles
         env:
           PGPASSWORD: postgres
