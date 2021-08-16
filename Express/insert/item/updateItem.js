@@ -17,13 +17,13 @@ const {
 
 // Generate external column insertion functions
 const insertExternalColumn = {
-    'attribute-mutable': externalColumnInsertGenerator('attribute_id', true, 'attribute', CreateItemError),
-    'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', CreateItemError),
-    'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor', CreateItemError),
-    'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', CreateItemError),
-    'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', CreateItemError),
-    'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', CreateItemError),
-    'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list', CreateItemError)
+    'attribute-mutable': externalColumnInsertGenerator('attribute_id', true, 'attribute', UpdateItemError),
+    'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', UpdateItemError),
+    'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor', UpdateItemError),
+    'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', UpdateItemError),
+    'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', UpdateItemError),
+    'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', UpdateItemError),
+    'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list', UpdateItemError)
 };
 
 module.exports = updateItem;
@@ -101,7 +101,7 @@ async function updateItem(options) {
     }
 }
 
-async function updateIndividualItem(createItemObject, db) {
+async function updateIndividualItem(updateItemObject, db) {
     const {
         itemTypeID,
         primaryKey,

@@ -17,7 +17,8 @@ const {
     validateObservationDataColumns,
     externalColumnInsertGenerator,
     insertObservationManyToMany,
-    insertObservationHistory
+    insertObservationHistory,
+    insertSOP
 } = require('../helpers.js');
 
 // Generate external column insertion functions
@@ -70,7 +71,7 @@ async function createObservation(options) {
         for(let createObservationObject of createObservationObjectArray) {
             const itemTableName = itemTableNames[createItemObject.itemTypeID];
             if(itemTableName === undefined) {
-                throw new CreateItemError({code: 400, msg: `itemTypeID: ${createItemObject.itemTypeID} is not valid`})
+                throw new CreateObservationError({code: 400, msg: `itemTypeID: ${createItemObject.itemTypeID} is not valid`})
             }
             
             // TODO: make dataColumnPresetLookup, add handling for mutible reference types
@@ -209,13 +210,13 @@ async function createIndividualObservation(createObservationObject, insertedItem
     }
 
     // Insert and get observation count
-    const observationCountReference = await db.one(`
+    const observationCountReference = (await db.one(`
         insert into tdg_observation_count 
             (observation_count_id) 
             values 
             (default) 
                 returning observation_count_id
-    `);
+    `)).observation_count_id;
 
     // Make the SQL Statement
     const fullSQLStatement = makeObservationSQLStatement(observationTableName, columnNamesAndValues, globalReference, itemReference, observationCountReference);
@@ -225,42 +226,20 @@ async function createIndividualObservation(createObservationObject, insertedItem
 
     // Insert list values and list many to many values
     for(let columnsAndValues of listColumnsAndValues) {
-        const {itemColumn, columnValue} = columnsAndValues;
+        const { itemColumn, columnValue } = columnsAndValues;
 
         // 1. Insert into the list_... table
-        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+        const { primaryKeyOfInsertedValue } = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
 
         // insert into the many to many table
         await insertObservationManyToMany(primaryKeyOfInsertedValue, observationPrimaryKey, itemColumn.tableName, db);
     }
 
     // Insert into SOP many to many
-    try {
-        const sopPrimaryKey = await db.one(formatSQL(`
-            select item_id from sop
-            where data_name = $(sopName)
-            and item_organization_id = $(organizationID)
-        `, {
-            sopName: sopValue,
-            organizationID: sessionObject.organizationID
-        }));
-
-        await db.none(formatSQL(`
-            insert into m2m_item_sop
-            (observation_count_id, item_sop_id)
-            values
-            ($(observationCountReference), $(sopPrimaryKey))
-        `, {
-            observationCountReference,
-            sopPrimaryKey
-        }));
-
-    } catch (err) {
-        throw new CreateObservationError({code: 400, msg: `SOP "${sopName}" is not a valid SOP in your organization`});
-    }
+    await insertSOP(sopValue, sessionObject.organizationID, observationCountReference);
 
     // 7. Insert insertion record into history tables
-    await insertObservationHistory(observationTableName, 'insert', observationPrimaryKey);
+    await insertObservationHistory(observationTableName, 'create', observationPrimaryKey);
 }
 
 /**

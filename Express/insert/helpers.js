@@ -449,25 +449,25 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
         // check type of each field
         returnableIDs.forEach((returnableID, i) => {
             // convert id to returnableID
-            id = returnableIDLookup[returnableID].columnID
+            const columnID = returnableIDLookup[returnableID].columnID
             // is it one of the data columns?
-            if(relevantColumnIDs.includes(id)) {
+            if(relevantColumnIDs.includes(columnID)) {
                 // get correct type
                 let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType.toLowerCase()]
-                // make sure it's an array if list reference type
-                if(['item-list', 'obs-list'].includes(returnableIDLookup[id].rt__type_name)) {
-                    if(type(data[i]) !== 'array') throw new ErrorClass({code: 400, msg: `returnableID ${id} must be of type: array`})
+                // make sure it's an array if list reference type or SOP
+                if(['item-list', 'obs-list'].includes(returnableIDLookup[returnableID].rt__type_name || ('special' === returnableIDLookup[returnableID].rt__type_name && 'Standard Operating Procedure' === returnableIDLookup[returnableID].c__frontend_name))) {
+                    if(type(data[i]) !== 'array') throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} must be of type: array`})
                     // check type for every value
                     data[i].forEach((listElement, i) => {
-                        if(type(element) !== correctType) throw new ErrorClass({code: 400, msg: `Element ${listElement} (index: ${i}) of returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
+                        if(type(element) !== correctType) throw new ErrorClass({code: 400, msg: `Element ${listElement} (index: ${i}) of returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}`})
                     });
                 }
                 // check type for others
                 else {
-                    if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${id} must of of type: ${correctType}`})
+                    if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}`})
                 }
             } else {
-                throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${id} is not valid for ${tableName}`})
+                throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} is not valid for ${tableName}`})
             }
         })
     }
@@ -539,25 +539,73 @@ function validateRequiredItemsOnUpdate(requiredItemTableNames, tableName) {
     }
 }
 
+function insertSOPGenerator(isUpdate, ErrorClass) {
+    return async (sopValue, organizationID, observationCount) => {
+        // if updating remove old values
+        if(isUpdate) {
+            try {
+                // remove all current
+                await db.none(formatSQL(`
+                    DELETE FROM m2m_item_sop
+                    WHERE observation_count_id = $(observationCount)
+                `, {
+                    observationCount
+                }));
+            } catch {
+                ErrorClass({code: 500, msg: 'Error when removing old SOP on update'});
+            }
+        }
+        // Insert new values
+        try {
+            // SOP Value is validated to be an array
+            for(let sopName of sopValue) {
+                const sopPrimaryKey = (await db.one(formatSQL(`
+                    select item_id from sop
+                    where data_name = $(sopName)
+                    and item_organization_id = $(organizationID)
+                `, {
+                    sopName,
+                    organizationID
+                }))).item_id;
+        
+                await db.none(formatSQL(`
+                    insert into m2m_item_sop
+                    (observation_count_id, item_sop_id)
+                    values
+                    ($(observationCount), $(sopPrimaryKey))
+                `, {
+                    observationCount,
+                    sopPrimaryKey
+                }));
+            }
+    
+        } catch (err) {
+            throw new ErrorClass({code: 400, msg: `SOP "${sopName}" is not a valid SOP in your organization`});
+        }
+    }
+}
+
 
 module.exports = {
+    externalColumnInsertGenerator,
     insertItemManyToMany: insertManyToManyGenerator(false, false),
     insertObservationManyToMany: insertManyToManyGenerator(true, false),
     updateItemManyToMany: insertManyToManyGenerator(false, true),
-    updateItemManyToMany: insertManyToManyGenerator(true, true),
-    externalColumnInsertGenerator,
+    updateObservationManyToMany: insertManyToManyGenerator(true, true),
     validateItemDataColumns: validateDataColumnsGenerator(false, false, CreateItemError),
     validateObservationDataColumns: validateDataColumnsGenerator(true, false, CreateObservationError),
     validateUpdateItemDataColumns: validateDataColumnsGenerator(false, true, CreateItemError),
     validateUpdateObservationDataColumns: validateDataColumnsGenerator(true, true, CreateObservationError),
+    insertItemHistory: insertHistoryGenerator(false),
+    insertObservationHistory: insertHistoryGenerator(true),
+    insertSOP: insertSOPGenerator(false, CreateObservationError),
+    updateSOP: insertSOPGenerator(true, UpdateObservationError),
+    validateRequiredItems,
+    validateRequiredItemsOnUpdate,
     CreateItemError,
     CreateObservationError,
     DeleteObservationError,
     DeleteItemError,
     UpdateItemError,
-    UpdateObservationError,
-    validateRequiredItems,
-    validateRequiredItemsOnUpdate,
-    insertItemHistory: insertHistoryGenerator(false),
-    insertObservationHistory: insertHistoryGenerator(true)
+    UpdateObservationError
 };
