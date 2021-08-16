@@ -3,7 +3,8 @@
  */
 const {
     observationHistory,
-    itemHistory
+    itemHistory,
+    validateRequiredItems
 } = require('../setup.js');
 
 const {postgresClient} = require('../db/pg.js');
@@ -77,11 +78,45 @@ class DeleteItemError extends Error {
     }
 }
 
+class UpdateItemError extends Error {
+    constructor(errObject, ...params) {
+        // Pass remaining arguments (including vendor specific ones) to parent constructor
+        super(...params)
+    
+        // Maintains proper stack trace for where our error was thrown (only available on V8)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, CreateItemError);
+        }
+    
+        this.name = 'UpdateItemError';
+        // Custom debugging information
+        this.code = errObject.code;
+        this.msg = errObject.msg;
+    }
+}
+
+class UpdateObservationError extends Error {
+    constructor(errObject, ...params) {
+        // Pass remaining arguments (including vendor specific ones) to parent constructor
+        super(...params)
+    
+        // Maintains proper stack trace for where our error was thrown (only available on V8)
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, CreateItemError);
+        }
+    
+        this.name = 'UpdateObservationError';
+        // Custom debugging information
+        this.code = errObject.code;
+        this.msg = errObject.msg;
+    }
+}
+
 /**
  * Composes a many to many table insertion function
  * @param {Boolean} isObservation 
  */
-function insertManyToManyGenerator(isObservation) {
+function insertManyToManyGenerator(isObservation, isUpdate) {
     let foreignKeyColumnName = 'item_id';
     if(isObservation) {
         foreignKeyColumnName = 'observation_id';
@@ -98,21 +133,33 @@ function insertManyToManyGenerator(isObservation) {
         if(type(primaryKeyOfInsertedValue) !== 'array') {
             primaryKeyOfInsertedValue = [primaryKeyOfInsertedValue];
         }
-        for(let key of primaryKeyOfInsertedValue) {
-            try {
-                await db.none(formatSQL(`INSERT INTO $(manyToManyTableName:name) 
-                    (list_id, $(foreignKeyColumnName:name))
-                    VALUES
-                    ($(primaryKeyOfInsertedValue), $(primaryKey))
+        try {
+            // if updating, remove all many to many values first
+            if(isUpdate) {
+                await db.none(formatSQL(`
+                    DELETE FROM $(manyToManyTableName:name)
+                    WHERE $(foreignKeyColumnName:name) = $(primaryKey)
+                `, {
+                    manyToManyTableName,
+                    foreignKeyColumnName,
+                    primaryKey
+                }));
+            }
+            for(let key of primaryKeyOfInsertedValue) {
+                await db.none(formatSQL(`
+                    INSERT INTO $(manyToManyTableName:name) 
+                        (list_id, $(foreignKeyColumnName:name))
+                        VALUES
+                        ($(primaryKeyOfInsertedValue), $(primaryKey))
                 `, {
                     manyToManyTableName,
                     primaryKeyOfInsertedValue: key,
                     primaryKey,
                     foreignKeyColumnName
                 }));        
-            } catch(err) {
-                throw new CreateItemError({code: 500, msg: `Error when inserting key ${key} and ${primaryKey} into ${manyToManyTableName}`});
             }
+        } catch(err) {
+            throw new CreateItemError({code: 500, msg: `Error when inserting key ${key} and ${primaryKey} into ${manyToManyTableName}`});
         }
     };
 }
@@ -122,18 +169,18 @@ function insertManyToManyGenerator(isObservation) {
  * values into list, attribute, factor, or location tables
  * @param {String} primaryKeyColumnName 
  * @param {Boolean} isMutable 
- * @param {String} referenceType 
- * @param {Object} db 
+ * @param {String} referenceType
+ * @param {Class} ErrorClass
+ * @returns {Function}
  */
-function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenceType, db) {
+function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenceType, ErrorClass) {
     /**
      * @param {String} tableName 
      * @param {String} columnName 
      * @param {String|Number|Date|Object|Boolean|Array} data 
-     * @returns {<{columnName: String, primaryKey: Number | Number[]}>}
-     * // Array of primary keys if list reference type
+     * @returns {<{columnName: String, columnValue: Number | Number[]}>} Array of primary keys if list reference type
      */
-    return async (tableName, columnName, data) => {
+    return async (tableName, columnName, data, db) => {
         let primaryKey;
         const foreignKeyColumnName = tableName + '_id';
         // List Handling
@@ -151,13 +198,13 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                 }));
                 
             } catch(err) {
-                throw new CreateItemError({code: 500, msg: `Error when getting current list values from ${tableName}`});
+                throw new ErrorClass({code: 500, msg: `Error when getting current list values from ${tableName}`});
             }
             // if there are new values
             if(primaryKey.length != data.length) {
                 const newValues = data.length.filter(value => !primaryKey.includes(value));
                 if(!isMutable) {
-                    throw new CreateItemError({code: 400, msg: `Value(s) ${newValues} from list input ${data.length} are not valid for the column ${columnName} and table ${tableName}`})
+                    throw new ErrorClass({code: 400, msg: `Value(s) ${newValues} from list input ${data.length} are not valid for the column ${columnName} and table ${tableName}`})
                 } else {
                     // insert new values
                     let newPrimaryKeys = [];
@@ -180,7 +227,7 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                         }
                         primaryKey = [...primaryKey, ...newPrimaryKeys];
                     } catch(err) {
-                        throw new CreateItemError({code: 500, msg: `Error when inserting ${newValues} into ${tableName}`})
+                        throw new ErrorClass({code: 500, msg: `Error when inserting ${newValues} into ${tableName}`})
                     }
                 }
             }
@@ -204,7 +251,7 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
             } catch(err) {
                 // This can probably be a 400 because this should only throw when the
                 // geojson isn't valid
-                throw new CreateItemError({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
+                throw new ErrorClass({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
             }
 
             return {
@@ -245,7 +292,7 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                         tableName,
                         columnName
                     }))).map(v => v[columnName]).join(', ');
-                    throw new CreateItemError({code: 400, msg: `The value ${data} is not one of the valid values (${validValues}) for ${tableName}`});
+                    throw new ErrorClass({code: 400, msg: `The value ${data} is not one of the valid values (${validValues}) for ${tableName}`});
                 }
 
                 // Now insert
@@ -263,10 +310,9 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                         primaryKeyColumnName
                     })))[primaryKeyColumnName];
                 } catch(err) {
-                    throw new CreateItemError({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
+                    throw new ErrorClass({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
                 }
             }
-                
         }
         return {
             // Foreign key column name and value inside the item or observation table
@@ -274,6 +320,84 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
             columnValue: primaryKey
         };
     };
+}
+
+/**
+ * Composes an external column insertion function for inserting
+ * values into list, attribute, factor, or location tables
+ * @param {String} primaryKeyColumnName 
+ * @param {Boolean} isMutable 
+ * @param {String} referenceType
+ * @returns {Function}
+ */
+function externalColumnUpdateGenerator(primaryKeyColumnName, isMutable, referenceType) {
+    /**
+     * @param {String} tableName 
+     * @param {String} columnName 
+     * @param {String|Number|Date|Object|Boolean|Array} data 
+     * @returns {<{columnName: String, columnValue: Number | Number[]}>} Array of primary keys if list reference type
+     */
+    return async (tableName, columnName, data) => {
+        let primaryKey;
+        const foreignKeyColumnName = tableName + '_id';
+        // List handling
+        if(referenceType === 'item-list' || referenceType == 'obs-list') {
+            // check to see if all values are valid
+            try {
+                primaryKey = await db.many(formatSQL(`
+                    select list_id
+                    from $(tableName:name)
+                    WHERE $(columnName:name) = ANY ($(data:array))
+                `, {
+                    tableName,
+                    columnName,
+                    data,
+                }));
+                
+            } catch(err) {
+                throw new UpdateItemError({code: 500, msg: `Error when getting current list values from ${tableName}`});
+            }
+            // if there are new values
+            if(primaryKey.length != data.length) {
+                const newValues = data.length.filter(value => !primaryKey.includes(value));
+                if(!isMutable) {
+                    throw new CreateItemError({code: 400, msg: `Value(s) ${newValues} from list input ${data.length} are not valid for the column ${columnName} and table ${tableName}`})
+                } else {
+                    // insert new values
+                    let newPrimaryKeys = [];
+                    try {
+                        for(let value of newValues) {
+                            // Now insert
+                            const newKey = (await db.one(formatSQL(`
+                                INSERT INTO $(tableName:name) 
+                                    ($(columnName:name))
+                                    VALUES
+                                    ($(value))
+                                        RETURNING $(primaryKeyColumnName:name)
+                            `, {
+                                tableName,
+                                columnName,
+                                value,
+                                primaryKeyColumnName
+                            })))[primaryKeyColumnName];
+                            newPrimaryKeys.push(newKey);
+                        }
+                        primaryKey = [...primaryKey, ...newPrimaryKeys];
+                    } catch(err) {
+                        throw new CreateItemError({code: 500, msg: `Error when inserting ${newValues} into ${tableName}`})
+                    }
+                }
+            }
+        }
+        // Location handling
+        else if(referenceType === 'item-location') {
+
+        }
+        // Factor, Attribute handling
+        else {
+
+        }
+    }
 }
 
 
@@ -288,7 +412,7 @@ const sqlToJavascriptLookup = {
     polygon: 'object',
     text: 'string'
 };
-function validateDataColumnsGenerator(isObservation, ErrorClass) {
+function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
     /**
      * Validate data types and preset values of data fields. Throws an error if not
      * @param {createItemObject.data} dataObject
@@ -316,10 +440,11 @@ function validateDataColumnsGenerator(isObservation, ErrorClass) {
 
         const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID);
 
-        // make sure all non nullable fields are included
-        const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
-
-        if(!nonNullableColumnIDs.every(id => columnIDs.includes(id))) throw new ErrorClass({code: 400, msg: `Must include columnIDs ${nonNullableColumnIDs} and only included ${columnIDs} for ${tableName}`});
+        // make sure all non nullable fields are included when creating a new item
+        if(!isUpdate) {
+            const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
+            if(!nonNullableColumnIDs.every(id => columnIDs.includes(id))) throw new ErrorClass({code: 400, msg: `Must include columnIDs ${nonNullableColumnIDs} and only included ${columnIDs} for ${tableName}`});
+        }
         
         // check type of each field
         returnableIDs.forEach((returnableID, i) => {
@@ -357,12 +482,12 @@ function insertHistoryGenerator(isObservation) {
         const typeID = historyLookup[historyType];
 
         await db.none(formatSQL(`
-            insert into $(baseTableName:name)
+            insert into $(historyTableName:name)
             (type_id, $(foreignKeyColumnName:raw), time_submitted)
             values
             ($(typeID), $(primaryKey), NOW())
         `, {
-            baseTableName,
+            historyTableName,
             typeID,
             primaryKey,
             foreignKeyColumnName
@@ -370,16 +495,69 @@ function insertHistoryGenerator(isObservation) {
     }
 }
 
+/**
+ * Validate the required items are correct. Throws an error if not
+ * @param {Array} requiredItemTableNames 
+ * @param {string} tableName
+ * @returns {undefined} 
+ * 
+ * uses requiredItemLookup
+ */
+function validateRequiredItems(requiredItemTableNames, tableName) {
+    // make sure all required items exist and all non nullable required items are included
+    const nonNullableNeededAmount = requiredItemLookup[tableName].nonNullable.length;
+    let nonNullableCurrentAmount = 0;
+    for(let table of requiredItemTableNames) {
+        // if non nullable
+        if(requiredItemLookup[tableName].nonNullable.includes(table)) {
+            nonNullableCurrentAmount ++;
+        // if not in the nullable set either then throw
+        } else if(!requiredItemLookup[tableName].nullable.includes(table)) {
+            throw new CreateItemError({code: 400, msg: `${table} is not a required item of ${tableName}`});
+        }
+    }
+    // Make sure all non nullables have been included
+    if(nonNullableCurrentAmount !== nonNullableNeededAmount) {
+        throw new CreateItemError({code: 400, msg: `Not all non-nullable required items have been included for ${tableName}. Needed ${[...requiredItemLookup[tableName].nonNullable, 'item_global']} and got ${requiredItemTableNames}`});
+    }
+}
+
+/**
+ * Validate the required items are correct. Throws an error if not
+ * @param {Array} requiredItemTableNames 
+ * @param {string} tableName
+ * @returns {undefined} 
+ * 
+ * uses requiredItemLookup
+ */
+function validateRequiredItemsOnUpdate(requiredItemTableNames, tableName) {
+    // make sure all required items are non nullable
+    for(let requiredItemTableName of requiredItemTableName) {
+        if(!requiredItemLookup[tableName].nonId.includes(requiredItemTableName)) {
+            throw new UpdateItemError({code: 400, msg: `${requiredItemTableName} is an identifying required item for ${tableName} and thus cannot be updated`});
+        }
+    }
+}
+
+
 module.exports = {
-    insertItemManyToMany: insertManyToManyGenerator(false),
-    insertObservationManyToMany: insertManyToManyGenerator(true),
+    insertItemManyToMany: insertManyToManyGenerator(false, false),
+    insertObservationManyToMany: insertManyToManyGenerator(true, false),
+    updateItemManyToMany: insertManyToManyGenerator(false, true),
+    updateItemManyToMany: insertManyToManyGenerator(true, true),
     externalColumnInsertGenerator,
-    validateItemDataColumns: validateDataColumnsGenerator(true, CreateObservationError),
-    validateObservationDataColumns: validateDataColumnsGenerator(false, CreateItemError),
+    validateItemDataColumns: validateDataColumnsGenerator(false, false, CreateItemError),
+    validateObservationDataColumns: validateDataColumnsGenerator(true, false, CreateObservationError),
+    validateUpdateItemDataColumns: validateDataColumnsGenerator(false, true, CreateItemError),
+    validateUpdateObservationDataColumns: validateDataColumnsGenerator(true, true, CreateObservationError),
     CreateItemError,
     CreateObservationError,
     DeleteObservationError,
     DeleteItemError,
+    UpdateItemError,
+    UpdateObservationError,
+    validateRequiredItems,
+    validateRequiredItemsOnUpdate,
     insertItemHistory: insertHistoryGenerator(false),
     insertObservationHistory: insertHistoryGenerator(true)
 };

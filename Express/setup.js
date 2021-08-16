@@ -67,13 +67,22 @@ const globalItemTypeID = itemTableNames.indexOf('item_global')
 requiredItemView.forEach(item => {
     requiredItemLookup[item.item_table_name] = {
         nullable: [],
-        nonNullable: []
+        nonNullable: [],
+        id: [],
+        nonId: []
     };
     item.required_item_table_name.forEach((requiredItem, i) => {
+        // is nullable ?
         if(item.is_nullable[i]) {
             requiredItemLookup[item.item_table_name].nullable.push(requiredItem);
         } else {
             requiredItemLookup[item.item_table_name].nonNullable.push(requiredItem);
+        }
+        // is id ?
+        if(item.is_id[i]) {
+            requiredItemLookup[item.item_table_name].id.push(requiredItem);
+        } else {
+            requiredItemLookup[item.item_table_name].nonId.push(requiredItem);            
         }
     })
 });

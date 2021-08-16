@@ -514,7 +514,8 @@ CREATE VIEW required_item_view
     SELECT 
         i1.table_name item_table_name, 
         array_agg(i2.table_name) required_item_table_name, 
-        array_agg(m2m.is_nullable) is_nullable 
+        array_agg(m2m.is_nullable) is_nullable,
+        array_agg(m2m.is_id) is_id
             from metadata_item i1 
             left join m2m_metadata_item m2m on i1.item_id = m2m.item_id 
             left join metadata_item i2 on i2.item_id = m2m.referenced_item_id 

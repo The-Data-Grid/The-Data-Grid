@@ -20,6 +20,16 @@ const {
     insertObservationHistory
 } = require('../helpers.js');
 
+// Generate external column insertion functions
+const insertExternalColumn = {
+    'attribute-mutable': externalColumnInsertGenerator('attribute_id', true, 'attribute', CreateObservationError),
+    'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', CreateObservationError),
+    'obs-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'obs-factor', CreateObservationError),
+    'obs-factor': externalColumnInsertGenerator('factor_id', false, 'obs-factor', CreateObservationError),
+    'obs-list': externalColumnInsertGenerator('list_id', false, 'obs-list', CreateObservationError),
+    'obs-list-mutable': externalColumnInsertGenerator('list_id', true, 'obs-list', CreateObservationError)
+};
+
 /**
  * A new observation to be inserted into the database
  * @typedef {Object} createObservationObject
@@ -127,16 +137,6 @@ async function createIndividualObservation(createObservationObject, insertedItem
     const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID)
     const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
 
-    // Generate external column insertion functions
-    const insertExternalColumn = {
-        'attribute-mutable': externalColumnInsertGenerator('attribute_id', true, 'attribute', db),
-        'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', db),
-        'obs-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'obs-factor', db),
-        'obs-factor': externalColumnInsertGenerator('factor_id', false, 'obs-factor', db),
-        'obs-list': externalColumnInsertGenerator('list_id', false, 'obs-list', db),
-        'obs-list-mutable': externalColumnInsertGenerator('list_id', true, 'obs-list', db)
-    };
-
     // 3. Go through user supplied data columns and add column names and column values
     //    to the columnNamesAndValues array. For external data columns, either insert
     //    the value into the external table first and add the newly created primary key,
@@ -170,7 +170,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
                     });
                     continue;
                 }
-                const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue);
+                const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
                 columnNamesAndValues.push(primaryKeyAndColumnName);
             // if list add to list array and handle after item insert
             // handle auditor and sop special types
@@ -228,7 +228,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
         const {itemColumn, columnValue} = columnsAndValues;
 
         // 1. Insert into the list_... table
-        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue);
+        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
 
         // insert into the many to many table
         await insertObservationManyToMany(primaryKeyOfInsertedValue, observationPrimaryKey, itemColumn.tableName, db);

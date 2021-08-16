@@ -11,8 +11,21 @@ const {
 } = require('../../setup.js');
 
 const {
-    insertItemHistory
+    insertItemHistory,
+    externalColumnInsertGenerator,
+    CreateItemError
 } = require('../helpers.js');
+
+// Generate external column insertion functions
+const insertExternalColumn = {
+    'attribute-mutable': externalColumnInsertGenerator('attribute_id', true, 'attribute', CreateItemError),
+    'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', CreateItemError),
+    'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor', CreateItemError),
+    'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', CreateItemError),
+    'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', CreateItemError),
+    'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', CreateItemError),
+    'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list', CreateItemError)
+};
 
 /****************************
     Request Object Definition
@@ -155,7 +168,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
             if(insertedItemPrimaryKeyLookup[createItemObject.newGlobalIndex] === null) {
                 insertedItemPrimaryKeyLookup = createIndividualItem(createItemObject.newGlobalIndex, createItemObjectArray, insertedItemPrimaryKeyLookup, db)
             } else {
-            // otherwise store primary key
+                // otherwise store primary key
                 globalReference = insertedItemPrimaryKeyLookup[createItemObject.newGlobalIndex]
             }
         }
@@ -196,24 +209,6 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID)
     const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
 
-    // Generate external column insertion functions
-    /**
-     * @param {String} tableName 
-     * @param {String} columnName 
-     * @param {String|Number|Date|Object|Boolean|Array} data 
-     * @returns {<{columnName: String, primaryKey: Number | Number[]}>}
-     * // Array of primary keys if list reference type
-     */
-    const insertExternalColumn = {
-        'attribute-mutable': externalColumnInsertGenerator('attribute_id', true, 'attribute', db),
-        'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', db),
-        'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor', db),
-        'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', db),
-        'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', db),
-        'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', db),
-        'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list', db)
-    };
-
     // 3. Go through user supplied data columns and add column names and column values
     //    to the columnNamesAndValues array. For external data columns, either insert
     //    the value into the external table first and add the newly created primary key,
@@ -226,6 +221,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         // Convert returnableID to columnID
         const columnID = returnableIDLookup[id].columnID;
         // if the returnable is valid
+        // I think this if statement is duplicative because validity was already checked
         if(relevantColumnIDs.includes(columnID)) {
             // if nullable then remove from nullable list
             if(nonNullableColumnIDs.includes(columnID)) {
@@ -247,7 +243,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
                     });
                     continue;
                 }
-                const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue);
+                const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
                 columnNamesAndValues.push(primaryKeyAndColumnName);
             // then a local column
             } else {
@@ -278,7 +274,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         const {itemColumn, columnValue} = columnsAndValues;
 
         // 1. Insert into the list_... table
-        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue);
+        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
 
         // insert into the many to many table
         await insertItemManyToMany(primaryKeyOfInsertedValue, itemPrimaryKey, itemColumn.tableName, db);
@@ -356,33 +352,4 @@ function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, 
     });
 
     return fullInsertSQL;
-}
-
-
-
-/**
- * Validate the required items are correct. Throws an error if not
- * @param {Array} requiredItemTableNames 
- * @param {string} tableName
- * @returns {undefined} 
- * 
- * uses requiredItemLookup
- */
-function validateRequiredItems(requiredItemTableNames, tableName) {
-    // make sure all required items exist and all non nullable required items are included
-    const nonNullableNeededAmount = requiredItemLookup[tableName].nonNullable.length;
-    let nonNullableCurrentAmount = 0;
-    for(let table of requiredItemTableNames) {
-        // if non nullable
-        if(requiredItemLookup[tableName].nonNullable.includes(table)) {
-            nonNullableCurrentAmount ++;
-        // if not in the nullable set either then throw
-        } else if(!requiredItemLookup[tableName].nullable.includes(table)) {
-            throw new CreateItemError({code: 400, msg: `${table} is not a required item of ${tableName}`});
-        }
-    }
-    // Make sure all non nullables have been included
-    if(nonNullableCurrentAmount !== nonNullableNeededAmount) {
-        throw new CreateItemError({code: 400, msg: `Not all non-nullable required items have been included for ${tableName}. Needed ${[...requiredItemLookup[tableName].nonNullable, 'item_global']} and got ${requiredItemTableNames}`});
-    }
 }
