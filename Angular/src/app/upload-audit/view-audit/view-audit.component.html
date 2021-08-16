@@ -1,23 +1,20 @@
-<!-- outside div body wrapper to make sure tab bar doesnt push down content -->
-
 <head>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
-
 </head>
-
-<div style="width: 90%; margin-left: auto; margin-right: auto">
-  <div id="top-buttons" fxLayoutAlign="end center" style="margin-top: 10px;;">
-    <button mat-button [routerLink]="'/upload-audit'">
-      Cancel
-    </button>
-    <button mat-button id="save-button" [routerLink]="'/upload-audit'">
-      Save
-    </button>
+<div id="body">
+  <div fxLayoutAlign="space-between center">
+    <h4 style="font-weight: 700; font-size: 25px;">{{audit.auditName}}</h4>
+    <div id="table-buttons">
+      <button mat-button [routerLink]="'/upload-audit'">
+        Cancel
+      </button>
+      <button mat-button id="save-button" [routerLink]="'/upload-audit'">
+        Save
+      </button>
+    </div>
   </div>
-  <h4>
-    {{audit.auditName}}
-  </h4>
+  <h6 style="font-weight: 700; font-size: 15px;">Audit Metadata</h6>
   <div id="open-dialog-buttons" style="margin-bottom: 20px;;">
     <button mat-button (click)="openGlobalPresets()">
       Global Presets
@@ -26,9 +23,6 @@
       Add Root Features
     </button>
   </div>
-
-
-
   <mat-accordion>
     <div *ngFor="let feature of displayedRootFeatures">
       <mat-expansion-panel [disabled]='auditOpened'>
@@ -37,9 +31,9 @@
             <span>
               {{ feature.name }}
             </span>
-            <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit(feature)">
+            <!-- <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit(feature)">
               <mat-icon style="font-size: small;">add</mat-icon>
-            </button>
+            </button> -->
           </mat-panel-title>
         </mat-expansion-panel-header>
         <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"
@@ -50,35 +44,5 @@
       </mat-expansion-panel>
     </div>
   </mat-accordion>
-
-
-  <!-- hardcoded -->
-  <!-- <mat-accordion>
-    <div *ngFor="let audit of audits">
-      <div *ngFor="let feature of audit.features">
-        <div *ngIf="feature.included">
-          <mat-expansion-panel [disabled] = 'auditOpened'>
-            <mat-expansion-panel-header>
-              <mat-panel-title style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
-                <span>
-                  {{ feature.name }}
-                </span>
-                <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit(feature.name)">
-                  <mat-icon style="font-size: small;">add</mat-icon>
-                </button>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"
-              [footerHeight]="50" rowHeight="auto" [scrollbarH]="false" [limit]="5">
-              <ngx-datatable-column *ngFor="let col of columns" [prop]="getProp(col)" [name]="col">
-              </ngx-datatable-column>
-            </ngx-datatable>
-          </mat-expansion-panel>
-        </div>
-      </div>
-    </div>
-  </mat-accordion> -->
-
+  <div style="padding-bottom: 40px;"></div>
 </div>
-
-<div style="padding-bottom: 40px;"></div>
