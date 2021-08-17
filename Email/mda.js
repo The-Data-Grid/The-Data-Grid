@@ -34,7 +34,7 @@ async function send(transporter, subject, body, receiversList) {
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
-        from: '"🌎 The Data Grid 🌎"', // sender address
+        from: '"🌎 The Data Grid 🌎" <thedatagridnoreply@gmail.com>', // sender address
         to: receiversList, // list of receivers
         subject: subject, // Subject line
         text: body, // plain text body
