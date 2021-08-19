@@ -14,8 +14,19 @@
       </button>
     </div>
   </div>
-  <h6 style="font-weight: 700; font-size: 15px;">Audit Metadata</h6>
-  <div id="open-dialog-buttons" style="margin-bottom: 20px;;">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span style="font-weight: 700; font-size: 15px;">
+          Audit Metadata
+        </span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngFor="let column of auditMetadata" style="font-weight: 700; font-size: 12px;">
+      {{column.frontendName}}
+    </div>
+  </mat-expansion-panel>
+  <div id="open-dialog-buttons" style="margin-top: 20px; margin-bottom: 20px;">
     <button mat-button (click)="openGlobalPresets()">
       Global Presets
     </button>

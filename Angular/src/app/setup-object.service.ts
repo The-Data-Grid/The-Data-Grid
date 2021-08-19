@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AppliedFilterSelections, ReturnableIDObject} from './models'
 
+// setupObject.children
 export const IDX_OF_FEATURES_ARR = 0;
+export const IDX_OF_ITEM_ARR = 1;
 export const IDX_OF_GLOBAL_ITEM_IDX = 2;
+export const IDX_OF_AUDIT_ITEM_IDX = 3;
 
 export const IDX_OF_ID_COL_IDXS = 0;
 export const IDX_OF_ID_ITEM_IDXS = 1;
@@ -98,9 +101,14 @@ export class SetupObjectService {
     return featuresToChildren;
   }
 
+  getAllAuditItemRelatedColumns(setupObject) {
+    const columns = []
+    this.getAllItemRelatedColumns(setupObject, setupObject.items[IDX_OF_GLOBAL_ITEM_IDX], columns)
+    return columns;
+  }
 
 //recursively find all the columns belonging to an item or a child of that item
-  private getAllItemRelatedColumns(item, columns, path, returnableIDs, setupObject) {
+  private getAllItemRelatedColumns(setupObject, item, columns, path = [], returnableIDs = []) {
     item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_COL_IDXS, i);
@@ -113,7 +121,7 @@ export class SetupObjectService {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_ITEM_IDXS, i);
       let itemIndex = itemPointer.index;
-      this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, returnableIDs, setupObject);
+      this.getAllItemRelatedColumns(setupObject, setupObject.items[itemIndex], columns, newPath, returnableIDs);
     });
     item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
       let newPath = Object.assign([], path);
@@ -127,7 +135,7 @@ export class SetupObjectService {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
       let itemIndex = itemPointer.index;
-      this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, returnableIDs, setupObject);
+      this.getAllItemRelatedColumns(setupObject, setupObject.items[itemIndex], columns, newPath, returnableIDs);
     });
   }
 
@@ -161,7 +169,7 @@ export class SetupObjectService {
   let globalColumns = [];
   let path = [IDX_OF_GLOBAL_ITEM_IDX];
 
-  this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, returnableIDs, setupObject);
+  this.getAllItemRelatedColumns(setupObject, setupObject.items[globalItemIndex], globalColumns, path, returnableIDs);
   return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFilterSelector);
 }
 
