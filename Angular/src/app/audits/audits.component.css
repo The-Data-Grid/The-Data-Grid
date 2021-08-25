@@ -1,42 +1,119 @@
-/* .body {
-    display: block;
-}     */
-
 #filterbox {
     height: 35vh;
     color: black;
     font-size: small;
+    border-bottom: 1px solid black;
 }
 
 #observations {
-    background-color: rgba(73, 73, 73, .4);
+    display: inline-block;
     width: 30%;
     height: 100%;
-    display: inline-block;
+    background-color: #9f9f9f;
+    overflow-y: scroll;
+}
+
+.observation-panel {
+    width: 100%; 
+    height:15%; 
+    border-top: 1px solid black;
+    padding-bottom: 2px;
+    font-size:1.65vh;
+    cursor: pointer;
+}
+
+.observation-panel:hover {
+    background-color: rgb(216, 216, 216);
+}
+
+.observation-panel-blank {
+    width: 100%; 
+    height:15%; 
+    border-top: 1px solid black;
 }
 
 #querybuilder {
     display: inline-block;
     width: 70%;
     height: 100%;
-    background-color: rgba(73, 73, 73, .2);
-    overflow-y: scroll;
+    background-color: rgb(251,251,251);
+    overflow-y: hidden;
 }
 
 #querybuilder-bar {
     background-color: rgba(73, 73, 73, .4);
     width: 100%;
-    height: 32px;
+    height: 5vh;
 }
 
-#querybuilder-filters {
-    padding: 20px;
+.title {
+    font-size: 1.75vh;
+    float: left;
+    font-weight: bold;
+    float: top;
+    margin-left: 5%;
+    margin-top: 1%;
+}
+
+.right {
+    font-size: 1.75vh;
+    float: right;
+    font-weight: bold;
+    float: top;
+    margin-right: 5%;
+    margin-top: 1%;
+}
+
+.grid-container {
+    display: grid;
+    width: 100%;
+    height: 90%;
+    grid-template-columns: 5% 95%;
+    grid-template-rows: 6vh 6vh 6vh 6vh 6vh;
+  }
+
+  
+  .grid-container > div {
+    border-right: 1px solid #B0B0B0;
+    border-bottom: 1px solid #E0E0E0;
+    background-color: rgb(251, 251, 251);
+    text-align: center;
+    /* padding: 20px 0; */
+    font-size: 1.5vh;
+  }
+
+  .grid-container > span {
+    border-right: 1px solid #B0B0B0;
+    background-color: rgb(251, 251, 251);
+    font-size: 2vh;
+  }
+  
+
+.label {
+    padding-top: 25%;
+    font-weight: 450;
+    font-size: 1vh;
+}
+
+.dropdown {
+    margin-top: 1%;
+    font-size: 1.5vh;
+    float: left;
+    margin-left: 1%;
+    padding-right: 60px;
+    border-radius: 6px;
+    padding:3px 50px 3px 3px;
+    box-shadow: 2px 2px 1px #D8D8D8;
+}
+
+.content {
+    padding-top: 0.5%;
+    size: 10px;
+    border-bottom: 1px solid #E0E0E0;
 }
 
 #apply-button {
     background-color: rgb(95, 167, 132);
-    margin-top:10px;
-    display: block;
 }
 
 /* .body ::ng-deep .mat-form-field-label, .mat-datepicker-toggle, ::ng-deep .mat-select-arrow, ::ng-deep .mat-select-value {

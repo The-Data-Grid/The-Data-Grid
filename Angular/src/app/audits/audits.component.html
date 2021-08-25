@@ -1,55 +1,94 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
+    </head>      
 <div class="body">
     <div id="filterbox">
         <div id="observations">
+            <div class="observation-panel">
+                <p style="margin-left: 15%;"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;&nbsp; My Observations</p>
+            </div>
+            <div class="observation-panel-blank">
+                <p>  </p>
+            </div>
+            <div class="observation-panel">
+                <p style="margin-left: 15%;"> <i class="fa fa-sitemap" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;&nbsp; My Organization's Observations</p>
+            </div>
+
+            <div class="observation-panel">
+                <p style="margin-left: 15%;"> <i class="fa fa-bath" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;&nbsp; My Organization's Audits</p>
+            </div>
+
+            <div class="observation-panel" style="border-bottom: 1px solid black;">
+                <p style="margin-left: 15%;"><i class="fa fa-user" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp;&nbsp; My Audits</p>
+            </div>
+
 
         </div>
         <div id="querybuilder">
             <div id="querybuilder-bar">
-                Query Builder
-            </div>
-            <!-- <h3>Filter By</h3>
-            <mat-radio-group style="padding-top: 30px" aria-label="Select an option" [(ngModel)]="filterBy">
-                <mat-radio-button value="Feature">Feature</mat-radio-button>
-                <mat-radio-button value="Submission">Submission</mat-radio-button>
-            </mat-radio-group> -->
+                <span class="title"><i class="fa fa-caret-down"></i>&nbsp;&nbsp; Query Builder</span>
+                <span class="right"><i class="fa fa-bars"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <!-- <button id="apply-button" mat-button (click)="applyFilters()">APPLY</button> -->
+                </span>
+            </div>      
 
-            <!-- global filters -->
-            <!-- <div class="global-filters" style="padding-top: 10px;">
-                <h3>Global Filters</h3>
-                <div *ngIf="selectorsLoaded">
-                    <app-reusable-template [feature]="globalSelectors"
-                        [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="globalReturnableIDs">
-                    </app-reusable-template>
-                </div>
-            </div> -->
+            <div class="grid-container">
+                <div class="label">Type</div>
+                <span class="content"><p style="font-size: 1.6vh; margin-left: 1%;">Some toggle goes here but I'm not quite sure what</p></span>
+                <div class="label">Target</div>  
+                <div>
+                    <span style="margin-top: 10px;">
+                        <select class="dropdown">
+                            <option value="volvo">Option 1</option>
+                            <option value="saab">Option 2</option>
+                            <option value="opel">Option 3</option>
+                            <option value="audi">Option 4</option>
+                          </select>
+                    </span>
+                  </div>
+                <div class="label">Fields</div>
+                <div>
+                    <span style="margin-top: 10px;">
+                        <select class="dropdown">
+                            <option value="volvo">Option 1</option>
+                            <option value="saab">Option 2</option>
+                            <option value="opel">Option 3</option>
+                            <option value="audi">Option 4</option>
+                          </select>
+                    </span>
+                </div>    
+                <div class="label">Filter</div>                
+                <span class="content"><p style="font-size: 1.6vh; cursor: pointer; color: rgb(10, 80, 139); margin-left: 1%;">All > GPF is greater than 2 > Auditor is Mr Rabid</p></span>
+                <div class="label">Sort</div>
+                <span class="content"><p style="font-size: 1.6vh; cursor: pointer;color: rgb(10, 80, 139); margin-left: 1%;">Date Conducted Descending > Auditor Last Name Descending</p></span>
+            </div>
+
 
             <!-- feature filters -->
-            <div id="querybuilder-filters" *ngIf="filterBy!='Submission'">
-                <mat-form-field class="selector">
-                    <mat-label>Features</mat-label>
-                    <mat-select [(ngModel)]="selectedFeature" (ngModelChange)="onFeatureSelection()">
-                        <mat-option *ngFor="let info of rootFeatures" [value]="info">
-                            {{info.name}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <!-- <mat-accordion *ngIf="selectedFeature">
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                {{ selectedFeature.name }}
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <app-reusable-template [feature]="featureSelectors[selectedFeature.index]"
-                            [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="featureReturnableIDs">
-                        </app-reusable-template>
-                    </mat-expansion-panel>
-                </mat-accordion> -->
-                <button id="apply-button" mat-button (click)="applyFilters()">APPLY</button>
+            <!-- <div id="querybuilder-filters" *ngIf="filterBy!='Submission'">
+                <div style="flex-grow: 1; border-right: 3px solid palegreen;" class="label"><p>Type</p></div>
+                <div style="flex-grow: 20">placeholder</div>
             </div>
-        </div>
+            <div id="querybuilder-filters" *ngIf="filterBy!='Submission'">
+                <div style="flex-grow: 1; border-right: 3px solid palegreen;" class="label">Target</div>
+                <div style="flex-grow: 20">placeholder</div>
+            </div>
+            <div id="querybuilder-filters" *ngIf="filterBy!='Submission'">
+                <div style="flex-grow: 1;border-right: 3px solid palegreen;" class="label">Fields</div>
+                <div style="flex-grow: 20">placeholder</div>
+            </div>
+            <div id="querybuilder-filters" *ngIf="filterBy!='Submission'">
+                <div style="flex-grow: 1;border-right: 3px solid palegreen" class="label">Filter</div>
+                <div style="flex-grow: 20">placeholder</div>
+            </div>
+            <div id="querybuilder-filters" *ngIf="filterBy!='Submission'">
+                <div style="flex-grow: 1;border-right: 3px solid palegreen" class="label">Sort</div>
+                <div style="flex-grow: 20">placeholder</div>
+            </div> -->
 
+        </div>
     </div>
 
     <div id="main-content">
@@ -151,3 +190,4 @@
         </ngx-datatable>
     </div>
 </div>
+</html>

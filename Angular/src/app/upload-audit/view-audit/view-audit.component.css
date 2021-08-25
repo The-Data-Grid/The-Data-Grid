@@ -1,19 +1,10 @@
-
-/* .mat-card {
+#body {
+    width: 70%;
     margin-left: auto;
     margin-right: auto;
-    border-radius: 0%;
+    top: 50px;
+    bottom: 30px;
 }
-
-.mat-card-subtitle {
-    padding:30px;
-}
-
-.mat-card-subtitle .mat-button {
-    margin: 10px;
-    background-color: #BFDCCE;
-    color: black;
-} */
 
 #save-button {
     background-color: rgb(86, 156, 215);
@@ -26,7 +17,7 @@
 }
 
 .add-button {
-    color:gray;
+    color: gray;
     margin-right: 15px;
 }
 
@@ -68,17 +59,19 @@
 }
 
 table {
-    width:99%;
+    width: 99%;
     margin-left: 5px;
-  }
-  table, th, td {
+}
+
+table, th, td {
     border: 1px solid #E8E8E8;
     border-collapse: collapse;
-  }
-  th, td {
+}
+
+th, td {
     padding: 15px;
     text-align: left;
-  }
+}
 
 .column_name {
     font-weight: 600;
@@ -87,16 +80,17 @@ table {
 .center {
     margin-left: auto;
     margin-right: auto;
-  
 }
 
 .table_styling {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
-  
+
 /* .table_styling tr:nth-child(even){background-color: #f2f2f2;} */
 
-.table_styling tr:hover {background-color: #ddd;}
+.table_styling tr:hover {
+    background-color: #ddd;
+}
 
 .table_separation {
     display: block;
@@ -105,10 +99,8 @@ table {
     background-image: linear-gradient(#FFFFFF, #F8F8F8, #F5F5F5, #F0F0F0, #E8E8E8);
     min-width: 95%;
     overflow: none;
-
 }
 
 .id_style {
     background-image: linear-gradient(#FFFFFF, #F8F8F8);
 }
-

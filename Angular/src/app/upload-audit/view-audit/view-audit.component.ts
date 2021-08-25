@@ -42,20 +42,17 @@ export class ViewAuditComponent implements OnInit {
   };
   defaultColumns = [];
   rootFeatures = [];
+  auditMetadata = [];
   // for optimistic updating from the dialogs
   displayedRootFeatures = [];
-
-
 
   getProp(col) {
     return col.replace(/\s+/g, '_');
   }
 
-
   constructor(public dialog: MatDialog, private datePipe: DatePipe,
     private apiService: ApiService, private setupObjectService: SetupObjectService) {
    }
-
 
   //  hardcord data, delete eventually
   audit = { auditName: "Bathroom Audit 1", uploadStatus: "uploaded", _id: "1234567890" };
@@ -121,7 +118,6 @@ export class ViewAuditComponent implements OnInit {
   ngOnInit(): void {
     // get setupObject and rootFeatures
     this.getSetupTableObject();
-
   }
 
   getSetupTableObject() {
@@ -129,6 +125,8 @@ export class ViewAuditComponent implements OnInit {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject)
       this.displayedRootFeatures = this.rootFeatures;
+      this.auditMetadata = this.setupObjectService.getAllAuditItemRelatedColumns(this.setupObject);
+      console.log(this.auditMetadata);
     });
   }
 
