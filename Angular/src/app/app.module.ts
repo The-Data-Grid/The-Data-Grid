@@ -26,7 +26,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { PasswordAuthenticationComponent } from './password-authentication/password-authentication.component';
 import { ClickOutsideModule } from 'ng-click-outside'
 import { MaterialModule } from './material.module';
-import { RootFeaturesComponent } from './upload-audit/root-features/root-features.component';
+import { AddRootFeaturesComponent } from './upload-audit/add-root-features/add-root-features.component';
 import { GlobalPresetsComponent} from './upload-audit/global-presets/global-presets.component';
 import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audit.component';
 import { SetupObjectService } from './setup-object.service';
@@ -49,7 +49,7 @@ import { TeamComponent } from './team/team.component';
     PasswordAuthenticationComponent,
     UploadAuditComponent,
     AuditSummaryComponent,
-    RootFeaturesComponent,
+    AddRootFeaturesComponent,
     GlobalPresetsComponent,
     FeatureAuditComponent,
     ReusableTemplateComponent,

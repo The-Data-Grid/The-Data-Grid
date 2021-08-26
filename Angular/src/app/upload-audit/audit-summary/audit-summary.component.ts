@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { RootFeaturesComponent } from '../root-features/root-features.component';
+import { AddRootFeaturesComponent } from '../add-root-features/add-root-features.component';
 import { GlobalPresetsComponent} from '../global-presets/global-presets.component';
 import { FeatureAuditComponent} from '../feature-audit/feature-audit.component';
 import { DatePipe } from '@angular/common';
@@ -64,7 +64,7 @@ export class AuditSummaryComponent implements OnInit {
 // end hardcode data
 
   openRootFeatures(): void {
-    const dialogRef = this.dialog.open(RootFeaturesComponent, {
+    const dialogRef = this.dialog.open(AddRootFeaturesComponent, {
       width: '801px',
       maxHeight: '500px',
       data: [this.audits, this.displayedRootFeatures],
