@@ -7,6 +7,7 @@ import { TableObject, SetupTableObject, AppliedFilterSelections } from './models
 import { error } from '@angular/compiler/src/util';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import {SubmissionObject} from './models/submission'
 const API_URL = environment.apiUrl; //this should default to environment.ts in dev and environment.prod.ts in production
 const PORT = environment.port;
 
@@ -125,6 +126,10 @@ export class ApiService {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
     return this.http.post(`${API_URL}/logout`, {
     }, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  submit(submission:SubmissionObject) {
+    return this.http.post(`${API_URL}/audit/submission`, submission, {responseType:'text'})
   }
 
 }

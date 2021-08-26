@@ -8,6 +8,7 @@ import {MatMenu, MatMenuTrigger} from '@angular/material/menu'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Clipboard } from '@angular/cdk/clipboard'
 import { black } from 'chalk';
+import {SubmissionObject} from './models/submission'
 
 
 const API_URL = environment.apiUrl;
@@ -148,10 +149,121 @@ export class AppComponent implements OnInit {
     this.currentWindowWidth = window.innerWidth;
     this.recheckIfInMenu = false;
 
+    // this.submit();
+
     // this.dialog.open(LockDialogComponent, dialogConfig);
   }
 
   copyEmail() {
     this.clipboard.copy("thedatagrid@gmail.com");
   }
+
+
+  submit() {
+    console.log("AYO")
+    var submission = {
+      "items": {
+          "create": [
+              {
+                  "itemTypeID": 15,
+                  "requiredItems": [],
+                  "newRequiredItemIndices": [2],
+                  "globalPrimaryKey": 1,
+                  "newGlobalItemIndex": null,
+                  "data": {
+                      "returnableIDs": [
+                          483,
+                          484,
+                          485
+                      ],
+                      "data": [
+                          2,
+                          "Tesla",
+                          "Lockheed Martin"
+                      ]
+                  }
+              },
+              {
+                  "itemTypeID": 15,
+                  "requiredItems": [],
+                  "newRequiredItemIndices": [2],
+                  "globalPrimaryKey": 1,
+                  "newGlobalItemIndex": null,
+                  "data": {
+                      "returnableIDs": [
+                          483,
+                          484,
+                          485
+                      ],
+                      "data": [
+                          3,
+                          "Tesla",
+                          "Lockheed Martin"
+                      ]
+                  }
+              },
+              {
+                  "itemTypeID": 17,
+                  "requiredItems": [],
+                  "newRequiredItemIndices": [3],
+                  "globalPrimaryKey": 1,
+                  "newGlobalItemIndex": null,
+                  "data": {
+                      "returnableIDs": [
+                          523,
+                          524,
+                          525
+                      ],
+                      "data": [
+                          "9001",
+                          true,
+                          false
+                      ]
+                  }
+              },
+              {
+                  "itemTypeID": 0,
+                  "requiredItems": [{
+                      "itemTypeID": 2,
+                      "primaryKey": 1
+                  }],
+                  "newRequiredItemIndices": [],
+                  "globalPrimaryKey": 1,
+                  "newGlobalItemIndex": null,
+                  "data": {
+                      "returnableIDs": [
+                          142,
+                          143
+                      ],
+                      "data": [
+                          "Franz Hall",
+                          {"type":"Polygon","coordinates":[[
+                              [7.734375,51.835777520452],
+                              [3.8671875,48.341646172375],
+                              [7.20703125,43.580390855608],
+                              [18.6328125,43.834526782237],
+                              [17.9296875,50.289339253292],
+                              [13.7109375,54.059387886624],
+                              [7.734375,51.835777520452]
+                          ]]}
+                      ]
+                  }
+              }
+          ],
+          "update": [],
+          "delete": [],
+          "requestPermanentDeletion": []
+      },
+      "observations": {
+          "create": [],
+          "update": [],
+          "delete": []
+      }
+  }
+    this.apiService.submit(submission).subscribe((res) => {
+      console.log(res)
+    })
+  }
+
+
 }
