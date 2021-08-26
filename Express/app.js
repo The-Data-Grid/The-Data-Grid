@@ -33,12 +33,15 @@ const cacheLayer = require('./query/cacheLayer.js');
 const template = require('./template.js');
 const authRouter = require('./auth/login.js');
 
-app.use(cors({credentials: true, origin: 'http://localhost:4200'}));
+// CORS
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:4200'
+}));
 
 // middleware
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false}));
-app.use('/api', authRouter);
 
 // set TLS options
 let options;
@@ -51,14 +54,10 @@ if(isDeployment) {
 // remove "X-Powered-By: Express" from header
 app.set('x-powered-by', false);
 
+// User Management Router
+app.use('/api/user', authRouter);
+
 ////// ROUTES //////
-//** Testing request response cycle time (for dev only) **//
-function cycleTimer(req, res, next) {
-    res.locals.cycleTime = []
-    res.locals.cycleTime.push(Date.now())
-    //console.log('app.js entry - 0 ms')
-    next()
-}
 
 //** Observation Key Query **/	
 app.get('/api/audit/observation/key/:feature', 
@@ -137,7 +136,7 @@ app.get('/api/audit/item/distinct/:feature/:include',
 
 
 //** Setup Query **//	
-app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);	
+app.get('/api/setup', parse.setupParse, query.sendSetup);	
 // Audit Upload	
 app.post('/api/audit/submission', insert.submission);	
 // Template Query	

@@ -2,14 +2,8 @@ const express = require('express');
 const router = express.Router(); //use router instead of app
 const session = require('express-session'); 
 const bcrypt = require('bcrypt');
-var cors = require('cors')
 
 const {postgresClient} = require('../db/pg.js'); 
-
-var corsOptions = {
-    origin: 'http://localhost:4200',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-  }  
 
 // get connection object
 const db = postgresClient.getConnection.db;
@@ -30,12 +24,10 @@ const updating = require('../statement.js').updates;
 let Store = require('memorystore')(session); 
 let MyStore = new Store({checkPeriod: 1000000});
 
-// router.use(corsOptions);
-
 // Session on every route
 router.use(session({
     store: MyStore, 
-    secret: 'shhhhh',
+    secret: 'shhhhh', // shouldn't matter because we use nanoid
     resave: false,
     saveUninitialized: false,
     name: 'sessionID',
@@ -48,8 +40,7 @@ router.use(session({
 }));
 
 // Login
-router.post('/login', cors(corsOptions), async (req, res) => {
-
+router.post('/login', async (req, res) => {
     let data = null;
     try {
         data = await db.one(formatSQL(SQL.password, {
@@ -89,9 +80,8 @@ router.post('/logout', (req, res) => {
     }
 });
 
-
 // New user register
-router.post('/user/new', async (req, res) => {
+router.post('/', async (req, res) => {
     if (!isValidPassword(req.body.pass)) {
         res.status(400).send('Bad Request 2211: Invalid Password'); 
     }
@@ -134,9 +124,6 @@ userSQL.insertingUsers= {
 
     res.send('registration successful')
 });
-
-
-
 
 
 // Send verfication email to new user  
@@ -223,7 +210,7 @@ router.post('/verifyPasswordResetLink', async (req, res) => {
 });
 
 // Update new password
-router.post('ResetPassword', async (req, res) => {
+router.post('resetPassword', async (req, res) => {
     let hashedPassword = await bcrypt.hash(req.body.pass, 10); 
     try {
         await db.none(formatSQL(updating.updatepassword, {

@@ -43,13 +43,11 @@ async function insertSubmission(submissionObject, sessionObject) {
     // PostgreSQL transaction
     // must pass transaction database object to each helper
     await db.tx(async transaction => {
-        /*
         await updateItem({
             updateItemObjectArray,
             transaction,
             sessionObject
         })
-        */
         
         await deleteItem({
             deleteItemObjectArray,
@@ -58,13 +56,11 @@ async function insertSubmission(submissionObject, sessionObject) {
             sessionObject
         })
 
-        /*
         await updateObservation({
             updateObservationObjectArray,
             transaction,
             sessionObject
         })
-        */
 
         await deleteObservation({
             deleteObservationObjectArray,
@@ -72,14 +68,12 @@ async function insertSubmission(submissionObject, sessionObject) {
             sessionObject
         })
 
-        
         const insertedItemPrimaryKeyLookup = await createItem({
             createItemObjectArray,
             transaction,
             sessionObject
         })
 
-        
         await createObservation({
             createObservationObjectArray,
             insertedItemPrimaryKeyLookup,
