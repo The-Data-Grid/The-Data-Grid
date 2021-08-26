@@ -22,12 +22,21 @@ export class AddRootFeaturesComponent implements OnInit {
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   rootFeatureOptions = [];
+  setupObject;
+  rootFeatures;
+  currentWindowWidth;
+  isChecked = false;
+  status = "current";
 
   constructor(private apiService: ApiService,
     public dialogRef: MatDialogRef<AddRootFeaturesComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Data, @Inject(MAT_DIALOG_DATA) public da: Data, private setupObjectService: SetupObjectService) {
   }
 
+  ngOnInit(): void {
+    this.currentWindowWidth = window.innerWidth
+    this.getSetupObject()
+  }
 
   onSubmit(): void {
     console.log(this.rootFeatures.length)
@@ -49,23 +58,11 @@ export class AddRootFeaturesComponent implements OnInit {
     return false;
   }
 
-  setupObject;
-  rootFeatures;
-  currentWindowWidth;
-
-  ngOnInit(): void {
-    this.currentWindowWidth = window.innerWidth
-    console.log(this.data);
-    this.getSetupObject()
-  }
-
-
   @HostListener('window:resize')
   onResize() {
     this.currentWindowWidth = window.innerWidth;
     console.log(this.currentWindowWidth)
   }
-
 
   getFeaturesLength() {
     for (var i = 0; ; i++) {
@@ -78,7 +75,6 @@ export class AddRootFeaturesComponent implements OnInit {
     }
   }
 
-
   getSubFeaturesLength(subfeatureList) {
     for (var i = 0; ; i++) {
       try {
@@ -89,10 +85,6 @@ export class AddRootFeaturesComponent implements OnInit {
       }
     }
   }
-
-  isChecked = false;
-
-  status = "current";
 
   close() {
     this.dialogRef.close();
@@ -112,6 +104,4 @@ export class AddRootFeaturesComponent implements OnInit {
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
     });
   }
-
-
 }

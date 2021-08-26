@@ -1,22 +1,22 @@
 <html>
-
 <body style="overflow-x: hidden;">
   <div class="top_decoration"></div>
   <br>
   <div id="toggle" class="main-width">
-    <mat-button-toggle-group name="featureToggle" id="featureToggle" value="current">
+    <mat-button-toggle-group name="featureToggle" id="featureToggle">
       <mat-button-toggle [class.main-width]="currentWindowWidth > 900" [class.second-width]="currentWindowWidth > 800"
-        [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('roots')" value="all">
-        <span style="margin-top: 200px;">Current Selections</span>
+        [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('current')">
+        Current Selections
       </mat-button-toggle>
       <mat-button-toggle [class.main-width]="currentWindowWidth > 900" [class.second-width]="currentWindowWidth > 800"
-        [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('current')" value="current">
+        [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('roots')">
         All Root Features
       </mat-button-toggle>
     </mat-button-toggle-group>
   </div>
-  <div style="margin-top: 20px; width: 90%; margin-left:25px" *ngIf="status=='current'">
-    <!-- FROM TEMPLATE -->
+
+  <!-- FROM TEMPLATE -->
+  <div *ngIf="status=='current'" class="tab-content">
     <mat-accordion>
       <div *ngFor="let audit of data[0]">
         <mat-expansion-panel>
@@ -43,7 +43,7 @@
   </div>
 
   <!-- ALL ROOT FEATURES -->
-  <div *ngIf="status=='roots'" style="margin-top: 20px; width: 90%; margin-left:25px">
+  <div *ngIf="status=='roots'" class="tab-content">
     <mat-accordion>
       <div *ngFor="let feature of rootFeatures">
         <mat-expansion-panel disabled style="color: green;">
@@ -62,7 +62,7 @@
   </div>
 
   <!-- action buttons -->
-  <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
+  <div class="action-button-group">
     <button mat-button (click)="close()" style="margin-right: 10px;">
       Cancel
     </button>
@@ -71,5 +71,4 @@
     </button>
   </div>
 </body>
-
 </html>
