@@ -19,7 +19,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { DialogComponent } from './login-dialog/login-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UploadComponent } from './upload/upload.component';
-import { ViewAuditComponent } from './upload-audit/view-audit/view-audit.component';
+import { AuditSummaryComponent } from './upload-audit/audit-summary/audit-summary.component';
 import { AboutComponent } from './about/about.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -48,7 +48,7 @@ import { TeamComponent } from './team/team.component';
     SettingsComponent,
     PasswordAuthenticationComponent,
     UploadAuditComponent,
-    ViewAuditComponent,
+    AuditSummaryComponent,
     RootFeaturesComponent,
     GlobalPresetsComponent,
     FeatureAuditComponent,

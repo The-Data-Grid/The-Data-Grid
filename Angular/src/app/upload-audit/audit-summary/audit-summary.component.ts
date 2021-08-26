@@ -12,12 +12,12 @@ const USE_FAKE_DATA = environment.useFakeData;
 import { AppliedFilterSelections } from '../../models'
 
 @Component({
-  selector: 'app-view-audit',
-  templateUrl: './view-audit.component.html',
-  styleUrls: ['./view-audit.component.css'],
+  selector: 'app-audit-summary',
+  templateUrl: './audit-summary.component.html',
+  styleUrls: ['./audit-summary.component.css'],
   providers: [DatePipe]
 })
-export class ViewAuditComponent implements OnInit {
+export class AuditSummaryComponent implements OnInit {
   expanded = false;
   auditOpened = false;
   myDate = new Date();

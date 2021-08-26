@@ -243,3 +243,12 @@ html, body {
 .my-tooltip {
   white-space: pre-line;
 }
+
+
+
+/* needed to remove hover effect */
+/* .transparent-hover:hover .mat-button-focus-overlay {
+  background-color: transparent;
+} */
+
+
