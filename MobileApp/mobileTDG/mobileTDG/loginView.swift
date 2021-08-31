@@ -47,10 +47,15 @@ struct loginView: View {
 
 // check if user information is valid (will call api eventually)
 func authorizeUser(user: String, password: String) -> Bool {
-    if (!user.isEmpty && !password.isEmpty) {
+   // print(user, password)
+   myCall123(name: user, word: password)
+   return true
+   /*
+   if (!user.isEmpty && !password.isEmpty) {
         return true
     }
     return false
+   */
 }
 
 // Canvas preview setup
@@ -75,33 +80,3 @@ struct submitButtonContent: View {
     }
 }
 
-
-//model for data
-struct loginData: Codable, Identifiable {
-   let id = UUID()
-   let email: String
-   let password: String
-}
-
-// apiCall Class
-class apiCall {
-   // function to get login info
-   func getLoginInfo(completion: @escaping([loginData]) -> ()){
-      //check to see if url is valid
-      guard let url = URL(string: "thedatagrid.org/api/login") else { return }
-
-      //URL session to call data form URL
-      URLSession.shared.dataTask(with: url) { (data, _, _) in
-         //info variable to store info of decoded json object
-         let info = try! JSONDecoder().decode([loginData].self, from: data!)
-
-         print(info)
-
-         DispatchQueue.main.async{
-            completion(info)
-         }
-      }
-      // need resume to run the API call to URL
-      .resume()
-   }
-}
