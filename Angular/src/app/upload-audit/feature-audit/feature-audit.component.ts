@@ -7,11 +7,7 @@ import { environment } from '../../../environments/environment';
 const USE_FAKE_DATA = environment.useFakeData;
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../../dropdown-settings'
 import { TableObjectService } from '../../table-object.service';
-// import { TableObject } from '../responses';
-// import { SetupObject} from '../setupObjectTry1';
 import { AppliedFilterSelections } from '../../models'
-
-
 
 @Component({
   selector: 'app-feature-audit',
@@ -27,7 +23,6 @@ export class FeatureAuditComponent implements OnInit {
     private tableObjectService: TableObjectService) {
   }
 
-  title;
   setupObject;
   subfeatures = [];
   attributeSelectors;
@@ -61,6 +56,8 @@ export class FeatureAuditComponent implements OnInit {
   featureIndex = this.data.index;
   featureName = this.data.name;
   featureReturnableIDs = [];
+  globalDefaultColumns = []
+  globalReturnableIDs = [];
 
   dummy = [
     {
@@ -87,11 +84,7 @@ export class FeatureAuditComponent implements OnInit {
     {
       title: this.featureName + " Observation",
       type: "observation",
-    },
-    // {
-    //   title: "Subfeature",
-    //   type: "subfeature",
-    // }
+    }
   ]
 
   ngOnInit() {
@@ -118,6 +111,7 @@ export class FeatureAuditComponent implements OnInit {
         this.getFeatureChildren();
         this.getAttributeAndObservationColumns()
         this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.featureIndex)
+        this.globalSelectors = this.setupObjectService.getGlobalSelectors(this.setupObject, this.appliedFilterSelections, this.globalReturnableIDs, this.globalDefaultColumns, false)
       });
     }
   }
@@ -150,5 +144,4 @@ export class FeatureAuditComponent implements OnInit {
     this.attributeSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, this.appliedFilterSelections, [], false);
     this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, this.appliedFilterSelections, [], true);
   }
-
 }

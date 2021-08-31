@@ -1,7 +1,6 @@
 import { Component, OnInit, Inject, ViewChild, HostListener, Output, EventEmitter } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatCheckboxModule, MatCheckbox } from '@angular/material/checkbox';
 import { SetupObjectService } from '../../setup-object.service';
 import { SetupObject, TableObject } from '../../responses'
 import { environment } from '../../../environments/environment';

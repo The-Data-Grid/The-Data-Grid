@@ -231,9 +231,9 @@ html, body {
   padding: 0 !important;
 }
 
-/* .cdk-overlay-container {
+.cdk-overlay-container {
   top: 50px;
-} */
+}
 
 .cdk-overlay-connected-position-bounding-box {
   top: 0 !important;
@@ -255,4 +255,44 @@ html, body {
   float: right;
   margin-top: 30px;
   padding: 30px;
+}
+
+/* STYLES FOR DIALOG POPUPS */
+
+.popup {
+  max-height: 70vh;
+}
+
+.top_decoration {
+  height: 30px;
+  min-width: 3000px;
+  background-color: #569CD7;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.primary_separator {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: black;
+  height: 1px;
+  width: 831px;
+  margin-left: 0px
+}
+
+.secondary_separator {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: lightgray;
+  height: 1px;
+  width: 831px;
+  margin-left: 0px
+}
+
+.popup .mat-expansion-panel {
+  width: 95% !important;
+  margin-right: auto;
+  margin-left: auto;
+  border-radius: 0 !important;
+  overflow: visible !important;
 }

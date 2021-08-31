@@ -27,8 +27,9 @@ import { PasswordAuthenticationComponent } from './password-authentication/passw
 import { ClickOutsideModule } from 'ng-click-outside'
 import { MaterialModule } from './material.module';
 import { AddRootFeaturesComponent } from './upload-audit/add-root-features/add-root-features.component';
-import { GlobalPresetsComponent} from './upload-audit/global-presets/global-presets.component';
+import { GlobalPresetsComponent } from './upload-audit/global-presets/global-presets.component';
 import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audit.component';
+import { ItemCreationComponent } from './upload-audit/item-creation/item-creation.component';
 import { SetupObjectService } from './setup-object.service';
 import { TableObjectService } from './table-object.service';
 import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
@@ -53,7 +54,8 @@ import { TeamComponent } from './team/team.component';
     GlobalPresetsComponent,
     FeatureAuditComponent,
     ReusableTemplateComponent,
-    TeamComponent
+    TeamComponent,
+    ItemCreationComponent
   ],
   imports: [
     BrowserModule,

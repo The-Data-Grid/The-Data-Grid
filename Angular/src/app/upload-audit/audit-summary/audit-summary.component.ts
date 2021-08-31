@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddRootFeaturesComponent } from '../add-root-features/add-root-features.component';
 import { GlobalPresetsComponent} from '../global-presets/global-presets.component';
 import { FeatureAuditComponent} from '../feature-audit/feature-audit.component';
+import { ItemCreationComponent} from '../item-creation/item-creation.component';
 import { DatePipe } from '@angular/common';
 import { ApiService } from '../../api.service';
 import { SetupObjectService } from '../../setup-object.service';
@@ -22,7 +23,6 @@ export class AuditSummaryComponent implements OnInit {
   auditOpened = false;
   myDate = new Date();
   columns = ["Action","Last Updated","Room ID","Clockwise Number"]
-
 
 // for getting setupObject:
   setupObject;
@@ -74,15 +74,6 @@ export class AuditSummaryComponent implements OnInit {
     })
   }
 
-  openGlobalPresets(): void {
-    const dialogRef = this.dialog.open(GlobalPresetsComponent, {
-      panelClass: 'audit-dialog-no-padding',
-      width: '801px',
-      maxHeight: '500px',
-      data: this.audits
-    })
-  }
-
   showOrHideTable(feature) {
     console.log(feature);
     const tableElement = document.getElementById(feature)
@@ -104,15 +95,29 @@ export class AuditSummaryComponent implements OnInit {
     }
     return true;
   }
-  
+
+  openGlobalPresets(): void {
+    const dialogRef = this.dialog.open(GlobalPresetsComponent, {
+      panelClass: 'audit-dialog-no-padding',
+      width: '801px',
+      data: this.audits
+    })
+  }
+
   openFeatureAudit(feature): void {
     this.auditOpened = true;
     const dialogRef = this.dialog.open(FeatureAuditComponent, {
       width: '801px',
-      maxHeight: '500px',
       data: feature
     })
     dialogRef.afterClosed().subscribe((e) => this.auditOpened = false)
+  }
+
+  openItemCreation(column): void {
+    const dialogRef = this.dialog.open(ItemCreationComponent, {
+      width: '801px',
+      data: column
+    })
   }
 
   ngOnInit(): void {
@@ -129,5 +134,4 @@ export class AuditSummaryComponent implements OnInit {
       console.log(this.auditMetadata);
     });
   }
-
 }

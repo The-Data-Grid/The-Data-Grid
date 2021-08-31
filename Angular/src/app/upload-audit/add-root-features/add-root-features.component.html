@@ -1,21 +1,22 @@
 <html>
+
 <body style="overflow-x: hidden;">
   <div class="top_decoration"></div>
   <br>
   <div id="toggle" class="main-width">
-    <mat-button-toggle-group name="featureToggle" id="featureToggle">
+    <mat-button-toggle-group name="featureToggle" id="featureToggle" value="current">
       <mat-button-toggle [class.main-width]="currentWindowWidth > 900" [class.second-width]="currentWindowWidth > 800"
-        [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('current')">
+        [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('current')" value="current">
         Current Selections
       </mat-button-toggle>
       <mat-button-toggle [class.main-width]="currentWindowWidth > 900" [class.second-width]="currentWindowWidth > 800"
-        [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('roots')">
+        [class.final-width]="currentWindowWidth > 600" (click)="changeStatus('roots')" value="all">
         All Root Features
       </mat-button-toggle>
     </mat-button-toggle-group>
   </div>
 
-  <!-- FROM TEMPLATE -->
+  <!-- CURRENT -->
   <div *ngIf="status=='current'" class="tab-content">
     <mat-accordion>
       <div *ngFor="let audit of data[0]">
@@ -71,4 +72,5 @@
     </button>
   </div>
 </body>
+
 </html>

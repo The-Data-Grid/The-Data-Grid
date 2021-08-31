@@ -1,45 +1,11 @@
 #body {
-  overflow-y: scroll;
-  overflow-x: scroll;
   overflow: scroll;
 }
 
-.top_decoration {
-  height: 30px;
-  min-width:3000px;
-  background-color: #569CD7;
-  overflow-y: hidden;
-  overflow-x: hidden;
-}
-
-
-.primary_separator {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  background-color: black;
-  height: 1px;
-  width: 831px;
-  margin-left: 0px
-}
-
-.secondary_separator {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  background-color: lightgray;
-  height: 1px;
-  width: 831px;
-  margin-left: 0px
-}
-
 .cdk-global-overlay-wrapper {
-    display: flex;
-    position: absolute;
-    z-index: 1000;
-    overflow: auto;
-    pointer-events: auto;  
-  }
-
-  .mat-dialog-container {
-    padding: 0px !important;
-  }
-  
+  display: flex;
+  position: absolute;
+  z-index: 1000;
+  overflow: auto;
+  pointer-events: auto;
+}
