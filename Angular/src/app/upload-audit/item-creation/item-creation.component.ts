@@ -20,6 +20,7 @@ export class ItemCreationComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data,
     private apiService: ApiService,
     private setupObjectService: SetupObjectService,
+    public dialog: MatDialog
   ) { }
 
   setupObject;
@@ -52,13 +53,16 @@ export class ItemCreationComponent implements OnInit {
   // idInfo;
   // featureIndex = this.data.index;
   // featureName = this.data.name;
-  // featureReturnableIDs = [];
+  returnableIDs = [];
   globalDefaultColumns = []
   globalReturnableIDs = [];
+  itemIndex = this.data;
+  item;
+  itemToColumns = {};
+  attributeColumns = [];
 
   ngOnInit() {
     this.getSetupObject();
-    console.log(this.data);
   }
 
   getSetupObject() {
@@ -68,12 +72,17 @@ export class ItemCreationComponent implements OnInit {
     else {
       this.apiService.getSetupTableObject().subscribe((res) => {
         this.setupObject = res;
+        this.item = this.setupObject.items[this.itemIndex];
+
         // this.getFeatureID();
         // this.getFeatureSelectors();
         // this.getFeatureChildren();
         // this.getAttributeAndObservationColumns()
         // this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.featureIndex)
         this.globalSelectors = this.setupObjectService.getGlobalSelectors(this.setupObject, this.appliedFilterSelections, this.globalReturnableIDs, this.globalDefaultColumns, false)
+        this.setupObjectService.mapAllItemRelatedColumns(this.setupObject, this.itemIndex, this.itemToColumns, false);
+        this.attributeColumns = this.setupObjectService.getItemAttributeColumns(this.setupObject, this.itemIndex);
+        console.log(this.attributeColumns)
       });
     }
   }
@@ -107,6 +116,13 @@ export class ItemCreationComponent implements OnInit {
   //   this.attributeSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, this.appliedFilterSelections, [], false);
   //   this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, this.appliedFilterSelections, [], true);
   // }
+
+  openItemCreation(itemIndex): void {
+    const dialogRef = this.dialog.open(ItemCreationComponent, {
+      width: '801px',
+      data: itemIndex
+    })
+  }
 
   close() {
     this.dialogRef.close();

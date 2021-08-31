@@ -296,3 +296,14 @@ html, body {
   border-radius: 0 !important;
   overflow: visible !important;
 }
+
+.create-button {
+  color: rgb(86, 156, 215);
+  text-decoration: underline;
+  background-color: transparent;
+  padding-top: 0px;
+  padding-right: 10px;
+  padding-left: 10px;
+  margin: 5px;
+  font-size: 12px;
+}

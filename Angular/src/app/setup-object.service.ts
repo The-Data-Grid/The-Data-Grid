@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AppliedFilterSelections, ReturnableIDObject} from './models'
+import { AppliedFilterSelections, ReturnableIDObject } from './models'
 
 // setupObject.children
 export const IDX_OF_FEATURES_ARR = 0;
@@ -7,11 +7,14 @@ export const IDX_OF_ITEM_ARR = 1;
 export const IDX_OF_GLOBAL_ITEM_IDX = 2;
 export const IDX_OF_AUDIT_ITEM_IDX = 3;
 
+// itemNodeObject.children
 export const IDX_OF_ID_COL_IDXS = 0;
 export const IDX_OF_ID_ITEM_IDXS = 1;
 export const IDX_OF_NON_ID_COL_IDXS = 2;
 export const IDX_OF_NON_ID_ITEM_IDXS = 3;
+export const IDX_OF_ITEM_ATTRIBUTE_IDXS = 4;
 
+// featureNodeObject.children
 export const IDX_OF_OBSERVATION_COL_IDXS = 0;
 export const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
 export const IDX_OF_ITEM_IDX = 2;  //subject to change when backend implements api
@@ -45,40 +48,40 @@ export class SetupObjectService {
     return rootFeatures;
   }
 
-    /* ////////////////////////////////////
-     getFeatureReturnableIDs(setupObject, featureIndex)
+  /* ////////////////////////////////////
+   getFeatureReturnableIDs(setupObject, featureIndex)
 
-     description: gets an array of column returnable IDS for a given feature
-     params: setupObject, 
-             featureIndex: the index of the setupObject 'feaures' array for the feature we are interested in
-     returns: array of numbers (returnableIDS)
-  */////////////////////////////////////////
+   description: gets an array of column returnable IDS for a given feature
+   params: setupObject, 
+           featureIndex: the index of the setupObject 'feaures' array for the feature we are interested in
+   returns: array of numbers (returnableIDS)
+*/////////////////////////////////////////
   getFeatureReturnableIDs(setupObject, featureIndex) {
-      let returnableIDs = [];
-      let ID = null;
-      
-      let indexOfFeatureIndex = setupObject.children[IDX_OF_FEATURES_ARR].indexOf(featureIndex);
-      // ...find feature's observation columns
-      setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
-        ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject);
-        if (ID) {
-          returnableIDs.push(ID);
-        }
-        else {
-          console.log("undefined returnable ID for observation column:" + i)
-        }
-      });
-      // ...find feature's attribute columns
-      setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
-        ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject);
-        if (ID) {
-          returnableIDs.push(ID);
-        }
-        else {
-          console.log("undefined returnable ID for attribute column:" + i)
-        }
-      });
-      return returnableIDs;
+    let returnableIDs = [];
+    let ID = null;
+
+    let indexOfFeatureIndex = setupObject.children[IDX_OF_FEATURES_ARR].indexOf(featureIndex);
+    // ...find feature's observation columns
+    setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
+      ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject);
+      if (ID) {
+        returnableIDs.push(ID);
+      }
+      else {
+        console.log("undefined returnable ID for observation column:" + i)
+      }
+    });
+    // ...find feature's attribute columns
+    setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
+      ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject);
+      if (ID) {
+        returnableIDs.push(ID);
+      }
+      else {
+        console.log("undefined returnable ID for attribute column:" + i)
+      }
+    });
+    return returnableIDs;
   }
 
   /* ////////////////////////////////////
@@ -102,13 +105,33 @@ export class SetupObjectService {
   }
 
   getAllAuditItemRelatedColumns(setupObject) {
-    const columns = []
-    this.getAllItemRelatedColumns(setupObject, setupObject.items[IDX_OF_GLOBAL_ITEM_IDX], columns)
-    return columns;
+    const itemToColumns = {}
+    this.mapAllItemRelatedColumns(setupObject, IDX_OF_AUDIT_ITEM_IDX, itemToColumns)
+    return itemToColumns;
   }
 
-//recursively find all the columns belonging to an item or a child of that item
-  private getAllItemRelatedColumns(setupObject, item, columns, path = [], returnableIDs = []) {
+  getItemAttributeColumns(setupObject, itemIndex) {
+    let item = setupObject.items[itemIndex];
+    return item.children[IDX_OF_ITEM_ATTRIBUTE_IDXS]
+  }
+
+  // getAllGlobalItemRelatedColumns(setupObject) {
+  //   const itemToColumns = {}
+  //   let path = [IDX_OF_GLOBAL_ITEM_IDX];
+  //   this.mapAllItemRelatedColumns(setupObject, IDX_OF_GLOBAL_ITEM_IDX, itemToColumns, path)
+  //   return itemToColumns;
+  // }
+
+  // getAuditItemRelatedIDColumns(setupObject) {
+  //   const columns = [];
+  //   let path = [IDX_OF_AUDIT_ITEM_IDX];
+  //   this.getItemIDColumns(setupObject, setupObject.items[IDX_OF_AUDIT_ITEM_IDX], columns, path)
+  //   return columns;
+  // }
+
+  //recursively find all the columns belonging to an item or a child of that item
+  private getAllItemRelatedColumns(setupObject, item, columns, path, returnableIDs = []) {
+    // traverse ID columns
     item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_COL_IDXS, i);
@@ -117,12 +140,14 @@ export class SetupObjectService {
       columns.push(curColumn);
       returnableIDs.push(this.getReturnableID(newPath, setupObject));
     });
+    // traverse ID items
     item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_ID_ITEM_IDXS, i);
       let itemIndex = itemPointer.index;
       this.getAllItemRelatedColumns(setupObject, setupObject.items[itemIndex], columns, newPath, returnableIDs);
     });
+    // traverse non-ID columns
     item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_NON_ID_COL_IDXS, i);
@@ -131,6 +156,7 @@ export class SetupObjectService {
       columns.push(curColumn);
       returnableIDs.push(this.getReturnableID(newPath, setupObject));
     });
+    // traverse non-ID items
     item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
       let newPath = Object.assign([], path);
       newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
@@ -139,53 +165,102 @@ export class SetupObjectService {
     });
   }
 
-   /* ////////////////////////////////////
-    getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
-
-    params: -setupObject
-            -appliedFilterSelections: an object that will hold's a user's input for each selector
-            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
-            -wantFilterSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
-
-    returns: selector object that maps selector type to column information. 
-    selector object format:
-    {
-      numericChoice: [],
-      numericEqual: [],
-      calendarRange: [],
-      calendarEqual: [],
-      dropdown: [],
-      searchableDropdown: [],
-      checklistDropdown: [],
-      searchableChecklistDropdown: [],
-      text: [],
-      bool: []
-    };
-
-    where each element inside the arrays is a columnObject
- */////////////////////////////////////////
- getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, returnableIDs, wantFilterSelector: boolean) {
-  let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
-  let globalColumns = [];
-  let path = [IDX_OF_GLOBAL_ITEM_IDX];
-
-  this.getAllItemRelatedColumns(setupObject, setupObject.items[globalItemIndex], globalColumns, path, returnableIDs);
-  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFilterSelector);
-}
 
 
-   /* ////////////////////////////////////
-    getFeatureFilterSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+  //lol im just gonna assume we don't need to collect returnableIDs for the next 5 functions?
+  //bc that requires finding the path and its rly complicated???
+  mapItemIDColumns(setupObject, itemIndex, itemToColumns) {
+    let item = setupObject.items[itemIndex];
+    item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
+      let curCol = setupObject.columns[IDColumnIndex];
+      itemToColumns[itemIndex] ? itemToColumns[itemIndex].push(curCol) : itemToColumns[itemIndex] = [curCol];
+    });
+  }
 
-    params: -setupObject
-            -appliedFilterSelections: an object that will hold's a user's input for each selector
-            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+  mapItemIDItems(setupObject, itemIndex, itemToColumns, getNonID) {
+    let item = setupObject.items[itemIndex];
+    item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let newItemIndex = itemPointer.index;
+      this.mapAllItemRelatedColumns(setupObject, newItemIndex, itemToColumns, getNonID);
+    });
+  }
 
-    returns: an array of selector objects. each element of this array contains the selectors belonging to
-             one feature, and its index is the same as the index of that feature in the setupObject features array. 
-             see getGlobalSelectors for an example of a selector object.
+  mapItemNonIDColumns(setupObject, itemIndex, itemToColumns) {
+    let item = setupObject.items[itemIndex];
+    item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
+      let curCol = setupObject.columns[NonIDColumnIndex];
+      itemToColumns[itemIndex] ? itemToColumns[itemIndex].push(curCol) : itemToColumns[itemIndex] = [curCol];
+    });
+  }
 
- */////////////////////////////////////////
+  mapItemNonIDItems(setupObject, itemIndex, itemToColumns, getNonID) {
+    let item = setupObject.items[itemIndex];
+    item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let newItemIndex = itemPointer.index;
+    });
+  }
+
+  //recursively map the columns belonging to an item to that 
+  // itemToColumns is an object that maps index of item to arr of columns
+  mapAllItemRelatedColumns(setupObject, itemIndex, itemToColumns, getNonID = true) {
+    // traverse ID columns
+    this.mapItemIDColumns(setupObject, itemIndex, itemToColumns)
+    // traverse ID items
+    this.mapItemIDItems(setupObject, itemIndex, itemToColumns, getNonID)
+    if (getNonID) {
+      // traverse non-ID columns
+      this.mapItemNonIDColumns(setupObject, itemIndex, itemToColumns)
+      // traverse non-ID items
+      this.mapItemNonIDItems(setupObject, itemIndex, itemToColumns, getNonID)
+    }
+  }
+
+  /* ////////////////////////////////////
+   getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+
+   params: -setupObject
+           -appliedFilterSelections: an object that will hold's a user's input for each selector
+           -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+           -wantFilterSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
+
+   returns: selector object that maps selector type to column information. 
+   selector object format:
+   {
+     numericChoice: [],
+     numericEqual: [],
+     calendarRange: [],
+     calendarEqual: [],
+     dropdown: [],
+     searchableDropdown: [],
+     checklistDropdown: [],
+     searchableChecklistDropdown: [],
+     text: [],
+     bool: []
+   };
+
+   where each element inside the arrays is a columnObject
+*/////////////////////////////////////////
+  getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, returnableIDs, wantFilterSelector: boolean) {
+    let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
+    let globalColumns = [];
+    let path = [IDX_OF_GLOBAL_ITEM_IDX];
+
+    this.getAllItemRelatedColumns(setupObject, setupObject.items[globalItemIndex], globalColumns, path, returnableIDs);
+    return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFilterSelector);
+  }
+
+  /* ////////////////////////////////////
+   getFeatureFilterSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+
+   params: -setupObject
+           -appliedFilterSelections: an object that will hold's a user's input for each selector
+           -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+
+   returns: an array of selector objects. each element of this array contains the selectors belonging to
+            one feature, and its index is the same as the index of that feature in the setupObject features array. 
+            see getGlobalSelectors for an example of a selector object.
+
+*/////////////////////////////////////////
   getFeatureFilterSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs) {
     let allFeatureSelectors = [];
     // for each feature...
@@ -213,24 +288,24 @@ export class SetupObjectService {
   }
 
 
- /* ////////////////////////////////////
-    getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumnIDs, isObservation: boolean)
-
-    params: -setupObject
-            -appliedFilterSelections: an object that will hold's a user's input for each selector
-            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
-            -isObservation: set to true to get observation selectors, false to get attribute selectors
-
-    returns: an array of selector objects. 
-             each element of this array contains the observation selectors or attribute selectors belonging to
-             one feature, and its index is the same as the index of that feature in the setupObject features array. 
-             see getGlobalSelectors for an example of a selector object.
-
- */////////////////////////////////////////
+  /* ////////////////////////////////////
+     getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumnIDs, isObservation: boolean)
+ 
+     params: -setupObject
+             -appliedFilterSelections: an object that will hold's a user's input for each selector
+             -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+             -isObservation: set to true to get observation selectors, false to get attribute selectors
+ 
+     returns: an array of selector objects. 
+              each element of this array contains the observation selectors or attribute selectors belonging to
+              one feature, and its index is the same as the index of that feature in the setupObject features array. 
+              see getGlobalSelectors for an example of a selector object.
+ 
+  */////////////////////////////////////////
 
   // returns an array that holds key-value mapping from feature's index in setupObj features array 
   // to its input selectors
-  getFeatureInputSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, 
+  getFeatureInputSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections,
     defaultColumnIDs, isObservation: boolean) {
     let childType;
     isObservation ? childType = IDX_OF_OBSERVATION_COL_IDXS : childType = IDX_OF_ATTRIBUTE_COL_IDXS;
@@ -252,7 +327,6 @@ export class SetupObjectService {
     });
     return allFeatureInputSelectors;
   }
-
 
   /* ////////////////////////////////////
     getFeatureItemChildren(setupObject, featureIndex)
@@ -278,7 +352,7 @@ export class SetupObjectService {
   // also find all columns that have default marked true
   //fills defaultcolumnIDs with the IDs of default columns
   //wantFilterSelector indicates whether we want to return filterSelectors or inputSelectors
-  private parseColumns(columns, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFilterSelector: boolean): any {
+  private parseColumns(columns, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, wantFilterSelector: boolean): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],

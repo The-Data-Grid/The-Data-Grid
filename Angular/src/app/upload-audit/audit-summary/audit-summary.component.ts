@@ -42,7 +42,7 @@ export class AuditSummaryComponent implements OnInit {
   };
   defaultColumns = [];
   rootFeatures = [];
-  auditMetadata = [];
+  auditMetadata = {};
   // for optimistic updating from the dialogs
   displayedRootFeatures = [];
 
@@ -113,10 +113,10 @@ export class AuditSummaryComponent implements OnInit {
     dialogRef.afterClosed().subscribe((e) => this.auditOpened = false)
   }
 
-  openItemCreation(column): void {
+  openItemCreation(itemIndex): void {
     const dialogRef = this.dialog.open(ItemCreationComponent, {
       width: '801px',
-      data: column
+      data: itemIndex
     })
   }
 
