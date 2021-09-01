@@ -1,0 +1,162 @@
+{
+    "items": {
+        "create": [
+            {
+                "itemTypeID": 0,
+                "requiredItems": [],
+                "newRequiredItemIndices": [1],
+                "globalPrimaryKey": 1,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        142,
+                        143
+                    ],
+                    "data": [
+                        "Boelter Hall",
+                        {"type":"Polygon","coordinates":[[
+                            [7.734375,51.835777520452],
+                            [3.8671875,48.341646172375],
+                            [7.20703125,43.580390855608],
+                            [18.6328125,43.834526782237],
+                            [17.9296875,50.289339253292],
+                            [13.7109375,54.059387886624],
+                            [7.734375,51.835777520452]
+                        ]]}
+                    ]
+                }
+            },
+            {
+                "itemTypeID": 2,
+                "requiredItems": [],
+                "newRequiredItemIndices": [2],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        172,
+                        173
+                    ],
+                    "data": [
+                        "UCLA!",
+                        "somewhere in hollywood..."
+                    ]
+                }
+            },
+            {
+                "itemTypeID": 3,
+                "requiredItems": [],
+                "newRequiredItemIndices": [3],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        185,
+                        186,
+                        187,
+                        188
+                    ],
+                    "data": [
+                        90000000,
+                        "LA",
+                        {"type":"Polygon","coordinates":[[
+                            [7.734375,51.835777520452],
+                            [3.8671875,48.341646172375],
+                            [7.20703125,43.580390855608],
+                            [18.6328125,43.834526782237],
+                            [17.9296875,50.289339253292],
+                            [13.7109375,54.059387886624],
+                            [7.734375,51.835777520452]
+                        ]]},
+                        {"type":"Point","coordinates": [7.734375,51.835777520452]}
+                    ]
+                }
+            },
+            {
+                "itemTypeID": 4,
+                "requiredItems": [],
+                "newRequiredItemIndices": [4],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        196,
+                        197,
+                        198
+                    ],
+                    "data": [
+                        "06037",
+                        "Los Angeles County",
+                        {"type":"Polygon","coordinates":[[
+                            [7.734375,51.835777520452],
+                            [3.8671875,48.341646172375],
+                            [7.20703125,43.580390855608],
+                            [18.6328125,43.834526782237],
+                            [17.9296875,50.289339253292],
+                            [13.7109375,54.059387886624],
+                            [7.734375,51.835777520452]
+                        ]]}
+                    ]
+                }
+            },
+            {
+                "itemTypeID": 5,
+                "requiredItems": [],
+                "newRequiredItemIndices": [5],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        203,
+                        204
+                    ],
+                    "data": [
+                        "California",
+                        {"type":"Polygon","coordinates":[[
+                            [7.734375,51.835777520452],
+                            [3.8671875,48.341646172375],
+                            [7.20703125,43.580390855608],
+                            [18.6328125,43.834526782237],
+                            [17.9296875,50.289339253292],
+                            [13.7109375,54.059387886624],
+                            [7.734375,51.835777520452]
+                        ]]}
+                    ]
+                }
+            },
+            {
+                "itemTypeID": 6,
+                "requiredItems": [],
+                "newRequiredItemIndices": [],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        207,
+                        208
+                    ],
+                    "data": [
+                        "United States of America",
+                        {"type":"Polygon","coordinates":[[
+                            [7.734375,51.835777520452],
+                            [3.8671875,48.341646172375],
+                            [7.20703125,43.580390855608],
+                            [18.6328125,43.834526782237],
+                            [17.9296875,50.289339253292],
+                            [13.7109375,54.059387886624],
+                            [7.734375,51.835777520452]
+                        ]]}
+                    ]
+                }
+            }
+        ],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": []
+    }
+}

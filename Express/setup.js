@@ -29,12 +29,12 @@ const referenceTypes = {
 }
 
 const metadataItemColums = syncdb.querySync('select * from metadata_item_columns');
-let observationHistory;
+let observationHistory = {};
 syncdb.querySync('select * from observation_history_type').forEach(el => observationHistory[el.type_name] = el.type_id);
-let itemHistory;
+let itemHistory = {};
 syncdb.querySync('select * from item_history_type').forEach(el => itemHistory[el.type_name] = el.type_id);
-let observationItemTableNameLookup
-let itemObservationTableNameLookup
+let observationItemTableNameLookup = {};
+let itemObservationTableNameLookup = {};
 syncdb.querySync('select * from observation_item_table_name_lookup').forEach(el => {
     observationItemTableNameLookup[el.observation] = el.item;
     itemObservationTableNameLookup[el.item] = el.observation;
@@ -241,7 +241,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                     nullable: row['c__is_nullable'],
                     information: row['c__information'],
                     accuracy: row['c__accuracy']
-                }
+                },
             }
         );
     });
@@ -722,7 +722,8 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         setupObject,
         idValidationLookup,
         featureParents,
-        returnableIDLookup
+        returnableIDLookup,
+        columnObjects,
     })
 }
 
@@ -926,13 +927,25 @@ const initialReturnableMapper = (returnable, statics) => {
     }
 };
 
-
 // CALLING SETUP FUNCTION
 // ============================================================
-const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
+const { 
+    returnableIDLookup,
+    idValidationLookup,
+    featureParents,
+    setupObject,
+    columnObjects,
+} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
 
-//console.log(featureParents);
+// Get all of the columns needed to insert the item
+const columnIdTableNameLookup = {};
+columnObjects.forEach((columnObject) => {
+    columnIdTableNameLookup[columnObject.additionalInfo.columnID] = columnObject.additionalInfo.tableName;
+});
+
+
+//console.log(itemHistory);
 //console.log(itemColumnObject['item_sink'])
 //console.log(Object.values(returnableIDLookup).filter(id => [34, 44, 49].includes(id.columnID)))
 //console.log(Object.values(returnableIDLookup).filter(id => [523].includes(id.columnID)))
@@ -955,6 +968,8 @@ module.exports = {
     observationHistory,
     itemHistory,
     observationItemTableNameLookup,
-    itemObservationTableNameLookup
+    itemObservationTableNameLookup,
+    columnObjects,
+    columnIdTableNameLookup,
 }
 

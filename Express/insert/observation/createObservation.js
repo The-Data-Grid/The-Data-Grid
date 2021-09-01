@@ -69,9 +69,9 @@ async function createObservation(options) {
     try {
         // Validate data fields for every observation
         for(let createObservationObject of createObservationObjectArray) {
-            const itemTableName = itemTableNames[createItemObject.itemTypeID];
+            const itemTableName = itemTableNames[createObservationObject.itemTypeID];
             if(itemTableName === undefined) {
-                throw new CreateObservationError({code: 400, msg: `itemTypeID: ${createItemObject.itemTypeID} is not valid`})
+                throw new CreateObservationError({code: 400, msg: `itemTypeID: ${createObservationObject.itemTypeID} is not valid`})
             }
             
             // TODO: make dataColumnPresetLookup, add handling for mutible reference types
@@ -82,7 +82,7 @@ async function createObservation(options) {
         console.log('Validated');
 
         for(let createObservationObject of createObservationObjectArray) {
-            const itemTableName = itemTableNames[createItemObject.itemTypeID];
+            const itemTableName = itemTableNames[createObservationObject.itemTypeID];
             const observationTableName = itemObservationTableNameLookup[itemTableName];
             await createIndividualObservation(createObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, transaction);
         }
@@ -160,7 +160,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
             // get the column metadata
             const itemColumn = itemColumns.filter(col => col.columnID == columnID)[0];
             // get the user passed insertion value
-            let columnValue = createItemObject.data.data[i];
+            let columnValue = createObservationObject.data.data[i];
 
             // if the column is external call the proper insertion function based on reference type and pass metadata and value
             if(itemColumn.referenceType in insertExternalColumn) {
@@ -239,7 +239,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
     await insertSOP(sopValue, sessionObject.organizationID, observationCountReference);
 
     // 7. Insert insertion record into history tables
-    await insertObservationHistory(observationTableName, 'create', observationPrimaryKey);
+    await insertObservationHistory(observationTableName, 'create', observationPrimaryKey, db);
 }
 
 /**

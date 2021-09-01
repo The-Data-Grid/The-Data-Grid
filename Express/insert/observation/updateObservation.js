@@ -191,5 +191,5 @@ async function updateIndividualObservation(updateObservationObject, sessionObjec
     }
 
     // Insert into history
-    await insertObservationHistory(observationTableName, 'update', observationPrimaryKey);
+    await insertObservationHistory(observationTableName, 'update', observationPrimaryKey, db);
 }

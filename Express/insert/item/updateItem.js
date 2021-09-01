@@ -3,7 +3,8 @@ const formatSQL = postgresClient.format;
 
 const {
     itemTableNames,
-    itemColumnObject
+    itemColumnObject,
+    returnableIDLookup,
 } = require('../../setup.js');
 
 const {
@@ -42,6 +43,7 @@ async function updateItem(options) {
 
     try {
         // Validate
+        console.log(updateItemObjectArray)
         for(let updateItemObject of updateItemObjectArray) {
             const {
                 itemTypeID,
@@ -203,5 +205,5 @@ async function updateIndividualItem(updateItemObject, db) {
     }
 
     // Insert into history
-    await insertItemHistory(tableName, 'update', primaryKey)
+    await insertItemHistory(tableName, 'update', primaryKey, db)
 }

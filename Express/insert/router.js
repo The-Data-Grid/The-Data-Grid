@@ -1,11 +1,28 @@
+const express = require('express'); 
+const router = express.Router(); //use router instead of app
 // Database connection and SQL formatter
 const {postgresClient} = require('../db/pg.js');
+const { authorizeSubmission } = require('../auth/authorizer.js');
 // get connection object
 const db = postgresClient.getConnection.db
-// individual object handlers
-const createItem = require('./item/createItem.js');
 const { clearCache } = require('../query/cacheLayer.js');
-
+// Handlers
+const createItem = require('./item/createItem.js');
+const updateItem = require('./item/updateItem.js');
+const deleteItem = require('./item/deleteItem.js');
+const createObservation = require('./observation/createObservation.js');
+const updateObservation = require('./observation/updateObservation.js');
+const deleteObservation = require('./observation/deleteObservation.js');
+// Error classes
+const {
+    CreateItemError,
+    CreateObservationError,
+    DeleteObservationError,
+    DeleteItemError,
+    UpdateItemError,
+    UpdateObservationError,
+} = require('./helpers.js');
+const errorClassArray = [CreateItemError, CreateObservationError, DeleteObservationError, DeleteItemError, UpdateItemError, UpdateObservationError];
 
 /**
  * A new collection of items and/or observations to be created/updated/deleted from the database
@@ -34,9 +51,6 @@ async function insertSubmission(submissionObject, sessionObject) {
     const createObservationObjectArray = submissionObject.observations.create
     const updateObservationObjectArray = submissionObject.observations.update
     const deleteObservationObjectArray = submissionObject.observations.delete
-
-    // JSON representation of item_history & observation_history
-    let uploadReceipt = {}
 
     console.log(createItemObjectArray)
 
@@ -92,11 +106,14 @@ async function insertSubmissionHandler(req, res, next) {
         return res.status(201).end();
     } catch(err) {
         console.log("ERROR: ", err)
-        if(err.msg instanceof Error) err.msg = err.msg.message;
-        return res.status(err.code).send(err.msg);
+        if(errorClassArray.some(errorClass => err instanceof errorClass)) {
+            return res.status(err.code).send(err.msg);
+        } else {
+            return res.status(500).send(err);
+        }
     }
 }
 
-module.exports = {
-    submission: insertSubmissionHandler
-};
+router.post('/', authorizeSubmission, insertSubmissionHandler);
+
+module.exports = router;

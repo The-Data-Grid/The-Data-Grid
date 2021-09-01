@@ -1,6 +1,5 @@
 const {postgresClient} = require('../../db/pg.js');
 const formatSQL = postgresClient.format;
-const type = require('@melgrove/type');
 const {
     returnableIDLookup,
     itemM2M,
@@ -13,7 +12,9 @@ const {
 const {
     insertItemHistory,
     externalColumnInsertGenerator,
-    CreateItemError
+    CreateItemError,
+    validateRequiredItems,
+    validateItemDataColumns
 } = require('../helpers.js');
 
 // Generate external column insertion functions
@@ -52,8 +53,11 @@ const insertExternalColumn = {
  * @property {String} i__table_name 'item_organization'
  * @property {String} i__frontend_name 'Organization'
  * @property {String} t__type_name 'non-observable'
- * @property {Number} i__creation_privilege 3
  * @property {Number} i__item_id 2
+ * @property {String} ur__type_name
+ * @property {String} qr__type_name
+ * @property {String} up__privilege_name
+ * @property {String} qp__privilege_name
  */
 
 /********************
@@ -93,11 +97,11 @@ async function createItem(options) {
             validateRequiredItems([
                 ...createItemObject.requiredItems.map(el => itemTableNames[el.itemTypeID]), 
                 ...createItemObject.newRequiredItemIndices.map(el => itemTableNames[createItemObjectArray[el].itemTypeID])
-            ], tableName)
+            ], tableName);
         
             // TODO: make dataColumnPresetLookup, add handling for mutible reference types
             // 2. Validate data columns
-            validateDataColumns(createItemObject.data, tableName)
+            validateItemDataColumns(createItemObject.data, tableName);
         }
 
         console.log('Validated');
@@ -281,7 +285,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     }
 
     // 7. Insert insertion record into history tables
-    await insertItemHistory(tableName, 'insert', itemPrimaryKey);
+    await insertItemHistory(tableName, 'create', itemPrimaryKey, db);
 
     // Update the primary key lookup and return it
     insertedItemPrimaryKeyLookup[currentIndex] = itemPrimaryKey;

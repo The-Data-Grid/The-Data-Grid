@@ -50,7 +50,7 @@ async function deleteItem(options) {
         }
 
         try {
-            await insertItemHistory(tableName, 'delete', itemPrimaryKey);
+            await insertItemHistory(tableName, 'delete', primaryKey, db);
         } catch(err) {
             console.log(err);
             throw new DeleteItemError({code: 500, msg: 'Error when inserting deletion into history table'});
@@ -109,7 +109,7 @@ async function deleteItem(options) {
         }
 
         try {
-            await insertItemHistory(itemTableName, 'permanent-deletion', deletedItemID);
+            await insertItemHistory(itemTableName, 'permanent-deletion', deletedItemID, db);
         } catch(err) {
             console.log(err);
             throw new DeleteItemError({err: 500, msg: 'Error when inserting permanent deletion into history table'});

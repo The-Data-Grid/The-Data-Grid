@@ -4,9 +4,15 @@
 const {
     observationHistory,
     itemHistory,
-    validateRequiredItems
+    requiredItemLookup,
+    returnableIDLookup,
+    itemColumnObject,
 } = require('../setup.js');
-
+const {
+    isValidDate,
+    dateToUTC,
+} = require('../validate.js');
+const type = require('@melgrove/type');
 const {postgresClient} = require('../db/pg.js');
 const formatSQL = postgresClient.format;
 
@@ -34,7 +40,7 @@ class CreateObservationError extends Error {
     
         // Maintains proper stack trace for where our error was thrown (only available on V8)
         if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, CreateItemError);
+            Error.captureStackTrace(this, CreateObservationError);
         }
     
         this.name = 'CreateItemError';
@@ -51,7 +57,7 @@ class DeleteObservationError extends Error {
     
         // Maintains proper stack trace for where our error was thrown (only available on V8)
         if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, CreateItemError);
+            Error.captureStackTrace(this, DeleteObservationError);
         }
     
         this.name = 'DeleteObservationError';
@@ -68,7 +74,7 @@ class DeleteItemError extends Error {
     
         // Maintains proper stack trace for where our error was thrown (only available on V8)
         if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, CreateItemError);
+            Error.captureStackTrace(this, DeleteItemError);
         }
     
         this.name = 'DeleteItemError';
@@ -85,7 +91,7 @@ class UpdateItemError extends Error {
     
         // Maintains proper stack trace for where our error was thrown (only available on V8)
         if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, CreateItemError);
+            Error.captureStackTrace(this, UpdateItemError);
         }
     
         this.name = 'UpdateItemError';
@@ -102,7 +108,7 @@ class UpdateObservationError extends Error {
     
         // Maintains proper stack trace for where our error was thrown (only available on V8)
         if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, CreateItemError);
+            Error.captureStackTrace(this, UpdateObservationError);
         }
     
         this.name = 'UpdateObservationError';
@@ -236,6 +242,18 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
         else if(referenceType == 'item-location') {
             // Now insert
             try {
+                console.log(formatSQL(`
+                INSERT INTO $(tableName:name) 
+                    ($(columnName:name))
+                    VALUES
+                    (ST_GeomFromGeoJSON($(data)))
+                        RETURNING $(primaryKeyColumnName:name)
+            `, {
+                tableName,
+                columnName,
+                data,
+                primaryKeyColumnName
+            }))
                 primaryKey = (await db.one(formatSQL(`
                     INSERT INTO $(tableName:name) 
                         ($(columnName:name))
@@ -424,6 +442,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
         const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
         // Get all of the columns needed to insert the item
         let itemColumns = itemColumnObject[tableName];
+        console.log('ITEM COLUMNS: ', Object.keys(itemColumnObject))
         itemColumns = itemColumns['c__column_id'].map((id, i) => ({
             columnID: id,
             isNullable: itemColumns['c__is_nullable'][i],
@@ -464,7 +483,17 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
                 }
                 // check type for others
                 else {
-                    if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}`})
+                    // format date
+                    if(correctType === 'date') {
+                        if(isValidDate(data[i])) {
+                            data[i] = dateToUTC(data[i]);
+                        } else {
+                            throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must be of type date in format: MM-DD-YYYY`})
+                        }
+                    } else {
+                        // all other
+                        if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}`})
+                    }
                 }
             } else {
                 throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} is not valid for ${tableName}`})
@@ -477,7 +506,7 @@ function insertHistoryGenerator(isObservation) {
     const historyLookup = isObservation ? observationHistory : itemHistory;
     const foreignKeyColumnName = isObservation ? 'observation_id' : 'item_id';
 
-    return async function insertHistory(baseTableName, historyType, primaryKey) {
+    return async function insertHistory(baseTableName, historyType, primaryKey, db) {
         const historyTableName = 'history_' + baseTableName;
         const typeID = historyLookup[historyType];
 
@@ -532,7 +561,7 @@ function validateRequiredItems(requiredItemTableNames, tableName) {
  */
 function validateRequiredItemsOnUpdate(requiredItemTableNames, tableName) {
     // make sure all required items are non nullable
-    for(let requiredItemTableName of requiredItemTableName) {
+    for(let requiredItemTableName of requiredItemTableNames) {
         if(!requiredItemLookup[tableName].nonId.includes(requiredItemTableName)) {
             throw new UpdateItemError({code: 400, msg: `${requiredItemTableName} is an identifying required item for ${tableName} and thus cannot be updated`});
         }

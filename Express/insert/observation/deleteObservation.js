@@ -66,7 +66,7 @@ async function deleteObservation(options) {
         }
 
         try {
-            await insertObservationHistory(observationTableName, 'delete', deletedPrimaryKey);
+            await insertObservationHistory(observationTableName, 'delete', deletedPrimaryKey, db);
         } catch(err) {
             console.log(err);
             throw new DeleteObservationError({err: 500, msg: 'Error when inserting deletion into history table'})

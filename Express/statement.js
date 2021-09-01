@@ -64,7 +64,7 @@ const construct = {
     
     insert_metadata_subfeature: 'CALL "insert_metadata_subfeature"($(tableName), $(parentTableName), $(numFeatureRange), $(information), $(frontendName))',
     
-    insert_metadata_item_observable: 'CALL "insert_metadata_item_observable"($(itemName), $(frontendName), $(creationPrivilege))',
+    insert_metadata_item_observable: 'CALL "insert_metadata_item_observable"($(itemName), $(frontendName), $(queryRole), $(queryPrivilege), $(uploadRole), $(uploadPrivilege))',
     
     create_observation_table: 'CALL "create_observation_table"($(tableName))',
     
@@ -171,12 +171,17 @@ const setup = {
         LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id',
 
     allItems: 'SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
-        i.creation_privilege as i__creation_privilege, i.item_id as i__item_id \
+        qr.type_name as qr__type_name, ur.type_name as ur__type_name, \
+        qp.privilege_name as qp__privilege_name, up.privilege_name as up__privilege_name, \
+        i.item_id as i__item_id \
         FROM metadata_item AS i \
-        LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id',
+        LEFT JOIN metadata_item_type AS t ON i.item_type = t.type_id \
+        LEFT JOIN tdg_role_type as qr on qr.type_id = i.query_role \
+        LEFT JOIN tdg_privilege as qp on qp.privilege_id = i.query_privilege \
+        LEFT JOIN tdg_role_type as ur on ur.type_id = i.upload_role \
+        LEFT JOIN tdg_privilege as up on up.privilege_id = i.upload_privilege',
 
     itemM2M: 'SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
-        i.creation_privilege as i__creation_privilege, \
         m2m.is_id as m2m__is_id, m2m.is_nullable as m2m__is_nullable, m2m.frontend_name as m2m__frontend_name, \
         ri.table_name as ri__table_name \
         FROM metadata_item AS i \
@@ -198,21 +203,55 @@ const setup = {
 // SQL for login.js
 
 const login = {
-    password: 'SELECT tdg_p_hash AS password FROM item_user WHERE data_email = $(checkemail)',
+    password: `
+        SELECT 
+            tdg_p_hash AS password
+            FROM item_user 
+                WHERE data_email = $(checkemail)
+                AND is_pending = FALSE`,
     isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)',
-    secret : 'SELECT secret_token FROM item_user WHERE data_email = $(checkemail)'
+    secret : `
+        SELECT * 
+        FROM item_user 
+        WHERE data_email = $(checkemail)
+        AND secret_token = $(token)`,
+    authorization: `
+        SELECT 
+            p.privilege_name AS privilege,
+            ARRAY_AGG(rt.type_name) AS role,
+            ARRAY_AGG(r.organization_id) AS "organizationID",
+            u.item_id as "userID"
+            FROM item_user AS u
+            LEFT JOIN tdg_role AS r ON u.item_id = r.item_user_id
+            LEFT JOIN tdg_role_type AS rt ON r.role_type_id = rt.type_id
+            LEFT JOIN tdg_privilege AS p ON u.privilege_id = p.privilege_id
+                WHERE u.data_email = $(checkemail)
+                GROUP BY p.privilege_name, u.item_id
+    `,
     };   
 
 const addingUsers = {
-insertingUsers: `INSERT INTO item_user (item_id, item_organization_id, data_first_name, data_last_name, 
-    data_date_of_birth, data_email, tdg_p_hash, data_is_email_public, data_is_quarterly_updates, is_superuser, secret_token, is_pending) 
-VALUES (DEFAULT, null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), false, NULL, true)`
+insertingUsers: `
+    INSERT INTO item_user (
+        item_organization_id,
+        data_first_name,
+        data_last_name, 
+        data_date_of_birth,
+        data_email,
+        tdg_p_hash,
+        data_is_email_public,
+        data_is_quarterly_updates,
+        secret_token,
+        is_pending,
+        privilege_id ) 
+        VALUES 
+        (null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), NULL, true, 2)`
     };
 
 const updates  = {
-    updateToken: 'UPDATE item_user SET secret_token = ($token) WHERE data_email = $(email)',
-    updateStatus: 'UPDATE item_user SET is_pending = ($status) WHERE data_email = $(email)',
-    updatepassword: 'UPDATE item_user SET tdg_p_hash = ($password) WHERE data_email = $(email)'
+    updateToken: 'UPDATE item_user SET secret_token = $(token) WHERE data_email = $(email) AND is_pending = FALSE',
+    updateStatus: 'UPDATE item_user SET is_pending = $(isPending) WHERE data_email = $(email)',
+    updatePassword: 'UPDATE item_user SET tdg_p_hash = $(password) WHERE data_email = $(email)'
 };
 
 
