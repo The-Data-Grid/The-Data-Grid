@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-upload-audit',
@@ -8,7 +9,11 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class UploadAuditComponent implements OnInit {
 
-  constructor() { }
+  isEditable = false;
+  buttonText:string = "Select";
+  @ViewChild('tabGroup') tabGroup;
+
+  constructor(private router:Router) { }
 
   dataSource = new MatTableDataSource();
   tempData = [
@@ -19,6 +24,36 @@ export class UploadAuditComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSource.data = this.tempData;
+  }
+
+  navigate(url) {
+    if (!this.isEditable)
+      this.router.navigate(url)
+  }
+
+  synchronize() {
+    // synchronize logic here
+    this.isEditable = false; // throwaway
+  }
+
+  delete() {
+    this.isEditable = false; // throwaway
+  }
+
+  changeEditability(): void {
+    this.isEditable = !this.isEditable;
+    if (this.isEditable == true) this.buttonText = "Cancel";
+    else this.buttonText = "Select";
+  }
+
+  isTabDisabled(selectedIndex) {
+    if (this.isEditable) {
+      if (selectedIndex != this.tabGroup.selectedIndex) {
+        return true;
+      }
+      return false;
+    }
+    return false;
   }
 
 }
