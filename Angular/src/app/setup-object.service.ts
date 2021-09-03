@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AppliedFilterSelections, ReturnableIDObject } from './models'
+import { AppliedFilterSelections } from './models'
 
 // setupObject.children
 export const IDX_OF_FEATURES_ARR = 0;
