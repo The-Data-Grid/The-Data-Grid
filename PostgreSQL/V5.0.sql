@@ -1206,7 +1206,6 @@ CREATE PROCEDURE create_observation_table(table_name TEXT)
                             observation_id SERIAL PRIMARY KEY,
                             observation_count_id INTEGER NOT NULL,
                             global_id INTEGER NOT NULL,
-                            submission_id INTEGER NOT NULL,
                             observableitem_id INTEGER NOT NULL)', table_name);
             
             -- Observation Count reference

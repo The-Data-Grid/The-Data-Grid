@@ -70,13 +70,13 @@ async function insertSubmission(submissionObject) {
             transaction
         })
 
-        /*
+        
         await createObservation({
             createObservationObjectArray,
             insertedItemPrimaryKeyLookup,
             transaction
         })
-        */
+        
 
         // clear the query cacheLayer
         // update dataColumnPresetLookup
