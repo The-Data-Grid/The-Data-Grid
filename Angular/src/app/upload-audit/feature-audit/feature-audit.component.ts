@@ -45,7 +45,6 @@ export class FeatureAuditComponent implements OnInit {
 
   defaultColumns = []
   rootFeatures = []
-  featuresToChildren = {}
   dataTableColumns = [];
   dropdownList = FakeData;
   globalSelectors = {};
@@ -100,7 +99,6 @@ export class FeatureAuditComponent implements OnInit {
       this.setupObject = SetupObject;
       this.getFeatureID();
       this.getFeatureSelectors();
-      this.getFeatureChildren();
       this.getAttributeAndObservationColumns()
     }
     else {
@@ -108,7 +106,6 @@ export class FeatureAuditComponent implements OnInit {
         this.setupObject = res;
         this.getFeatureID();
         this.getFeatureSelectors();
-        this.getFeatureChildren();
         this.getAttributeAndObservationColumns()
         this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.featureIndex)
         this.globalSelectors = this.setupObjectService.getGlobalSelectors(this.setupObject, this.appliedFilterSelections, this.globalReturnableIDs, this.globalDefaultColumns, false)
@@ -127,17 +124,6 @@ export class FeatureAuditComponent implements OnInit {
       this.appliedFilterSelections,
       this.defaultColumns
     );
-  }
-
-  getFeatureChildren() {
-    // map features to children
-    this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
-    this.selectorsLoaded = true
-    let features = this.setupObjectService.getFeaturesToChildren(this.setupObject);
-    let subfeatureIndices = features[this.featureIndex];
-    for (var i = 0; i < subfeatureIndices.length; i++) {
-      this.subfeatures.push(this.setupObject.features[subfeatureIndices[i]]);
-    }
   }
 
   getAttributeAndObservationColumns() {

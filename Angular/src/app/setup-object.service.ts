@@ -84,50 +84,12 @@ export class SetupObjectService {
     return returnableIDs;
   }
 
-  /* ////////////////////////////////////
-    getFeaturesToChildren(setupObject)
-
-    params: setupObject
-
-    returns: object that maps a feature's index in the setupObject 
-      'features' array to the feature's subfeature indices. example:
-       {
-         1: [2,3,4],   //feature 1 has subfeatures 2, 3, and 4
-       }
- */////////////////////////////////////////
-  getFeaturesToChildren(setupObject) {
-    let featuresToChildren = {}
-    setupObject.features.forEach((feature, index) => {
-      // map index to the feature's children
-      featuresToChildren[index] = feature.featureChildren;
-    });
-    return featuresToChildren;
-  }
-
   getAllAuditItemRelatedColumns(setupObject) {
-    const itemToColumns = {}
-    this.mapAllItemRelatedColumns(setupObject, IDX_OF_AUDIT_ITEM_IDX, itemToColumns)
-    return itemToColumns;
+    // const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_AUDIT_ITEM_IDX])
+    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, IDX_OF_AUDIT_ITEM_IDX)
+    console.log(treeIDObjects)
+    return treeIDObjects;
   }
-
-  getItemAttributeColumns(setupObject, itemIndex) {
-    let item = setupObject.items[itemIndex];
-    return item.children[IDX_OF_ITEM_ATTRIBUTE_IDXS]
-  }
-
-  // getAllGlobalItemRelatedColumns(setupObject) {
-  //   const itemToColumns = {}
-  //   let path = [IDX_OF_GLOBAL_ITEM_IDX];
-  //   this.mapAllItemRelatedColumns(setupObject, IDX_OF_GLOBAL_ITEM_IDX, itemToColumns, path)
-  //   return itemToColumns;
-  // }
-
-  // getAuditItemRelatedIDColumns(setupObject) {
-  //   const columns = [];
-  //   let path = [IDX_OF_AUDIT_ITEM_IDX];
-  //   this.getItemIDColumns(setupObject, setupObject.items[IDX_OF_AUDIT_ITEM_IDX], columns, path)
-  //   return columns;
-  // }
 
   //recursively find all the columns belonging to an item or a child of that item
   private getAllItemRelatedColumns(setupObject, item, columns, path, returnableIDs = []) {
@@ -165,64 +127,119 @@ export class SetupObjectService {
     });
   }
 
+  mapItemTreeIDtoColumns(setupObject, itemIndex, treeIDObjects, path) {
+    let treeID = path.join('>');
+    console.log("itemIndex", itemIndex)
+    console.log("TREEID", treeID)
+    let treeIDObject = {
+      item: setupObject.items[itemIndex],
+      itemIndex: itemIndex,
+      IDColumns: [],
+      nonIDColumns: [],
+      attributeColumns: [],
+      IDreturnableIDs: [],
+      nonIDreturnableIDs: [],
+      attributeReturnableIDs: []
+    };
+    // if there exists an object for this tree ID already, add to it. 
+    // else, assign this blank treeIDObject to this treeID
+    treeIDObjects[treeID] ? treeIDObject = treeIDObjects[treeID] : treeIDObjects[treeID] = treeIDObject
 
 
-  //lol im just gonna assume we don't need to collect returnableIDs for the next 5 functions?
-  //bc that requires finding the path and its rly complicated???
-  mapItemIDColumns(setupObject, itemIndex, itemToColumns) {
-    let item = setupObject.items[itemIndex];
-    item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
+    // for each column that is an ID child of the item, get its returnable ID, push its ID, push the column 
+    treeIDObject.item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
+      let colPath = Object.assign([], path);
+      colPath.push(IDX_OF_ID_COL_IDXS, i);
       let curCol = setupObject.columns[IDColumnIndex];
-      itemToColumns[itemIndex] ? itemToColumns[itemIndex].push(curCol) : itemToColumns[itemIndex] = [curCol];
+      curCol["_returnableID"] = this.getReturnableID(colPath, setupObject);
+      treeIDObject.IDreturnableIDs.push(curCol["_returnableID"]);
+      treeIDObject.IDColumns.push(curCol);
+    });
+    treeIDObject.item.children[IDX_OF_NON_ID_COL_IDXS].forEach((nonIDColumnIndex, i) => {
+      let colPath = Object.assign([], path);
+      colPath.push(IDX_OF_NON_ID_COL_IDXS, i);
+      let curCol = setupObject.columns[nonIDColumnIndex];
+      curCol["_returnableID"] = this.getReturnableID(colPath, setupObject);
+      treeIDObject.nonIDreturnableIDs.push(curCol["_returnableID"]);
+      treeIDObject.nonIDColumns.push(curCol);
+    });
+    treeIDObject.item.children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnInfo, i) => {
+      // console.log(treeIDObject.item.children[IDX_OF_ATTRIBUTE_COL_IDXS])
+      let colPath = Object.assign([], path);
+      colPath.push(IDX_OF_ATTRIBUTE_COL_IDXS, i);
+      attributeColumnInfo["_returnableID"] = this.getReturnableID(colPath, setupObject);
+      treeIDObject.attributeReturnableIDs.push(attributeColumnInfo["_returnableID"]);
     });
   }
 
-  mapItemIDItems(setupObject, itemIndex, itemToColumns, getNonID) {
-    let item = setupObject.items[itemIndex];
-    item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
-      let newItemIndex = itemPointer.index;
-      this.mapAllItemRelatedColumns(setupObject, newItemIndex, itemToColumns, getNonID);
+  mapItemTreeIDtoIDItems(setupObject, itemIndex, treeIDObjects, path) {
+    let treeID = path.join('>');
+    let treeIDObject = {
+      item: setupObject.items[itemIndex],
+      itemIndex: itemIndex,
+      IDColumns: [],
+      nonIDColumns: [],
+      attributeColumns: [],
+      IDreturnableIDs: [],
+      nonIDreturnableIDs: [],
+      attributeReturnableIDs: []
+    };
+    // if there exists an object for this tree ID already, add to it. 
+    // else, assign this blank treeIDObject to this treeID
+    treeIDObjects[treeID] ? treeIDObject = treeIDObjects[treeID] : treeIDObjects[treeID] = treeIDObject
+
+    treeIDObject.item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let nextItemPath = Object.assign([], path);
+      nextItemPath.push(IDX_OF_ID_ITEM_IDXS, i);
+      let nextItemIndex = itemPointer.index;
+      this.mapItemTreeIDtoColumns(setupObject, nextItemIndex, treeIDObjects, nextItemPath);
     });
   }
 
-  mapItemNonIDColumns(setupObject, itemIndex, itemToColumns) {
-    let item = setupObject.items[itemIndex];
-    item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
-      let curCol = setupObject.columns[NonIDColumnIndex];
-      itemToColumns[itemIndex] ? itemToColumns[itemIndex].push(curCol) : itemToColumns[itemIndex] = [curCol];
+  mapItemTreeIDtoNonIDItems(setupObject, itemIndex, treeIDObjects, path) {
+    let treeID = path.join('>');
+    let treeIDObject = {
+      item: setupObject.items[itemIndex],
+      itemIndex: itemIndex,
+      IDColumns: [],
+      nonIDColumns: [],
+      attributeColumns: [],
+      IDreturnableIDs: [],
+      nonIDreturnableIDs: [],
+      attributeReturnableIDs: []
+    };
+    // if there exists an object for this tree ID already, add to it. 
+    // else, assign this blank treeIDObject to this treeID
+    treeIDObjects[treeID] ? treeIDObject = treeIDObjects[treeID] : treeIDObjects[treeID] = treeIDObject
+
+    treeIDObject.item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let nextItemPath = Object.assign([], path);
+      nextItemPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
+      let nextItemIndex = itemPointer.index;
+      this.mapItemTreeIDtoColumns(setupObject, nextItemIndex, treeIDObjects, nextItemPath);
     });
   }
 
-  mapItemNonIDItems(setupObject, itemIndex, itemToColumns, getNonID) {
-    let item = setupObject.items[itemIndex];
-    item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
-      let newItemIndex = itemPointer.index;
-    });
-  }
-
-  //recursively map the columns belonging to an item to that 
-  // itemToColumns is an object that maps index of item to arr of columns
-  mapAllItemRelatedColumns(setupObject, itemIndex, itemToColumns, getNonID = true) {
+  //recursively map the columns belonging to an item to that item
+  mapAllItemRelatedColumns(setupObject, itemIndex, path = [IDX_OF_ITEM_ARR, itemIndex]) {
+    let treeIDObjects = {}
     // traverse ID columns
-    this.mapItemIDColumns(setupObject, itemIndex, itemToColumns)
-    // traverse ID items
-    this.mapItemIDItems(setupObject, itemIndex, itemToColumns, getNonID)
-    if (getNonID) {
-      // traverse non-ID columns
-      this.mapItemNonIDColumns(setupObject, itemIndex, itemToColumns)
-      // traverse non-ID items
-      this.mapItemNonIDItems(setupObject, itemIndex, itemToColumns, getNonID)
-    }
+    this.mapItemTreeIDtoColumns(setupObject, itemIndex, treeIDObjects, path)
+    // // traverse ID items AND NON id ITEMS
+    this.mapItemTreeIDtoIDItems(setupObject, itemIndex, treeIDObjects, path)
+    this.mapItemTreeIDtoNonIDItems(setupObject, itemIndex, treeIDObjects, path)
+    return treeIDObjects;
   }
+
 
   /* ////////////////////////////////////
    getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
-
+  
    params: -setupObject
            -appliedFilterSelections: an object that will hold's a user's input for each selector
            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
            -wantFilterSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
-
+  
    returns: selector object that maps selector type to column information. 
    selector object format:
    {
@@ -237,9 +254,9 @@ export class SetupObjectService {
      text: [],
      bool: []
    };
-
+  
    where each element inside the arrays is a columnObject
-*/////////////////////////////////////////
+  */////////////////////////////////////////
   getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, returnableIDs, wantFilterSelector: boolean) {
     let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
     let globalColumns = [];
@@ -251,16 +268,16 @@ export class SetupObjectService {
 
   /* ////////////////////////////////////
    getFeatureFilterSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
-
+  
    params: -setupObject
            -appliedFilterSelections: an object that will hold's a user's input for each selector
            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
-
+  
    returns: an array of selector objects. each element of this array contains the selectors belonging to
             one feature, and its index is the same as the index of that feature in the setupObject features array. 
             see getGlobalSelectors for an example of a selector object.
-
-*/////////////////////////////////////////
+  
+  */////////////////////////////////////////
   getFeatureFilterSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs) {
     let allFeatureSelectors = [];
     // for each feature...
@@ -290,17 +307,17 @@ export class SetupObjectService {
 
   /* ////////////////////////////////////
      getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumnIDs, isObservation: boolean)
- 
+   
      params: -setupObject
              -appliedFilterSelections: an object that will hold's a user's input for each selector
              -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
              -isObservation: set to true to get observation selectors, false to get attribute selectors
- 
+   
      returns: an array of selector objects. 
               each element of this array contains the observation selectors or attribute selectors belonging to
               one feature, and its index is the same as the index of that feature in the setupObject features array. 
               see getGlobalSelectors for an example of a selector object.
- 
+   
   */////////////////////////////////////////
 
   // returns an array that holds key-value mapping from feature's index in setupObj features array 
@@ -330,14 +347,14 @@ export class SetupObjectService {
 
   /* ////////////////////////////////////
     getFeatureItemChildren(setupObject, featureIndex)
-
+  
     params: 
       setupObject, 
       featureIndex: the feature's index of the setupObject.features array
-
+  
     returns: array of the feature's item children. each element is an itemChildNodePointerObject
     see api spec for more info on itemChildNodePointerObject.
- */////////////////////////////////////////
+  */////////////////////////////////////////
   getFeatureItemChildren(setupObject, featureIndex) {
     let itemIndex = setupObject.features[featureIndex].children[IDX_OF_ITEM_IDX];
     return setupObject.items[itemIndex].children[IDX_OF_ID_ITEM_IDXS];

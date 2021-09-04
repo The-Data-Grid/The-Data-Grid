@@ -113,10 +113,10 @@ export class AuditSummaryComponent implements OnInit {
     dialogRef.afterClosed().subscribe((e) => this.auditOpened = false)
   }
 
-  openItemCreation(itemIndex): void {
+  openItemCreation(treeIDObject): void {
     const dialogRef = this.dialog.open(ItemCreationComponent, {
       width: '801px',
-      data: itemIndex
+      data: treeIDObject
     })
   }
 
@@ -131,7 +131,7 @@ export class AuditSummaryComponent implements OnInit {
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject)
       this.displayedRootFeatures = this.rootFeatures;
       this.auditMetadata = this.setupObjectService.getAllAuditItemRelatedColumns(this.setupObject);
-      console.log(this.setupObject)
+      console.log(this.auditMetadata)
     });
   }
 }

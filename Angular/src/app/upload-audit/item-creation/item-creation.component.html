@@ -18,12 +18,12 @@
           "{{item.frontendName}}" ID
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div *ngFor="let itemToColumn of itemToColumns | keyvalue" style="font-weight: 700;">
-        {{setupObject.items[itemToColumn.key].frontendName}}
-        <button mat-button class="create-button transparent-hover" (click)="openItemCreation(itemToColumn.key)">
+      <div *ngFor="let treeIDObject of treeIDObjects" style="font-weight: 700;">
+        {{treeIDObject.item.frontendName}}
+        <button mat-button class="create-button transparent-hover" (click)="openItemCreation(treeIDObject.key)">
           Create New
         </button>
-        <div *ngFor="let column of itemToColumn.value" style="margin-left: 2em;">
+        <div *ngFor="let column of treeIDObject.value" style="margin-left: 2em;">
           {{column.frontendName}}
         </div>
       </div>
