@@ -186,7 +186,7 @@ test('Create observation that references existing item', done => {
 
 // create observation that references created item
 // submissionObjet9
-test('Create global and audit', done => {
+test('Create observation that references created item', done => {
     request
         .post(uploadAPI)
         .send(submissionObject9)
@@ -201,7 +201,7 @@ test('Create global and audit', done => {
 
 // update and delete observation
 // submissionObject10, submissionObject11, submissionObject12, submissionObject13
-test('Create, update, and delete item', done => {
+test('Create, update, and delete observation', done => {
 // Create item
     request
         .post(uploadAPI)
