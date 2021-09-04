@@ -301,6 +301,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
     // index of globalObject
     let globalItemIndex = itemOrder.indexOf('item_global');
+    let auditItemIndex = itemOrder.indexOf('item_audit');
     // all item indicies
     let itemIndices = itemOrder.map((e,i) => i)
     
@@ -407,7 +408,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // Constructing the final setupObject
     // ==================================================
 
-    setupObject.children = [featureIndices, itemIndices, globalItemIndex];
+    setupObject.children = [featureIndices, itemIndices, globalItemIndex, auditItemIndex];
     setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
     setupObject.items = itemNodeObjects;
     setupObject.features = featureNodeObjects;
