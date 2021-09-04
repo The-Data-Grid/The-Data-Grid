@@ -1,7 +1,6 @@
 // SETUP //
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
 const https = require('https');
@@ -29,12 +28,12 @@ connectPostgreSQL('default');
 const parse = require('./parse.js');
 const {validateObservation, validateItem} = require('./validate.js')
 const query = require('./query/query.js');
+const insert = require('./insert/insert.js');
 const cacheLayer = require('./query/cacheLayer.js');
 const template = require('./template.js');
 const authRouter = require('./auth/login.js');
 
 app.use(cors({credentials: true, origin: 'http://localhost:4200'}));
-//app.use(bodyParser.json());
 
 // middleware
 app.use(express.json()); 
@@ -140,7 +139,7 @@ app.get('/api/audit/item/distinct/:feature/:include',
 //** Setup Query **//	
 app.get('/api/setup', cycleTimer, parse.setupParse, query.sendSetup);	
 // Audit Upload	
-//app.get('/api/upload/...', parse.uploadParse, insert.insertAudit);	
+app.post('/api/audit/submission', insert.submission);	
 // Template Query	
 app.get('/api/template/', parse.templateParse, template.makeTemplate); // makeTemplate should be in query.js	
 // Front Page Stats	

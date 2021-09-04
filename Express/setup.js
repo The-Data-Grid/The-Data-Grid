@@ -15,7 +15,7 @@ const formatSQL = postgresClient.format;
 // QUERIES //
 // ==================================================
 
-let {returnableQuery, 
+let {returnableQuery,  // defunct, now a view
        columnQuery, 
        allItems, 
        itemM2M, 
@@ -23,13 +23,53 @@ let {returnableQuery,
        allFeatures} = require('./statement.js').setup
 
 
-// returnableQuery = syncdb.querySync(returnableQuery);
+const referenceTypes = {
+    item: ['item-id', 'item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'],
+    observation: ['obs', 'obs-global', 'obs-list', 'obs-factor', 'special', 'attribute']
+}
+
+const metadataItemColums = syncdb.querySync('select * from metadata_item_columns');
+const itemColumnObject = {};
+metadataItemColums.forEach(item => {
+    itemColumnObject[item.i__table_name] = {...item};
+
+    itemColumnObject[item.i__table_name].isItem = item.r__type_name.map(type => referenceTypes.item.includes(type));
+    itemColumnObject[item.i__table_name].isObservation = item.r__type_name.map(type => referenceTypes.observation.includes(type));
+});
 returnableQuery = syncdb.querySync('select * from returnable_view');
 columnQuery = syncdb.querySync(columnQuery);
 allItems = syncdb.querySync(allItems);
 itemM2M = syncdb.querySync(itemM2M);
 frontendTypes = syncdb.querySync(frontendTypes);
 allFeatures = syncdb.querySync(allFeatures);
+// from setupObject, identifies type of item (ex. item_sink vs item_mirror) based on index
+const itemTableNames = allItems.map(item => item['i__table_name']);
+
+/**
+ * Validation lookup to verify proper item insertion
+ * @typedef {Object} requiredItemLookup
+ * @property {Object} [tableName] Reprsents a single item and all of its required items. Property should exist for every item in the schema
+ * @property {Number[]} tableName.nullable
+ * @property {Number[]} tableName.nonNullable
+ */
+let requiredItemLookup = {}
+const requiredItemView = syncdb.querySync('SELECT * FROM required_item_view')
+const globalItemTypeID = itemTableNames.indexOf('item_global')
+requiredItemView.forEach(item => {
+    requiredItemLookup[item.item_table_name] = {
+        nullable: [],
+        nonNullable: []
+    };
+    item.required_item_table_name.forEach((requiredItem, i) => {
+        if(item.is_nullable[i]) {
+            requiredItemLookup[item.item_table_name].nullable.push(requiredItem);
+        } else {
+            requiredItemLookup[item.item_table_name].nonNullable.push(requiredItem);
+        }
+    })
+});
+
+
 
 // closing db connection
 console.log('Closed PostgreSQL Connection: setup');
@@ -38,15 +78,16 @@ syncdb.end()
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, ID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, appendAlias) {
+    constructor(feature, ID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, sqlType) {
         this.ID = ID;
+        this.columnID = columnID;
         this.feature = feature;
         this.columnName = columnName;
         this.frontendName = frontendName;
         this.referenceType = referenceType;
         this.appendSQL = appendSQL;
         this.selectSQL = selectSQL;
-        this.appendAlias = appendAlias;
+        this.sqlType = sqlType;
 
         this.joinObject = this.makeJoinObject(Array.from(columnTree), Array.from(tableTree), ID);
 
@@ -454,7 +495,9 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         // Get column tree
         const columnTree = row['r__join_object'].columns;
-        //console.log(columnTree) 
+        
+        // Get column ID
+        const columnID = row['c__column_id'];
 
         // Get table tree
         const tableTree = row['r__join_object'].tables;
@@ -464,6 +507,9 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         // Get data column
         const frontendName = row['r__frontend_name'];
+
+        // Get SQL type
+        const sqlType = row['sql__type_name'];
 
         // Get column name and table name
         const columnName = row['c__column_name'];
@@ -649,7 +695,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup[returnableID] = new ReturnableID(feature, returnableID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName)
+        returnableIDLookup[returnableID] = new ReturnableID(feature, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, sqlType)
 
     }
 
@@ -869,18 +915,24 @@ const {returnableIDLookup, idValidationLookup, featureParents, setupObject} = se
 
 
 //console.log(featureParents);
-//console.log(idValidationLookup)
+//console.log(itemColumnObject['item_sink'])
+//console.log(Object.values(returnableIDLookup).filter(id => [34, 44, 49].includes(id.columnID)))
+//console.log(Object.values(returnableIDLookup).filter(id => [523].includes(id.columnID)))
+//console.log(returnableIDLookup[523])
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
-//console.log(returnableIDLookup['310'])
+//console.log(Object.keys(returnableIDLookup))
 //console.log(setupObject)
+//console.log(allItems)    
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
-    
 module.exports = {
     returnableIDLookup,
     idValidationLookup,
     featureParents,
     setupObject,
     allItems,
-    itemM2M
+    itemM2M,
+    itemColumnObject,
+    requiredItemLookup,
+    itemTableNames
 }
 
