@@ -85,9 +85,7 @@ export class SetupObjectService {
   }
 
   getAllAuditItemRelatedColumns(setupObject) {
-    // const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_AUDIT_ITEM_IDX])
-    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, IDX_OF_AUDIT_ITEM_IDX)
-    console.log(treeIDObjects)
+    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_AUDIT_ITEM_IDX])
     return treeIDObjects;
   }
 
@@ -129,8 +127,6 @@ export class SetupObjectService {
 
   mapItemTreeIDtoColumns(setupObject, itemIndex, treeIDObjects, path) {
     let treeID = path.join('>');
-    console.log("itemIndex", itemIndex)
-    console.log("TREEID", treeID)
     let treeIDObject = {
       item: setupObject.items[itemIndex],
       itemIndex: itemIndex,

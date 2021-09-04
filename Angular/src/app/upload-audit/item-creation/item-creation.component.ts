@@ -41,7 +41,8 @@ export class ItemCreationComponent implements OnInit {
   globalSelectors = {};
   globalDefaultColumns = []
   globalReturnableIDs = [];
-  item = this.data;
+  item = this.data.item;
+  treeIDObject = this.data;
 
   ngOnInit() {
     this.getSetupObject();
