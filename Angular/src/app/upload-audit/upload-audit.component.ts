@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 
 @Component({
   selector: 'app-upload-audit',
@@ -13,7 +15,7 @@ export class UploadAuditComponent implements OnInit {
   buttonText:string = "Select";
   @ViewChild('tabGroup') tabGroup;
 
-  constructor(private router:Router) { }
+  constructor(private router:Router, public dialog: MatDialog) { }
 
   dataSource = new MatTableDataSource();
   tempData = [
@@ -34,10 +36,26 @@ export class UploadAuditComponent implements OnInit {
   synchronize() {
     // synchronize logic here
     this.isEditable = false; // throwaway
+    this.buttonText = "Select"
   }
 
   delete() {
-    this.isEditable = false; // throwaway
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '35%',
+      height: '60%',
+      data: false
+    })
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        console.log("delete");
+        this.isEditable = false; // throwaway
+        this.buttonText = "Select";    
+      }
+      else {
+        console.log("don't delete")
+      }
+    })
+    console.log(dialogRef)
   }
 
   changeEditability(): void {
