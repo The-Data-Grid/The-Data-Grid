@@ -69,8 +69,8 @@ export class ReusableTemplateComponent implements OnInit {
   getDropdownOptions() {
     this.apiService.getDropdownOptions(this.returnableIDs).subscribe((res) => {
       this.dropdownOptions = res;
-      console.log("dropdown (from resusable.ts):");
-      console.log(this.dropdownOptions)
+      // console.log("dropdown (from resusable.ts):");
+      // console.log(this.dropdownOptions)
       this.IDtoOptions = this.mapIDtoOptions();
       // console.log(this.IDtoOptions)
     })

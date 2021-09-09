@@ -132,7 +132,7 @@ export class AuditSummaryComponent implements OnInit {
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject)
       this.displayedRootFeatures = this.rootFeatures;
       this.auditMetadata = this.setupObjectService.getAllAuditItemRelatedColumns(this.setupObject);
-      console.log(this.auditMetadata)
+      console.log("audit metadata", this.auditMetadata)
     });
   }
 }

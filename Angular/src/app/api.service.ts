@@ -23,8 +23,21 @@ export class ApiService {
       observe: 'response',
     })
       .pipe(map((response: any) => {
-        console.log("Server Status: " + response.status + ":::::" + response.statusText);
-        console.log(response.body);
+        console.log("SetupObject Request Status: " + response.status + ":::::" + response.statusText);
+        console.log("setupObject", response.body);
+        return response.body;
+      }));
+  }
+
+  public getAudits(): Observable<any> {
+    var url = API_URL + '/audit/item/audit/157=BHS';
+
+    return this.http.get<any>(url, {
+      observe: 'response',
+    })
+      .pipe(map((response: any) => {
+        console.log("Audit Request Status: " + response.status + ":::::" + response.statusText);
+        console.log("audit respone", response.body);
         return response.body;
       }));
   }

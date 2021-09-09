@@ -85,7 +85,7 @@ export class SetupObjectService {
   }
 
   getAllAuditItemRelatedColumns(setupObject) {
-    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_AUDIT_ITEM_IDX])
+    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_AUDIT_ITEM_IDX], [IDX_OF_AUDIT_ITEM_IDX])
     return treeIDObjects;
   }
 
@@ -159,12 +159,13 @@ export class SetupObjectService {
       treeIDObject.nonIDreturnableIDs.push(curCol["_returnableID"]);
       treeIDObject.nonIDColumns.push(curCol);
     });
-    treeIDObject.item.children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnInfo, i) => {
-      // console.log(treeIDObject.item.children[IDX_OF_ATTRIBUTE_COL_IDXS])
+    treeIDObject.item.children[IDX_OF_ITEM_ATTRIBUTE_IDXS].forEach((attributeColumnIndex, i) => {
       let colPath = Object.assign([], path);
-      colPath.push(IDX_OF_ATTRIBUTE_COL_IDXS, i);
-      attributeColumnInfo["_returnableID"] = this.getReturnableID(colPath, setupObject);
-      treeIDObject.attributeReturnableIDs.push(attributeColumnInfo["_returnableID"]);
+      colPath.push(IDX_OF_ITEM_ATTRIBUTE_IDXS, i);
+      let curCol = setupObject.columns[attributeColumnIndex];
+      curCol["_returnableID"] = this.getReturnableID(colPath, setupObject);
+      treeIDObject.attributeReturnableIDs.push(curCol["_returnableID"]);
+      treeIDObject.attributeColumns.push(curCol);
     });
   }
 
