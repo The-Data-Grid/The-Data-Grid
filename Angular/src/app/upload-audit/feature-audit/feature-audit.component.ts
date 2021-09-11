@@ -87,18 +87,15 @@ export class FeatureAuditComponent implements OnInit {
     {
       title: this.featureName + " Observation",
       type: "observation",
-
     },
-    {
-      title: "Subfeature",
-      type: "subfeature",
-    }
+    // {
+    //   title: "Subfeature",
+    //   type: "subfeature",
+    // }
   ]
-
 
   ngOnInit() {
     this.getSetupObject();
-
   }
 
   close() {
@@ -121,7 +118,6 @@ export class FeatureAuditComponent implements OnInit {
         this.getFeatureChildren();
         this.getAttributeAndObservationColumns()
         this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.featureIndex)
-
       });
     }
   }

@@ -22,8 +22,11 @@
         </span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <div *ngFor="let column of auditMetadata" style="font-weight: 700; font-size: 12px;">
-      {{column.frontendName}}
+    <div *ngFor="let column of auditMetadata" style="font-weight: 700;">
+      {{column.frontendName}}         
+      <button mat-button id="create-button" class="transparent-hover" [routerLink]="'/upload-audit'">
+        Create New
+      </button>
     </div>
   </mat-expansion-panel>
   <div id="open-dialog-buttons" style="margin-top: 20px; margin-bottom: 20px;">
@@ -42,9 +45,9 @@
             <span>
               {{ feature.name }}
             </span>
-            <!-- <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit(feature)">
+            <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit(feature)">
               <mat-icon style="font-size: small;">add</mat-icon>
-            </button> -->
+            </button>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"

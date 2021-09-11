@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { RootFeaturesComponent } from '../root-features/root-features.component';
+import { AddRootFeaturesComponent } from '../add-root-features/add-root-features.component';
 import { GlobalPresetsComponent} from '../global-presets/global-presets.component';
 import { FeatureAuditComponent} from '../feature-audit/feature-audit.component';
 import { DatePipe } from '@angular/common';
@@ -12,12 +12,12 @@ const USE_FAKE_DATA = environment.useFakeData;
 import { AppliedFilterSelections } from '../../models'
 
 @Component({
-  selector: 'app-view-audit',
-  templateUrl: './view-audit.component.html',
-  styleUrls: ['./view-audit.component.css'],
+  selector: 'app-audit-summary',
+  templateUrl: './audit-summary.component.html',
+  styleUrls: ['./audit-summary.component.css'],
   providers: [DatePipe]
 })
-export class ViewAuditComponent implements OnInit {
+export class AuditSummaryComponent implements OnInit {
   expanded = false;
   auditOpened = false;
   myDate = new Date();
@@ -64,7 +64,7 @@ export class ViewAuditComponent implements OnInit {
 // end hardcode data
 
   openRootFeatures(): void {
-    const dialogRef = this.dialog.open(RootFeaturesComponent, {
+    const dialogRef = this.dialog.open(AddRootFeaturesComponent, {
       width: '801px',
       maxHeight: '500px',
       data: [this.audits, this.displayedRootFeatures],

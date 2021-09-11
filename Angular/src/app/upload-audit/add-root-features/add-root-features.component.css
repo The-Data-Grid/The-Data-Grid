@@ -6,7 +6,7 @@
 
 .top_decoration {
   height: 30px;
-  min-width:3000px;
+  min-width: 3000px;
   background-color: #569CD7;
   overflow-y: hidden;
   overflow-x: hidden;
@@ -32,14 +32,14 @@
   cursor: pointer;
   margin-top: -36px;
   /* margin-left: 730px; */
-  margin-left:93%;
+  margin-left: 93%;
   font-weight: 600;
 }
 
 #toggle {
-margin-left: 12%;
-cursor: pointer;
-width:500px;
+  margin-left: 12%;
+  cursor: pointer;
+  width: 500px;
 }
 
 .mat-button-toggle {
@@ -57,25 +57,24 @@ width:500px;
 }
 
 .main-width {
-  width:300px
+  width: 300px
 }
 
 .second-width {
-  width:270px;
+  width: 270px;
 }
 
 .final-width {
-  width:205px;
+  width: 205px;
 }
 
 .mat-button-toggle-label-content {
   line-height: 60px !important;
 }
 
-
 .mat-button-toggle-checked {
   background-color: #D3D3D3;
-}  
+}
 
 .first_separator {
   margin-top: 30px;
@@ -90,7 +89,7 @@ width:500px;
   position: absolute;
   z-index: 1000;
   overflow: auto;
-  pointer-events: auto;  
+  pointer-events: auto;
 }
 
 .audit_names {
@@ -107,10 +106,9 @@ width:500px;
   width: 831px;
   margin-left: 0px;
   /* box-shadow: 20px 0px 10px 5px black; */
-
 }
 
-.separators_highlight { 
+.separators_highlight {
   box-shadow: 0px 2px 2px 1px #B0B0B0
 }
 
@@ -137,32 +135,29 @@ width:500px;
 }
 
 .checkmark_small:after {
-    content: "";
-    position: absolute;
-    display: none;
+  content: "";
+  position: absolute;
+  display: none;
 }
 
-.container input:checked ~ .checkmark_small:after {
+.container input:checked~.checkmark_small:after {
   display: block;
 }
 
-
 .subFeatures {
-    font-size: 14px;
-    margin-left: 30px;
-    font-weight: 600;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}  
+  font-size: 14px;
+  margin-left: 30px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 
 .subfeature_separators {
   background-color: black;
   height: 1px;
   width: 800px;
   margin-left: 0px
-
 }
-
 
 .sep_style {
   width: 806px;
@@ -173,10 +168,9 @@ width:500px;
   /* background-image: linear-gradient(#FFFFFF, #F8F8F8); */
 }
 
-
 ::ng-deep .checkbox {
-  position:absolute; 
-  margin-left:500px;
+  position: absolute;
+  margin-left: 500px;
   cursor: pointer;
   width: 50px !important;
   background-color: green !important;
@@ -196,7 +190,7 @@ width:500px;
 
 ::ng-deep .mat-checkbox-checked .mat-checkbox-background {
   background-color: #569CD7 !important;
-  height:17px;
+  height: 17px;
   width: 17px;
 }
 
@@ -207,7 +201,6 @@ width:500px;
   padding: 0px;
   width: 90%;
   padding: 0px !important;
-
 }
 
 .secondary_separator {
@@ -215,11 +208,10 @@ width:500px;
   height: 1px;
   width: 801px;
   margin-left: -54px;
-
 }
 
 .cdk-global-scrollblock {
-overflow-y: hidden;
+  overflow-y: hidden;
 }
 
 .mat-dialog-container {
@@ -227,5 +219,11 @@ overflow-y: hidden;
 }
 
 ::ng-deep .mat-expansion-panel-header[aria-disabled=true] {
-  color: rgba(0,0,0,.87);
+  color: rgba(0, 0, 0, .87);
+}
+
+.tab-content {
+  margin-top: 20px;
+  width: 90%;
+  margin-left: 25px;
 }
