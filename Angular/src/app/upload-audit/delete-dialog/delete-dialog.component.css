@@ -1,0 +1,32 @@
+.x {
+    width: 22%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;  
+    padding-top: 10%;
+}
+
+.confirm {
+    text-align: center;
+}
+
+.warning {
+    color: gray;
+    padding-top: 10px;
+}
+
+.buttons {
+    margin-left: 25%;
+  }
+
+.button {
+    cursor: pointer;
+    width: 35%;
+    font-size: 18px;
+    padding-top: 10%;
+    padding-bottom: 10%;
+    color: white;
+    padding: 10px;
+    border-radius: 2px;
+    border: none;
+}

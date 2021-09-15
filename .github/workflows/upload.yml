@@ -1,4 +1,4 @@
-name: API Testing with PostgreSQL Service
+name: Upload Testing with PostgreSQL Service
 on:
   push:
     branches:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   # Label of the runner job
-  API-Test-Suite:
+  Upload-Test-Suite:
     # You must use a Linux environment when using service containers or container jobs
     runs-on: ubuntu-latest
 
@@ -50,6 +50,6 @@ jobs:
         run: npm run db-fake
 
       - name: Run the Test Suite
-        run: npm run test -- api --forceExit --detectOpenHandles
+        run: npm run test -- upload --forceExit --detectOpenHandles
         env:
           PGPASSWORD: postgres

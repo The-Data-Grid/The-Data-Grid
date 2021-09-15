@@ -34,6 +34,7 @@ import { SetupObjectService } from './setup-object.service';
 import { TableObjectService } from './table-object.service';
 import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
 import { TeamComponent } from './team/team.component';
+import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,7 +56,8 @@ import { TeamComponent } from './team/team.component';
     FeatureAuditComponent,
     ReusableTemplateComponent,
     TeamComponent,
-    ItemCreationComponent
+    ItemCreationComponent,
+    DeleteDialogComponent
   ],
   imports: [
     BrowserModule,
