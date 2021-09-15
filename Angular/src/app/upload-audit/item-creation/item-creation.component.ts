@@ -53,7 +53,7 @@ export class ItemCreationComponent implements OnInit {
       this.setupObject = SetupObject;
     }
     else {
-      this.apiService.getSetupTableObject().subscribe((res) => {
+      this.apiService.getSetupObject().subscribe((res) => {
         this.setupObject = res;
         this.globalSelectors = this.setupObjectService.getGlobalSelectors(this.setupObject, this.appliedFilterSelections, this.globalReturnableIDs, this.globalDefaultColumns, false)
       });

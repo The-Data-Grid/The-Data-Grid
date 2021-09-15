@@ -123,11 +123,11 @@ export class AuditSummaryComponent implements OnInit {
 
   ngOnInit(): void {
     // get setupObject and rootFeatures
-    this.getSetupTableObject();
+    this.getSetupObject();
   }
 
-  getSetupTableObject() {
-    this.apiService.getSetupTableObject().subscribe((res) => {
+  getSetupObject() {
+    this.apiService.getSetupObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject)
       this.displayedRootFeatures = this.rootFeatures;

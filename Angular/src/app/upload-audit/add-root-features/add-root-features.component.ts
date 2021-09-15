@@ -98,7 +98,7 @@ export class AddRootFeaturesComponent implements OnInit {
   }
 
   getSetupObject() {
-    this.apiService.getSetupTableObject().subscribe((res) => {
+    this.apiService.getSetupObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
       this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
     });

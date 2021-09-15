@@ -44,11 +44,11 @@ export class GlobalPresetsComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.getSetupTableObject();
+    this.getSetupObject();
   }
 
-  getSetupTableObject() {
-    this.apiService.getSetupTableObject().subscribe((res) => {
+  getSetupObject() {
+    this.apiService.getSetupObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
       this.globalSelectors = this.setupObjectService.getGlobalSelectors(
         this.setupObject,

@@ -85,7 +85,7 @@ export class SetupObjectService {
   }
 
   getAllAuditItemRelatedColumns(setupObject) {
-    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_AUDIT_ITEM_IDX], [IDX_OF_AUDIT_ITEM_IDX])
+    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_AUDIT_ITEM_IDX])
     return treeIDObjects;
   }
 
@@ -141,7 +141,6 @@ export class SetupObjectService {
     // else, assign this blank treeIDObject to this treeID
     treeIDObjects[treeID] ? treeIDObject = treeIDObjects[treeID] : treeIDObjects[treeID] = treeIDObject
 
-
     // for each column that is an ID child of the item, get its returnable ID, push its ID, push the column 
     treeIDObject.item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
       let colPath = Object.assign([], path);
@@ -150,6 +149,7 @@ export class SetupObjectService {
       curCol["_returnableID"] = this.getReturnableID(colPath, setupObject);
       treeIDObject.IDreturnableIDs.push(curCol["_returnableID"]);
       treeIDObject.IDColumns.push(curCol);
+      // console.log(curCol.frontendName, colPath)
     });
     treeIDObject.item.children[IDX_OF_NON_ID_COL_IDXS].forEach((nonIDColumnIndex, i) => {
       let colPath = Object.assign([], path);

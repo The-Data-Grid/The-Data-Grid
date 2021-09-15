@@ -15,8 +15,9 @@
     margin-right: 10px;
 }
 
-.mat-table {
+#table {
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .mat-column-uploadStatus {

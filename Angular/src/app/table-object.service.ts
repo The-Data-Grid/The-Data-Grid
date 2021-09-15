@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import {
   IDX_OF_FEATURES_ARR,
+  IDX_OF_ITEM_ARR,
   IDX_OF_GLOBAL_ITEM_IDX,
+  IDX_OF_AUDIT_ITEM_IDX,
   IDX_OF_ID_COL_IDXS,
   IDX_OF_ID_ITEM_IDXS,
   IDX_OF_NON_ID_COL_IDXS,
   IDX_OF_NON_ID_ITEM_IDXS,
+  IDX_OF_ITEM_ATTRIBUTE_IDXS,
   IDX_OF_OBSERVATION_COL_IDXS,
   IDX_OF_ATTRIBUTE_COL_IDXS,
   IDX_OF_ITEM_IDX,
@@ -46,6 +49,8 @@ export class TableObjectService {
       let columnIndex = returnableIDToColumnIndex[returnableID];
       let curColumn = setupObject.columns[columnIndex];
       let itemPath = returnableIDToItemPathArrays[returnableID].join(">");
+
+      // console.log(curColumn)
 
       // let itemName be the last element of itemPath
       // get column desc
@@ -121,7 +126,7 @@ export class TableObjectService {
         let childArrayIndex = treeID.pop();
         if (childArrayIndex == IDX_OF_ITEM_IDX) {
           let itemIndex = feature.children[IDX_OF_ITEM_IDX];
-          returnableIDToItemPathArrays[returnableID].concat( this.getItemPathFromItem(itemIndex, treeID, setupObject));
+          returnableIDToItemPathArrays[returnableID].concat(this.getItemPathFromItem(itemIndex, treeID, setupObject));
         }
       }
     });
@@ -139,12 +144,12 @@ export class TableObjectService {
     if (childArrayIndex == IDX_OF_ID_ITEM_IDXS) {
       let itemChildNodePointer = itemNode.children[IDX_OF_ID_ITEM_IDXS][childArrayElementIndex];
       partialPath.push(itemChildNodePointer.frontendName)
-      partialPath.concat( this.getItemPathFromItem(itemChildNodePointer.index, treeID, setupObject))
+      partialPath.concat(this.getItemPathFromItem(itemChildNodePointer.index, treeID, setupObject))
     }
     else if (childArrayIndex == IDX_OF_NON_ID_ITEM_IDXS) {
       let itemChildNodePointer = itemNode.children[IDX_OF_NON_ID_ITEM_IDXS][childArrayElementIndex];
       partialPath.push(itemChildNodePointer.frontendName)
-      partialPath.concat( this.getItemPathFromItem(itemChildNodePointer.index, treeID, setupObject))
+      partialPath.concat(this.getItemPathFromItem(itemChildNodePointer.index, treeID, setupObject))
     }
 
     return partialPath;
@@ -174,6 +179,10 @@ export class TableObjectService {
           let itemIndex = feature.children[IDX_OF_ITEM_IDX];
           returnableIDToColumnIndex[returnableID] = this.getColumnIndexFromItem(itemIndex, treeID, setupObject);
         }
+      }
+      else if (firstIndex == IDX_OF_ITEM_ARR) {
+        let itemIndex = setupObject.children[IDX_OF_ITEM_ARR][treeID.pop()];
+        returnableIDToColumnIndex[returnableID] = this.getColumnIndexFromItem(itemIndex, treeID, setupObject);
       }
     });
     return returnableIDToColumnIndex;
