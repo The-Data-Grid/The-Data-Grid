@@ -1,26 +1,30 @@
 ////// QUERY PARSING //////
 
+const { compareSync } = require("bcrypt");
+
 function operation_map(operation) {
     op = operation;
     switch(operation){
         case 'gte':
-            op = '>='
-            break
+            op = '>=';
+            break;
         case 'gt':
-            op = '>'
-            break
+            op = '>';
+            break;
         case 'lte':
-            op = '<='
-            break
+            op = '<=';
+            break;
         case 'lt':
-            op = '<'
-            break
+            op = '<';
+            break;
         case 'e':
-            op = 'Exists'
-            break
+            op = 'Exists';
+            break;
         case 'dne':
-            op = 'Does not exist'
-            break
+            op = 'Does not exist';
+            break;
+        case '~':
+            op = 'not';
         default:
             op = null //set op to null if non-valid operation
     }
@@ -44,7 +48,6 @@ function parseConstructor (init) {
         // init parsed values
         res.locals.parsed = {};
     
-
         // Validate column IDs are numeric
         for(let id of include) {
             if(isNaN(parseInt(id))) {
@@ -52,20 +55,20 @@ function parseConstructor (init) {
             }
         }
 
-    // console.log('feature = ', feature);
-    // console.log('includes = ', include);
-    // console.log('filters = ', filter);
+        // console.log('feature = ', feature);
+        // console.log('includes = ', include);
+        // console.log('filters = ', filter);
     
-    // Construct object of parsed filters
-    let filters = {};
-    let universalFilters = {};
-    for (const key in filter) {
+        // Construct object of parsed filters
+        let filters = {};
+        let universalFilters = {};
+        for (const key in filter) {
 
-        // check for universal filters
-        if(['sorta','sortd','limit','offset', 'pk'].includes(key)) {
-            universalFilters[key] = filter[key]
-            continue
-        }
+            // check for universal filters
+            if(['sorta','sortd','limit','offset', 'pk'].includes(key)) {
+                universalFilters[key] = filter[key];
+                continue;
+            }
 
             // Validate filter IDs are numeric
             if(isNaN(parseInt(key))) {
@@ -73,49 +76,37 @@ function parseConstructor (init) {
             }
 
             // setting up custom operator
-            // req.query parses 42[example]=something as 42: {example: 'something'}
             if (typeof(filter[key]) === 'object') {
+                console.log(filter[key]);
 
-                // Only getting the first operation! Multiple operations is not set up
-                // ex: 42: {lte: 5, gte: 2} only makes the lte filter now
-                // @Yash pls fix
-                let operationKey = Object.keys(filter[key])[0]
+                let operationKeys = Object.keys(filter[key]);
+                let operationValues = Object.values(filter[key]);
 
-                // get value
-                let value = filter[key][operationKey]
+                //console.log(operationKeys);
+                //console.log(operationValues);
+                /*
                 // get operation name
-                let operation = operation_map(operationKey)
+                let operation = operation_map(operationKeys)
+
                 // if not a valid operation
                 if(operation === null) {
-                    return res.status(400).send(`Bad Request 1603: ${operationKey} is not a valid operator`)
+                    return res.status(400).send(`Bad Request 1603: ${operationKeys} is not a valid operator`)
                 } 
-                // otherwise add as a filter
-                else {
-                    filters[key] = {
-                        operation,
-                        value
-                    }
-                }
+                */
             } else { // if no operator is given use = operator
 
-                // @Yash OR stuff probably needs to go here too
-
-                let value = filter[key]
-
-                filters[key] = {
-                    operation: '=', 
-                    value
-                } 
             }  
         }
 
-    // attaching parsed object
-    res.locals.parsed.request = "audit";
-    res.locals.parsed.features = feature
-    res.locals.parsed.columns = include
-    res.locals.parsed.filters = filters
-    res.locals.parsed.universalFilters = universalFilters;
-    next(); // passing to validate.js 
+        // console.log(filters);
+
+        // attaching parsed object
+        res.locals.parsed.request = "audit";
+        res.locals.parsed.features = feature
+        res.locals.parsed.columns = include
+        res.locals.parsed.filters = filters
+        res.locals.parsed.universalFilters = universalFilters;
+        next(); // passing to validate.js 
     }
 }
 
