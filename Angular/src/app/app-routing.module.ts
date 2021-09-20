@@ -19,7 +19,7 @@ const routes: Routes = [
   { path: 'about', component: AboutComponent },
   { path: 'upload-files', component: UploadFilesComponent },
   { path: 'upload-audit', component: UploadAuditComponent },
-  { path: 'audit-summary/:id', component: AuditSummaryComponent },
+  { path: 'audit-summary', component: AuditSummaryComponent },
   { path: 'download', component: DownloadComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'team', component: TeamComponent },

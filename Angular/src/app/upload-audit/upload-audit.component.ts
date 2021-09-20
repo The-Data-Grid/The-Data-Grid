@@ -3,7 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ApiService } from '../api.service';
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
-import { Router } from '@angular/router';
+import { Router, UrlHandlingStrategy } from '@angular/router';
 import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 
@@ -29,7 +29,7 @@ export class UploadAuditComponent implements OnInit {
     { auditName: "Bathroom Audit 1", uploadStatus: "uploaded", _id: "1234567890" },
     { auditName: "Bathroom Audit 2", uploadStatus: "uploaded", _id: "5555555555" }
   ]
-  displayedColumns: string[] = ['auditName', 'uploadStatus'];
+  displayedColumns = [];
   audits;
   tableRows;
   setupObject;
@@ -37,6 +37,7 @@ export class UploadAuditComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSource.data = this.tempData;
+    console.log("dataSource data", this.dataSource.data)
     this.getSetupObject();
   }
 
@@ -52,10 +53,15 @@ export class UploadAuditComponent implements OnInit {
     this.apiService.getAudits(this.setupObject).subscribe((res) => {
       this.audits = res;
       this.tableRows = this.tableObjectService.getRows(this.setupObject, this.audits, this.dataTableColumns);
-      console.log(this.tableRows)
+      this.dataSource.data = this.makeTableRows(this.dataTableColumns, this.tableRows)
+      this.dataTableColumns.forEach(column => {
+        this.displayedColumns.push(column.name)
+      });
+      console.log("dataSource data", this.dataSource.data)
+      console.log("displayed columns", this.displayedColumns)
     });
   }
-  
+
   navigate(url) {
     if (!this.isEditable)
       this.router.navigate(url)
@@ -102,6 +108,18 @@ export class UploadAuditComponent implements OnInit {
     return false;
   }
 
+  makeTableRows(columns, rows) {
+    let data = [];
+    rows.forEach((row, i) => {
+    let rowData = {}
+
+      columns.forEach(column => {
+        rowData[column.name] = row[column.returnableID]
+      });
+      data.push(rowData)
+    });
+    return data;
+  }
 }
 
 
