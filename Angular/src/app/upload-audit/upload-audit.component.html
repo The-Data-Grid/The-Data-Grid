@@ -17,12 +17,12 @@
                     <mat-cell *matCellDef="let audit" (click)="navigate(['/audit-summary'])"
                         [ngStyle]="!isEditable?{'cursor': 'pointer'} : {'cursor': 'auto'}">
                         <input *ngIf="isEditable" class="checkmarklocation" type="checkbox" style="cursor: pointer;">
-                        <span style="font-weight: 500; font-size: 12px;">{{audit["Audit Name"]}}</span>
+                        <span style="margin-left: 12px; font-weight: 500; font-size: 12px;">{{audit["Audit Name"]}}</span>
                     </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="Time Audit Created">
-                    <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">
-                        <span style="font-weight: 500; font-size: 12px;">{{audit["Time Audit Created"]}}</span>
+                    <mat-cell *matCellDef="let audit">
+                        <span style="margin-left: 12px; font-weight: 500; font-size: 12px;">{{audit["Time Audit Created"]}}</span>
                     </mat-cell>
                 </ng-container>
                 <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
@@ -35,12 +35,12 @@
                     <mat-cell *matCellDef="let audit" (click)="navigate(['/audit-summary'])"
                         [ngStyle]="!isEditable?{'cursor': 'pointer'} : {'cursor': 'auto'}">
                         <input *ngIf="isEditable" class="checkmarklocation" type="checkbox" style="cursor: pointer;">
-                        <span style="font-weight: 500; font-size: 12px;">{{audit["Audit Name"]}}</span>
+                        <span style="margin-left: 12px; font-weight: 500; font-size: 12px;">{{audit["Audit Name"]}}</span>
                     </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="Time Audit Created">
-                    <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">
-                        <span style="font-weight: 500; font-size: 12px;">{{audit["Time Audit Created"]}}</span>
+                    <mat-cell *matCellDef="let audit">
+                        <span style="margin-left: 12px; font-weight: 500; font-size: 12px;">{{audit["Time Audit Created"]}}</span>
                     </mat-cell>
                 </ng-container>
                 <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
@@ -53,12 +53,12 @@
                     <mat-cell *matCellDef="let audit" (click)="navigate(['/audit-summary'])"
                         [ngStyle]="!isEditable?{'cursor': 'pointer'} : {'cursor': 'auto'}">
                         <input *ngIf="isEditable" class="checkmarklocation" type="checkbox" style="cursor: pointer;">
-                        <span style="font-weight: 500; font-size: 12px;">{{audit["Audit Name"]}}</span>
+                        <span style="margin-left: 12px; font-weight: 500; font-size: 12px;">{{audit["Audit Name"]}}</span>
                     </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="Time Audit Created">
-                    <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">
-                        <span style="font-weight: 500; font-size: 12px;">{{audit["Time Audit Created"]}}</span>
+                    <mat-cell *matCellDef="let audit">
+                        <span style="margin-left: 12px; font-weight: 500; font-size: 12px;">{{audit["Time Audit Created"]}}</span>
                     </mat-cell>
                 </ng-container>
                 <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
