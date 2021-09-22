@@ -25,10 +25,6 @@ export class UploadAuditComponent implements OnInit {
 
 
   dataSource = new MatTableDataSource();
-  tempData = [
-    { auditName: "Bathroom Audit 1", uploadStatus: "uploaded", _id: "1234567890" },
-    { auditName: "Bathroom Audit 2", uploadStatus: "uploaded", _id: "5555555555" }
-  ]
   displayedColumns = [];
   audits;
   tableRows;
@@ -36,8 +32,6 @@ export class UploadAuditComponent implements OnInit {
   dataTableColumns;
 
   ngOnInit(): void {
-    this.dataSource.data = this.tempData;
-    console.log("dataSource data", this.dataSource.data)
     this.getSetupObject();
   }
 
@@ -57,8 +51,7 @@ export class UploadAuditComponent implements OnInit {
       this.dataTableColumns.forEach(column => {
         this.displayedColumns.push(column.name)
       });
-      console.log("dataSource data", this.dataSource.data)
-      console.log("displayed columns", this.displayedColumns)
+      console.log(this.dataTableColumns)
     });
   }
 

@@ -89,6 +89,11 @@ export class SetupObjectService {
     return treeIDObjects;
   }
 
+  getAllGlobalItemRelatedColumns(setupObject) {
+    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_GLOBAL_ITEM_IDX])
+    return treeIDObjects;
+  }
+
   //recursively find all the columns belonging to an item or a child of that item
   private getAllItemRelatedColumns(setupObject, item, columns, path, returnableIDs = []) {
     // traverse ID columns

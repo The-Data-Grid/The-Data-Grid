@@ -108,9 +108,9 @@ export class AuditsComponent implements OnInit {
       this.appliedFilterSelections,
       this.defaultColumnIDs);
 
-    // console.log("global selectors:", this.globalSelectors);
+    console.log("global selectors:", this.globalSelectors);
     // console.log("feature selectors:", this.featureSelectors);
-    // console.log("applied filter selections:", this.appliedFilterSelections);
+    console.log("applied filter selections:", this.appliedFilterSelections);
     // console.log("defaultColumnIDs:", this.defaultColumnIDs);
     this.applyFilters();
     this.selectorsLoaded = true
