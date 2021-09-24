@@ -296,17 +296,25 @@ function isNumber(field) {
     return true;
 }
 
-function isValidDate(field)
-{
-    var matches = /^(\d{1,2})[-](\d{1,2})[-](\d{4})$/.exec(field);
+function isValidDate(field) {
+    const matches = /^(\d{1,2})[-](\d{1,2})[-](\d{4})$/.exec(field);
     if (matches == null) return false;
-    var d = matches[2];
-    var m = matches[1] - 1;
-    var y = matches[3];
-    var composedDate = new Date(y, m, d);
+    let d = matches[2];
+    let m = matches[1] - 1;
+    let y = matches[3];
+    let composedDate = new Date(y, m, d);
     return composedDate.getDate() == d &&
             composedDate.getMonth() == m &&
             composedDate.getFullYear() == y;
+}
+
+function dateToUTC(field) {
+    const matches = /^(\d{1,2})[-](\d{1,2})[-](\d{4})$/.exec(field);
+    let d = matches[2];
+    let m = matches[1] - 1;
+    let y = matches[3];
+    const dateString = new Date(y, m, d);
+    return dateString.toUTCString();
 }
 
 function isPositiveIntegerOrZero(field) {
@@ -379,6 +387,7 @@ module.exports = {
     isText,
     isNumber,
     isValidDate,
+    dateToUTC,
     isValidEmail,
     isValidPassword,
     requestObject: {

@@ -53,7 +53,7 @@
         "isNullable": false,
         "isDefault": true,
         "filterSelectorName": null,
-        "inputSelectorName": null,
+        "inputSelectorName": "text",
         "frontendType": "string"
     },
     { // SOP NAME

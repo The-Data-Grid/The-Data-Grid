@@ -28,11 +28,6 @@ var lodashLang = require('lodash/lang');
 // csv parser
 const {writeToBuffer} = require('@fast-csv/format');
 
-
-// Testing request response cycle time (for dev only)
-var cycleTime = [];
-
-
 /**
  * Takes in the requested returnables and the values to filter by. 
  * Then computes the joins needed to complete the join, generates a full SQL statement, and queries the database with the statement.
@@ -295,43 +290,9 @@ function sendKey(req, res) {
 }
 
 
-// SEND STATS DATA
-// ============================================================
-async function statsQuery(req, res, next) {
-
-    try { 
-
-       //statsObservations
-       //statsSubmitted
-       //statsMostRecent
-        
-        let observations = await db.any('select max(observation_count_id) as obs from tdg_observation_count');  //maybe use a postgres var
-        let submitted = await db.any('select max("s"."submission_id") as subs from item_submission as s');
-        //let mostRecent = await db.one(statsMostRecent);
-
-        let statsResponse = {
-            observations: observations[0].obs,
-            submitted: submitted[0].subs
-        };
-
-        return res.json(statsResponse);
-
-    } catch(err) {
-
-        console.log(err);
-        res.status(500).send('Internal Server Error: 1703: Stats Query Error')
-
-    }
-    
-}
-
-
 // SEND SETUP OBJECT
 // ============================================================
 function sendSetup(req, res) {
-
-    let cycleTime = Date.now() - res.locals.cycleTime[0]
-    //console.log(`Sent setupObject in ${cycleTime} ms`)
     
     // if the "If-Modified-Since" header is not included or is newer or the same age as the setupObject's lastModified date
     if(res.locals.parsed.ifModifiedSince >= setupObject.lastModified) {
@@ -352,8 +313,6 @@ function sendSetup(req, res) {
 module.exports = {
     featureQuery: dataQueryWrapper('observation'),
     itemQuery: dataQueryWrapper('item'),
-    statsQuery,
-    cycleTime,
     formatDefault,
     sendDefault,
     formatDistinct,

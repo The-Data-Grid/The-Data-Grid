@@ -1,0 +1,43 @@
+{
+    "items": {
+        "create": [],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [
+            {
+                "itemTypeID": 15,
+                "itemPrimaryKey": 1,
+                "newItemIndex": null,
+                "globalPrimaryKey": 1,
+                "newGlobalIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        65,
+                        66,
+                        67,
+                        68,
+                        70,
+                        73,
+                        75,
+                        77
+                    ],
+                    "data": [
+                        "01-29-1999",
+                        "Absolutely nasty",
+                        "Oliver Melgrove",
+                        "SOP?",
+                        3.5,
+                        ["Pretty alright", "you know", "yeah, i know"],
+                        ["Faucet is nice"],
+                        []
+                    ]
+                }
+            }
+        ],
+        "update": [],
+        "delete": []
+    }
+}

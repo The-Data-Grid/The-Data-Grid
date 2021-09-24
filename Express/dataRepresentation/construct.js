@@ -112,8 +112,10 @@ else if(process.argv[0] == 'inspect') {
         commandLineArgs.type = 'f'
     } else if(process.argv.includes('--column') || process.argv.includes('-c')) {
         commandLineArgs.type = 'c'
+    } else if(process.argv.includes('--item') || process.argv.includes('-i')) {
+        commandLineArgs.type = 'i';
     } else {
-        throw Error('\'construct inspect\' requires flag of \'-r\', \'-f\', or \'-f\'')
+        throw Error('\'construct inspect\' requires flag of \'-r\', \'-f\', \'-i\', or \'-c\'')
     }
     // here we go
     return inspectSchema(commandLineArgs);
@@ -261,6 +263,8 @@ async function inspectSchema(commandLineArgs) {
         out = await db.any('SELECT * FROM metadata_feature');
     } else if(commandLineArgs.type === 'c') {
         out = await db.any('SELECT * FROM metadata_column');
+    } else if(commandLineArgs.type === 'i') {
+        out = await db.any('SELECT * FROM metadata_item');
     }
 
     let count = (commandLineArgs.isSummary || commandLineArgs.isTree ? Object.keys(out).length : out.length)
@@ -500,7 +504,10 @@ async function constructFeatures(features) {
             await db.none(formatSQL(insert_metadata_item_observable, {
                 itemName: featureItemLookup[feature.tableName],
                 frontendName: feature.observableItem.frontendName,
-                creationPrivilege: feature.observableItem.creationPrivilege
+                queryRole: feature.authorization.queryRole,
+                queryPrivilege: feature.authorization.queryPrivilege,
+                uploadRole: feature.authorization.uploadRole,
+                uploadPrivilege: feature.authorization.uploadPrivilege,
             }));
 
             console.log(chalk.green(`Feature Metadata: Inserted ${featureItemLookup[feature.tableName]} into metadata_item`));
