@@ -797,7 +797,7 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
     if(currentPath.length == 0) {
         let childrenID;
         // if id-column
-        if(['item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor'].includes(returnable['rt__type_name'])) {
+        if(['item-id'].includes(returnable['rt__type_name'])) {
             childrenID = 0;
         // attribute
         } else if(returnable['rt__type_name'] == 'attribute') {
