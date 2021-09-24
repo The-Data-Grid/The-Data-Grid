@@ -55,11 +55,11 @@ app.use(helmet.xssFilter());
 // require TLS for production
 app.use(isDeployment ? helmet.hsts() : (req, res, next) => next());
 
-// format request authorization credentials
-app.use('/', parseCredentials);
-
 // User Management API Router
-app.use('/api/user', authRouter);
+app.use('/api', authRouter);
+
+// format request authorization credentials
+app.use('/api', parseCredentials);
 
 // Audit Upload API Router
 app.use('/api/audit/submission', insertRouter);

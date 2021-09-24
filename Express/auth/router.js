@@ -38,7 +38,7 @@ router.use(session({
 }));
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/user/login', async (req, res) => {
     try {
         const password = (await db.one(formatSQL(SQL.password, {
             checkemail: req.body.email,
@@ -78,7 +78,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Logout
-router.post('/logout', (req, res) => {
+router.post('/user/logout', (req, res) => {
     if (req.session.loggedIn !== true) {
         return res.status(400).send('you already logged out.');
     } 
@@ -89,7 +89,7 @@ router.post('/logout', (req, res) => {
 });
 
 // New user register
-router.post('/', async (req, res) => {
+router.post('/user/', async (req, res) => {
     if (!isValidPassword(req.body.pass)) {
         console.log('ERROR:', 'Bad Request 2211: Invalid Password');
         return res.status(400).send('Bad Request 2211: Invalid Password'); 
@@ -151,7 +151,7 @@ router.post('/', async (req, res) => {
 });
 
 // Verify email link of new user  
-router.post('/email/verify', async (req, res) => { 
+router.post('/user/email/verify', async (req, res) => { 
     try {
         const {
             email,
@@ -182,7 +182,7 @@ router.post('/email/verify', async (req, res) => {
 
 
 // Send email to user for password reset  
-router.post('/password/request-reset', async (req, res) => {
+router.post('/user/password/request-reset', async (req, res) => {
     const rand = nanoid(50);
     try {
         await db.none(formatSQL(updating.updateToken, {
@@ -204,7 +204,7 @@ router.post('/password/request-reset', async (req, res) => {
 
 
 // User identity for requesting password reset is confirmed
-router.post('/password/reset', async (req, res) => {
+router.post('/user/password/reset', async (req, res) => {
     try {
         const {
             email,
@@ -249,7 +249,7 @@ const roleIDLookup = {
     auditor: 1,
     admin: 2,
 };
-router.put('/role', async (req, res) => {
+router.put('/user/role', async (req, res) => {
     try {
         const {
             userEmail,
