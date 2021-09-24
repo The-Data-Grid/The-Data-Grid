@@ -21,15 +21,8 @@
         </span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <div *ngFor="let treeIDObject of auditMetadata | keyvalue" style="font-weight: 700;">
-      {{treeIDObject.value.item.frontendName}}
-      <button mat-button class="create-button transparent-hover" (click)="openItemCreation(treeIDObject.value)">
-        Create New
-      </button>
-      <div *ngFor="let child of treeIDObject.value.IDColumns" style="margin-left: 2em;">
-        {{child.frontendName}} 
-      </div>
-    </div>
+    <app-selectors-template [treeIDobjects]="auditMetadata">
+    </app-selectors-template>
   </mat-expansion-panel>
   <div id="open-dialog-buttons">
     <button mat-button (click)="openGlobalPresets()">

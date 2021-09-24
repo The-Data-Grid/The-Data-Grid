@@ -33,6 +33,7 @@ import { ItemCreationComponent } from './upload-audit/item-creation/item-creatio
 import { SetupObjectService } from './setup-object.service';
 import { TableObjectService } from './table-object.service';
 import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
+import { SelectorsTemplateComponent } from './selectors-template/selectors-template.component';
 import { TeamComponent } from './team/team.component';
 import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialog.component';
 @NgModule({
@@ -57,7 +58,8 @@ import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialo
     ReusableTemplateComponent,
     TeamComponent,
     ItemCreationComponent,
-    DeleteDialogComponent
+    DeleteDialogComponent,
+    SelectorsTemplateComponent
   ],
   imports: [
     BrowserModule,

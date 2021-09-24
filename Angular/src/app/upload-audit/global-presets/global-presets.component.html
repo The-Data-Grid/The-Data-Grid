@@ -4,9 +4,16 @@
         <h3>Global Presets</h3>
 
         <div *ngIf="selectorsLoaded">
-            <app-reusable-template [feature]="globalSelectors" [appliedFilterSelections]="appliedFilterSelections"
-                [returnableIDs]="globalReturnableIDs">
-            </app-reusable-template>
+            <app-selectors-template [treeIDobjects]="globalTreeIDobjects" [returnableIDs]="globalReturnableIDs">
+            </app-selectors-template>
+            <!-- 
+                <button mat-button class="create-button transparent-hover"
+                    (click)="openItemCreation(treeIDObject.value)">
+                    Create New
+                </button>
+                <div *ngFor="let child of treeIDObject.value.IDColumns" style="margin-left: 2em;">
+                    {{child.frontendName}}
+                </div> -->
         </div>
     </div>
 
