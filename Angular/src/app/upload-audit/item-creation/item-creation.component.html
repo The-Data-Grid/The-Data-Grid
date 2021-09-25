@@ -18,15 +18,8 @@
           "{{item.frontendName}}" ID
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div style="font-weight: 700;">
-        {{item.frontendName}}
-        <button mat-button class="create-button transparent-hover" (click)="openItemCreation(treeIDObject)">
-          Create New
-        </button>
-        <div *ngFor="let column of treeIDObject.columnIDs" style="margin-left: 2em;">
-          {{column.frontendName}}
-        </div>
-      </div>
+      <app-selectors-template [treeIDobjects]="[treeIDObject]" [returnableIDs]="treeIDObject.IDreturnableIDs">
+      </app-selectors-template>
     </mat-expansion-panel>
     <mat-expansion-panel>
       <mat-expansion-panel-header>
@@ -34,9 +27,9 @@
           "{{item.frontendName}}" Attributes
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div *ngFor="let column of treeIDObject.attributeColumns">
-        {{column.frontendName}}
-      </div>
+      <app-selectors-template [treeIDobjects]="[treeIDObject]" [returnableIDs]="treeIDObject.attributeReturnableIDs"
+        [columnsType]="'attributeColumns'">
+      </app-selectors-template>
     </mat-expansion-panel>
   </mat-accordion>
   <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">

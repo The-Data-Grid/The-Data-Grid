@@ -3,12 +3,12 @@
 </head>
 <div id="body">
   <div fxLayoutAlign="space-between center">
-    <h4 style="font-weight: 700; font-size: 25px;">{{audit.auditName}}</h4>
+    <h4 style="font-weight: 700; font-size: 25px;">{{auditName}}</h4>
     <div id="table-buttons">
       <button mat-button [routerLink]="'/upload-audit'">
         Cancel
       </button>
-      <button mat-button id="save-button" [routerLink]="'/upload-audit'">
+      <button mat-button id="save-button" [routerLink]="'/upload-audit'" (click)="save()">
         Save
       </button>
     </div>
@@ -21,7 +21,7 @@
         </span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <app-selectors-template [treeIDobjects]="auditMetadata">
+    <app-selectors-template [treeIDobjects]="auditTreeIDobjects" [returnableIDs]="auditReturnableIDs">
     </app-selectors-template>
   </mat-expansion-panel>
   <div id="open-dialog-buttons">

@@ -51,13 +51,17 @@ export class UploadAuditComponent implements OnInit {
       this.dataTableColumns.forEach(column => {
         this.displayedColumns.push(column.name)
       });
-      console.log(this.dataTableColumns)
+      // console.log("dataTableColumns", this.dataTableColumns)
+      // console.log("tableRows", this.tableRows)
     });
   }
 
-  navigate(url) {
-    if (!this.isEditable)
-      this.router.navigate(url)
+  navigate(auditInfo) {
+    if (!this.isEditable) {
+      console.log("auditInfo", auditInfo)
+      localStorage.setItem('currentlyEditingAuditName', auditInfo['Audit Name']);
+      this.router.navigate(['/audit-summary'])
+    }
   }
 
   synchronize() {
@@ -102,16 +106,16 @@ export class UploadAuditComponent implements OnInit {
   }
 
   makeTableRows(columns, rows) {
-    let data = [];
-    rows.forEach((row, i) => {
-    let rowData = {}
+    let allData = [];
+    rows.forEach((row) => {
+      let rowData = {}
 
       columns.forEach(column => {
         rowData[column.name] = row[column.returnableID]
       });
-      data.push(rowData)
+      allData.push(rowData)
     });
-    return data;
+    return allData;
   }
 }
 

@@ -49,7 +49,7 @@ export class GlobalPresetsComponent implements OnInit {
     this.apiService.getSetupObject().subscribe((res) => {
       this.setupObject = res;
       this.globalTreeIDobjects = this.setupObjectService.getAllGlobalItemRelatedColumns(this.setupObject)
-      console.log("globalTreeIDobjects", this.globalTreeIDobjects)
+      // console.log("globalTreeIDobjects", this.globalTreeIDobjects)
       this.globalReturnableIDs = this.setupObjectService.getAllIDreturnableIDs(this.globalTreeIDobjects)
       this.selectorsLoaded = true;
     });

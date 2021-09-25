@@ -2,12 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ApiService } from '../api.service';
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings } from '../dropdown-settings'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
-import { SetupObjectService } from '../setup-object.service';
-import { TableObjectService } from '../table-object.service';
-import { AppliedFilterSelections } from '../models';
-
-//   @Input() feature: any
-//   @Input() featureIndex: number
+import { ItemCreationComponent } from '../upload-audit/item-creation/item-creation.component';
+import { MatDialog } from '@angular/material/dialog';
 
 //   selectorsLoaded: boolean = false;
 
@@ -20,16 +16,16 @@ export class SelectorsTemplateComponent implements OnInit {
 
   @Input() treeIDobjects: {}
   @Input() returnableIDs: []
+  @Input() auditName: string
+  @Input() columnsType: string //should be "IDcolumns", "nonIDcolumns", "attributeColumns"
 
-  constructor(private apiService: ApiService,
-    private setupObjectService: SetupObjectService,
-    private tableObjectService: TableObjectService) { }
+  constructor(private apiService: ApiService, public dialog: MatDialog,) { }
 
   setupObject;
   dropdownOptions;
   IDtoOptions;
+  columnInfos;
 
-  // TODO: look at the items and get returnable IDs
   // TODO: form querystrings by looking at the items and getting the user selections
   numericRelation: string[][] = [[">=", "gte"], ["<=", "lte"], [">", "gt"], ["<", "lt"], ["=", "equal"]]
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
@@ -37,20 +33,21 @@ export class SelectorsTemplateComponent implements OnInit {
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
 
   ngOnInit(): void {
+    if (!this.columnsType) {
+      this.columnsType = 'IDColumns'
+    }
     this.getDropdownOptions();
   }
 
   getDropdownOptions() {
-    this.apiService.getDropdownOptions(this.returnableIDs).subscribe((res) => {
+    this.apiService.getDropdownOptions(this.returnableIDs, this.auditName).subscribe((res) => {
       this.dropdownOptions = res;
       // console.log("dropdown (from resusable.ts):");
-      console.log("dropdown options:", this.dropdownOptions)
+      // console.log("dropdown options:", this.dropdownOptions)
       this.IDtoOptions = this.mapIDtoOptions();
       console.log("ID to options:", this.IDtoOptions)
     })
   }
-
-
 
   mapIDtoOptions() {
     let IDtoOptions = {}
@@ -77,6 +74,13 @@ export class SelectorsTemplateComponent implements OnInit {
       });
     })
     return IDtoOptions;
+  }
+
+  openItemCreation(treeIDObject): void {
+    const dialogRef = this.dialog.open(ItemCreationComponent, {
+      width: '801px',
+      data: treeIDObject
+    })
   }
 
   onItemSelect(item: any) {

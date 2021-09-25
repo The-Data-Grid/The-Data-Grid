@@ -1,6 +1,9 @@
 <div *ngFor="let treeIDObject of treeIDobjects | keyvalue" style="font-weight: 700;">
     {{treeIDObject.value.item.frontendName}}
-    <div *ngFor="let columnInfo of treeIDObject.value.IDColumns">
+    <button mat-button class="create-button transparent-hover" (click)="openItemCreation(treeIDObject.value)">
+        Create New
+    </button>
+    <div *ngFor="let columnInfo of treeIDObject.value[columnsType]">
         <div *ngIf="columnInfo.column.inputSelector && columnInfo.returnableID">
             <div [ngSwitch]="columnInfo.column.inputSelector.selectorKey">
                 <div *ngSwitchCase="'numericChoice'">
@@ -52,20 +55,23 @@
                 </div>
                 <div *ngSwitchCase="'dropdown'">
                     <!-- d -->
-                    <mat-form-field class="selector">
+                    <!-- <mat-form-field class="selector">
                         <mat-label>{{columnInfo.column.frontendName}} (dropdown) </mat-label>
                         <mat-select [(ngModel)]="columnInfo.userInputSelection">
-                            <!-- <mat-option *ngFor="let val of columnObject.selector.selectorValues" [value]=val>
-                                {{val}}
-                            </mat-option> -->
                         </mat-select>
-                    </mat-form-field>
+                    </mat-form-field> -->
+                    <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
+                        [placeholder]="columnInfo.column.frontendName  + columnInfo.returnableID+ ' (SD)'"
+                        [(ngModel)]="columnInfo.userInputSelection" [settings]="searchableDropdownSettings"
+                        [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                        (onSelectAll)="onSelectAll($event)">
+                    </ng-multiselect-dropdown>
                 </div>
                 <div *ngSwitchCase="'searchableDropdown'">
                     <!-- sd -->
                     <!-- {{IDtoOptions[columnInfo.returnableID]}} -->
                     <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
-                        [placeholder]="columnInfo.column.frontendName + ' (SD)'"
+                        [placeholder]="columnInfo.column.frontendName + ' ' + columnInfo.returnableID+ ' (SD)'"
                         [(ngModel)]="columnInfo.userInputSelection" [settings]="searchableDropdownSettings"
                         [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
                         (onSelectAll)="onSelectAll($event)">
@@ -82,7 +88,7 @@
                 <div *ngSwitchCase="'searchableChecklistDropdown'">
                     <!-- scd -->
                     <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
-                        [placeholder]="columnInfo.column.frontendName + ' (SCD)'"
+                        [placeholder]="columnInfo.column.frontendName + ' ' + columnInfo.returnableID + ' (SCD)'"
                         [(ngModel)]="columnInfo.userInputSelection" [settings]="searchableChecklistDropdownSettings"
                         [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
                         (onSelectAll)="onSelectAll($event)">

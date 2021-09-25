@@ -133,7 +133,6 @@ export class SetupObjectService {
     let returnableIDs = []
     let itemInfos = Object.values(treeIDobjects)
     itemInfos.forEach((itemInfo: any) => {
-      console.log(itemInfo)
       returnableIDs.push(...itemInfo.IDreturnableIDs)
     });
     return returnableIDs;
