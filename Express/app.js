@@ -12,7 +12,6 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config();
 let httpPort;
 let httpsPort;
 if (isDeployment) {
@@ -32,6 +31,7 @@ const { sendSetup } = require('./query/query.js');
 const insertRouter = require('./insert/router.js');
 const auditRouter = require('./query/router.js');
 const authRouter = require('./auth/router.js');
+const setSession = require('./auth/session.js');
 const parseCredentials = require('./auth/parseCredentials.js');
 
 // CORS, JSON, URL encoding
@@ -55,11 +55,11 @@ app.use(helmet.xssFilter());
 // require TLS for production
 app.use(isDeployment ? helmet.hsts() : (req, res, next) => next());
 
-// User Management API Router
-app.use('/api', authRouter);
+// Session and format request authorization credentials
+app.use('/api', setSession, parseCredentials)
 
-// format request authorization credentials
-app.use('/api', parseCredentials);
+// User Management API Router
+app.use('/api/user', authRouter);
 
 // Audit Upload API Router
 app.use('/api/audit/submission', insertRouter);
