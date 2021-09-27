@@ -1,50 +1,141 @@
 ////// QUERY PARSING //////
 
 const { compareSync } = require("bcrypt");
+const e = require("express");
+const { query } = require("express");
+const { isNumber, indexOf, rest } = require("lodash");
+const { response } = require("./app");
 
 function operation_map(operation) {
-    op = operation;
     switch(operation){
         case 'gte':
-            op = '>=';
+            operation = '>=';
             break;
         case 'gt':
-            op = '>';
+            operation = '>';
             break;
         case 'lte':
-            op = '<=';
+            operation = '<=';
             break;
         case 'lt':
-            op = '<';
+            operation = '<';
             break;
         case 'e':
-            op = 'Exists';
+            operation = 'Exists';
             break;
         case 'dne':
-            op = 'Does not exist';
+            operation = 'Does not exist';
             break;
         case '~':
-            op = 'not';
+            operation = 'not';
         default:
-            op = null //set op to null if non-valid operation
+            operation = null; //set op to null if non-valid operation
     }
-    return op
+    return operation;
+}
+
+function deconstructQuery(queryStatement){
+    // array with all components of query statement separated
+    // ex. 65[gte]=01-20-2000 ==> {key: returnableID, op: operation, value: value} ==> {key: 65, op: gte, value: 01-20-200}
+    // ex. limit=50 ==> [key: limit, op: '', value: 50]
+    let deconstructedQuery = {};
+
+    let open = queryStatement.indexOf('[');
+    let close = queryStatement.indexOf(']');
+    let equals = queryStatement.indexOf('=');
+    let key;
+    let op;
+    let val;
+
+    // get returnable ID of query as key
+    let i = 0;
+    while (i < queryStatement.length && Number.isInteger(parseInt(queryStatement[i])))
+        ++i;
+    if (i > 0)
+        key = queryStatement.slice(0,i);
+    else if (open !== -1 && close !== -1)
+        key = queryStatement.slice(0, open);
+    else
+        key = queryStatement.slice(0, equals);
+    
+    // get operation of query as op
+    if (open !== -1 && close !== -1)
+        op = operation_map(queryStatement.slice(open+1, close));
+    else
+        op = '=';
+
+    // get value as val
+    if (equals !== -1)
+        val = queryStatement.slice(equals+1);
+    else
+        val = '';
+
+    deconstructedQuery = {
+        key,
+        op,
+        val
+    };
+
+    return deconstructedQuery;
+}
+
+function separateQueries(queryStatements) {
+
+    // remove query string until '?'
+    queryStatements = queryStatements.substring(queryStatements.indexOf('?')+1);
+    let operationIndices = [];
+    let separatedQuery = [];
+
+    // alter query string from URL encoding '%7C' to '|'
+    let orCode = queryStatements.indexOf('%7C');
+    while (orCode !== -1){
+        queryStatements = queryStatements.substring(0, orCode) + '|' + queryStatements.substring(orCode+3);
+        orCode = queryStatements.indexOf('%7C')
+    }
+
+    // determine whether any params are AND-ed or OR-ed
+    if (queryStatements.indexOf("&") === -1 && queryStatements.indexOf("|") === -1) {
+        separatedQuery.push(['', deconstructQuery(queryStatements)]);
+    } 
+    else { 
+        // add each param between the ANDs and ORs
+        for (let i = 0; i < queryStatements.length; i++){
+            if (queryStatements[i] === "&" || queryStatements[i] === "|"){
+                // add first param
+                if (separatedQuery.length === 0)
+                    separatedQuery.push(['', deconstructQuery(queryStatements.substring(0, i))]);
+                // add params in between ANDs and ORs
+                else{
+                    let query = queryStatements.substring(operationIndices.slice(-1), i);
+                    separatedQuery.push([query[0], deconstructQuery(query.slice(1))]);
+                }   
+                // add index of operation
+                operationIndices.push(i);    
+            }
+        }
+        // add last param
+        let query = queryStatements.substring(operationIndices.slice(-1));
+        separatedQuery.push([query[0], deconstructQuery(query.slice(1))]);
+    }
+    return separatedQuery;
 }
 
 function parseConstructor (init) {
 
     return (req, res, next) => {
-        let filter = req.query;
+        let filter = separateQueries(req.originalUrl);
         let {feature} = req.params; 
         let include;
+
         // if we're doing a key query then include is just null
         if (init == 'key') {
-            include = []
+            include = [];
         }
         else {
             include = req.params.include;
             include = include.split('&');
         }
+
         // init parsed values
         res.locals.parsed = {};
     
@@ -60,51 +151,59 @@ function parseConstructor (init) {
         // console.log('filters = ', filter);
     
         // Construct object of parsed filters
-        let filters = {};
+        console.log(filter);
+        let filters = [];
         let universalFilters = {};
-        for (const key in filter) {
 
+        for (const elem in filter) {
+
+            let isUniverisal = false;
             // check for universal filters
-            if(['sorta','sortd','limit','offset', 'pk'].includes(key)) {
-                universalFilters[key] = filter[key];
+            if(['sorta','sortd','limit','offset','pk'].includes(Object.values(filter[elem][1])[0])) {
+                universalFilters[elem] = Object.values(filter[elem][1])[2];
+                isUniverisal = true;
                 continue;
             }
-
+            
             // Validate filter IDs are numeric
-            if(isNaN(parseInt(key))) {
+            if(isNaN(parseInt(elem))) {
                 return res.status(400).send(`Bad Request 1602: filters must be numeric IDs or universals`);
             }
-
+            let operation = Object.values(filter[elem][1])[1];
+            // if not a valid operation
+            if(operation === null) {
+                return res.status(400).send(`Bad Request 1603: ${operation} is not a valid operator`);
+            } 
+            
             // setting up custom operator
-            if (typeof(filter[key]) === 'object') {
-                console.log(filter[key]);
+            if (!isUniverisal) {
+                // first operation
+                if (filter[elem][0] === '')
+                    filters.push([filter[elem][1]]);
+                
+                // operator for AND
+                else if (filter[elem][0] === '&')
+                    filters.push([filter[elem][1]]);
+                
+                // operator for OR
+                else if (filter[elem][0] == '|'){
+                    console.log(filters);
+                    filters[filters.length-1].push(filter[elem][1]);
+                    console.log(filters);
+                }
 
-                let operationKeys = Object.keys(filter[key]);
-                let operationValues = Object.values(filter[key]);
-
-                //console.log(operationKeys);
-                //console.log(operationValues);
-                /*
-                // get operation name
-                let operation = operation_map(operationKeys)
-
-                // if not a valid operation
-                if(operation === null) {
-                    return res.status(400).send(`Bad Request 1603: ${operationKeys} is not a valid operator`)
-                } 
-                */
-            } else { // if no operator is given use = operator
-
-            }  
+                else
+                    return res.status(400).send(`Bad Request 1604: ${filter[elem][0]} is not a valid operator`);
+            }
         }
 
-        // console.log(filters);
+        console.log(filters)
 
         // attaching parsed object
         res.locals.parsed.request = "audit";
-        res.locals.parsed.features = feature
-        res.locals.parsed.columns = include
-        res.locals.parsed.filters = filters
+        res.locals.parsed.features = feature;
+        res.locals.parsed.columns = include;
+        res.locals.parsed.filters = filters;
         res.locals.parsed.universalFilters = universalFilters;
         next(); // passing to validate.js 
     }
@@ -167,8 +266,8 @@ function timestamptzParse(s) {
 
 // this will throw if date isn't validated to be MM-DD-YYYY
 function apiDateToUTC(date) {
-    let arr = date.split('-')
-    return(new Date(arr[2] + '-' + arr[0] + '-' + arr[1]).toUTCString())
+    let arr = date.split('-');
+    return(new Date(arr[2] + '-' + arr[0] + '-' + arr[1]).toUTCString());
 }
 ////// END OF TIMESTAMPTZ PARSING  //////
 
