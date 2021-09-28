@@ -58,7 +58,7 @@ const uploadAPI = '/api/audit/submission';
 /**
  * TESTS
  */
-
+/*
 test('Create items that reference eachother with existing global item is unauthorized for guest', done => {
     request
         .post(uploadAPI)
@@ -168,7 +168,7 @@ test('Create, update, and delete item', done => {
         .expect(201)
         .end(finishTest(done));
 })})});
-
+*/
 // create observation that references existing item
 // submissionObject8
 test('Create observation that references existing item', done => {
@@ -183,7 +183,7 @@ test('Create observation that references existing item', done => {
         .expect(201)
         .end(finishTest(done));
 });
-
+/*
 // create observation that references created item
 // submissionObjet9
 test('Create observation that references created item', done => {
@@ -248,7 +248,7 @@ test('Create, update, and delete observation', done => {
         .end(finishTest(done));
 })})})});
 
-
+*/
 function finishTest(done) {
     return (err, res) => {
         if (err) {

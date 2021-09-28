@@ -193,10 +193,11 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
         if(referenceType === 'item-list' || referenceType === 'obs-list') {
             // check to see if all values are valid
             try {
-                primaryKey = await db.many(formatSQL(`
+                
+                primaryKey = await db.any(formatSQL(`
                     select list_id
                     from $(tableName:name)
-                    WHERE $(columnName:name) = ANY ($(data:array))
+                    WHERE $(columnName:name) IN ($(data:csv))
                 `, {
                     tableName,
                     columnName,
@@ -204,11 +205,12 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                 }));
                 
             } catch(err) {
+                console.log(err)
                 throw new ErrorClass({code: 500, msg: `Error when getting current list values from ${tableName}`});
             }
             // if there are new values
             if(primaryKey.length != data.length) {
-                const newValues = data.length.filter(value => !primaryKey.includes(value));
+                const newValues = data.filter(value => !primaryKey.includes(value));
                 if(!isMutable) {
                     throw new ErrorClass({code: 400, msg: `Value(s) ${newValues} from list input ${data.length} are not valid for the column ${columnName} and table ${tableName}`})
                 } else {
@@ -442,6 +444,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
         const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
         // Get all of the columns needed to insert the item
         let itemColumns = itemColumnObject[tableName];
+        console.log(itemColumns)
         console.log('ITEM COLUMNS: ', Object.keys(itemColumnObject))
         itemColumns = itemColumns['c__column_id'].map((id, i) => ({
             columnID: id,
@@ -458,6 +461,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
         }
 
         const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID);
+        
 
         // make sure all non nullable fields are included when creating a new item
         if(!isUpdate) {
@@ -474,11 +478,11 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
                 // get correct type
                 let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType.toLowerCase()]
                 // make sure it's an array if list reference type or SOP
-                if(['item-list', 'obs-list'].includes(returnableIDLookup[returnableID].rt__type_name || ('special' === returnableIDLookup[returnableID].rt__type_name && 'Standard Operating Procedure' === returnableIDLookup[returnableID].c__frontend_name))) {
+                if(['item-list', 'obs-list'].includes(returnableIDLookup[returnableID].referenceType || ('special' === returnableIDLookup[returnableID].rt__type_name && 'Standard Operating Procedure' === returnableIDLookup[returnableID].c__frontend_name))) {
                     if(type(data[i]) !== 'array') throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} must be of type: array`})
                     // check type for every value
                     data[i].forEach((listElement, i) => {
-                        if(type(element) !== correctType) throw new ErrorClass({code: 400, msg: `Element ${listElement} (index: ${i}) of returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}`})
+                        if(type(listElement) !== correctType) throw new ErrorClass({code: 400, msg: `Element ${listElement} (index: ${i}) of returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}`})
                     });
                 }
                 // check type for others

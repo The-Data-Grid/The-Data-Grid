@@ -31,7 +31,7 @@
                         "SOP?",
                         3.5,
                         ["Pretty alright", "you know", "yeah, i know"],
-                        ["Faucet is nice"],
+                        "Faucet is nice",
                         []
                     ]
                 }

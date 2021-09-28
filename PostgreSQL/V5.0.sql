@@ -1676,7 +1676,7 @@ create view metadata_item_columns as
             from metadata_item i 
             left join metadata_column c on c.metadata_item_id = i.item_id
             left join metadata_reference_type r on c.reference_type = r.type_id
-            where c.observation_table_name is null
+            -- where c.observation_table_name is null
                 group by i__table_name;
 
 create view metadata_observation_columns as

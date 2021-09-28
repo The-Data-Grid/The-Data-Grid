@@ -946,7 +946,7 @@ columnObjects.forEach((columnObject) => {
 });
 
 
-//console.log(itemHistory);
+//console.log(itemColumnObject.item_sink);
 //console.log(itemColumnObject['item_sink'])
 //console.log(Object.values(returnableIDLookup).filter(id => [34, 44, 49].includes(id.columnID)))
 //console.log(Object.values(returnableIDLookup).filter(id => [523].includes(id.columnID)))
