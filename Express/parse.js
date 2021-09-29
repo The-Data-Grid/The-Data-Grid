@@ -4,7 +4,6 @@ const { compareSync } = require("bcrypt");
 const e = require("express");
 const { query } = require("express");
 const { isNumber, indexOf, rest } = require("lodash");
-const { response } = require("./app");
 
 function operation_map(operation) {
     switch(operation){
@@ -151,7 +150,7 @@ function parseConstructor (init) {
         // console.log('filters = ', filter);
     
         // Construct object of parsed filters
-        console.log(filter);
+        // console.log(filter);
         let filters = [];
         let universalFilters = {};
 
@@ -187,9 +186,9 @@ function parseConstructor (init) {
                 
                 // operator for OR
                 else if (filter[elem][0] == '|'){
-                    console.log(filters);
+                    //console.log(filters);
                     filters[filters.length-1].push(filter[elem][1]);
-                    console.log(filters);
+                    //console.log(filters);
                 }
 
                 else
