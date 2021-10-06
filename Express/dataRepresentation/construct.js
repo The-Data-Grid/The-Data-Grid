@@ -18,7 +18,7 @@ var util = require('util'); // util.inspect()
 
 
 // Database connection and SQL formatter
-const {postgresClient, connectPostgreSQL} = require('../db/pg.js');
+const { postgresClient, connectPostgreSQL } = require('../db/pg.js');
 // Establish an new connection pool
 connectPostgreSQL('construct')
 // get connection object
