@@ -80,6 +80,8 @@ function deconstructQuery(queryStatement){
 
 function separateQueries(queryStatements) {
 
+    if (queryStatements.indexOf('?') === -1)
+        return [];
     // remove query string until '?'
     queryStatements = queryStatements.substring(queryStatements.indexOf('?')+1);
     let operationIndices = [];
