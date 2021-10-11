@@ -228,6 +228,17 @@ const login = {
                 WHERE u.data_email = $(checkemail)
                 GROUP BY p.privilege_name, u.item_id
     `,
+    user: `
+        SELECT
+            u.data_first_name "firstName",
+            u.data_last_name "lastName",
+            u.data_email "email",
+            u.data_date_of_birth "dateOfBirth",
+            u.data_is_email_public "isEmailPublic",
+            u.data_is_quarterly_updates "isQuarterlyUpdates"
+            FROM item_user
+            WHERE item_id = $(userID)
+    `
     };   
 
 const addingUsers = {

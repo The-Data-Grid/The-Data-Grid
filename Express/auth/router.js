@@ -130,6 +130,27 @@ router.post('/', async (req, res) => {
     return res.status(201).end();
 });
 
+router.get('/', async (req, res) => {
+    try {
+        // first get userID from session
+        const { userID, loggedIn } = req.session;
+
+        if(loggedIn !== true) {
+            return res.status(401).end();
+        }
+
+        let userData = await db.one(formatSQL(SQL.user, {
+            userID
+        }));
+
+        return res.status(200).json(userData);
+
+    } catch(err) {
+        console.log(err);
+        return res.status(500).end();
+    }
+})
+
 // Verify email link of new user  
 router.post('/email/verify', async (req, res) => { 
     try {
