@@ -16,6 +16,13 @@ const { apiDateToUTC } = require('../parse.js');
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 const updating = require('../statement.js').updates;
+const { sendMail } = require('../email/mda.js');
+
+// use correct mail depending on testing
+let sendEmail = sendMail;
+if(isTesting) {
+    sendEmail = sendEmailFake;
+}
 
 // Login
 router.post('/login', async (req, res) => {
@@ -120,7 +127,11 @@ router.post('/', async (req, res) => {
         const encodedEmail = encodeURIComponent(req.body.email);
         emailLink = "https://thedatagrid.org/verify-email?email=" + encodedEmail + "&token=" + rand; 
 
-        await sendEmail(req.body.email, emailLink);
+        await sendEmail({
+            address: req.body.email,
+            title: 'The Data Grid - Email Verification',
+            body: emailLink
+        });
 
     } catch(err) {
         console.log(err);
@@ -194,7 +205,11 @@ router.post('/password/request-reset', async (req, res) => {
         const encodedEmail = encodeURIComponent(req.body.email);
         const emailLink = "https://thedatagrid.org/reset-password?email=" + encodedEmail + "?token=" + rand; 
         
-        await sendEmail(req.body.email, emailLink);
+        await sendEmail({
+            address: req.body.email,
+            title: 'The Data Grid - Password Reset',
+            body: emailLink
+        });
 
         return res.status(201).end();
     } catch(error) {
@@ -316,7 +331,7 @@ router.put('/role', async (req, res) => {
 })
 
 // Just for testing
-async function sendEmail(_, __) {
+async function sendEmailFake(_) {
     
 }
 
