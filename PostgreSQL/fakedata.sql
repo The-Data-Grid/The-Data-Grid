@@ -218,7 +218,6 @@ INSERT INTO observation_sink
 ("observation_id",
 "observation_count_id",
 "global_id",
-"submission_id",
 "observableitem_id",
 "data_time_conducted",
 "data_commentary",
@@ -227,29 +226,29 @@ INSERT INTO observation_sink
 "attribute_sink_basin_brand_id",
 "attribute_sink_faucet_brand_id")
 VALUES
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, 1, NOW(), 'Nice Sink!', 'Sandra', 2.71828, 2, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, 2, NOW(), 'Alright Sink.', 'Sandra', 3, 2, 2),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, 3, NOW(), 'Sink!', 'Sandra', 4, 1, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, 4, NOW(), 'Nice!', 'Sandra', 4.1828, 1, 2),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 1, NOW(), 'Nice Sink!', 'Sandra', 2.71828, 2, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 2, NOW(), 'Alright Sink.', 'Sandra', 3, 2, 2),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 3, NOW(), 'Sink!', 'Sandra', 4, 1, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 1, 4, NOW(), 'Nice!', 'Sandra', 4.1828, 1, 2),
 
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 2, 5, NOW(), NULL, 'Sandra', 7.28, 1, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 2, 6, NOW(), NULL, 'Sandra', 1.828, 3, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 2, 7, NOW(), NULL, 'Sandra', 3.71828, 3, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 2, 8, NOW(), NULL, 'Sandra', 3.1415, 1, 2),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 5, NOW(), NULL, 'Sandra', 7.28, 1, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 6, NOW(), NULL, 'Sandra', 1.828, 3, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 7, NOW(), NULL, 'Sandra', 3.71828, 3, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 2, 8, NOW(), NULL, 'Sandra', 3.1415, 1, 2),
 
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 9, NOW(), 'Nice Sink!', 'Mark', 2, 2, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 10, NOW(), 'Alright Sink.', 'Mark', 2.1, 2, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 11, NOW(), 'Sink!', 'Mark', 2.3, 1, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 12, NOW(), 'Nice!', 'Mark', 2.909, 3, 2),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 13, NOW(), NULL, 'Mark', 4.88, 1, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 14, NOW(), NULL, 'Mark', 1.02, 3, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 15, NOW(), NULL, 'Mark', 1.1, 3, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 16, NOW(), '1st', 'Mark', 2.9, 2, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 9, NOW(), 'Nice Sink!', 'Mark', 2, 2, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 10, NOW(), 'Alright Sink.', 'Mark', 2.1, 2, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 11, NOW(), 'Sink!', 'Mark', 2.3, 1, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 12, NOW(), 'Nice!', 'Mark', 2.909, 3, 2),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 13, NOW(), NULL, 'Mark', 4.88, 1, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 14, NOW(), NULL, 'Mark', 1.02, 3, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 15, NOW(), NULL, 'Mark', 1.1, 3, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '1st', 'Mark', 2.9, 2, 3),
 
     -- different people observation the same sink
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 16, NOW(), '2nd', 'Juan', 1.02, 3, 3),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 16, NOW(), '3rd', 'Pablo', 1.1, 3, 1),
-    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 3, 16, NOW(), '4th', 'Jeremiah', 2.8, 2, 3);
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '2nd', 'Juan', 1.02, 3, 3),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '3rd', 'Pablo', 1.1, 3, 1),
+    (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '4th', 'Jeremiah', 2.8, 2, 3);
 
 
 INSERT INTO m2m_list_sink_faucet_condition
@@ -305,13 +304,12 @@ VALUES
 -- SOP
 INSERT INTO item_sop
 (item_id,
-tdg_filepath,
+data_body,
 data_name,
-data_time_uploaded,
 item_organization_id)
 VALUES
-(default, 'bruinhomesolutions.com/water-audit/SOP', 'Water Audit SOP', NOW(), 1),
-(default, 'www.rea.seas.ucla.edu/rng/wp/SOP', 'Waste Audit SOP', NOW(), 1);
+(default, 'blah blah blah...', 'Water Audit SOP', 1),
+(default, 'blah blah blah...', 'Waste Audit SOP', 1);
 
 
 INSERT INTO m2m_item_sop

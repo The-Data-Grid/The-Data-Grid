@@ -1,0 +1,58 @@
+{
+    "items": {
+        "create": [
+            {
+                "itemTypeID": 10,
+                "requiredItems": [
+                    {
+                        "itemTypeID": 1,
+                        "primaryKey": 1
+                    },
+                    {
+                        "itemTypeID": 9,
+                        "primaryKey": 2
+                    }
+                ],
+                "newRequiredItemIndices": [1],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [],
+                    "data": []
+                }
+            },
+            {
+                "itemTypeID": 12,
+                "requiredItems": [
+                    {
+                        "itemTypeID": 1,
+                        "primaryKey": 1
+                    },
+                    {
+                        "itemTypeID": 9,
+                        "primaryKey": 2
+                    }
+                ],
+                "newRequiredItemIndices": [],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        400
+                    ],
+                    "data": [
+                        "My favorite audit in the whole wide world"
+                    ]
+                }
+            }
+        ],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": []
+    }
+}

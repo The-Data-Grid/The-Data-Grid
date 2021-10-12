@@ -1,0 +1,18 @@
+{
+    "items": {
+        "create": [],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": [
+            {
+                "itemTypeID": 14,
+                "observationPrimaryKey": 1
+            }
+        ]
+    }
+}

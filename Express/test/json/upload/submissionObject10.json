@@ -1,0 +1,38 @@
+{
+    "items": {
+        "create": [
+            {
+                "itemTypeID": 14,
+                "requiredItems": [
+                    {
+                        "itemTypeID": 17,
+                        "primaryKey": 1
+                    }
+                ],
+                "newRequiredItemIndices": [],
+                "globalPrimaryKey": 1,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        460,
+                        461,
+                        462
+                    ],
+                    "data": [
+                        1,
+                        "I'm on the 13th JSON I don't even know anymore",
+                        "Flusho brand 1"
+                    ]
+                }
+            }
+        ],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": []
+    }
+}

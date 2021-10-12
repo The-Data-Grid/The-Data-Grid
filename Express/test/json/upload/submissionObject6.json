@@ -1,0 +1,27 @@
+{
+    "items": {
+        "create": [],
+        "update": [
+            {
+                "itemTypeID": 16,
+                "primaryKey": 1,
+                "nonIDRequiredItems": [],
+                "data": {
+                    "returnableIDs": [
+                        502
+                    ],
+                    "data": [
+                        2
+                    ]
+                }
+            }
+        ],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": []
+    }
+}

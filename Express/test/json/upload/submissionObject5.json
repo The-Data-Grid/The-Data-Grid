@@ -1,0 +1,34 @@
+{
+    "items": {
+        "create": [
+            {
+                "itemTypeID": 16,
+                "requiredItems": [
+                    {
+                        "itemTypeID": 17,
+                        "primaryKey": 1
+                    }
+                ],
+                "newRequiredItemIndices": [],
+                "globalPrimaryKey": 1,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        502
+                    ],
+                    "data": [
+                        1
+                    ]
+                }
+            }
+        ],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": []
+    }
+}
