@@ -48,9 +48,18 @@ async function send(transporter, subject, body, receiversList) {
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
-//main().catch(console.error);
+async function sendMail(config) {
+    const {
+        title,
+        address,
+        body
+    } = config;
+
+    await send(createTransport(), title, body, address);
+}
 
 module.exports = {
     createTransport,
-    send
+    send,
+    sendMail
 };
