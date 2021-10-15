@@ -99,7 +99,7 @@ router.post('/', async (req, res) => {
         }));
     } catch(error) {
         console.log('ERROR:', error);
-        return es.status(400).send('Bad Request 2214: Email already taken');
+        return res.status(400).send('Bad Request 2214: Email already taken');
     }
     
     // insert
