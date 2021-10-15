@@ -253,7 +253,6 @@ const login = {
 const addingUsers = {
 insertingUsers: `
     INSERT INTO item_user (
-        item_organization_id,
         data_first_name,
         data_last_name, 
         data_date_of_birth,
@@ -265,7 +264,7 @@ insertingUsers: `
         is_pending,
         privilege_id ) 
         VALUES 
-        (null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), NULL, true, 2)`
+        ($(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), $(token), true, 2)`
     };
 
 const updates  = {

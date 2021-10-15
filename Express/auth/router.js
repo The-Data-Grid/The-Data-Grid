@@ -55,7 +55,7 @@ router.post('/login', async (req, res) => {
             return res.status(200).json(sessionObject);
         }
         else {
-            throw new Error('Invalid');
+            throw new Error('Invalid Password');
         }
     }
     catch(error) {
@@ -107,6 +107,8 @@ router.post('/', async (req, res) => {
         //hash password
         let hashedPassword = await bcrypt.hash(req.body.pass, 13); 
 
+        const rand = nanoid(50);
+
         await db.none(formatSQL(userSQL.insertingUsers, {
             userfirstname: req.body.firstName,
             userlastname: req.body.lastName,
@@ -115,10 +117,10 @@ router.post('/', async (req, res) => {
             userdateofbirth: apiDateToUTC(req.body.dateOfBirth),
             userpublic: req.body.isEmailPublic,
             userquarterlyupdates: req.body.isQuarterlyUpdates,
+            token: rand,
         }));
 
         // send verification email
-        const rand = nanoid(50);
         await db.none(formatSQL(updating.updateToken, {
             token: rand, //secret token for security
             email: req.body.email
@@ -188,6 +190,7 @@ router.post('/email/verify', async (req, res) => {
         return res.status(200).send('Email verified');
 
     } catch(error) {
+        console.log(error)
         return res.status(401).send('Email verification failed');
     }
 });
