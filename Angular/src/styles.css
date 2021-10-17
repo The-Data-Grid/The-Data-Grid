@@ -90,19 +90,23 @@ html, body {
   border-top-color: rgb(95, 167, 132);
 }
 
+.selector {
+  font-size: small;
+  min-width: 300px;
+  margin: 10px;
+}
+
 /* the following selectors are for ng multiselect */
 
 .selector .multiselect-dropdown {
   outline: none !important;
-  margin-top: 25px;
-  margin-bottom: 25px;
+  margin: 10px !important;
   overflow: visible !important;
-  /* color: rgb(228, 228, 228) !important; */
+  min-width: 300px !important; 
 }
 
 .selector .multiselect-dropdown .dropdown-btn {
-  display: inline-block;
-  width: 85% !important;
+  width: 90% !important; 
   text-align: left !important;
   font-size: small !important;
   border-radius: 0px !important;
@@ -119,7 +123,6 @@ html, body {
 
 .selector .dropdown-list {
   width: 90% !important;
-  margin-left: 5% !important;
   margin-top: 0 !important;
   padding: 0 !important;
   font-size: small !important;
@@ -133,10 +136,7 @@ html, body {
   text-align: left !important;
   margin-right: 0px !important;
   margin-left: 0px !important;
-}
-
-.selector .filter-textbox input {
-  padding-left: 10px !important;
+  overflow: hidden;
 }
 
 .selector .multiselect-dropdown .dropdown-btn span {
@@ -150,20 +150,17 @@ html, body {
 .selector .multiselect-dropdown .dropdown-btn .dropdown-down {
   padding: 0 !important;
   margin: 0 !important;
-  /* border-top: 5px solid rgb(228, 228, 228) !important; */
-  border-left: 5px solid transparent !important;
-  border-right: 5px solid transparent !important;
+  border-left: 7px solid transparent !important;
+  border-right: 7px solid transparent !important;
 }
 
 /* the little arrow symbol when pointing up */
 .selector .multiselect-dropdown .dropdown-btn .dropdown-up {
   padding: 0 !important;
   margin: 0 !important;
-  /* border-bottom: 5px solid rgb(228, 228, 228) !important; */
-  border-left: 5px solid transparent !important;
-  border-right: 5px solid transparent !important;
+  border-left: 7px solid transparent !important;
+  border-right: 7px solid transparent !important;
 }
-
 
 /* datetime picker */
 
@@ -242,4 +239,67 @@ html, body {
 
 .my-tooltip {
   white-space: pre-line;
+}
+
+/* needed to remove hover effect */
+
+/* .transparent-hover:hover .mat-button-focus-overlay {
+  background-color: transparent;
+} */
+
+.action-button-group {
+  float: right;
+  margin-top: 30px;
+  padding: 30px;
+}
+
+/* STYLES FOR DIALOG POPUPS */
+
+.popup {
+  max-height: 70vh;
+}
+
+.top_decoration {
+  height: 30px;
+  min-width: 3000px;
+  background-color: #569CD7;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.primary_separator {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: black;
+  height: 1px;
+  width: 831px;
+  margin-left: 0px
+}
+
+.secondary_separator {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: lightgray;
+  height: 1px;
+  width: 831px;
+  margin-left: 0px
+}
+
+.popup .mat-expansion-panel {
+  width: 95% !important;
+  margin-right: auto;
+  margin-left: auto;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+.create-button {
+  color: rgb(86, 156, 215);
+  text-decoration: underline;
+  background-color: transparent;
+  padding-top: 0px;
+  padding-right: 10px;
+  padding-left: 10px;
+  margin: 5px;
+  font-size: 12px;
 }

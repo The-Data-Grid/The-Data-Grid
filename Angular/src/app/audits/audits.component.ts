@@ -37,7 +37,6 @@ export class AuditsComponent implements OnInit {
   featureReturnableIDs = [];
   rootFeatures = [];
   selectedFeature;
-  featuresToChildren = {};
   appliedFilterSelections: AppliedFilterSelections = {
     numericChoice: {},
     numericEqual: {},
@@ -109,9 +108,6 @@ export class AuditsComponent implements OnInit {
       this.appliedFilterSelections,
       this.defaultColumnIDs);
 
-    // map features to children
-    this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
-
     // console.log("global selectors:");
     // console.log(this.globalSelectors);
     // console.log("feature selectors:");
@@ -120,8 +116,6 @@ export class AuditsComponent implements OnInit {
     // console.log(this.appliedFilterSelections);
     // console.log("defaultColumnIDs:");
     // console.log(this.defaultColumnIDs);
-    // console.log("featuresToChildren:");
-    // console.log(this.featuresToChildren);
     this.applyFilters();
     this.selectorsLoaded = true
   }
@@ -138,8 +132,8 @@ export class AuditsComponent implements OnInit {
         this.tableObject = res;
         console.log(this.tableObject)
         this.tableRows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
-  console.log(this.tableRows)
-  console.log(this.dataTableColumns)
+        console.log(this.tableRows)
+        console.log(this.dataTableColumns)
       });
     }
   }

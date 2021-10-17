@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-upload-audit',
@@ -8,7 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class UploadAuditComponent implements OnInit {
 
-  constructor() { }
+  constructor(private apiService: ApiService) { }
 
   dataSource = new MatTableDataSource();
   tempData = [
@@ -16,9 +17,22 @@ export class UploadAuditComponent implements OnInit {
     { auditName: "Bathroom Audit 2", uploadStatus: "uploaded", _id: "5555555555" }
   ]
   displayedColumns: string[] = ['auditName', 'uploadStatus'];
+  audits;
+  setupObject;
 
   ngOnInit(): void {
     this.dataSource.data = this.tempData;
-  }
 
+    this.apiService.getSetupTableObject().subscribe((res) => {
+      this.setupObject = res;
+    });
+
+    this.apiService.getAudits().subscribe((res) => {
+      this.audits = res;
+      console.log("audits", res)
+    });
+  }
 }
+
+// organizationtree id is 1 1 0 0
+//returnable id 157

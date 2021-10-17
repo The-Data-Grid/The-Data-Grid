@@ -42,10 +42,7 @@
                             (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false" class="upload">
                             <span *ngIf="currentWindowWidth >= 700">Upload</span>
                             <i *ngIf="currentWindowWidth < 700" class="fa fa-cloud-upload" style="font-size: 20px;"></i>
-
                         </button>
-
-
                         <mat-menu #menu="matMenu" [overlapTrigger]="true" class="customize" style="position: absolute;">
                             <span (mouseenter)="recheckIfInMenu = true"
                                 (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false">
@@ -61,9 +58,8 @@
                                 </button>
                             </span>
                         </mat-menu>
-
                         <mat-menu #_menu="matMenu" [overlapTrigger]="true" class="customize"
-                            style="position: absolute;">
+                        style="position: absolute;">
                             <span (mouseenter)="recheckIfInMenu3 = true"
                                 (mouseleave)="closeResourceMenu(3); recheckIfInMenu3 = false">
                                 <button mat-menu-item [routerLink]="'/upload-audit'"
@@ -78,8 +74,6 @@
                                 </button>
                             </span>
                         </mat-menu>
-
-
                     </a>
                 </div>
 
@@ -88,13 +82,6 @@
                     <span *ngIf="currentWindowWidth >= 700"> Get Involved </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
                 </a>
-
-                <!-- <a mat-tab-link [routerLink]="'/upload-files'" routerLinkActive="activeButton"
-               [routerLinkActiveOptions]="{exact: true}" #rla8="routerLinkActive" [active]="rla8.isActive">
-               <span *ngIf="currentWindowWidth >= 700"> DataCheckit </span>
-               <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
-           </a> -->
-
                 <div>
                     <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
                         #rla8="routerLinkActive" [active]="rla8.isActive" [routerLink]="'/team'"
@@ -104,9 +91,7 @@
                             (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false" class="upload">
                             <span *ngIf="currentWindowWidth >= 700"> About </span>
                             <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
-
                         </button>
-
                         <mat-menu #menu_="matMenu" [overlapTrigger]="false" class="customize">
                             <span (mouseenter)="recheckIfInMenu2 = true"
                                 (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false">
@@ -120,18 +105,13 @@
                                     [ngStyle]="{'background-color': isActiveButton('/throwaway',1)}">
                                     How it Works
                                 </button>
-                                <!-- <button mat-menu-item [routerLink]="'/team'" (mouseover)="adjustDropdownHover(2)" (mouseout)="adjustDropdownHover(2)" [ngStyle]="{'background-color': isActiveButton('/team',2)}">
-                    Team
-                  </button> -->
                                 <button mat-menu-item [routerLink]="'/about'" (mouseover)="adjustDropdownHover(3)"
                                     (mouseout)="adjustDropdownHover(3)"
                                     [ngStyle]="{'background-color': isActiveButton('/throwaway2',3)}">
                                     Contact
                                 </button>
-
                             </span>
                         </mat-menu>
-
                         <mat-menu #__menu="matMenu" [overlapTrigger]="false" class="customize">
                             <span (mouseenter)="recheckIfInMenu3 = true"
                                 (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false">
@@ -145,12 +125,8 @@
                                     [ngStyle]="{'background-color': isActiveButton('/throwaway',8)}">
                                     Log Out
                                 </button>
-
                             </span>
                         </mat-menu>
-
-
-
                     </a>
                 </div>
 
@@ -183,6 +159,7 @@
             </nav>
         </header>
         <router-outlet></router-outlet>
+        <div style="padding-bottom: 150px;"></div>
         <footer *ngIf="currentWindowWidth > 700" id="footer">
             <nav>
                 <div fxLayout="row" fxLayoutAlign="space-around start" class="bottom-bar">
