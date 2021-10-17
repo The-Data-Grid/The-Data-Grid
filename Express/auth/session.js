@@ -1,5 +1,6 @@
 require('dotenv').config();
 const session = require('express-session'); 
+const isDeployment = ['-d', '--deploy'].includes(process.argv[2])
 
 // session store init
 let Store = require('memorystore')(session); 
@@ -8,7 +9,7 @@ let MyStore = new Store({checkPeriod: 1_000_000});
 // Session on every route
 module.exports = session({
     store: MyStore, 
-    secret: process.env.EXPRESS_SESSION_SECRET,
+    secret: isDeployment ? 'no-secret' : process.env.EXPRESS_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     name: 'sessionID',
