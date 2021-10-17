@@ -50,6 +50,6 @@ jobs:
         run: npm run db-fake
 
       - name: Run the Test Suite
-        run: npm run test-user
+        run: npm run test-user-force
         env:
           PGPASSWORD: postgres
