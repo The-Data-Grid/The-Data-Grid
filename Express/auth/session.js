@@ -9,7 +9,7 @@ let MyStore = new Store({checkPeriod: 1_000_000});
 // Session on every route
 module.exports = session({
     store: MyStore, 
-    secret: isDeployment ? 'no-secret' : process.env.EXPRESS_SESSION_SECRET,
+    secret: isDeployment ? process.env.EXPRESS_SESSION_SECRET : 'no-secret',
     resave: false,
     saveUninitialized: false,
     name: 'sessionID',
