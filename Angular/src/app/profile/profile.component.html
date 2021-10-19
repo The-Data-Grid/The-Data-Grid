@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100&display=swap" rel="stylesheet">
+</head>
+
+<div style="   width: 100%;
+max-width: 1600px;
+margin: 0 auto;
+">
+<div>
+<div class="profile_info">
+    <div class="avatar" style="width: 20px;" >
+
+<!--     <div *ngIf="isAvatarHover" (mouseenter)="hoverOnEditButton()">
+        <img style="cursor: pointer; position: absolute; width: 20px; margin-left: -160px; margin-top:-35px" src="assets/edit_icon.png">
+    </div> -->
+</div>
+<div>
+      <!-- will eventually dynamically allocate position of name based on length -->
+      <h1 style="position: absolute; font-size: 22px; margin-left: -195px; margin-top: 3px;">{{userData.firstName}}</h1>
+</div>
+<div style="margin-left: -180px">
+  <button class="logoutButton" (click)="AppComponent.logOut()">
+    Log Out
+  </button>
+</div>
+    <h1 class="myInfoLabel">My Account</h1>
+    
+<div>
+<div style="display: inline-block;">
+  <p class='privilege_label'>Privilege:</p>
+  <div style="margin-left: 80px; margin-top: -35px;">
+  <!-- <p class='email_text'>{{userData.email}}</p> -->
+  <p class='email_text'>super user</p>
+  </div>
+  
+
+<div style="display: inline-block; margin-top: 0px;">
+  <p class='email_label'>Email:</p>
+  <div style="margin-left: 80px; margin-top: -35px;">
+  <!-- <p class='email_text'>{{userData.email}}</p> -->
+  <p class='email_text'>{{email}}</p>
+  </div>
+
+</div>
+
+<div id="OrganizationTable" style="width: 800px; margin-left: -260px; margin-top: 50px;">
+  <h3 style="margin-left: 315px;">
+    My Organizations
+  </h3>
+  <ngx-datatable
+    class="material"
+    [rows]="rows"
+    columnMode="force"
+    [headerHeight]="50"
+    [footerHeight]="50"
+    rowHeight="auto"
+    [scrollbarH]="true"
+    [limit]="5"
+  >
+  <ngx-datatable-column *ngFor="let col of OrganizationColumns" [prop]="col.prop" [name]="col.prop"></ngx-datatable-column>
+  </ngx-datatable>
+</div>
+
+<div>
+    <div id="OrganizationTable" style="width: 800px; margin-left: -260px; margin-top: 100px;">
+      <h3 style="margin-left: 315px; font-size: 26px;">
+        Organization Role Editor
+      </h3>
+
+
+      <div style="margin-top: 80px;">
+
+        <div>
+          <input type="text" id="email_input" style="width: 240px; margin-left: -150px;">
+        </div>
+
+        <div class="orgSelector" style="margin-left:200px; margin-top: -40px;">
+          <select>
+          <option *ngFor="let org of userData.OrganizationName">{{org}}</option>
+        </select>
+        </div>
+
+      </div>
+
+    </div>
+</div>
+
+</div>

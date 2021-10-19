@@ -10,6 +10,7 @@ import {ViewAuditComponent} from './upload-audit/view-audit/view-audit.component
 import { DownloadComponent } from './download/download.component'
 import { SettingsComponent } from './settings/settings.component'
 import { TeamComponent } from './team/team.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
@@ -23,6 +24,7 @@ const routes: Routes = [
   { path: 'download', component: DownloadComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'team', component: TeamComponent },
+  { path: 'profile', component: ProfileComponent },
 
 ];
 
