@@ -469,8 +469,8 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     setupMobileObject.features = mobileFeatureNodeObjects;
     setupMobileObject.columns = columnObjects.map(obj => obj.object);
     setupMobileObject.datatypes = datatypeArray;
-    //fix-me: add treeIDArray component
-    // setupMobileObject.treeIDArray = 
+    setupObject.returnableIDToTreeID = returnableIDToTreeIDObject;
+    setupObject.treeIDToReturnableID = treeIDToReturnableIDObject;
 
     // Construct idValidationLookup
     // ============================================================
