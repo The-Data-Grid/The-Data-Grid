@@ -27,7 +27,7 @@ connectPostgreSQL('default');
 
 // Middleware
 const { setupParse } = require('./parse.js');
-const { sendSetup } = require('./query/query.js');
+const { sendSetup, sendMobileSetup } = require('./query/query.js');
 const insertRouter = require('./insert/router.js');
 const auditRouter = require('./query/router.js');
 const authRouter = require('./auth/router.js');
@@ -69,6 +69,9 @@ app.use('/api/audit', auditRouter);
 
 // Setup Object
 app.get('/api/setup', setupParse, sendSetup);
+
+// Setup Mobile Object
+app.get('/api/setup/mobile', setupParse, sendMobileSetup);
 
 
 // @kian pls clean up

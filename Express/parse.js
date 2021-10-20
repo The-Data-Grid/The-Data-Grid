@@ -27,6 +27,7 @@ function operation_map(operation) {
             break;
         case '~':
             operation = 'not';
+            break;
         default:
             operation = null; //set op to null if non-valid operation
     }
