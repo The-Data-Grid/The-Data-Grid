@@ -1,0 +1,34 @@
+{
+    "items": {
+        "create": [
+            {
+                "itemTypeID": 1,
+                "requiredItems": [{
+                    "itemTypeID": 2,
+                    "primaryKey": 1
+                }],
+                "newRequiredItemIndices": [],
+                "globalPrimaryKey": null,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        157,
+                        158
+                    ],
+                    "data": [
+                        "Acme Corporation",
+                        "https://acme.com"
+                    ]
+                }
+            }
+        ],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": []
+    }
+}

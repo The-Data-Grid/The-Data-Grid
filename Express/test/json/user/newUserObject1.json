@@ -1,0 +1,9 @@
+{
+    "firstName": "Example",
+    "lastName": "User",
+    "email": "exampleuser@thedatagrid.org",
+    "pass": "really_STR0NG_password",
+    "dateOfBirth": "01-22-1995",
+    "isEmailPublic": true,
+    "isQuarterlyUpdates": true
+}

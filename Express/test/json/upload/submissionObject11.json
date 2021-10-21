@@ -1,0 +1,45 @@
+{
+    "items": {
+        "create": [],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [
+            {
+                "itemTypeID": 14,
+                "itemPrimaryKey": 1,
+                "newItemIndex": null,
+                "globalPrimaryKey": 1,
+                "newGlobalIndex": null,
+                "data": {
+                    "returnableIDs": [
+                        33,
+                        34,
+                        35,
+                        36,
+                        38,
+                        41,
+                        42,
+                        43,
+                        46
+                    ],
+                    "data": [
+                        "02-15-1999",
+                        "art",
+                        "Sandra",
+                        "SOP??",
+                        1.0234,
+                        ["Pretty alright", "you know", "yeah, i know"],
+                        ["Sensor is nice"],
+                        [],
+                        []
+                    ]
+                }
+            }
+        ],
+        "update": [],
+        "delete": []
+    }
+}

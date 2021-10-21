@@ -1,0 +1,353 @@
+/* .body {
+   height: 100px;
+   width: 100vh;
+   position: absolute;
+} */
+ 
+.profile_info {
+    position: relative;
+    margin-left: 40%;
+    margin-top: 5%;
+    padding-bottom: 200px
+ }
+  
+ .avatar {
+    margin-left: -1100%;
+    margin-top: 15px;
+    height: 120px;
+    border-radius: 50%;
+    cursor: pointer;
+ }
+  
+ .name {
+    font-weight: 400;
+    font-size: 26px;
+    margin-left: -220px;
+    font-family: 'IBM Plex Sans', sans-serif;
+ }
+
+ .profile_hover {
+     filter: brightness(80%);
+ }
+  
+ .privileges {
+    margin-left: -250px;
+    font-size: 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+ }
+  
+ .account {
+    background-color: transparent;
+    border: none;
+    font-size: 40px;
+    margin-left: 90px;
+    margin-top: -250px;
+    color: #569CD7;
+    cursor: pointer;
+    position: absolute;
+ }
+  
+ .account:focus {
+    outline: none;
+    box-shadow: none;
+ }
+  
+ .slash {
+    font-size: 40px;
+    margin-left: 317px;
+    margin-top: -250px;
+    color: #5FA784;
+ }
+
+  
+ .edit {
+    background-color: transparent;
+    border: none;
+    font-size: 40px;
+    margin-left: 335px;
+    margin-top: -92px;
+    color: #5FA784;
+    cursor: pointer;
+    position: absolute;
+ }
+  
+ .edit:focus {
+    outline: none;
+    box-shadow: none;
+ }
+  
+ .isUnderlined {
+    text-decoration: underline;
+  }
+ 
+  .username {
+      width: 200px;
+      font-size: 18px;
+  }
+ 
+ input {
+    line-height: 3.5em;
+    padding-left: 10px;
+    border-style: solid;
+    border-radius: 3px;
+    border-color: lightgray;
+    font-size: 12px;
+    border-width: thin;
+    margin-left: 200px;
+    margin-top: -45px;
+    position: relative;
+    resize: none;
+ }
+ 
+ input:focus {
+    outline-width: thick;
+    outline-color: #bfe3ff;
+ }
+
+ .myInfoLabel {
+     margin-left: -180px;
+     margin-top:-220px;
+     font-size:48px;
+     color: #569CD7;
+ }
+
+ .preferencesLabel {
+    /* margin-left: 70px; */
+    margin-left: 5%;
+    margin-top: 0px;
+    font-size: 18px;
+ }
+
+ .privacyLabel {
+   /* margin-left: 110px; */
+   margin-left: 10%;
+   margin-top: 30px;
+   font-size: 18px;
+ }
+
+ .wrapper {
+   width: 600px;
+   border: 1px solid lightgray;
+   /* border-radius: 4px; */
+   height: 50px;
+   margin-left: -150px;
+}
+
+.container {
+   margin-left: -20px;
+   display: block;
+   position: relative;
+   padding-left: 35px;
+   /* margin-bottom: 12px; */
+   margin-top: 17px;
+   cursor: pointer;
+   font-size: 14px;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+ }
+
+   /* Hide the browser's default checkbox */
+.container input {
+   position: absolute;
+   opacity: 0;
+   cursor: pointer;
+   height: 0;
+   width: 0;
+ }
+
+  /* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+   background-color: #ccc;
+ }
+
+  /* When the checkbox is checked, add a blue background */
+  .container input:checked ~ .checkmark {
+   background-color: #2196F3;
+ }
+
+   /* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+   content: "";
+   position: absolute;
+   display: none;
+}
+    
+    /* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+   display: block;
+   }
+  
+  /* Style the checkmark/indicator */
+  .container .checkmark:after {
+   left: 6px;
+   top: 2px;
+   width: 5px;
+   height: 10px;
+   border: solid white;
+   border-width: 0 3px 3px 0;
+   -webkit-transform: rotate(45deg);
+   -ms-transform: rotate(45deg);
+   transform: rotate(45deg);
+ }
+
+
+ .checkmarkLocation {
+   margin-top: 80px;
+ }
+
+ .checkmark {
+   position: absolute;
+   top: 0;
+   left: 580px;
+   height: 20px;
+   width: 20px;
+   background-color: #eee;
+ }
+
+
+ 
+ .privilege_label {
+     margin-top: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 10px;
+ }
+
+ .editCamera {
+    background: 'assets/edit_icon.png';
+    width:50px;
+    height:50px;
+    display: inline-block;
+}
+ 
+ .email_label {
+   font-size: 14px;
+   font-weight: 500;
+   margin-left: 28px;
+   margin-top: 25px;
+ }
+ 
+ .submit {
+    margin-top: 50px;
+ }
+ 
+ .noChanges {
+   background-color: #b9dded;
+   /* background-color: #569CD7; */
+   color: white;
+   /* filter: grayscale(60%); */
+   cursor: auto;
+   position: absolute;
+   margin-left: 390px;
+   margin-top: 15px;
+ }
+ 
+ .changesMade {
+   background-color: #569CD7;
+   color: white;
+   position: absolute;
+   cursor: pointer;
+   margin-left: 390px;
+   margin-top: 15px;
+ }
+ 
+ .exitButton {
+   background-color: #5FA784;
+   color: white;
+   position: absolute;
+   cursor: pointer;
+   margin-left: 300px;
+   margin-top: 15px;
+ }
+ 
+ .user_privileges {
+   color: #757575;
+   position: absolute;
+   font-size: 12px;
+   /* margin-left: 70px; */
+   margin-left: -95px;
+   margin-top: -28px;
+ }
+ 
+ .privilege_expansion {
+   position: absolute;
+   height: 15px;
+   margin-top: -28px;
+   /* margin-left: 100px; */
+   margin-left: -120px;
+   cursor: pointer;
+ }
+
+ .AddOrganization {
+    background-color: #569CD7;
+    margin-top: -50px;
+    margin-left: 730px;
+    position: absolute;
+ }
+
+ .deleteAccountButton {
+    position: absolute;
+    background-color: #ff9999;
+    margin-left: 100px;
+    margin-top: 80px;
+ }
+
+ .divider {
+    width: 130%;
+    height: 1px;
+    background-color: #cccccc;
+    margin-left: -50px;
+ }
+
+ .indivDivider {
+    width: 2px;
+    height:50px;
+    background-color: black;
+    position: absolute;
+    z-index: 5;
+ }
+
+ .mainDivider {
+   width: 2px;
+   height:500px;
+   background-color: black;
+   position: absolute;
+   z-index: 5;
+   /* margin-left: 40%; */
+
+ }
+ .logoutButton {
+   position: absolute;
+    background-color: #5FA784;
+    font-size: 14px;
+    padding: 11px 27px;
+    border-radius: 10px;
+ }
+ .setRole {
+   position: absolute;
+   background-color: #569CD7;
+   font-size: 14px;
+    padding: 11px 16px;
+    border-radius: 10px;
+ }
+
+
+table {
+   width: 100%;
+ }
+
+ td[colspan]:not([colspan="1"]) {
+   text-align: center;
+}
+ 
+td[colspan="2"] {
+   text-align: center;
+}
+
+table, tr, td {
+   border: #ffffff;
+} 
+

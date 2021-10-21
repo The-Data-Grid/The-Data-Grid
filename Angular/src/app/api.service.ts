@@ -137,13 +137,23 @@ export class ApiService {
 
   attemptLogin(loginObject, withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
-    return this.http.post(`${API_URL}/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+    return this.http.post(`${API_URL}/user/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  attemptSignUp(signUpObject, withCredentials=true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/user`, signUpObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  verifyEmail(verifyEmailObject, withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/user/email/verify`, verifyEmailObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
 
   signOut(withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
-    return this.http.post(`${API_URL}/logout`, {
+    return this.http.post(`${API_URL}/user/logout`, {
     }, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 

@@ -37,6 +37,10 @@ import { ReusableTemplateComponent } from './reusable-template/reusable-template
 import { SelectorsTemplateComponent } from './selectors-template/selectors-template.component';
 import { TeamComponent } from './team/team.component';
 import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialog.component';
+import { ProfileComponent } from './profile/profile.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,7 +65,10 @@ import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialo
     ItemCreationComponent,
     DeleteDialogComponent,
     SelectorsTemplateComponent,
-    FilterComponent
+    FilterComponent,
+    VerifyEmailComponent,
+    CheckEmailComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

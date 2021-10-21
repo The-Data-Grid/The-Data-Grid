@@ -1,0 +1,34 @@
+{
+    "items": {
+        "create": [],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [
+            {
+                "itemTypeID": 14,
+                "observationPrimaryKey": 1,
+                "data": {
+                    "returnableIDs": [
+                        35,
+                        36,
+                        38,
+                        41,
+                        42
+                    ],
+                    "data": [
+                        "Burt",
+                        "SOP???????????",
+                        13.99024,
+                        ["Pretty alright", "you know"],
+                        ["Sensor is nice", "yeeemer"]
+                    ]
+                }
+            }
+        ],
+        "delete": []
+    }
+}
