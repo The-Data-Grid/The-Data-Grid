@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuditsComponent } from './audits/audits.component';
+import { FilterComponent } from './filter/filter.component';
 import { IndexComponent } from './index/index.component';
 import { UploadComponent } from './upload/upload.component';
 import { AboutComponent } from './about/about.component';
@@ -14,7 +15,7 @@ import { TeamComponent } from './team/team.component';
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
   { path: '', component: IndexComponent },
-  { path: 'audits', component: AuditsComponent },
+  { path: 'filter', component: FilterComponent },
   { path: 'upload', component: UploadComponent },
   { path: 'about', component: AboutComponent },
   { path: 'upload-files', component: UploadFilesComponent },

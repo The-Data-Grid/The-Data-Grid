@@ -21,7 +21,9 @@
       <app-selectors-template [treeIDobjects]="[treeIDObject]" [returnableIDs]="treeIDObject.IDreturnableIDs">
       </app-selectors-template>
     </mat-expansion-panel>
-    <mat-expansion-panel>
+
+    <!-- no attributes for now -->
+    <!-- <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title>
           "{{item.frontendName}}" Attributes
@@ -30,13 +32,14 @@
       <app-selectors-template [treeIDobjects]="[treeIDObject]" [returnableIDs]="treeIDObject.attributeReturnableIDs"
         [columnsType]="'attributeColumns'">
       </app-selectors-template>
-    </mat-expansion-panel>
+    </mat-expansion-panel> -->
+
   </mat-accordion>
   <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
     <button mat-button (click)="close()" style="margin-right: 10px;">
       Cancel Changes
     </button>
-    <button mat-button (click)="close()" style="background-color: #569CD7; color: white;">
+    <button mat-button (click)="save()" style="background-color: #569CD7; color: white;">
       Save & Back
     </button>
   </div>

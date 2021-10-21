@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from './api.service';
 import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
+import { FilterComponent } from './filter/filter.component';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -59,7 +60,8 @@ import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialo
     TeamComponent,
     ItemCreationComponent,
     DeleteDialogComponent,
-    SelectorsTemplateComponent
+    SelectorsTemplateComponent,
+    FilterComponent
   ],
   imports: [
     BrowserModule,

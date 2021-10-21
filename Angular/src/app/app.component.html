@@ -24,7 +24,7 @@
                     <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px;">
                     <span *ngIf="currentWindowWidth >= 700"> the data grid </span>
                 </a>
-                <a mat-tab-link [routerLink]="'/audits'" routerLinkActive="activeButton"
+                <a mat-tab-link [routerLink]="'/filter'" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive">
                     <span *ngIf="currentWindowWidth >= 700"> Data </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>

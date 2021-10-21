@@ -71,4 +71,22 @@ export class ItemCreationComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  save() {
+    let queryStringBits = [];
+    console.log(this.treeIDObject)
+    this.treeIDObject.IDColumns.forEach(columnInfo => {
+      if (columnInfo.column.inputSelector) {
+        switch (columnInfo.column.inputSelector.selectorKey) {
+          default:
+            if (columnInfo.userInputSelection && columnInfo.userInputSelection != "") {
+              queryStringBits.push(`${columnInfo.returnableID}=${columnInfo.userInputSelection}`)
+              columnInfo.userInputSelection = "";
+            }
+        }
+      }
+    });
+    console.log(queryStringBits)
+    this.close();
+  }
+
 }
