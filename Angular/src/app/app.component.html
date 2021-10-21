@@ -115,6 +115,11 @@
                         <mat-menu #__menu="matMenu" [overlapTrigger]="false" class="customize">
                             <span (mouseenter)="recheckIfInMenu3 = true"
                                 (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false">
+                                <button [routerLink]="'/profile'" class="dropdown-btn" mat-menu-item
+                                    (mouseover)="adjustDropdownHover(6)" (mouseout)="adjustDropdownHover(6)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',6)}">
+                                    My Account
+                                </button>
                                 <button [routerLink]="'/settings'" class="dropdown-btn" mat-menu-item
                                     (mouseover)="adjustDropdownHover(7)" (mouseout)="adjustDropdownHover(7)"
                                     [ngStyle]="{'background-color': isActiveButton('/throwaway',7)}">
@@ -167,6 +172,7 @@
                         <div class="bot-logo" fxLayoutAlign="center center">
                             <img src="../../favicon.png" alt="tdg logo" style="height: 35px; width: 35px; margin:5px;">
                             <span> the data grid </span>
+                            <button click="clearit()"></button>
                         </div>
                         <div fxLayoutAlign="center center">
                             <a href="https://www.facebook.com/thedatagrid">

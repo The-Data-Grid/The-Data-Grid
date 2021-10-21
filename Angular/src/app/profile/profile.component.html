@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100&display=swap" rel="stylesheet">
+</head>
+
+<div style="   width: 100%;
+max-width: 1600px;
+margin: 0 auto;
+">
+<div>
+<div class="profile_info">
+    <div class="avatar" style="width: 20px;" ></div>
+<div>
+      <!-- will eventually dynamically allocate position of name based on length -->
+      <h1 style="position: absolute; font-size: 24px; margin-left: -300px; margin-top: -50px;">{{userData.firstName}} {{userData.lastName}}</h1>
+</div>
+<div style="margin-left: -300px; margin-top: 70px">
+  <button style="margin-top: -50px;" class="logoutButton" (click)="AppComponent.logOut()">
+    Log Out
+  </button>
+</div>
+
+    <h1 class="myInfoLabel">My Account</h1>
+    
+
+<div style="display: inline-block;">
+  <p class='privilege_label'>Privilege:</p>
+  <div style="margin-left: 80px; margin-top: -35px;">
+  <!-- <p class='email_text'>{{userData.email}}</p> -->
+  <p class='email_text'>{{userData.privilege}}</p>
+  </div>
+  
+
+<div style="display: inline-block; margin-top: 0px;">
+  <p class='email_label'>Email:</p>
+  <div style="margin-left: 80px; margin-top: -35px;">
+  <!-- <p class='email_text'>{{userData.email}}</p> -->
+  <p class='email_text'>{{userData.email}}</p>
+  </div>
+
+</div>
+
+
+
+
+    <div id="OrganizationTable" style="width: 800px; margin-left: -260px; margin-top: 50px;">
+      <h3 style="margin-left: 315px; font-size: 24px;">
+        My Organizations
+      </h3>
+      <ngx-datatable
+        class="material"
+        id="org_table"
+        [rows]="rows"
+        columnMode="force"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        rowHeight="auto"
+        [scrollbarH]="true"
+        [limit]="5"
+      >
+      <ngx-datatable-column *ngFor="let col of OrganizationColumns" [prop]="col.prop" [name]="col.prop"></ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+    
+
+</div>
+<div style="margin-top: 50px">
+  <h1 style="font-size: 28px;">Organization Role Editor</h1>
+
+  <div>
+    <input style="margin-left: -280px; top: 35px; width: 200px;"type="text" size="45" id="email_input" value="{{this.userData.email}}">
+  </div>
+  <div class="custom-select" style="width:200px; margin-top:-20px;">
+<!--     <select>
+      <option *ngFor="let org of roleOrg">{{org}}</option>
+    </select> -->
+
+      <mat-form-field appearance="fill">
+        <mat-label>Choose an org</mat-label>
+          <mat-select id="selectOrg">
+            <mat-option *ngFor="let org of roleOrg" [value]="org">{{org}}</mat-option>
+          </mat-select>
+      </mat-form-field>
+     
+  </div>
+  <div style="margin-left: 270px; margin-top: -85px;">
+    <mat-form-field appearance="fill" >
+        <mat-label>Choose a role</mat-label>
+          <mat-select id="selecRole"> 
+            <mat-option *ngFor="let role of roleType" [value]="role">{{role}}</mat-option>
+          </mat-select>
+      </mat-form-field>
+  </div>
+  <div style="margin-left: 550px; margin-top: -75px;">
+    <button class="setRole" (click)="setRole()">Set Role</button>
+  </div>
+  <div style="margin-top: 80px; margin-left: 100px;"><p *ngIf="validForm">Role Updated</p></div>
+</div>
+
+<div style="margin-top: 50px;"></div>
+</div>
+

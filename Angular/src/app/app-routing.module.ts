@@ -10,6 +10,12 @@ import { AuditSummaryComponent } from './upload-audit/audit-summary/audit-summar
 import { DownloadComponent } from './download/download.component'
 import { SettingsComponent } from './settings/settings.component'
 import { TeamComponent } from './team/team.component';
+<<<<<<< HEAD
+import { ProfileComponent } from './profile/profile.component';
+=======
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
+>>>>>>> 628fbeff353bfc71ee05ef9e7602d164a536f923
 
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
@@ -23,6 +29,12 @@ const routes: Routes = [
   { path: 'download', component: DownloadComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'team', component: TeamComponent },
+<<<<<<< HEAD
+  { path: 'profile', component: ProfileComponent },
+=======
+  { path: 'verify-email', component: VerifyEmailComponent },
+  { path: 'check-email', component: CheckEmailComponent },
+>>>>>>> 628fbeff353bfc71ee05ef9e7602d164a536f923
 
 ];
 
