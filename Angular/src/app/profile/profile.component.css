@@ -106,9 +106,10 @@
  }
 
  .myInfoLabel {
-     margin-left: 110px;
-     margin-top:-150px;
-     font-size:28px;
+     margin-left: -180px;
+     margin-top:-220px;
+     font-size:48px;
+     color: #569CD7;
  }
 
  .preferencesLabel {
@@ -325,101 +326,17 @@
     padding: 11px 27px;
     border-radius: 10px;
  }
- .orgSelector {
-   width: 150px;
+ .setRole {
+   position: absolute;
+   background-color: #569CD7;
+   font-size: 14px;
+    padding: 11px 16px;
+    border-radius: 10px;
  }
-
- 
-.select-selected {
-  background-color: DodgerBlue;
-}
-
-/* Style the arrow inside the select element: */
-.select-selected:after {
-  position: absolute;
-  content: "";
-  top: 14px;
-  right: 10px;
-  width: 0;
-  height: 0;
-  border: 6px solid transparent;
-  border-color: #fff transparent transparent transparent;
-}
-
-/* Point the arrow upwards when the select box is open (active): */
-.select-selected.select-arrow-active:after {
-  border-color: transparent transparent #fff transparent;
-  top: 7px;
-}
-
-/* style the items (options), including the selected item: */
-.select-items div,.select-selected {
-  color: #ffffff;
-  padding: 8px 16px;
-  border: 1px solid transparent;
-  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
-  cursor: pointer;
-}
-
-/* Style items (options): */
-.select-items {
-  position: absolute;
-  background-color: DodgerBlue;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 99;
-}
-
-/* Hide the items when the select box is closed: */
-.select-hide {
-  display: none;
-}
-
-.select-items div:hover, .same-as-selected {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-/* ngx-datatable.material .datatable-header .datatable-header-cell {
-   font-size: 10px !important;
-} */
-
- /* :host ::ng-deep .datatable-header-cell-label-draggable  {
-   padding-bottom: 100px !important;
- }
-
- .datatable-header-cell-template {
-   vertical-align: bottom;
-   border-bottom: 2px solid #ddd;
-   padding: 800px;
-   line-height: 1.42857143;
-   font-weight: bold;
-   color: rgb(51, 51, 51);
-   }
-
-:host ::ng-deep .datatable-header-cell-label-draggable {
-   font-size: 500px;
-} */
 
 
 table {
    width: 100%;
- }
- 
- /* th.mat-header-cell, td.mat-cell {
-     text-align: center;
-     border: 1px solid #CCC;
-     padding: 0 !important;
- } */
-
- .NOOOOO {
-    background-color: #ffffff;
- }
-
- .mat-cell {
-    color: #585858;
-    font-size: 13px;
-    font-weight: 400;
  }
 
  td[colspan]:not([colspan="1"]) {
@@ -434,14 +351,3 @@ table, tr, td {
    border: #ffffff;
 } 
 
-.mat-header-cell {
-   height: 14px;
-}
-
-.second_header {
-   height: 40px !important;
-}
-
-.tr_font {
-   font-size: 12px;
-}
