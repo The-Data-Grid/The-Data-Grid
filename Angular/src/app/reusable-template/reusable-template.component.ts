@@ -7,8 +7,6 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
 import { SetupObject, TableObject } from '../responses'
-// import { TableObject } from '../responses';
-// import { SetupObject} from '../setupObjectTry1';
 import { environment } from '../../environments/environment';
 import { AppliedFilterSelections } from '../models';
 const USE_FAKE_DATA = environment.useFakeData;
@@ -17,7 +15,6 @@ const USE_FAKE_DATA = environment.useFakeData;
   selector: 'app-reusable-template',
   templateUrl: './reusable-template.component.html',
   styleUrls: ['./reusable-template.component.css']
-  // styleUrls: ['../audits/audits.component.css']
 })
 export class ReusableTemplateComponent implements OnInit {
 
@@ -30,8 +27,7 @@ export class ReusableTemplateComponent implements OnInit {
   @Input() featureSelectors: any[]
   @Input() featureIndex: number
   @Input() appliedFilterSelections: AppliedFilterSelections
-  @Input() returnableIDs: AppliedFilterSelections
-
+  @Input() returnableIDs: any[]
 
   dropdownOptions: any = null;
   setupObject;
@@ -73,13 +69,12 @@ export class ReusableTemplateComponent implements OnInit {
   getDropdownOptions() {
     this.apiService.getDropdownOptions(this.returnableIDs).subscribe((res) => {
       this.dropdownOptions = res;
-      console.log("dropdown (from resusable.ts):");
-      console.log(this.dropdownOptions)
+      // console.log("dropdown (from resusable.ts):");
+      // console.log(this.dropdownOptions)
       this.IDtoOptions = this.mapIDtoOptions();
       // console.log(this.IDtoOptions)
     })
   }
-
 
   mapIDtoOptions() {
     let IDtoOptions = {}
@@ -91,7 +86,7 @@ export class ReusableTemplateComponent implements OnInit {
       this.dropdownOptions.columnData[i].forEach((option, j) => {
         //this basically makes sure we are not setting item_text: [null]
         //bc for some reason we are getting stuff like that in the response
-        if (option===null || option[0] === null) {
+        if (option === null || option[0] === null) {
           IDtoOptions[ID].push({
             item_id: j,
             item_text: "None"

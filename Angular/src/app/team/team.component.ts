@@ -100,16 +100,24 @@ export class TeamComponent implements OnInit {
       instagram: "https://www.instagram.com/bhavnaa.s/",
       linkedin: "https://www.linkedin.com/in/bhavna-sreekumar-54b162196",
       email: "https://mail.google.com/mail/?view=cm&fs=1&to=sreekumarbhavna@gmail.com",
-    }
-
-
-
-
-
-
-
+    },
+    {
+      name: 'Oliver Melgrove',
+      team: 'Backend Lead',
+      bio: 'Oliver like to do pottery and write code. In his spare time he hopes it starts raining so he can go for a run!',
+      work: 'Oliver has worked on developing the web server, database, and API. He has worked with Kian and the backend team to design the system architecture.',
+      photo: 'assets/team/Oliver.png', // path;
+      facebook:'',
+      instagram:'',
+      linkedin:'https://www.linkedin.com/in/melgrove',
+      email:'https://mail.google.com/mail/?view=cm&fs=1&to=oliver@melgrove.com'
+    } 
   ]
   constructor() { }
+
+  click() {
+    localStorage.clear();
+  }
 
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;

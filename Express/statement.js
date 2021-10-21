@@ -218,8 +218,8 @@ const login = {
     authorization: `
         SELECT 
             p.privilege_name AS privilege,
-            ARRAY_AGG(rt.type_name) AS role,
-            ARRAY_AGG(r.organization_id) AS "organizationID",
+            ARRAY_REMOVE(ARRAY_AGG(rt.type_name), NULL) AS role,
+            ARRAY_REMOVE(ARRAY_AGG(r.item_organization_id), NULL) AS "organizationID",
             u.item_id as "userID"
             FROM item_user AS u
             LEFT JOIN tdg_role AS r ON u.item_id = r.item_user_id
@@ -230,21 +230,29 @@ const login = {
     `,
     user: `
         SELECT
+            p.privilege_name as privilege,
+            ARRAY_REMOVE(ARRAY_AGG(rt.type_name), NULL) AS role,
+            ARRAY_REMOVE(ARRAY_AGG(r.item_organization_id), NULL) AS "organizationID",
+            ARRAY_REMOVE(ARRAY_AGG(o.data_organization_name_text), NULL) AS "organizationName",
             u.data_first_name "firstName",
             u.data_last_name "lastName",
             u.data_email "email",
             u.data_date_of_birth "dateOfBirth",
             u.data_is_email_public "isEmailPublic",
             u.data_is_quarterly_updates "isQuarterlyUpdates"
-            FROM item_user
-            WHERE item_id = $(userID)
+            FROM item_user AS u
+            LEFT JOIN tdg_role AS r ON u.item_id = r.item_user_id
+            LEFT JOIN tdg_role_type AS rt ON r.role_type_id = rt.type_id
+            LEFT JOIN tdg_privilege AS p ON u.privilege_id = p.privilege_id
+            LEFT JOIN item_organization AS o ON r.item_organization_id = o.item_id
+                WHERE u.item_id = $(userID)
+                GROUP BY p.privilege_name, u.data_first_name, u.data_last_name, u.data_email, u.data_date_of_birth, u.data_is_email_public, u.data_is_quarterly_updates 
     `
     };   
 
 const addingUsers = {
 insertingUsers: `
     INSERT INTO item_user (
-        item_organization_id,
         data_first_name,
         data_last_name, 
         data_date_of_birth,
@@ -256,7 +264,7 @@ insertingUsers: `
         is_pending,
         privilege_id ) 
         VALUES 
-        (null, $(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), NULL, true, 2)`
+        ($(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), $(token), true, 2)`
     };
 
 const updates  = {

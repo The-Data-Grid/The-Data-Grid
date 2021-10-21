@@ -41,8 +41,8 @@ CREATE TABLE item_global (
     item_id SERIAL PRIMARY KEY,
     item_audit_id INTEGER NOT NULL, --fk **
     item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
-    item_user_id INTEGER NOT NULL, --fk **
-    item_template_id INTEGER --fk ** ???
+    item_user_id INTEGER NOT NULL --fk **
+    --item_template_id INTEGER --fk ** ???
 );
 
 CREATE TABLE item_building (
@@ -128,6 +128,7 @@ CREATE TABLE m2m_item_sop (
     item_sop_id INTEGER NOT NULL --fk **
 );
 
+/*
 CREATE TABLE item_template (
     item_id SERIAL PRIMARY KEY,
     item_organization_id INTEGER NOT NULL, --fk **
@@ -135,6 +136,7 @@ CREATE TABLE item_template (
     data_template_name TEXT,
     data_template_json JSONB NOT NULL
 );
+*/
 
 CREATE TABLE m2m_auditor (
     observation_count_id INTEGER NOT NULL, --fk **
@@ -143,7 +145,7 @@ CREATE TABLE m2m_auditor (
 
 CREATE TABLE item_user (
     item_id SERIAL PRIMARY KEY,
-    item_organization_id INTEGER, --fk **
+    -- item_organization_id INTEGER, --fk **
     data_first_name TEXT NOT NULL,
     data_last_name TEXT NOT NULL,
     data_date_of_birth TIMESTAMPTZ NOT NULL,
@@ -157,7 +159,7 @@ CREATE TABLE item_user (
     privilege_id INTEGER NOT NULL, --fk **
     -- Constraint: privilege 'superuser' must only be associated with TDG org
     -- Note: TDG must be the first organization added in the database for now! (must have PK = 1)
-    CHECK((privilege_id = 3 AND item_organization_id = 1) OR (privilege_id != 3)),
+    -- CHECK((privilege_id = 3 AND item_organization_id = 1) OR (privilege_id != 3)),
     UNIQUE(data_email)
 );
 
@@ -278,7 +280,7 @@ ON item_state (item_country_id);
 
 CREATE INDEX item_sop_index
 ON item_sop (item_organization_id);
-
+/*
 CREATE INDEX item_template_index1
 ON item_template (item_user_id);
 
@@ -287,7 +289,7 @@ ON item_template (item_organization_id);
 
 CREATE INDEX item_user_index
 ON item_user (item_organization_id);
-
+*/
 CREATE INDEX item_global_index1
 ON item_global (item_audit_id);
 
@@ -296,10 +298,10 @@ ON item_global (item_organization_id);
 
 CREATE INDEX item_global_index3
 ON item_global (item_user_id);
-
+/*
 CREATE INDEX item_global_index4
 ON item_global (item_template_id);
-
+*/
 CREATE INDEX item_audit_index1
 ON item_audit (item_catalog_id);
 
@@ -867,7 +869,7 @@ ALTER TABLE item_country ADD FOREIGN KEY (location_region_id) REFERENCES locatio
 
 -- Global
 ALTER TABLE item_global ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
-ALTER TABLE item_global ADD FOREIGN KEY (item_template_id) REFERENCES item_template;
+--ALTER TABLE item_global ADD FOREIGN KEY (item_template_id) REFERENCES item_template;
 ALTER TABLE item_global ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE item_global ADD FOREIGN KEY (item_audit_id) REFERENCES item_audit (item_id);
 
@@ -886,8 +888,8 @@ ALTER TABLE item_sop ADD FOREIGN KEY (item_organization_id) REFERENCES item_orga
 
 
 -- Template
-ALTER TABLE item_template ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
-ALTER TABLE item_template ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
+--ALTER TABLE item_template ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
+--ALTER TABLE item_template ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 
 
 -- Auditor
@@ -913,7 +915,7 @@ ALTER TABLE tdg_role ADD FOREIGN KEY (role_type_id) REFERENCES tdg_role_type;
 -- ALTER TABLE m2m_user_organization ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 -- ALTER TABLE m2m_user_organization ADD FOREIGN KEY (organization_id) REFERENCES item_organization;
 
-ALTER TABLE item_user ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
+-- ALTER TABLE item_user ADD FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
 
                                                                                 
@@ -1553,7 +1555,7 @@ INSERT INTO metadata_item
             (DEFAULT, 'item_country', 'Country', 3, 1, null, 3, null),
             (DEFAULT, 'item_sop', 'Standard Operating Procedure', 3, 1, null, 2, 1),
             (DEFAULT, 'item_template', 'Template', 3, 1, null, 2, 1),
-            (DEFAULT, 'item_user', 'User', 3, 3, null, 1, null), -- Note upload privilege superuser users are created through the user API
+            (DEFAULT, 'item_user', 'User', 3, 3, null, 3, null), -- Note upload privilege superuser users are created through the user API
             (DEFAULT, 'item_global', 'Global Item', 3, 1, null, 2, 1),
             (DEFAULT, 'item_catalog', 'Catalog', 3, 1, null, 2, 1),
             (DEFAULT, 'item_audit', 'Audit', 3, 1, null, 2, 1);
@@ -1570,14 +1572,14 @@ CALL "insert_m2m_metadata_item"('item_city', 'item_county', TRUE, FALSE, 'County
 CALL "insert_m2m_metadata_item"('item_county', 'item_state', TRUE, FALSE, 'State of County', NULL);
 CALL "insert_m2m_metadata_item"('item_state', 'item_country', TRUE, FALSE, 'Country of State', NULL);
 CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_template', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
-CALL "insert_m2m_metadata_item"('item_template', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_user', 'item_organization', FALSE, FALSE, 'Member of Organization', NULL);
+--CALL "insert_m2m_metadata_item"('item_template', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
+--CALL "insert_m2m_metadata_item"('item_template', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
+-- CALL "insert_m2m_metadata_item"('item_user', 'item_organization', FALSE, FALSE, 'Member of Organization', NULL);
 --     submission
 CALL "insert_m2m_metadata_item"('item_global', 'item_audit', TRUE, FALSE, 'Audit of Observation', NULL);
 CALL "insert_m2m_metadata_item"('item_global', 'item_organization', TRUE, FALSE, 'Auditing Organization', NULL);
 CALL "insert_m2m_metadata_item"('item_global', 'item_user', TRUE, FALSE, 'Auditing User', NULL);
-CALL "insert_m2m_metadata_item"('item_global', 'item_template', FALSE, TRUE, 'Template Used', NULL);
+--CALL "insert_m2m_metadata_item"('item_global', 'item_template', FALSE, TRUE, 'Template Used', NULL);
 --     audit
 CALL "insert_m2m_metadata_item"('item_audit', 'item_catalog', FALSE, TRUE, 'Catalog of Audit', NULL);
 CALL "insert_m2m_metadata_item"('item_audit', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
@@ -1592,7 +1594,7 @@ CALL "add_history_table"('item_county');
 CALL "add_history_table"('item_state');
 CALL "add_history_table"('item_country');
 CALL "add_history_table"('item_sop');
-CALL "add_history_table"('item_template');
+--CALL "add_history_table"('item_template');
 CALL "add_history_table"('item_user');
 CALL "add_history_table"('item_global');
 CALL "add_history_table"('item_audit');
@@ -1618,8 +1620,8 @@ CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', T
 CALL "insert_metadata_column"('data_body', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Body', 'text', NULL, 'string', NULL, NULL, 'TEXT', 'item-non-id');
 
 
-CALL "insert_metadata_column"('data_template_json', 'item_template', NULL, NULL, 'item_template', FALSE, FALSE, 'Audit Template JSON', 'searchableDropdown', NULL, 'string', 'JSON representation of an audit input template', NULL, 'JSON', 'item-non-id');
-CALL "insert_metadata_column"('data_template_name', 'item_template', NULL, NULL, 'item_template', TRUE, TRUE, 'Audit Template Name', 'text', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+--CALL "insert_metadata_column"('data_template_json', 'item_template', NULL, NULL, 'item_template', FALSE, FALSE, 'Audit Template JSON', 'searchableDropdown', NULL, 'string', 'JSON representation of an audit input template', NULL, 'JSON', 'item-non-id');
+--CALL "insert_metadata_column"('data_template_name', 'item_template', NULL, NULL, 'item_template', TRUE, TRUE, 'Audit Template Name', 'text', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 
 --CALL "insert_metadata_column"('data_time_submitted', 'item_submission', NULL, NULL, 'item_submission', TRUE, FALSE, 'Time Audit Submission Submitted', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
 

@@ -7,11 +7,7 @@ import { environment } from '../../../environments/environment';
 const USE_FAKE_DATA = environment.useFakeData;
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../../dropdown-settings'
 import { TableObjectService } from '../../table-object.service';
-// import { TableObject } from '../responses';
-// import { SetupObject} from '../setupObjectTry1';
 import { AppliedFilterSelections } from '../../models'
-
-
 
 @Component({
   selector: 'app-feature-audit',
@@ -27,7 +23,6 @@ export class FeatureAuditComponent implements OnInit {
     private tableObjectService: TableObjectService) {
   }
 
-  title;
   setupObject;
   subfeatures = [];
   attributeSelectors;
@@ -50,7 +45,6 @@ export class FeatureAuditComponent implements OnInit {
 
   defaultColumns = []
   rootFeatures = []
-  featuresToChildren = {}
   dataTableColumns = [];
   dropdownList = FakeData;
   globalSelectors = {};
@@ -61,6 +55,8 @@ export class FeatureAuditComponent implements OnInit {
   featureIndex = this.data.index;
   featureName = this.data.name;
   featureReturnableIDs = [];
+  globalDefaultColumns = []
+  globalReturnableIDs = [];
 
   dummy = [
     {
@@ -87,18 +83,11 @@ export class FeatureAuditComponent implements OnInit {
     {
       title: this.featureName + " Observation",
       type: "observation",
-
-    },
-    {
-      title: "Subfeature",
-      type: "subfeature",
     }
   ]
 
-
   ngOnInit() {
     this.getSetupObject();
-
   }
 
   close() {
@@ -110,7 +99,6 @@ export class FeatureAuditComponent implements OnInit {
       this.setupObject = SetupObject;
       this.getFeatureID();
       this.getFeatureSelectors();
-      this.getFeatureChildren();
       this.getAttributeAndObservationColumns()
     }
     else {
@@ -118,10 +106,9 @@ export class FeatureAuditComponent implements OnInit {
         this.setupObject = res;
         this.getFeatureID();
         this.getFeatureSelectors();
-        this.getFeatureChildren();
         this.getAttributeAndObservationColumns()
         this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.featureIndex)
-
+        this.globalSelectors = this.setupObjectService.getGlobalSelectors(this.setupObject, this.appliedFilterSelections, this.globalReturnableIDs, this.globalDefaultColumns, false)
       });
     }
   }
@@ -139,20 +126,8 @@ export class FeatureAuditComponent implements OnInit {
     );
   }
 
-  getFeatureChildren() {
-    // map features to children
-    this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
-    this.selectorsLoaded = true
-    let features = this.setupObjectService.getFeaturesToChildren(this.setupObject);
-    let subfeatureIndices = features[this.featureIndex];
-    for (var i = 0; i < subfeatureIndices.length; i++) {
-      this.subfeatures.push(this.setupObject.features[subfeatureIndices[i]]);
-    }
-  }
-
   getAttributeAndObservationColumns() {
     this.attributeSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, this.appliedFilterSelections, [], false);
     this.observationSelectors = this.setupObjectService.getFeatureInputSelectors(this.setupObject, this.appliedFilterSelections, [], true);
   }
-
 }

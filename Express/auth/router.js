@@ -16,6 +16,13 @@ const { apiDateToUTC } = require('../parse.js');
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 const updating = require('../statement.js').updates;
+const { sendMail } = require('../email/mda.js');
+
+// use correct mail depending on testing
+let sendEmail = sendMail;
+if(isTesting) {
+    sendEmail = sendEmailFake;
+}
 
 // Login
 router.post('/login', async (req, res) => {
@@ -48,7 +55,7 @@ router.post('/login', async (req, res) => {
             return res.status(200).json(sessionObject);
         }
         else {
-            throw new Error('Invalid');
+            throw new Error('Invalid Password');
         }
     }
     catch(error) {
@@ -92,13 +99,15 @@ router.post('/', async (req, res) => {
         }));
     } catch(error) {
         console.log('ERROR:', error);
-        return es.status(400).send('Bad Request 2214: Email already taken');
+        return res.status(400).send('Bad Request 2214: Email already taken');
     }
     
     // insert
     try {
         //hash password
         let hashedPassword = await bcrypt.hash(req.body.pass, 13); 
+
+        const rand = nanoid(50);
 
         await db.none(formatSQL(userSQL.insertingUsers, {
             userfirstname: req.body.firstName,
@@ -108,10 +117,10 @@ router.post('/', async (req, res) => {
             userdateofbirth: apiDateToUTC(req.body.dateOfBirth),
             userpublic: req.body.isEmailPublic,
             userquarterlyupdates: req.body.isQuarterlyUpdates,
+            token: rand,
         }));
 
         // send verification email
-        const rand = nanoid(50);
         await db.none(formatSQL(updating.updateToken, {
             token: rand, //secret token for security
             email: req.body.email
@@ -120,7 +129,11 @@ router.post('/', async (req, res) => {
         const encodedEmail = encodeURIComponent(req.body.email);
         emailLink = "https://thedatagrid.org/verify-email?email=" + encodedEmail + "&token=" + rand; 
 
-        await sendEmail(req.body.email, emailLink);
+        await sendEmail({
+            address: req.body.email,
+            title: 'The Data Grid - Email Verification',
+            body: emailLink
+        });
 
     } catch(err) {
         console.log(err);
@@ -177,6 +190,7 @@ router.post('/email/verify', async (req, res) => {
         return res.status(200).send('Email verified');
 
     } catch(error) {
+        console.log(error)
         return res.status(401).send('Email verification failed');
     }
 });
@@ -194,7 +208,11 @@ router.post('/password/request-reset', async (req, res) => {
         const encodedEmail = encodeURIComponent(req.body.email);
         const emailLink = "https://thedatagrid.org/reset-password?email=" + encodedEmail + "?token=" + rand; 
         
-        await sendEmail(req.body.email, emailLink);
+        await sendEmail({
+            address: req.body.email,
+            title: 'The Data Grid - Password Reset',
+            body: emailLink
+        });
 
         return res.status(201).end();
     } catch(error) {
@@ -316,7 +334,7 @@ router.put('/role', async (req, res) => {
 })
 
 // Just for testing
-async function sendEmail(_, __) {
+async function sendEmailFake(_) {
     
 }
 

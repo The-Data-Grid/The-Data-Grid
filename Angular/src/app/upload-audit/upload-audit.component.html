@@ -1,22 +1,67 @@
 <!-- outside div body wrapper to make sure tab bar doesnt push down content -->
 <div id="body">
-    <div id="table-buttons" fxLayoutAlign="end center">
-        <button mat-icon-button>
-            <mat-icon>add</mat-icon>
-        </button>
+    <div fxLayoutAlign="space-between center">
+        <h4 style="font-weight: 700; font-size: 25px;">Audits</h4>
+        <div id="table-buttons">
+            <button mat-button id="select-button">Select</button>
+            <button mat-icon-button [routerLink]="['/audit-summary', 1234567890]">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
     </div>
-    <!-- table -->
-    <mat-table [dataSource]="dataSource" id="table" class="mat-elevation-z4">
-        <ng-container matColumnDef="auditName">
-            <mat-cell *matCellDef="let audit" [routerLink]="['/view-audit', audit._id]">{{audit.auditName}}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="uploadStatus">
-            <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">
-                <button mat-icon-button>
-                    <mat-icon>arrow_circle_up</mat-icon>
-                </button>
-            </mat-cell>
-        </ng-container>
-        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-    </mat-table>
+    <mat-tab-group mat-align-tabs="start">
+        <!-- IN PROGRESS AUDITS -->
+        <mat-tab label="Unsynced">
+            <!-- table -->
+            <mat-table [dataSource]="dataSource" class="mat-elevation-z4">
+                <ng-container matColumnDef="auditName">
+                    <mat-cell *matCellDef="let audit" [routerLink]="['/audit-summary', audit._id]">{{audit.auditName}}
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="uploadStatus">
+                    <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">
+                        <!-- <button mat-icon-button>
+                            <mat-icon>arrow_circle_up</mat-icon>
+                        </button> -->
+                    </mat-cell>
+                </ng-container>
+                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+            </mat-table>
+        </mat-tab>
+        <!-- SUBMITTED AUDITS -->
+        <mat-tab label="Synced">
+            <mat-table [dataSource]="dataSource" class="mat-elevation-z4">
+                <ng-container matColumnDef="auditName">
+                    <mat-cell *matCellDef="let audit" [routerLink]="['/audit-summary', audit._id]">{{audit.auditName}}
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="uploadStatus">
+                    <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">
+                        <!-- <button mat-icon-button>
+                            <mat-icon>arrow_circle_up</mat-icon>
+                        </button> -->
+                    </mat-cell>
+                </ng-container>
+                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+            </mat-table>
+        </mat-tab>
+        <!-- ALL AUDITS -->
+        <mat-tab label="All">
+            <mat-table [dataSource]="dataSource" class="mat-elevation-z4">
+                <ng-container matColumnDef="auditName">
+                    <mat-cell *matCellDef="let audit" [routerLink]="['/audit-summary', audit._id]">{{audit.auditName}}
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="uploadStatus">
+                    <mat-cell *matCellDef="let audit" fxLayout="row" fxLayoutAlign="end center">
+                        <!-- <button mat-icon-button>
+                            <mat-icon>arrow_circle_up</mat-icon>
+                        </button> -->
+                    </mat-cell>
+                </ng-container>
+                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+            </mat-table>
+        </mat-tab>
+    </mat-tab-group>
+
 </div>

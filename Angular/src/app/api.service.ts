@@ -23,8 +23,21 @@ export class ApiService {
       observe: 'response',
     })
       .pipe(map((response: any) => {
-        console.log("Server Status: " + response.status + ":::::" + response.statusText);
-        console.log(response.body);
+        console.log("SetupObject Request Status: " + response.status + ":::::" + response.statusText);
+        console.log("setupObject", response.body);
+        return response.body;
+      }));
+  }
+
+  public getAudits(): Observable<any> {
+    var url = API_URL + '/audit/item/audit/157=BHS';
+
+    return this.http.get<any>(url, {
+      observe: 'response',
+    })
+      .pipe(map((response: any) => {
+        console.log("Audit Request Status: " + response.status + ":::::" + response.statusText);
+        console.log("audit respone", response.body);
         return response.body;
       }));
   }
@@ -45,6 +58,7 @@ export class ApiService {
 
   // arg returnableIDS is an array of IDS for which you want to get options
   public getDropdownOptions(returnableIDs): Observable<any> {
+    console.log(returnableIDs)
     // var url = API_URL + '/audit/observation/distinct';
     // var url = API_URL + '/audit/observation/distinct/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161&188';
     var url = API_URL + '/audit/observation/distinct/sink/' + returnableIDs.filter(s => s).join('&');
@@ -117,13 +131,23 @@ export class ApiService {
 
   attemptLogin(loginObject, withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
-    return this.http.post(`${API_URL}/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+    return this.http.post(`${API_URL}/user/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  attemptSignUp(signUpObject, withCredentials=true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/user`, signUpObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  verifyEmail(verifyEmailObject, withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/user/email/verify`, verifyEmailObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
 
   signOut(withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
-    return this.http.post(`${API_URL}/logout`, {
+    return this.http.post(`${API_URL}/user/logout`, {
     }, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 

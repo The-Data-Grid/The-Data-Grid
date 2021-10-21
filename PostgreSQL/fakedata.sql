@@ -40,7 +40,6 @@ VALUES
 
 INSERT INTO item_user 
 ("item_id",
-"item_organization_id",
 "data_first_name",
 "data_last_name",
 "data_date_of_birth",
@@ -50,10 +49,10 @@ INSERT INTO item_user
 "data_is_quarterly_updates",
 "privilege_id")
 VALUES
-    (default, 1, 'Oliver', 'Melgrove', 'Tue, 26 Jan 2021 21:53:05 GMT', 'oliver@melgrove.com', 'password', true, true, 3),
-    (default, 1, 'Tanya', 'Zhong', 'Tue, 26 Jan 2021 21:53:05 GMT', 'tanyazhong1@gmail.com', 'password', true, true, 3),
-    (default, 1, 'Kian', 'Nikzad', 'Tue, 26 Jan 2021 21:53:05 GMT', 'kian.nikzad@gmail.com', 'password', true, true, 3),
-    (default, 1, 'Jorden', 'Van Foreest', 'Tue, 26 Jan 2021 21:53:05 GMT', 'jorden-van-foreest@thedatagrid.org', '$2b$10$MWv9JnM4zD6TjnZlpSYC4upMdlGatnZxY9zDxKK/8BdTRjIho0p4S', true, true, 2);
+    (default, 'Oliver', 'Melgrove', 'Tue, 26 Jan 2021 21:53:05 GMT', 'oliver@melgrove.com', 'password', true, true, 3),
+    (default, 'Tanya', 'Zhong', 'Tue, 26 Jan 2021 21:53:05 GMT', 'tanyazhong1@gmail.com', 'password', true, true, 3),
+    (default, 'Kian', 'Nikzad', 'Tue, 26 Jan 2021 21:53:05 GMT', 'kian.nikzad@gmail.com', 'password', true, true, 3),
+    (default, 'Jorden', 'Van Foreest', 'Tue, 26 Jan 2021 21:53:05 GMT', 'jorden-van-foreest@thedatagrid.org', '$2b$10$MWv9JnM4zD6TjnZlpSYC4upMdlGatnZxY9zDxKK/8BdTRjIho0p4S', true, true, 2);
 
 
 INSERT INTO tdg_role 
@@ -82,12 +81,12 @@ VALUES
 
 -- "submission_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name"
 INSERT INTO item_global
-("item_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id")
+("item_id", "item_audit_id", "item_organization_id", "item_user_id")
 VALUES
-    (default, 1, 1, 1, NULL),
-    (default, 1, 1, 2, NULL),
-    (default, 2, 1, 3, NULL),
-    (default, 2, 1, 2, NULL);
+    (default, 1, 1, 1),
+    (default, 1, 1, 2),
+    (default, 2, 1, 3),
+    (default, 2, 1, 2);
 
 
 -- actual features

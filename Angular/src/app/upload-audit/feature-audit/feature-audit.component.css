@@ -1,42 +1,3 @@
-.top_decoration {
-  height: 30px;
-  min-width:3000px;
-  background-color: #569CD7;
-  overflow-y: hidden;
-  overflow-x: hidden;
-}
-
-
-.mat-expansion-panel {
-  width: 95% !important;
-  margin-right: auto;
-  margin-left: auto;
-  border-radius: 0 !important;
-  overflow: visible !important;
-}
-
-.primary_separator {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  background-color: black;
-  height: 1px;
-  width: 801px;
-  /* margin-left: -54px */
-}
-.secondary_separator {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  background-color: lightgray;
-  height: 1px;
-  width: 801px;
-  margin-left: -64px
-}
-
-.mat-dialog-container {
-  padding: 0px !important;
-}
-
-
 .custom ::ng-deep .mat-form-field-underline, ::ng-deep .mat-form-field-ripple, ::ng-deep .mat-form-field-label, ::ng-deep .mat-focused .mat-form-field-placeholder, ::ng-deep .multiselect-dropdown .dropdown-btn, ::ng-deep .multiselect-dropdown-ripple {
   color: black !important;
 }
@@ -44,12 +5,4 @@
 .custom ::ng-deep .mat-focused .mat-form-field-label {
   /*change color of label*/
   color: green !important;
- }
-
-/* .cdk-global-overlay-wrapper {
-  display: flex;
-  position: absolute;
-  z-index: 1000;
-  overflow: auto;
-  pointer-events: auto;  
-} */
+}
