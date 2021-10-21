@@ -10,6 +10,8 @@ import { AuditSummaryComponent } from './upload-audit/audit-summary/audit-summar
 import { DownloadComponent } from './download/download.component'
 import { SettingsComponent } from './settings/settings.component'
 import { TeamComponent } from './team/team.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
 
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
@@ -23,6 +25,8 @@ const routes: Routes = [
   { path: 'download', component: DownloadComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'team', component: TeamComponent },
+  { path: 'verify-email', component: VerifyEmailComponent },
+  { path: 'check-email', component: CheckEmailComponent },
 
 ];
 

@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiService } from '../api.service';
 import { HttpHeaders } from "@angular/common/http"
+import { first } from 'rxjs/operators';
+import { stringify } from '@angular/compiler/src/util';
+import {Router} from '@angular/router';
 
 interface Month {
   value: string;
@@ -11,6 +14,16 @@ interface Month {
 interface loginObject {
   email: string;
   pass: string;
+}
+
+interface SignUpObject {
+  firstName: string;
+  lastName: string;
+  email: string;
+  pass: string;
+  dateOfBirth: string;
+  isEmailPublic: boolean;
+  isQuarterlyUpdates: boolean;
 }
 
 @Component({
@@ -27,24 +40,32 @@ export class DialogComponent implements OnInit {
   signUpPassword;
   matchPassword;
   userLoginObject:loginObject;
+  signUpObject: SignUpObject;
+  firstname;
+  lastname;
+  email;
+  password;
+  month;
+  day;
+  year;
 
   handleInput() {
     console.log("help");
   }
 
   months: Month[] = [
-    {value: 'jan', viewValue: 'January'},
-    {value: 'feb', viewValue: 'February'},
-    {value: 'mar', viewValue: 'March'},
-    {value: 'apr', viewValue: 'April'},
-    {value: 'may', viewValue: 'May'},
-    {value: 'jun', viewValue: 'June'},
-    {value: 'jul', viewValue: 'July'},
-    {value: 'aug', viewValue: 'August'},
-    {value: 'sep', viewValue: 'September'},
-    {value: 'oct', viewValue: 'October'},
-    {value: 'nov', viewValue: 'November'},
-    {value: 'dec', viewValue: 'December'},
+    {value: "01", viewValue: 'January'},
+    {value: '02', viewValue: 'February'},
+    {value: '03', viewValue: 'March'},
+    {value: '04', viewValue: 'April'},
+    {value: '05', viewValue: 'May'},
+    {value: '06', viewValue: 'June'},
+    {value: '07', viewValue: 'July'},
+    {value: '08', viewValue: 'August'},
+    {value: '09', viewValue: 'September'},
+    {value: '10', viewValue: 'October'},
+    {value: '11', viewValue: 'November'},
+    {value: '12', viewValue: 'December'},
 
   ];
 
@@ -65,7 +86,7 @@ export class DialogComponent implements OnInit {
   }
   
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService) { 
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService, private router:Router) { 
   }
 
   ngOnInit() {
@@ -84,8 +105,43 @@ export class DialogComponent implements OnInit {
   }
 
   checkSuccess() {
-    this.modal = "success";
-    this.dialogRef.updateSize('300px','350px')
+    //console.log(this.month + "-" + this.day + "-" + this.year);
+    //return;
+    // this.signUpObject = {
+    //   firstName: "Private",
+    //   lastName: "Joker",
+    //   email: "me@me.com",
+    //   pass: "marrone12345",
+    //   dateOfBirth: "03-02-1123",
+    //   isEmailPublic: true,
+    //   isQuarterlyUpdates: true
+    // }
+
+    if (this.day < 10) {
+      this.day = "0" + stringify(this.day);
+    }
+    //console.log(this.day);
+    this.signUpObject = {
+      firstName: this.firstname,
+      lastName: this.lastname,
+      email: this.email,
+      pass: this.password,
+      dateOfBirth: this.month + "-" + this.day + "-" + this.year,
+      isEmailPublic: true,
+      isQuarterlyUpdates: true
+    }
+    this.apiService.attemptSignUp(this.signUpObject).subscribe((res: any) => {
+      console.log("signing up...");
+      console.log(res);
+
+      if (res == '') {
+        this.router.navigate(['./check-email']);
+        this.dialogRef.close();
+      }
+
+    })
+
+    //this.dialogRef.updateSize('300px','350px')
   }
 
   passwords_match() {
@@ -111,7 +167,6 @@ export class DialogComponent implements OnInit {
     var regExp = /[a-zA-Z]/g;
     var numRegExp = /[0-9]/g;
     if (this.signUpPassword) {
-      console.log(this.signUpPassword.length)
       if (this.signUpPassword.length > 0) {
         if (!regExp.test(this.signUpPassword) || !numRegExp.test(this.signUpPassword) || this.signUpPassword.length < 10) {
           return false;
@@ -185,4 +240,5 @@ export class DialogComponent implements OnInit {
   close() {
     this.dialogRef.close();
   }
+
 }

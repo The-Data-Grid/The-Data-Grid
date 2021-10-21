@@ -115,6 +115,10 @@ export class TeamComponent implements OnInit {
   ]
   constructor() { }
 
+  click() {
+    localStorage.clear();
+  }
+
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
   }

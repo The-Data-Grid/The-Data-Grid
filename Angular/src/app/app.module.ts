@@ -34,6 +34,8 @@ import { SetupObjectService } from './setup-object.service';
 import { TableObjectService } from './table-object.service';
 import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
 import { TeamComponent } from './team/team.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,7 +57,9 @@ import { TeamComponent } from './team/team.component';
     FeatureAuditComponent,
     ReusableTemplateComponent,
     TeamComponent,
-    ItemCreationComponent
+    ItemCreationComponent,
+    VerifyEmailComponent,
+    CheckEmailComponent
   ],
   imports: [
     BrowserModule,

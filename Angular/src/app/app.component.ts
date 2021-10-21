@@ -69,6 +69,9 @@ export class AppComponent implements OnInit {
   constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private clipboard: Clipboard,) { }
 
 
+  clearit() {
+    localStorage.clear();
+  }
   checkStorage() {
     // console.log(localStorage)
     if (localStorage.length == 0) {
