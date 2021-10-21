@@ -116,13 +116,15 @@ export class ProfileComponent implements OnInit {
     let i = this.userData.organizationName.indexOf(org);
     const data = {
       organizationID: this.userData.organizationID[i],
-      userEmail: (<HTMLInputElement>document.getElementById("email_input")).value,
-      role: (<HTMLInputElement>document.getElementById("selectRole")).value
+      userEmail: this.userData.email,
+      role: this.userData.role
     }
     if (data.userEmail.length && data.organizationID && data.role)
       this.showUpdatedRole();
     else
       return;
+
+
 
     return fetch(url, {
       method: "PUT",
