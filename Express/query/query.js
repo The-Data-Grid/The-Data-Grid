@@ -6,7 +6,7 @@ response object, and sends an HTTP response.
 ============================================================ */
 
 // Internal setup objects
-const {returnableIDLookup, featureParents, setupObject} = require('../setup.js')
+const {returnableIDLookup, featureParents, setupObject, setupMobileObject} = require('../setup.js')
 
 // Database connection and SQL formatter
 const {postgresClient} = require('../db/pg.js');
@@ -293,19 +293,14 @@ function sendKey(req, res) {
 // SEND SETUP OBJECT
 // ============================================================
 function sendSetup(req, res) {
-    
-    // if the "If-Modified-Since" header is not included or is newer or the same age as the setupObject's lastModified date
-    if(res.locals.parsed.ifModifiedSince >= setupObject.lastModified) {
+    return res.status(200).json(setupObject) // send setupObject
+};
 
-        return res.status(304) // don't send object - not modified
-        
-    } else { // then "If-Modified-Since" is older than setupObject's lastModified date or is something else
 
-        // set "Last-Modified" header
-        res.set('Last-Modified', setupObject.lastModified)
-        // send setupObject
-        return res.status(200).json(setupObject) // send setupObject
-    };
+// SEND SETUP MOBILE OBJECT
+// ============================================================
+function sendMobileSetup(req, res) {
+    return res.status(200).json(setupMobileObject) // send setupMobileObject
 };
 
 
@@ -319,5 +314,6 @@ module.exports = {
     sendDistinct,
     sendDownload,
     sendSetup,
+    sendMobileSetup,
     sendKey
 };

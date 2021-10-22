@@ -55,7 +55,11 @@ const auditUploadAPI = '/api/audit/submission'
  */
 
 // Create a new organizaiton
-test('Superuser can create a new organization through the Audit Upload API', done => {
+test('1.Superuser can create a new organization through the Audit Upload API \
+    2.Anybody can create a new user through the User Management API \
+    3.Superuser can grant the admin role to a user \
+    4.Anybody can create a new user through the User Management API (again) \
+    5.Organization admin can grant the auditor role to a user', done => {
     request
         .post(auditUploadAPI)
         .send(organizationSubmission)

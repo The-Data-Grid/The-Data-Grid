@@ -84,7 +84,7 @@ router.post('/', async (req, res) => {
 
     if (!isValidEmail(req.body.email)) {
         console.log('ERROR:', 'Bad Request 2211: Invalid Password');
-        return res.status(400).send('Bad Request 2211: Invalid Password'); 
+        return res.status(400).send('Bad Request 2212: Invalid Email'); 
     }
 
     if (!isValidDate(req.body.dateOfBirth)) {
@@ -93,7 +93,7 @@ router.post('/', async (req, res) => {
     }
 
     //check if email is taken 
-    try {
+    try {   
         await db.none(formatSQL(SQL.isEmailTaken, {
             checkemail: req.body.email
         }));
@@ -129,11 +129,15 @@ router.post('/', async (req, res) => {
         const encodedEmail = encodeURIComponent(req.body.email);
         emailLink = "https://thedatagrid.org/verify-email?email=" + encodedEmail + "&token=" + rand; 
 
+        console.log('User inserted. Sending email to ' + req.body.email + ' with link: ' + emailLink);
+
         await sendEmail({
             address: req.body.email,
             title: 'The Data Grid - Email Verification',
             body: emailLink
         });
+
+        console.log('Email sent.')
 
     } catch(err) {
         console.log(err);
@@ -207,12 +211,16 @@ router.post('/password/request-reset', async (req, res) => {
 
         const encodedEmail = encodeURIComponent(req.body.email);
         const emailLink = "https://thedatagrid.org/reset-password?email=" + encodedEmail + "?token=" + rand; 
+
+        console.log('Sending email to ' + req.body.email + ' with link: ' + emailLink);
         
         await sendEmail({
             address: req.body.email,
             title: 'The Data Grid - Password Reset',
             body: emailLink
         });
+
+        console.log('Email sent.');
 
         return res.status(201).end();
     } catch(error) {
