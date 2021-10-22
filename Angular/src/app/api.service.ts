@@ -33,6 +33,7 @@ export class ApiService {
     let returnableIDstring = auditTreeIDObjects[itemPath].IDreturnableIDs.filter(s => s).join('&')
     // let url = API_URL + '/audit/item/audit/157=BHS';
     let url = API_URL + '/audit/item/audit/' + returnableIDstring;
+    // let url = API_URL + '/audit/item/audit/';
 
     console.log(url)
 
@@ -41,7 +42,7 @@ export class ApiService {
     })
       .pipe(map((response: any) => {
         // console.log("Audit Request Status: " + response.status + ":::::" + response.statusText);
-        // console.log("audit response", response.body);
+        console.log("audit response", response.body);
         return response.body;
       }));
   }

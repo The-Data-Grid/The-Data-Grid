@@ -22,7 +22,7 @@ export class MetadataPanelComponent implements OnInit {
   }
 
   getSetupTableObject() {
-    this.apiService.getSetupTableObject().subscribe((res) => {
+    this.apiService.getSetupObject().subscribe((res) => {
       USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
       this.auditMetadata = this.setupObjectService.getAllAuditItemRelatedColumns(this.setupObject);
       console.log("audit metadata:", this.auditMetadata)
