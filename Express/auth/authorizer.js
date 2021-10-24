@@ -3,6 +3,8 @@ const {
     itemTableNames,
     columnIdTableNameLookup,
     allItems,
+    observationItemTableNameLookup,
+    columnIdItemLookup,
 } = require('../setup.js');
 
 const itemAuthorizationLookup = {};
@@ -53,15 +55,14 @@ class RequestValidationError extends Error {
 /**
  * 
  * @param {'query' | 'submission'} queryOrUpload
- * @param {'item' | 'observation'} itemOrObservation
  */
-function authorizationGenerator(queryOrUpload, itemOrObservation) {
+function authorizationGenerator(queryOrUpload) {
 
     return async (req, res, next) => {
         let collectedItems;
         if(queryOrUpload === 'query') {
             // [tableName, ...]
-            collectedItems = collectQueryItems(res.locals.parsed, itemOrObservation);
+            collectedItems = collectQueryItems(res.locals.parsed);
         } else {
             // [{
             //    tableName: String,  
@@ -111,7 +112,7 @@ async function validateItemsOnRequesterRole(items, authorizationObject, queryOrU
     // validate every passed item
     for(let itemObjectOrTableName of items) {
         // Check if upload and query is possible based on authorization properties of schemaFeatureInput
-        checkRequesterRole(itemObjectOrTableName.tableName, authorizationObject, queryOrUpload)
+        checkRequesterRole(itemObjectOrTableName, authorizationObject, queryOrUpload)
 
         // Additional upload checks
         if(queryOrUpload === 'upload') {
@@ -133,6 +134,10 @@ async function validateItemsOnRequesterRole(items, authorizationObject, queryOrU
      * @throws {RequestValidationError}
      */
     function checkRequesterRole(itemTableName, authorizationObject, queryOrUpload) {
+        if(queryOrUpload === 'upload') {
+            itemTableName = itemTableName.tableName;
+        }
+
         const {
             queryRole,
             uploadRole,
@@ -297,10 +302,17 @@ function collectQueryItems(parsed, queryType) {
     // go through all the returnables and get unique items
     const uniqueItems = [];
     for(let returnable of allReturnableIDs) {
-        const tableName = columnIdTableNameLookup[returnable.columnID];
+        let tableName = columnIdItemLookup[returnable.columnID];
+        /*
+        // if observation table convert to item table
+        if(tableName in observationItemTableNameLookup) {
+            tableName = observationItemTableNameLookup[tableName];
+        }
+        */
         if(!uniqueItems.includes(tableName)) {
             uniqueItems.push(tableName);
         }
+        
     }
     return uniqueItems;
 }

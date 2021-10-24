@@ -41,6 +41,7 @@ function dataQueryWrapper(queryType) {
     return async (req, res, next) => {   
     
         try {
+            console.log(res.locals.parsed.filters)
     
             let {
                 allReturnableIDs,

@@ -945,6 +945,12 @@ columnObjects.forEach((columnObject) => {
     columnIdTableNameLookup[columnObject.additionalInfo.columnID] = columnObject.additionalInfo.tableName;
 });
 
+const columnIdItemLookup = {};
+for(let itemData of Object.entries(itemColumnObject)) {
+    for(let id of itemData[1].c__column_id) {
+        columnIdItemLookup[id] = itemData[0];
+    }
+}
 
 //console.log(itemColumnObject.item_sink);
 //console.log(itemColumnObject['item_sink'])
@@ -953,8 +959,8 @@ columnObjects.forEach((columnObject) => {
 //console.log(returnableIDLookup[523])
 //console.log(returnableIDLookup.filter(el => el.appendSQL === null && el.joinObject.refs.length != 0))
 //console.log(Object.keys(returnableIDLookup))
-//console.log(setupObject)
-//console.log(allItems)    
+//console.log(itemColumnObject)
+//console.log(observationItemTableNameLookup)    
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
 module.exports = {
     returnableIDLookup,
@@ -972,5 +978,6 @@ module.exports = {
     itemObservationTableNameLookup,
     columnObjects,
     columnIdTableNameLookup,
+    columnIdItemLookup,
 }
 

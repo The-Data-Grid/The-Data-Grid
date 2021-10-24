@@ -37,7 +37,7 @@ module.exports = (req, res, next) => {
             res.locals.authorization = req.session;
         } else {
             res.locals.authorization = {
-                privilege: null,
+                privilege: 'guest',
                 role: [],
                 organizationID: [],
                 userID: null,

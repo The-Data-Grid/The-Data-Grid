@@ -197,16 +197,20 @@ function validationConstructor(init) {
 
             // Validate filters for feature and operators for filters
 
-            let filterIDKeys = Object.keys(res.locals.parsed.filters);    
-
-            for(let filter of filterIDKeys) {
+            let filterObjectsUnpacked = [];
+            res.locals.parsed.filters.forEach( arr => {
+                arr.forEach( obj => {
+                    filterObjectsUnpacked.push(obj);
+                });
+            });   
+            for(let filter of filterObjectsUnpacked) {
                 // if not a valid filter for this feature and not a global filter and feature validation
-                if(!validate[feature].filter.includes(parseInt(filter)) && (init == 'item' || !globals.filter.includes(parseInt(filter)))) { 
-                    return res.status(400).send(`Bad Request 2203: ${filter} is not a valid filter for the ${feature} feature`);
+                if(!validate[feature].filter.includes(parseInt(filter.key)) && (init == 'item' || !globals.filter.includes(parseInt(filter.key)))) { 
+                    return res.status(400).send(`Bad Request 2203: ${filter.key} is not a valid filter for the ${feature} feature`);
                 } else {
-                    let operator = res.locals.parsed.filters[filter]['operation'];
-                    let field = res.locals.parsed.filters[filter]['value'];
-                    let index = validate[feature].filter.indexOf(filter)
+                    let operator = filter.op;
+                    let field = filter.val;
+                    let index = validate[feature].filter.indexOf(filter.key)
 
                     // TEXT
                     if(validate[feature]['sqlType'][index] == 'TEXT') {

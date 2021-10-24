@@ -88,11 +88,14 @@ function separateQueries(queryStatements) {
     let separatedQuery = [];
 
     // alter query string from URL encoding '%7C' to '|'
+    // commented out because decodeURIComponent() included
+    /*
     let orCode = queryStatements.indexOf('%7C');
     while (orCode !== -1){
         queryStatements = queryStatements.substring(0, orCode) + '|' + queryStatements.substring(orCode+3);
         orCode = queryStatements.indexOf('%7C')
     }
+    */
 
     // determine whether any params are AND-ed or OR-ed
     if (queryStatements.indexOf("&") === -1 && queryStatements.indexOf("|") === -1) {
@@ -124,7 +127,7 @@ function separateQueries(queryStatements) {
 function parseConstructor (init) {
 
     return (req, res, next) => {
-        let filter = separateQueries(req.originalUrl);
+        let filter = separateQueries(decodeURIComponent(req.originalUrl));
         let {feature} = req.params; 
         let include;
 
@@ -198,7 +201,7 @@ function parseConstructor (init) {
             }
         }
 
-        console.log(filters)
+        // console.log('Filters: ', filters)
 
         // attaching parsed object
         res.locals.parsed.request = "audit";
@@ -210,18 +213,12 @@ function parseConstructor (init) {
     }
 }
 
-////// END OF QUERY PARSING //////
-
-
 ////// UPLOAD PARSING ////// 
 
 function uploadParse(req, res, next) {
     res.locals.parsed = {}; // attaching parsed object
     next(); // passing to insert.js
 }
-
-////// END OF UPLOAD PARSING //////
-
 
 ////// TEMPLATE PARSING //////
 
@@ -231,9 +228,6 @@ function templateParse(req, res, next) {
     res.locals.parsed = JSON.parse(JSON.stringify(req.body));
     next(); // passing to template.js
 }
-
-////// END OF TEMPLATE PARSING //////
-
 
 ////// SETUP PARSING //////
 

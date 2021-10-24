@@ -69,7 +69,6 @@ const setupObject = {
 /**
  * TESTS
  */
-
 test('setupObject correct shape', done => {
     request
         .get(setup)
@@ -239,7 +238,7 @@ test('Testing OR parsing logic', done => {
         .end(function (err, res) {
             if (err) return done(err);
             checkResponse(res, 400);
-            expect(rest.text).toBe('Bad Request 1604: OR-ed operations are not valid');
+            expect(res.text).toBe('Bad Request 1604: OR-ed operations are not valid');
             done();
         });
 });
