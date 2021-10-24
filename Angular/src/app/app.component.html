@@ -77,11 +77,11 @@
                     </a>
                 </div>
 
-                <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
+                <!-- <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
                     #rla2="routerLinkActive" [active]="rla2.isActive">
                     <span *ngIf="currentWindowWidth >= 700"> Get Involved </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
-                </a>
+                </a> -->
                 <div>
                     <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
                         #rla8="routerLinkActive" [active]="rla8.isActive" [routerLink]="'/team'"
@@ -112,6 +112,50 @@
                                 </button>
                             </span>
                         </mat-menu>
+                        <!-- <mat-menu #__menu="matMenu" [overlapTrigger]="false" class="customize">
+                            <span (mouseenter)="recheckIfInMenu3 = true"
+                                (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false">
+                                <button [routerLink]="'/profile'" class="dropdown-btn" mat-menu-item
+                                    (mouseover)="adjustDropdownHover(6)" (mouseout)="adjustDropdownHover(6)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',6)}">
+                                    My Account
+                                </button>
+                                <button [routerLink]="'/settings'" class="dropdown-btn" mat-menu-item
+                                    (mouseover)="adjustDropdownHover(7)" (mouseout)="adjustDropdownHover(7)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',7)}">
+                                    Settings
+                                </button>
+                                <button (click)="logOut()" class="dropdown-btn" mat-menu-item
+                                    (mouseover)="adjustDropdownHover(8)" (mouseout)="adjustDropdownHover(8)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',8)}">
+                                    Log Out
+                                </button>
+                            </span>
+                        </mat-menu> -->
+                    </a>
+                </div>
+
+                <div style="margin-left: auto;">
+                    <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
+                        #rla9="routerLinkActive" [active]="rla9.isActive" [routerLink]="'/profile'"
+                        style="overflow: hidden;">
+                         <span class="example-spacer"></span>
+                
+                <a *ngIf="!checkStorage()" mat-tab-link (click)="openDialog()">
+                    <span *ngIf="currentWindowWidth >= 700"> Log In </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
+                </a>
+                <a *ngIf="checkStorage()" mat-tab-link (click)="logOut()">
+                    <button class="upload" [matMenuTriggerFor]="__menu" #menuTrigger="matMenuTrigger"
+                        (mouseenter)="openResourceMenu(2); recheckIfInMenu3 = true"
+                        (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false"
+                        >
+                        <span *ngIf="currentWindowWidth >= 700" style="text-align: center; font-weight: bold;">
+                            My Account &nbsp;&nbsp; <span style="font-size: 8px;">▼</span> </span>
+                        <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
+
+                    </button>
+                </a>
                         <mat-menu #__menu="matMenu" [overlapTrigger]="false" class="customize">
                             <span (mouseenter)="recheckIfInMenu3 = true"
                                 (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false">
@@ -141,21 +185,7 @@
                    <span *ngIf="currentWindowWidth >= 700"> My Profile </span>
                    <i *ngIf="currentWindowWidth < 700" class="fa fa-address-card" style="font-size: 20px;"></i>
                </a> -->
-                <span class="example-spacer"></span>
-                <a *ngIf="!checkStorage()" mat-tab-link (click)="openDialog()">
-                    <span *ngIf="currentWindowWidth >= 700"> Log In </span>
-                    <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
-                </a>
-                <a *ngIf="checkStorage()" mat-tab-link (click)="logOut()">
-                    <button class="upload" [matMenuTriggerFor]="__menu" #menuTrigger="matMenuTrigger"
-                        (mouseenter)="openResourceMenu(2); recheckIfInMenu3 = true"
-                        (mouseleave)="closeResourceMenu(2); recheckIfInMenu3 = false">
-                        <span *ngIf="currentWindowWidth >= 700" style="text-align: center; font-weight: bold;">
-                            My Account &nbsp;&nbsp; <span style="font-size: 8px;">▼</span> </span>
-                        <i *ngIf="currentWindowWidth < 700" class="fa fa-pencil" style="font-size: 20px;"></i>
 
-                    </button>
-                </a>
 
                 <!-- <a *ngIf="checkStorage()" mat-tab-link (click)="logOut()">
                    <span *ngIf="currentWindowWidth >= 700"> Log Out </span>
