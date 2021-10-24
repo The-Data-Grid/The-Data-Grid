@@ -156,6 +156,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     let idValidationLookup = {};
     let featureParents = {};
     let setupObject = {};
+    let setupMobileObject = {}
 
     // Format frontendTypes                         
     frontendTypes = frontendTypes.map((el) => el.type_name)
@@ -252,7 +253,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
     const itemOrder = allItems.map(row => row['i__table_name']);
 
-    
+    let mobileItemNodeObjects = []
     let itemNodeObjects = allItems.map(item => {
 
         // getting non-id columns
@@ -311,6 +312,13 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         // filter by ID = false and map to object
         let nonIDitemChildNodePointerObjects = itemChildNodePointerObjects.filter(obj => obj.isID === false).map(obj => obj.object);
 
+        mobileItemNodeObjects.push({
+            children: [IDColumnIndices, nonIDColumnIndices, itemAttributeColumnsIndices],
+            itemChildNodePointerObjects: [IDitemChildNodePointerObjects, nonIDitemChildNodePointerObjects],
+            frontendName: item['i__frontend_name'],
+            information: null
+        })
+
         return ({
             children: [IDColumnIndices, IDitemChildNodePointerObjects, nonIDColumnIndices, nonIDitemChildNodePointerObjects, itemAttributeColumnsIndices],
             frontendName: item['i__frontend_name'],
@@ -318,9 +326,13 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         });
     });
 
+
     // index of globalObject
     let globalItemIndex = itemOrder.indexOf('item_global');
     let auditItemIndex = itemOrder.indexOf('item_audit');
+    let userItemIndex = itemOrder.indexOf('item_user');
+    let orgItemIndex = itemOrder.indexOf('item_organization');
+
     // all item indicies
     let itemIndices = itemOrder.map((e,i) => i)
     
@@ -343,7 +355,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
             parentSubfeatureLookup[el[1]].push(el[0])
         }
     })
-
+    let mobileFeatureNodeObjects = []
     let featureNodeObjects = allFeatures.map((el) => {
 
         let frontendName = el['f__frontend_name']
@@ -378,6 +390,14 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         // backend name is defined by table name
         let backendName = el['f__table_name']
         backendName = backendName.match(/^(?:sub)?observation_(.*)/)[1]
+
+        mobileFeatureNodeObjects.push({
+            children: [observationColumnIndices, attributeColumnIndices],
+            itemIndex: observationColumnIndices,
+            frontendName: frontendName,
+            information: information,
+            featureChildren: directChildren
+        })
 
 // INFO: numFeatureRange is commented out
         return({
@@ -427,7 +447,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // Constructing the final setupObject
     // ==================================================
 
-    setupObject.children = [featureIndices, itemIndices, globalItemIndex, auditItemIndex];
+    setupObject.children = [featureIndices, itemIndices, globalItemIndex, auditItemIndex, userItemIndex, orgItemIndex];
     setupObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
     setupObject.items = itemNodeObjects;
     setupObject.features = featureNodeObjects;
@@ -439,6 +459,18 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // setupObject.lastModified = Date.now();
     // yay
 
+    // Constructing the final setupMobileObject
+    // ===================================================
+
+    //fix-me: add index of user item and organization item
+    setupMobileObject.children = [globalItemIndex, auditItemIndex, userItemIndex, orgItemIndex];
+    setupMobileObject.subfeatureStartIndex = allFeatures.map((feature) => (feature['ff__table_name'] === null ? false : true)).indexOf(true); // indexOf takes first index to match
+    setupMobileObject.items = mobileItemNodeObjects;
+    setupMobileObject.features = mobileFeatureNodeObjects;
+    setupMobileObject.columns = columnObjects.map(obj => obj.object);
+    setupMobileObject.datatypes = datatypeArray;
+    setupObject.returnableIDToTreeID = returnableIDToTreeIDObject;
+    setupObject.treeIDToReturnableID = treeIDToReturnableIDObject;
 
     // Construct idValidationLookup
     // ============================================================
@@ -721,6 +753,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     
     return({
         setupObject,
+        setupMobileObject,
         idValidationLookup,
         featureParents,
         returnableIDLookup,
@@ -935,6 +968,7 @@ const {
     idValidationLookup,
     featureParents,
     setupObject,
+    setupMobileObject,
     columnObjects,
 } = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
@@ -967,6 +1001,7 @@ module.exports = {
     idValidationLookup,
     featureParents,
     setupObject,
+    setupMobileObject,
     allItems,
     itemM2M,
     itemColumnObject,
