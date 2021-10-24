@@ -198,11 +198,10 @@
         <footer *ngIf="currentWindowWidth > 700" id="footer">
             <nav>
                 <div fxLayout="row" fxLayoutAlign="space-around start" class="bottom-bar">
-                    <div style="width: 25%;">
+                    <div style="width: 25%; margin-right: auto;">
                         <div class="bot-logo" fxLayoutAlign="center center">
                             <img src="../../favicon.png" alt="tdg logo" style="height: 35px; width: 35px; margin:5px;">
                             <span> the data grid </span>
-                            <button click="clearit()"></button>
                         </div>
                         <div fxLayoutAlign="center center">
                             <a href="https://www.facebook.com/thedatagrid">
@@ -220,37 +219,17 @@
                     <div class="bottom-card">
                         <p class="bot-text" style="font-weight: 500;">Contact us</p>
                         <button mat-button matTooltip="Copy Email" (click)="copyEmail()" style="text-align: left;">
-                            <div>
+                            <div style="margin-top: -8px;">
                                 <a class="bot-text"
-                                    style="vertical-align: middle; padding-right: 5px;">thedatagrid@gmail.com </a>
-                                <a>
+                                    style="vertical-align: left; margin-left: -14px;">admin@thedatagrid.org </a>
+                                <a style="margin-left: 20%">
                                     <img src="assets/copy_icon.png" alt="Copy"
                                         style="height: 18px; vertical-align: middle;">
                                 </a>
                             </div>
                         </button>
                     </div>
-                    <div class="bottom-card">
-                        <p class="bot-text" style="font-weight: 500;">Support Us</p>
-                        <div>
-                            <a href="https://www.paypal.com">
-                                <img src="assets/donate.png" alt="Donate" style="height: 16px;">
-                            </a>
-                            <a href="https://www.paypal.com" mat-button class="bot-text"
-                                style="padding: 5px;">Donate</a>
-                        </div>
-                        <div>
-                            <a>
-                                <img src="assets/subscribe.png" alt="Subscribe" style="height: 15px; width: 20px;">
-                            </a>
-                            <a mat-button class="bot-text" style="padding: 6px">Subscribe</a>
-                        </div>
-                    </div>
-                    <div class="bottom-card">
-                        <p class="bot-text" style="font-weight: 500;">Careers</p>
-                        <p class="bot-text" style="font-weight: 500;">Terms of Use</p>
-                        <p class="bot-text" style="font-weight: 500;">Privacy Policy</p>
-                    </div>
+                   
                 </div>
             </nav>
         </footer>
