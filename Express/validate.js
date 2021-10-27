@@ -4,7 +4,8 @@
  ********************/
 
 const fs = require('fs')
-const Joi = require('joi')
+const Joi = require('joi');
+const { isInteger } = require('lodash');
 
 const {idValidationLookup} = require('./setup.js');
 
@@ -182,13 +183,12 @@ function validationConstructor(init) {
             let feature = (init == 'item' ? 'item_' + res.locals.parsed.features : 'observation_' + res.locals.parsed.features);
             let universalFilters = res.locals.parsed.universalFilters;
 
-
+            
             if(!validateFeatures.includes(feature)) {
                 return res.status(400).send(`Bad Request 2201: ${feature} is not a valid ${init == 'item' ? 'item' : 'feature'}`);
             };
 
             // Validate columns for feature
-
             for(let column of res.locals.parsed.columns) {
                 if(!validate[feature].column.includes(parseInt(column)) && (init == 'item' || !globals.column.includes(parseInt(column)))) {
                     return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
@@ -254,10 +254,9 @@ function validationConstructor(init) {
 
             // Validate universalFilters input fields
             for(let filter in universalFilters) {
+                console.log(universalFilters)
                 // Validate field
-                if(Array.isArray(universalFilters[filter])) {
-                    return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters`);
-                } else if (filter == 'limit' && !isPositiveInteger(universalFilters[filter])) {
+                if (filter == 'limit' && !isPositiveInteger(universalFilters[filter])) {
                     return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
                 } else if (filter == 'offset' && !isPositiveIntegerOrZero(universalFilters[filter])) {
                     return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a positive integer`);

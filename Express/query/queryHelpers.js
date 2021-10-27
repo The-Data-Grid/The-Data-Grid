@@ -54,9 +54,9 @@ function makeInternalObjects(parsed, queryType) {
     // if sorting then add ID of the column to sort to allIDs
     let sortID = [];
     if(Object.keys(parsed.universalFilters).includes('sorta')) {
-        sortID.push(parsed.universalFilters.sorta)
+        sortID = sortID.push(parsed.universalFilters.sorta);
     } else if(Object.keys(parsed.universalFilters).includes('sortd')) {
-        sortID.push(parsed.universalFilters.sortd)
+        sortID = sortID.push(parsed.universalFilters.sortd);
     }
 
     // array of unique IDs from:

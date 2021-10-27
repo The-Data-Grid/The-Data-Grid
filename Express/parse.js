@@ -3,35 +3,35 @@
 const { compareSync } = require("bcrypt");
 const e = require("express");
 const { query } = require("express");
-const { isNumber, indexOf, rest } = require("lodash");
+const { isNumber, indexOf, rest, isInteger } = require("lodash");
 
 function operation_map(operation) {
     switch(operation){
         case 'gte':
-            operation = '>=';
+            op = '>=';
             break;
         case 'gt':
-            operation = '>';
+            op = '>';
             break;
         case 'lte':
-            operation = '<=';
+            op = '<=';
             break;
         case 'lt':
-            operation = '<';
+            op = '<';
             break;
         case 'e':
-            operation = 'Exists';
+            op = 'Exists';
             break;
         case 'dne':
-            operation = 'Does not exist';
+            op = 'Does not exist';
             break;
         case '~':
-            operation = 'not';
+            op = 'not';
             break;
         default:
-            operation = null; //set op to null if non-valid operation
+            op = null; //set op to null if non-valid operation
     }
-    return operation;
+    return op;
 }
 
 function deconstructQuery(queryStatement){
@@ -39,13 +39,13 @@ function deconstructQuery(queryStatement){
     // ex. 65[gte]=01-20-2000 ==> {key: returnableID, op: operation, value: value} ==> {key: 65, op: gte, value: 01-20-200}
     // ex. limit=50 ==> [key: limit, op: '', value: 50]
     let deconstructedQuery = {};
+    let key;
+    let op;
+    let val;
 
     let open = queryStatement.indexOf('[');
     let close = queryStatement.indexOf(']');
     let equals = queryStatement.indexOf('=');
-    let key;
-    let op;
-    let val;
 
     // get returnable ID of query as key
     let i = 0;
@@ -57,12 +57,13 @@ function deconstructQuery(queryStatement){
         key = queryStatement.slice(0, open);
     else
         key = queryStatement.slice(0, equals);
-    
+
+    const operation = queryStatement.slice(open+1, close)
     // get operation of query as op
     if (open !== -1 && close !== -1)
-        op = operation_map(queryStatement.slice(open+1, close));
+        op = operation_map(operation);
     else
-        op = '=';
+        op = '=';   
 
     // get value as val
     if (equals !== -1)
@@ -128,7 +129,8 @@ function separateQueries(queryStatements) {
 function parseConstructor (init) {
 
     return (req, res, next) => {
-        let filter = separateQueries(decodeURIComponent(req.originalUrl));
+        const url = req.originalUrl;
+        let filter = separateQueries(decodeURIComponent(url));
         let {feature} = req.params; 
         let include;
 
@@ -165,7 +167,13 @@ function parseConstructor (init) {
             let isUniverisal = false;
             // check for universal filters
             if(['sorta','sortd','limit','offset','pk'].includes(Object.values(filter[elem][1])[0])) {
-                universalFilters[elem] = Object.values(filter[elem][1])[2];
+                let id = Object.values(filter[elem][1])[2];
+                let key = Object.values(filter[elem][1])[0];
+                if (universalFilters[key]){
+                    return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters`);
+                } else {
+                    universalFilters[key] = id;
+                }
                 isUniverisal = true;
                 continue;
             }
@@ -174,10 +182,12 @@ function parseConstructor (init) {
             if(isNaN(parseInt(elem))) {
                 return res.status(400).send(`Bad Request 1602: filters must be numeric IDs or universals`);
             }
+
             let operation = Object.values(filter[elem][1])[1];
+            
             // if not a valid operation
             if(operation === null) {
-                return res.status(400).send(`Bad Request 1603: ${operation} is not a valid operator`);
+                return res.status(400).send(`Bad Request 1603: ${url.slice(url.indexOf('[')+1, url.indexOf(']'))} is not a valid operator`);
             } 
             
             // setting up custom operator
@@ -196,7 +206,6 @@ function parseConstructor (init) {
                     filters[filters.length-1].push(filter[elem][1]);
                     //console.log(filters);
                 }
-
                 else
                     return res.status(400).send(`Bad Request 1604: ${filter[elem][0]} is not a valid operator`);
             }

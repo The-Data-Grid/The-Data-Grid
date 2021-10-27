@@ -41,7 +41,6 @@ function dataQueryWrapper(queryType) {
     return async (req, res, next) => {   
     
         try {
-            console.log(res.locals.parsed.filters)
     
             let {
                 allReturnableIDs,
@@ -94,7 +93,6 @@ function dataQueryWrapper(queryType) {
             next()
     
         } catch(err) {
-    
             console.log(err)
             // Error
             return res.status(500).send(`Internal Server Error 1702: Malformed Query`);
@@ -115,10 +113,7 @@ function formatDefault(req, res, next) {
     // fuck .fill(), all my homies hate .fill() 
     // (we don't use .fill([]) here because it fills the array with references to a single array, instead of multiple arrays)
     let rowData = Array(res.locals.parsed.finalQuery.rows.length).fill().map(e => [])
-
     let primaryKey = Array(res.locals.parsed.finalQuery.rows.length).fill(null)
-
-    
     let keys = res.locals.parsed.finalQuery.fields.map(field => field.name);
     let returnableIDs = keys.filter(key => key !== 'observation_pkey' && key !== 'item_pkey').map(key => parseInt(key.slice(1)));
 
@@ -154,14 +149,11 @@ function formatDefault(req, res, next) {
     }
 
     next()
-
-    
 };
 
 function sendDefault(req, res) {
     return res.json(res.locals.formattedResponse)
 }
-
 
 function sendDownload(req, res) {
 

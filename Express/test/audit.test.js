@@ -33,19 +33,19 @@ let invalidObservation = '/api/audit/item/invalid/50'
 let nonNumericID = observationBase + 'bad';
 let invalidOperator = observationBase + '66?65[get]=01-20-2000';
 
-let o4 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&sorta=70';
-let o5 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10';
-let o6 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10&sorta=70&sortd=70';
-let o7 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10&sorta=70&sorta=70';
-let o8 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset[dne]&sorta=70';
-let o9 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=0&offset=10&sorta=70';
-let o10 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=-10&sorta=70';
-let o11 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10&sorta=abc'
-let o12 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000&65[lte]=01-20-2020&65[gte]=01-20-2020&limit=50&offset=abc&sorta=70';
+let o4 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&sorta=70';
+let o5 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10';
+let o6 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10&sorta=70&sortd=70';
+let o7 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10&sorta=70&sorta=70';
+let o8 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset[dne]&sorta=70';
+let o9 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=0&offset=10&sorta=70';
+let o10 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=-10&sorta=70';
+let o11 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&limit=50&offset=10&sorta=abc'
+let o12 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&65[gte]=01-20-2020&limit=50&offset=abc&sorta=70';
 let o13 = '/api/audit/item/key/user?limit=10&offset=1&sorta=264'
 let o14 = '/api/audit/observation/key/sink?limit=10&offset=1&sorta=66'
 let o15 = '/api/audit/item/user/265?pk=4'
-let o16 = observationBase + '66&65&73&70&292&293?65[gte]=01-20-2000|65[lte]=01-20-2020|65[gte]=01-20-2020&limit=50&offset=abc&sorta=70';
+let o16 = observationBase + '66&65&73&70?65[gte]=01-20-2000|65[lte]=01-20-2020|65[gte]=01-20-2020&limit=50&offset=abc&sorta=70';
 
 /**
  * OBJECTS
@@ -69,6 +69,8 @@ const setupObject = {
 /**
  * TESTS
  */
+
+
 test('setupObject correct shape', done => {
     request
         .get(setup)
@@ -132,6 +134,7 @@ test('Test invalid operator', function (done) {
         });
 });
 
+
 test('Test limit requiring offset', function (done) {
     request
         .get(o4)
@@ -143,6 +146,7 @@ test('Test limit requiring offset', function (done) {
         });
 });
 
+
 test('Test offset requiring sorta or sortd', function (done) {
     request
         .get(o5)
@@ -153,6 +157,7 @@ test('Test offset requiring sorta or sortd', function (done) {
             done();
         });
 });
+
 
 test('Test not using both sorta and sortd', function (done) {
     request
@@ -208,7 +213,6 @@ test('Test positive integer or zero for filter', function (done) {
             done();
         });
 });
-
 
 test('Test for valid number for filter', function (done) {
     request
