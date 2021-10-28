@@ -53,7 +53,7 @@ export class ItemCreationComponent implements OnInit {
       this.setupObject = SetupObject;
     }
     else {
-      this.apiService.getSetupTableObject().subscribe((res) => {
+      this.apiService.getSetupObject().subscribe((res) => {
         this.setupObject = res;
         this.globalSelectors = this.setupObjectService.getGlobalSelectors(this.setupObject, this.appliedFilterSelections, this.globalReturnableIDs, this.globalDefaultColumns, false)
       });
@@ -69,6 +69,24 @@ export class ItemCreationComponent implements OnInit {
 
   close() {
     this.dialogRef.close();
+  }
+
+  save() {
+    let queryStringBits = [];
+    console.log(this.treeIDObject)
+    this.treeIDObject.IDColumns.forEach(columnInfo => {
+      if (columnInfo.column.inputSelector) {
+        switch (columnInfo.column.inputSelector.selectorKey) {
+          default:
+            if (columnInfo.userInputSelection && columnInfo.userInputSelection != "") {
+              queryStringBits.push(`${columnInfo.returnableID}=${columnInfo.userInputSelection}`)
+              columnInfo.userInputSelection = "";
+            }
+        }
+      }
+    });
+    console.log(queryStringBits)
+    this.close();
   }
 
 }

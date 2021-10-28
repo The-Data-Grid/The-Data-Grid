@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from './api.service';
 import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
+import { FilterComponent } from './filter/filter.component';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -33,7 +34,9 @@ import { ItemCreationComponent } from './upload-audit/item-creation/item-creatio
 import { SetupObjectService } from './setup-object.service';
 import { TableObjectService } from './table-object.service';
 import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
+import { SelectorsTemplateComponent } from './selectors-template/selectors-template.component';
 import { TeamComponent } from './team/team.component';
+import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialog.component';
 import { ProfileComponent } from './profile/profile.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
@@ -60,6 +63,9 @@ import { CheckEmailComponent } from './verify-email/check-email/check-email.comp
     ReusableTemplateComponent,
     TeamComponent,
     ItemCreationComponent,
+    DeleteDialogComponent,
+    SelectorsTemplateComponent,
+    FilterComponent,
     VerifyEmailComponent,
     CheckEmailComponent,
     ProfileComponent

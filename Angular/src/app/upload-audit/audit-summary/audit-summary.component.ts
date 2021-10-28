@@ -3,13 +3,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddRootFeaturesComponent } from '../add-root-features/add-root-features.component';
 import { GlobalPresetsComponent } from '../global-presets/global-presets.component';
 import { FeatureAuditComponent } from '../feature-audit/feature-audit.component';
-import { ItemCreationComponent } from '../item-creation/item-creation.component';
 import { DatePipe } from '@angular/common';
 import { ApiService } from '../../api.service';
 import { SetupObjectService, IDX_OF_ID_COL_IDXS, IDX_OF_NON_ID_COL_IDXS } from '../../setup-object.service';
-import { SetupObject, TableObject } from '../../responses'
-import { environment } from '../../../environments/environment';
-const USE_FAKE_DATA = environment.useFakeData;
 import { AppliedFilterSelections } from '../../models'
 
 @Component({
@@ -42,7 +38,9 @@ export class AuditSummaryComponent implements OnInit {
   };
   defaultColumns = [];
   rootFeatures = [];
-  auditMetadata = {};
+  auditTreeIDobjects = {};
+  auditReturnableIDs;
+
   // for optimistic updating from the dialogs
   displayedRootFeatures = [];
   IDX_OF_ID_COL_IDXS = IDX_OF_ID_COL_IDXS;
@@ -55,14 +53,32 @@ export class AuditSummaryComponent implements OnInit {
     private apiService: ApiService, private setupObjectService: SetupObjectService) {
   }
 
+  auditName = localStorage.getItem('currentlyEditingAuditName')
+
   //  hardcord data, delete eventually
-  audit = { auditName: "Bathroom Audit 1", uploadStatus: "uploaded", _id: "1234567890" };
   audits = [
     { name: "Restroom Audit", included: true, features: [{ name: "Toilet", included: true, actions: [{ Action: "Removal", Last_Updated: "5 mins ago", Room_ID: "1201B", Clockwise_Number: 8 }, { Action: "Creation", Last_Updated: "3 days ago", Room_ID: "1201B", Clockwise_Number: 4 }, { Action: "Observation", Last_Updated: "3 days ago", Room_ID: "1201B", Clockwise_Number: 5 }] }, { name: "Sink", included: true, actions: [{ Action: "Deletion Request", Last_Updated: "45 mins ago", Room_ID: "1201B", Clockwise_Number: 3 }, { Action: "Creation and Observation", Last_Updated: "4 months ago", Room_ID: "1201B", Clockwise_Number: 7 }] }, { name: "Urinal", included: true, actions: [{ Action: "Creation", Last_Updated: "1 hr ago", Room_ID: "1201B", Clockwise_Number: 2 }, { Action: "Observation", Last_Updated: "1 hr ago", Room_ID: "1201B", Clockwise_Number: 1 }] }] },
     { name: "Irrigation Audit", included: true, features: [{ name: "Sprinkler", included: true, actions: [{ Action: "Creation", Last_Updated: "12 mins ago", Room_ID: "23A", Clockwise_Number: 2 }, { Action: "Observation", Last_Updated: "33 mins ago", Room_ID: "23A", Clockwise_Number: 4 }] }, { name: "Canal", included: true, actions: [{ Action: "Creation and Observation", Last_Updated: "3 weeks ago", Room_ID: "23A", Clockwise_Number: 13 }] }, { name: "Sewer", included: true, actions: [{ Action: "Deletion Request", Last_Updated: "3 weeks ago", Room_ID: "23A", Clockwise_Number: 9 }, { Action: "Observation and Creation", Last_Updated: "3 weeks ago", Room_ID: "23A", Clockwise_Number: 3 }] }] },
     { name: "Boiler Room Audit", included: true, features: [{ name: "Boiler", included: true, actions: [{ Action: "Removal", Last_Updated: "1 year ago", Room_ID: "11C", Clockwise_Number: 22 }, { Action: "Creation", Last_Updated: "12 years ago", Room_ID: "11C", Clockwise_Number: 16 }] }, { name: "Pump", included: true, actions: [{ Action: "Deletion Request", Last_Updated: "3 years ago", Room_ID: "12B", Clockwise_Number: 9 }, { Action: "Creation", Last_Updated: "65 years ago", Room_ID: "12B", Clockwise_Number: 7 }] }] }
   ]
   // end hardcode data
+
+  ngOnInit(): void {
+    // get setupObject and rootFeatures
+    this.getSetupObject();
+  }
+
+  getSetupObject() {
+    this.apiService.getSetupObject().subscribe((res) => {
+      this.setupObject = res;
+      this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject)
+      this.displayedRootFeatures = this.rootFeatures;
+      this.auditTreeIDobjects = this.setupObjectService.getAllAuditItemRelatedColumns(this.setupObject);
+      this.auditReturnableIDs = this.setupObjectService.getAllIDreturnableIDs(this.auditTreeIDobjects)
+      console.log("auditReturnableIDs", this.auditReturnableIDs)
+      console.log("auditTreeIDObjects", this.auditTreeIDobjects)
+    });
+  }
 
   openRootFeatures(): void {
     const dialogRef = this.dialog.open(AddRootFeaturesComponent, {
@@ -114,25 +130,8 @@ export class AuditSummaryComponent implements OnInit {
     dialogRef.afterClosed().subscribe((e) => this.auditOpened = false)
   }
 
-  openItemCreation(treeIDObject): void {
-    const dialogRef = this.dialog.open(ItemCreationComponent, {
-      width: '801px',
-      data: treeIDObject
-    })
-  }
+  save() {
+    console.log(this.auditTreeIDobjects)
 
-  ngOnInit(): void {
-    // get setupObject and rootFeatures
-    this.getSetupTableObject();
-  }
-
-  getSetupTableObject() {
-    this.apiService.getSetupTableObject().subscribe((res) => {
-      USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
-      this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject)
-      this.displayedRootFeatures = this.rootFeatures;
-      this.auditMetadata = this.setupObjectService.getAllAuditItemRelatedColumns(this.setupObject);
-      console.log("audit metadata", this.auditMetadata)
-    });
   }
 }

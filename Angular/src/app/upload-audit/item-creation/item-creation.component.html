@@ -18,32 +18,28 @@
           "{{item.frontendName}}" ID
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div style="font-weight: 700;">
-        {{item.frontendName}}
-        <button mat-button class="create-button transparent-hover" (click)="openItemCreation(treeIDObject)">
-          Create New
-        </button>
-        <div *ngFor="let column of treeIDObject.columnIDs" style="margin-left: 2em;">
-          {{column.frontendName}}
-        </div>
-      </div>
+      <app-selectors-template [treeIDobjects]="[treeIDObject]" [returnableIDs]="treeIDObject.IDreturnableIDs">
+      </app-selectors-template>
     </mat-expansion-panel>
-    <mat-expansion-panel>
+
+    <!-- no attributes for now -->
+    <!-- <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title>
           "{{item.frontendName}}" Attributes
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div *ngFor="let column of treeIDObject.attributeColumns">
-        {{column.frontendName}}
-      </div>
-    </mat-expansion-panel>
+      <app-selectors-template [treeIDobjects]="[treeIDObject]" [returnableIDs]="treeIDObject.attributeReturnableIDs"
+        [columnsType]="'attributeColumns'">
+      </app-selectors-template>
+    </mat-expansion-panel> -->
+
   </mat-accordion>
   <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
     <button mat-button (click)="close()" style="margin-right: 10px;">
       Cancel Changes
     </button>
-    <button mat-button (click)="close()" style="background-color: #569CD7; color: white;">
+    <button mat-button (click)="save()" style="background-color: #569CD7; color: white;">
       Save & Back
     </button>
   </div>

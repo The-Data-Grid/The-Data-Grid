@@ -100,13 +100,15 @@ html, body {
 
 .selector .multiselect-dropdown {
   outline: none !important;
-  margin: 10px !important;
+  margin-left: 10px !important;
+  margin-right: 10px !important;
   overflow: visible !important;
   min-width: 300px !important; 
 }
 
 .selector .multiselect-dropdown .dropdown-btn {
-  width: 90% !important; 
+  min-width: 300px !important; 
+  max-width: 300px !important; 
   text-align: left !important;
   font-size: small !important;
   border-radius: 0px !important;
@@ -122,7 +124,8 @@ html, body {
 }
 
 .selector .dropdown-list {
-  width: 90% !important;
+  min-width: 300px !important; 
+  max-width: 300px !important; 
   margin-top: 0 !important;
   padding: 0 !important;
   font-size: small !important;

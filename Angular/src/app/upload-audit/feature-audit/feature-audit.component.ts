@@ -102,7 +102,7 @@ export class FeatureAuditComponent implements OnInit {
       this.getAttributeAndObservationColumns()
     }
     else {
-      this.apiService.getSetupTableObject().subscribe((res) => {
+      this.apiService.getSetupObject().subscribe((res) => {
         this.setupObject = res;
         this.getFeatureID();
         this.getFeatureSelectors();

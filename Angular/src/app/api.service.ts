@@ -1,22 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { environment } from '../environments/environment';
-import { Observable, observable, Subscribable } from 'rxjs';
-import { map, catchError, filter, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { TableObject, SetupTableObject, AppliedFilterSelections } from './models';
-import { error } from '@angular/compiler/src/util';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
-import { platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import { SetupObjectService, IDX_OF_ITEM_ARR, IDX_OF_AUDIT_ITEM_IDX } from './setup-object.service';
+
 const API_URL = environment.apiUrl; //this should default to environment.ts in dev and environment.prod.ts in production
 const PORT = environment.port;
-
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private setupObjectService: SetupObjectService) { }
 
-  public getSetupTableObject(): Observable<SetupTableObject> {
+  public getSetupObject(): Observable<SetupTableObject> {
     var url = API_URL + '/setup';
 
     return this.http.get<SetupTableObject>(url, {
@@ -29,15 +27,22 @@ export class ApiService {
       }));
   }
 
-  public getAudits(): Observable<any> {
-    var url = API_URL + '/audit/item/audit/157=BHS';
+  public getAudits(setupObject): Observable<any> {
+    let auditTreeIDObjects = this.setupObjectService.getAllAuditItemRelatedColumns(setupObject);
+    let itemPath = IDX_OF_ITEM_ARR + ">" + setupObject.children[IDX_OF_AUDIT_ITEM_IDX]; //path to audit item
+    let returnableIDstring = auditTreeIDObjects[itemPath].IDreturnableIDs.filter(s => s).join('&')
+    // let url = API_URL + '/audit/item/audit/157=BHS';
+    let url = API_URL + '/audit/item/audit/' + returnableIDstring;
+    // let url = API_URL + '/audit/item/audit/';
+
+    console.log(url)
 
     return this.http.get<any>(url, {
       observe: 'response',
     })
       .pipe(map((response: any) => {
-        console.log("Audit Request Status: " + response.status + ":::::" + response.statusText);
-        console.log("audit respone", response.body);
+        // console.log("Audit Request Status: " + response.status + ":::::" + response.statusText);
+        console.log("audit response", response.body);
         return response.body;
       }));
   }
@@ -57,11 +62,14 @@ export class ApiService {
   }
 
   // arg returnableIDS is an array of IDS for which you want to get options
-  public getDropdownOptions(returnableIDs): Observable<any> {
+  public getDropdownOptions(returnableIDs, auditName = "sink"): Observable<any> {
     console.log(returnableIDs)
+    if (!auditName) {
+      auditName = "sink"
+    }
     // var url = API_URL + '/audit/observation/distinct';
     // var url = API_URL + '/audit/observation/distinct/sink/65&66&67&68&70&73&76&142&143&69&71&72&74&75&78&79&80&81&82&83&144&145&146&147&148&149&150&151&156&157&158&159&160&161&188';
-    var url = API_URL + '/audit/observation/distinct/sink/' + returnableIDs.filter(s => s).join('&');
+    var url = API_URL + '/audit/observation/distinct/' + auditName + '/' + returnableIDs.filter(s => s).join('&');
 
     return this.http.get<any>(url, {
       observe: 'response',
@@ -70,7 +78,6 @@ export class ApiService {
         return response.body;
       }));
   }
-
 
   private formQueryURL(defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections) {
     // create the "columns" part of the query by joining the default column IDS with '&'

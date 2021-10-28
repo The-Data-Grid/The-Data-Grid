@@ -1,26 +1,20 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
 import { DatePipe } from '@angular/common';
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../dropdown-settings'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { AppliedFilterSelections } from '../models'
-
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
-import { SetupObject, TableObject } from '../responses'
-import { environment } from '../../environments/environment';
-const USE_FAKE_DATA = environment.useFakeData;
-
 @Component({
-  selector: 'app-audits',
-  templateUrl: './audits.component.html',
-  styleUrls: ['./audits.component.css']
+  selector: 'app-filter',
+  templateUrl: './filter.component.html',
+  styleUrls: ['./filter.component.css']
 })
-
-export class AuditsComponent implements OnInit {
-  // Variables for table 
+export class FilterComponent implements OnInit {
+  // variables for table 
   dataTableColumns = [];
-  tableRows = [];
+  rows = [];
   tableObject;
   currentlyEditingCell = {};
   cellEdited = {};
@@ -29,14 +23,15 @@ export class AuditsComponent implements OnInit {
   oldCellEdited = {};
   page = "AuditsPage"
 
-  // Variables for filtering 
+  // variables for filtering sidebar
   filterBy = "Feature";
   setupObject;
-  defaultColumnIDs = []; // Default denotes which columns are to be included in queries by default
+  defaultColumnIDs = []; //default denotes which return columns are to be included in queries by default
   globalReturnableIDs = [];
   featureReturnableIDs = [];
   rootFeatures = [];
   selectedFeature;
+  featuresToChildren = {};
   appliedFilterSelections: AppliedFilterSelections = {
     numericChoice: {},
     numericEqual: {},
@@ -57,7 +52,8 @@ export class AuditsComponent implements OnInit {
     placeholder: "hello"
   };
 
-  // Variables for multiselect dropdowns:
+  // the following variables are for multiselect dropdowns:
+  // dropdownList = FakeData;
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
@@ -72,21 +68,15 @@ export class AuditsComponent implements OnInit {
     this.getSetupObject();
   }
 
+
   getSetupObject() {
-    if (USE_FAKE_DATA) {
-      console.log("using data from responses.ts")
-      this.setupObject = SetupObject;
+    this.apiService.getSetupObject().subscribe((res) => {
+      console.log("using data from express server")
+      this.setupObject = res;
       this.parseSetupObject();
-    }
-    else {
-      this.apiService.getSetupObject().subscribe((res) => {
-        console.log("using data from express server")
-        this.setupObject = res;
-        this.parseSetupObject();
-        console.log("setupObject:");
-        console.log(this.setupObject)
-      });
-    }
+      console.log("setupObject:");
+      console.log(this.setupObject)
+    });
   }
 
   parseSetupObject() {
@@ -108,10 +98,16 @@ export class AuditsComponent implements OnInit {
       this.appliedFilterSelections,
       this.defaultColumnIDs);
 
-    console.log("global selectors:", this.globalSelectors);
-    // console.log("feature selectors:", this.featureSelectors);
-    console.log("applied filter selections:", this.appliedFilterSelections);
-    // console.log("defaultColumnIDs:", this.defaultColumnIDs);
+    // console.log("global selectors:");
+    // console.log(this.globalSelectors);
+    // console.log("feature selectors:");
+    // console.log(this.featureSelectors);
+    // console.log("applied filter selections:");
+    // console.log(this.appliedFilterSelections);
+    // console.log("defaultColumnIDs:");
+    // console.log(this.defaultColumnIDs);
+    // console.log("featuresToChildren:");
+    // console.log(this.featuresToChildren);
     this.applyFilters();
     this.selectorsLoaded = true
   }
@@ -119,19 +115,11 @@ export class AuditsComponent implements OnInit {
   getTableObject() {
     // clear the column headers
     this.dataTableColumns = [];
-    if (USE_FAKE_DATA) {
-      this.tableObject = TableObject;
-      this.tableRows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
-    }
-    else {
-      this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections, this.globalReturnableIDs.concat(this.featureReturnableIDs)).subscribe((res) => {
-        this.tableObject = res;
-        // console.log(this.tableObject)
-        this.tableRows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
-        // console.log(this.tableRows)
-        // console.log(this.dataTableColumns)
-      });
-    }
+    this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections, this.globalReturnableIDs.concat(this.featureReturnableIDs)).subscribe((res) => {
+      this.tableObject = res;
+      console.log(this.tableObject)
+      this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
+    });
   }
 
   toggleMetaInfoDisplay(column) {
@@ -146,11 +134,11 @@ export class AuditsComponent implements OnInit {
     this.oldRowInfo.push({
       rowIndex: rowIndex,
       columnName: columnName,
-      previousValue: this.tableRows[rowIndex][columnName]
+      previousValue: this.rows[rowIndex][columnName]
     });
     this.cellEdited[rowIndex + columnName] = true;
-    this.tableRows[rowIndex][columnName] = event.target.value;
-    console.log('UPDATED!', this.tableRows[rowIndex][columnName]);
+    this.rows[rowIndex][columnName] = event.target.value;
+    console.log('UPDATED!', this.rows[rowIndex][columnName]);
   }
 
   toggleEditingCell(rowIndex, columnName) {
@@ -182,8 +170,8 @@ export class AuditsComponent implements OnInit {
     this.toggleEditingMode();
     // restore cellEdited object and row info to previous state
     this.oldRowInfo.forEach(obj => {
-      this.tableRows[obj.rowIndex][obj.columnName] = obj.previousValue;
-      this.tableRows = [...this.tableRows];
+      this.rows[obj.rowIndex][obj.columnName] = obj.previousValue;
+      this.rows = [...this.rows];
     });
     this.cellEdited = Object.assign({}, this.oldCellEdited);
     console.log(this.oldCellEdited);
@@ -202,9 +190,10 @@ export class AuditsComponent implements OnInit {
     console.log(this.featureReturnableIDs)
   }
 
+
   applyDateFilter = (val: string) => {
     val = this.datepipe.transform(val, 'MM-dd-yyyy');
-    // this.tableRows = this.filteredData.filter(function (item) {
+    // this.rows = this.filteredData.filter(function (item) {
     //   if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
     //     return true;
     //   }
