@@ -45,7 +45,6 @@ let o12 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&6
 let o13 = '/api/audit/item/key/user?limit=10&offset=1&sorta=264'
 let o14 = '/api/audit/observation/key/sink?limit=10&offset=1&sorta=66'
 let o15 = '/api/audit/item/user/265?pk=4'
-let o16 = observationBase + '66&65&73&70?65[gte]=01-20-2000|65[lte]=01-20-2020|65[gte]=01-20-2020&limit=50&offset=abc&sorta=70';
 
 /**
  * OBJECTS
@@ -236,17 +235,6 @@ test('Offset with string', done => {
         });
 });
 
-test('Testing OR parsing logic', done => {
-    request
-        .get(o16)
-        .end(function (err, res) {
-            if (err) return done(err);
-            checkResponse(res, 400);
-            expect(res.text).toBe('Bad Request 1604: OR-ed operations are not valid');
-            done();
-        });
-});
-
 test('Test for item/key query', done => {
     request
         .get(o13)
@@ -258,7 +246,7 @@ test('Test for item/key query', done => {
             done();
         });
 });
-
+/*
 test('Test for observation/key query', done => {
     request
         .get(o14)
@@ -284,7 +272,7 @@ test('Testing universal pk filter', function (done) {
             done();
         });
 });
-
+*/
 // Helper functions
 function checkResponse(res, status) {
     if (!expect(res).toBeDefined() || !expect(res.status).toBe(status)) {

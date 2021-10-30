@@ -165,10 +165,11 @@ function parseConstructor (init) {
         for (const elem in filter) {
 
             let isUniverisal = false;
+            const keys = Object.values(filter[elem][1])
             // check for universal filters
-            if(['sorta','sortd','limit','offset','pk'].includes(Object.values(filter[elem][1])[0])) {
-                let id = Object.values(filter[elem][1])[2];
-                let key = Object.values(filter[elem][1])[0];
+            if(['sorta','sortd','limit','offset','pk'].includes(keys[0])) {
+                let id = keys[2];
+                let key = keys[0];
                 if (universalFilters[key]){
                     return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters`);
                 } else {
@@ -178,12 +179,12 @@ function parseConstructor (init) {
                 continue;
             }
             
-            // Validate filter IDs are numeric
-            if(isNaN(parseInt(elem))) {
+            // Validate filter keys are numeric
+            if(isNaN(parseInt(keys[0]))) {
                 return res.status(400).send(`Bad Request 1602: filters must be numeric IDs or universals`);
             }
 
-            let operation = Object.values(filter[elem][1])[1];
+            let operation = keys[1];
             
             // if not a valid operation
             if(operation === null) {
@@ -212,10 +213,10 @@ function parseConstructor (init) {
         }
 
         // console.log('Filters: ', filters)
-
         // attaching parsed object
         res.locals.parsed.request = "audit";
         res.locals.parsed.features = feature;
+        console.log(res.locals.parsed.features)
         res.locals.parsed.columns = include;
         res.locals.parsed.filters = filters;
         res.locals.parsed.universalFilters = universalFilters;

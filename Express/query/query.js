@@ -41,7 +41,6 @@ function dataQueryWrapper(queryType) {
     return async (req, res, next) => {   
     
         try {
-    
             let {
                 allReturnableIDs,
                 allIDs,
@@ -107,7 +106,7 @@ function formatDefault(req, res, next) {
     // This is row-major data
 
     /* DEBUG */
-    // console.log(res.locals.parsed.finalQuery);
+    console.log(res.locals.parsed.finalQuery);
     
 
     // fuck .fill(), all my homies hate .fill() 
@@ -262,7 +261,7 @@ function sendKey(req, res) {
     // finalQuery is one row
 
     /* DEBUG */
-    // console.log(res.locals.parsed.finalQuery);
+    console.log(res.locals.parsed.finalQuery);
 
     let primaryKey = null
 

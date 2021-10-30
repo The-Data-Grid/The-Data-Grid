@@ -254,7 +254,6 @@ function validationConstructor(init) {
 
             // Validate universalFilters input fields
             for(let filter in universalFilters) {
-                console.log(universalFilters)
                 // Validate field
                 if (filter == 'limit' && !isPositiveInteger(universalFilters[filter])) {
                     return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);

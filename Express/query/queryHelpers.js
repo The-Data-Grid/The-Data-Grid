@@ -47,6 +47,8 @@ function makeInternalObjects(parsed, queryType) {
 
     // array of all features in feature tree (features and subfeatures)
     let featureTree = [];
+    console.log("query type: ", queryType)
+    console.log(parsed.features);
     // get feature and add to feature tree
     const feature = `${queryType}_${parsed.features}`;
     featureTree.push(feature);
