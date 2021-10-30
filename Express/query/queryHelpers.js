@@ -63,7 +63,13 @@ function makeInternalObjects(parsed, queryType) {
     // 1. returned columns
     // 2. returned filters
     // 3. column to sort by
-    let allIDs = [...new Set(parsed.columns.concat(Object.keys(parsed.filters), sortID))];
+    const filterColumnIDs = [];
+    parsed.filters.forEach( arr => {
+        arr.forEach( obj => {
+            filterColumnIDs.push(obj.key);
+        });
+    });
+    let allIDs = [...new Set(parsed.columns.concat(filterColumnIDs, sortID))];
 
     // array of returnableID objects from IDs 
     let allReturnableIDs = allIDs.map((id) => returnableIDLookup[id])
@@ -144,7 +150,7 @@ function makeWhereClauseArray(whereLookup, filters) {
     let whereClauseArray = [];
     let initialWHERE = true;
 
-    for(let ID in filters) {
+    for(let orGroup of filters) {
 
         let out = {}
         // The first clause must be WHERE and the following clauses must be AND
@@ -157,26 +163,17 @@ function makeWhereClauseArray(whereLookup, filters) {
 
         // Getting the clause components
         // if multiple values passed then implement logical OR
-        if(Array.isArray(filters[ID].value)) {
-            let condition = [];
-            filters[ID].value.forEach(value => {
-                condition.push(formatSQL(whereCondition, {
-                    select: whereLookup[String(ID)],
-                    operation: filters[ID].operation,
-                    filterValue: value
-                }))
-            })
-            out.condition = condition.join(' OR ')
-        } else {
-            out.condition = formatSQL(whereCondition, {
-                select: whereLookup[String(ID)],
-                operation: filters[ID].operation,
-                filterValue: filters[ID].value
-            })
-        }
+        const condition = [];
+        orGroup.forEach(filter => {
+            condition.push(formatSQL(whereCondition, {
+                select: whereLookup[filter.key],
+                operation: filter.op,
+                filterValue: filter.val,
+            }));
+        });
+        out.condition = condition.join(' OR ');
         whereClauseArray.push(formatSQL(where, out));
     }
-
     return whereClauseArray;
 }
 
