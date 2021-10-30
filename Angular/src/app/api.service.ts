@@ -14,10 +14,10 @@ const PORT = environment.port;
 export class ApiService {
   constructor(private http: HttpClient, private setupObjectService: SetupObjectService) { }
 
-  public getSetupObject(): Observable<SetupTableObject> {
+  public getSetupObject(): Observable<any> {
     var url = API_URL + '/setup';
 
-    return this.http.get<SetupTableObject>(url, {
+    return this.http.get<any>(url, {
       observe: 'response',
     })
       .pipe(map((response: any) => {
@@ -31,9 +31,8 @@ export class ApiService {
     let auditTreeIDObjects = this.setupObjectService.getAllAuditItemRelatedColumns(setupObject);
     let itemPath = IDX_OF_ITEM_ARR + ">" + setupObject.children[IDX_OF_AUDIT_ITEM_IDX]; //path to audit item
     let returnableIDstring = auditTreeIDObjects[itemPath].IDreturnableIDs.filter(s => s).join('&')
-    // let url = API_URL + '/audit/item/audit/157=BHS';
     let url = API_URL + '/audit/item/audit/' + returnableIDstring;
-    // let url = API_URL + '/audit/item/audit/';
+    // let url = API_URL + '/audit/item/audit/1234567890';
 
     console.log(url)
 
@@ -41,7 +40,7 @@ export class ApiService {
       observe: 'response',
     })
       .pipe(map((response: any) => {
-        // console.log("Audit Request Status: " + response.status + ":::::" + response.statusText);
+        console.log("Audit Request Status: " + response.status + ":::::" + response.statusText);
         console.log("audit response", response.body);
         return response.body;
       }));
@@ -141,7 +140,7 @@ export class ApiService {
     return this.http.post(`${API_URL}/user/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
-  attemptSignUp(signUpObject, withCredentials=true) {
+  attemptSignUp(signUpObject, withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
     return this.http.post(`${API_URL}/user`, signUpObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
