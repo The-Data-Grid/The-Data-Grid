@@ -216,7 +216,6 @@ function parseConstructor (init) {
         // attaching parsed object
         res.locals.parsed.request = "audit";
         res.locals.parsed.features = feature;
-        console.log(res.locals.parsed.features)
         res.locals.parsed.columns = include;
         res.locals.parsed.filters = filters;
         res.locals.parsed.universalFilters = universalFilters;

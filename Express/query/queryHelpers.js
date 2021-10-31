@@ -47,8 +47,6 @@ function makeInternalObjects(parsed, queryType) {
 
     // array of all features in feature tree (features and subfeatures)
     let featureTree = [];
-    console.log("query type: ", queryType)
-    console.log(parsed.features);
     // get feature and add to feature tree
     const feature = `${queryType}_${parsed.features}`;
     featureTree.push(feature);
@@ -75,7 +73,10 @@ function makeInternalObjects(parsed, queryType) {
 
     // array of returnableID objects from IDs 
     let allReturnableIDs = allIDs.map((id) => returnableIDLookup[id])
-
+    console.log(allReturnableIDs,
+        allIDs,
+        feature,
+        featureTree)
     return {
         allReturnableIDs,
         allIDs,
@@ -87,6 +88,7 @@ function makeInternalObjects(parsed, queryType) {
 // FEATURE CLAUSES
 // ==================================================
 function makeFeatureClauseArray(feature, featureTree, queryType) {
+    console.log("something is working")
     let featureClauseArray = [];
     //let subfeatures = Object.keys(featureParents).filter(key => featureParents[key] !== null).map(key => [key, featureParents[key]]);
     let rootFeature = feature

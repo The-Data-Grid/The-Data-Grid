@@ -234,7 +234,7 @@ test('Offset with string', done => {
             done();
         });
 });
-
+/*
 test('Test for item/key query', done => {
     request
         .get(o13)
@@ -246,7 +246,7 @@ test('Test for item/key query', done => {
             done();
         });
 });
-/*
+*/
 test('Test for observation/key query', done => {
     request
         .get(o14)
@@ -258,7 +258,7 @@ test('Test for observation/key query', done => {
             done();
         });
 });
-
+/*
 test('Testing universal pk filter', function (done) {
     request
         .get(o15)

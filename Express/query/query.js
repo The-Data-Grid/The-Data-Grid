@@ -37,9 +37,7 @@ const {writeToBuffer} = require('@fast-csv/format');
  * @param {function} next 
  */
 function dataQueryWrapper(queryType) {
-
     return async (req, res, next) => {   
-    
         try {
             let {
                 allReturnableIDs,
@@ -47,7 +45,7 @@ function dataQueryWrapper(queryType) {
                 feature,
                 featureTree
             } = queryHelpers.makeInternalObjects(res.locals.parsed, queryType)
-    
+
             // A lot happens here... The query engine contains an algorithm that trims unneeded joins, asigns aliases to arbitrary columns, stores a lookup of
             // aliases for the where clause, does some SQL formatting, and a bit more.
             let {
@@ -81,7 +79,7 @@ function dataQueryWrapper(queryType) {
             let finalQuery = query.join(' '); 
             
             // DEBUG: Show SQL Query //
-            // console.log(finalQuery); 
+            console.log(finalQuery); 
     
             // Finally querying the database and attaching the result
             res.locals.parsed.finalQuery = await db.result(finalQuery)
@@ -106,7 +104,7 @@ function formatDefault(req, res, next) {
     // This is row-major data
 
     /* DEBUG */
-    console.log(res.locals.parsed.finalQuery);
+    // console.log(res.locals.parsed.finalQuery);
     
 
     // fuck .fill(), all my homies hate .fill() 
