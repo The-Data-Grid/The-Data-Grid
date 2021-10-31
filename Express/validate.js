@@ -261,7 +261,7 @@ function validationConstructor(init) {
                     return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a positive integer`);
                 } else if (filter == 'sorta' || filter == 'sortd') {
                     if (!validate[feature].column.includes(parseInt(universalFilters[filter])) && (init == 'item' || !globals.filter.includes(parseInt(universalFilters[filter])))) {
-                        return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
+                        return res.status(400).send(`Bad Request 2211: Field for ${filter} must be a valid returnable ID`);
                     }
                 } else if (filter == 'pk') {
                     if (filter == 'pk' && !isPositiveInteger(universalFilters[filter])) {

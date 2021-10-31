@@ -59,7 +59,7 @@ function dataQueryWrapper(queryType) {
             if(Object.keys(whereLookup).length != allIDs.length) {        
                 return res.status(500).send('Internal Server Error 7701: Number of columns found different than number of columns requested')
             }
-    
+
             const featureClauseArray = queryHelpers.makeFeatureClauseArray(feature, featureTreeArray, queryType);
     
             const whereClauseArray = queryHelpers.makeWhereClauseArray(whereLookup, res.locals.parsed.filters);
@@ -79,7 +79,7 @@ function dataQueryWrapper(queryType) {
             let finalQuery = query.join(' '); 
             
             // DEBUG: Show SQL Query //
-            console.log(finalQuery); 
+            // console.log(finalQuery); 
     
             // Finally querying the database and attaching the result
             res.locals.parsed.finalQuery = await db.result(finalQuery)
@@ -259,7 +259,7 @@ function sendKey(req, res) {
     // finalQuery is one row
 
     /* DEBUG */
-    console.log(res.locals.parsed.finalQuery);
+    //console.log(res.locals.parsed.finalQuery);
 
     let primaryKey = null
 

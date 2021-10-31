@@ -54,9 +54,9 @@ function makeInternalObjects(parsed, queryType) {
     // if sorting then add ID of the column to sort to allIDs
     let sortID = [];
     if(Object.keys(parsed.universalFilters).includes('sorta')) {
-        sortID = sortID.push(parsed.universalFilters.sorta);
+        sortID.push(parsed.universalFilters.sorta);
     } else if(Object.keys(parsed.universalFilters).includes('sortd')) {
-        sortID = sortID.push(parsed.universalFilters.sortd);
+        sortID.push(parsed.universalFilters.sortd);
     }
 
     // array of unique IDs from:
@@ -73,10 +73,7 @@ function makeInternalObjects(parsed, queryType) {
 
     // array of returnableID objects from IDs 
     let allReturnableIDs = allIDs.map((id) => returnableIDLookup[id])
-    console.log(allReturnableIDs,
-        allIDs,
-        feature,
-        featureTree)
+
     return {
         allReturnableIDs,
         allIDs,
@@ -88,7 +85,6 @@ function makeInternalObjects(parsed, queryType) {
 // FEATURE CLAUSES
 // ==================================================
 function makeFeatureClauseArray(feature, featureTree, queryType) {
-    console.log("something is working")
     let featureClauseArray = [];
     //let subfeatures = Object.keys(featureParents).filter(key => featureParents[key] !== null).map(key => [key, featureParents[key]]);
     let rootFeature = feature
