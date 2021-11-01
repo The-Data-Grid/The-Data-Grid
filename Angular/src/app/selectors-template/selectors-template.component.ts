@@ -18,6 +18,7 @@ export class SelectorsTemplateComponent implements OnInit {
   @Input() returnableIDs: []
   @Input() auditName: string
   @Input() columnsType: string //should be "IDcolumns", "nonIDcolumns", "attributeColumns"
+  @Input() selectionType: string
 
   constructor(private apiService: ApiService, public dialog: MatDialog,) { }
 
@@ -36,6 +37,10 @@ export class SelectorsTemplateComponent implements OnInit {
     if (!this.columnsType) {
       this.columnsType = 'IDColumns'
     }
+    if (!this.selectionType) {
+      this.selectionType='input'
+    }
+
     this.getDropdownOptions();
   }
 

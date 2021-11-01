@@ -1,116 +1,241 @@
-<div *ngFor="let treeIDObject of treeIDobjects | keyvalue" style="font-weight: 700;">
-    {{treeIDObject.value.item.frontendName}}
-    <button mat-button class="create-button transparent-hover" (click)="openItemCreation(treeIDObject.value)">
-        Create New
-    </button>
-    <div *ngFor="let columnInfo of treeIDObject.value[columnsType]">
-        <div *ngIf="columnInfo.column.inputSelector && columnInfo.returnableID">
-            <div [ngSwitch]="columnInfo.column.inputSelector.selectorKey">
-                <div *ngSwitchCase="'numericChoice'">
-                    <!-- nc -->
-                    <!--  TODO: change how input received -->
-                    <div class="selector" fxLayout="row" fxLayoutAlign="space-between center">
-                        <mat-form-field style="width: 45%;">
-                            <mat-label>Select Relation</mat-label>
-                            <mat-select [(ngModel)]='columnInfo.inputUserSelection.relation'>
-                                <mat-option *ngFor="let relation of numericRelation" [value]="relation[1]">
-                                    {{relation[0]}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                        <mat-form-field style="width: 45%;">
-                            <mat-label>{{columnInfo.columnInfo.column.frontendName}} (NC) </mat-label>
-                            <input matInput placeholder="ex: 4.5" [(ngModel)]='columnInfo.inputUserSelection.value'>
+<div *ngIf="selectionType=='input'">
+    <div *ngFor="let treeIDObject of treeIDobjects | keyvalue">
+        {{treeIDObject.value.item.frontendName}}
+        <button mat-button class="create-button transparent-hover" (click)="openItemCreation(treeIDObject.value)">
+            Create New
+        </button>
+        <div *ngFor="let columnInfo of treeIDObject.value[columnsType]">
+            <div *ngIf="columnInfo.column.inputSelector && columnInfo.returnableID">
+                <div [ngSwitch]="columnInfo.column.inputSelector.selectorKey">
+                    <div *ngSwitchCase="'numericChoice'">
+                        <!-- nc -->
+                        <!--  TODO: change how input received -->
+                        <div class="selector" fxLayout="row" fxLayoutAlign="space-between center">
+                            <mat-form-field style="width: 45%;">
+                                <mat-label>Select Relation</mat-label>
+                                <mat-select [(ngModel)]='columnInfo.inputUserSelection.relation'>
+                                    <mat-option *ngFor="let relation of numericRelation" [value]="relation[1]">
+                                        {{relation[0]}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field style="width: 45%;">
+                                <mat-label>{{columnInfo.column.frontendName}} (NC) </mat-label>
+                                <input matInput placeholder="ex: 4.5" [(ngModel)]='columnInfo.inputUserSelection.value'>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div *ngSwitchCase="'numericEqual'">
+                        <!-- ne -->
+                        <mat-form-field class="selector">
+                            <mat-label>{{columnInfo.column.frontendName}} (NE) </mat-label>
+                            <input matInput placeholder="ex: 4.5" [(ngModel)]='columnInfo.inputUserSelection'>
                         </mat-form-field>
                     </div>
-                </div>
-                <div *ngSwitchCase="'numericEqual'">
-                    <!-- ne -->
-                    <mat-form-field class="selector">
-                        <mat-label>{{columnInfo.columnInfo.column.frontendName}} (NE) </mat-label>
-                        <input matInput placeholder="ex: 4.5" [(ngModel)]='columnInfo.inputUserSelection'>
-                    </mat-form-field>
-                </div>
-                <div *ngSwitchCase="'calendarRange'">
-                    <!-- cr -->
-                    <div class="selector" fxLayout="row" fxLayoutAlign="space-between center">
-                        <mat-form-field style="width: 45%;">
-                            <input matInput class="datetime-picker" type="datetime-local"
-                                [placeholder]="columnInfo.column.frontendName + ' (CR)'"
-                                [(ngModel)]="columnInfo.userInputSelection.start">
-                        </mat-form-field>
-                        <span> to </span>
-                        <mat-form-field style="width: 45%;">
-                            <input matInput class="datetime-picker" type="datetime-local"
-                                [(ngModel)]="columnInfo.userInputSelection.end">
+                    <div *ngSwitchCase="'calendarRange'">
+                        <!-- cr -->
+                        <div class="selector" fxLayout="row" fxLayoutAlign="space-between center">
+                            <mat-form-field style="width: 45%;">
+                                <input matInput class="datetime-picker" type="datetime-local"
+                                    [placeholder]="columnInfo.column.frontendName + ' (CR)'"
+                                    [(ngModel)]="columnInfo.inputUserSelection.start">
+                            </mat-form-field>
+                            <span> to </span>
+                            <mat-form-field style="width: 45%;">
+                                <input matInput class="datetime-picker" type="datetime-local"
+                                    [(ngModel)]="columnInfo.inputUserSelection.end">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div *ngSwitchCase="'calendarEqual'">
+                        <!-- ce -->
+                        <mat-form-field class="selector">
+                            <input matInput type="datetime-local"
+                                [placeholder]="columnInfo.column.frontendName + ' (CE)'"
+                                [(ngModel)]="columnInfo.inputUserSelection">
                         </mat-form-field>
                     </div>
-                </div>
-                <div *ngSwitchCase="'calendarEqual'">
-                    <!-- ce -->
-                    <mat-form-field class="selector">
-                        <input matInput type="datetime-local" [placeholder]="columnInfo.column.frontendName + ' (CE)'"
-                            [(ngModel)]="columnInfo.userInputSelection">
-                    </mat-form-field>
-                </div>
-                <div *ngSwitchCase="'dropdown'">
-                    <!-- d -->
-                    <!-- <mat-form-field class="selector">
+                    <div *ngSwitchCase="'dropdown'">
+                        <!-- d -->
+                        <!-- <mat-form-field class="selector">
                         <mat-label>{{columnInfo.column.frontendName}} (dropdown) </mat-label>
-                        <mat-select [(ngModel)]="columnInfo.userInputSelection">
+                        <mat-select [(ngModel)]="columnInfo.inputUserSelection">
                         </mat-select>
                     </mat-form-field> -->
-                    <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
-                        [placeholder]="columnInfo.column.frontendName  + columnInfo.returnableID+ ' (SD)'"
-                        [(ngModel)]="columnInfo.userInputSelection" [settings]="searchableDropdownSettings"
-                        [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
-                        (onSelectAll)="onSelectAll($event)">
-                    </ng-multiselect-dropdown>
-                </div>
-                <div *ngSwitchCase="'searchableDropdown'">
-                    <!-- sd -->
-                    <!-- {{IDtoOptions[columnInfo.returnableID]}} -->
-                    <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
-                        [placeholder]="columnInfo.column.frontendName + ' ' + columnInfo.returnableID+ ' (SD)'"
-                        [(ngModel)]="columnInfo.userInputSelection" [settings]="searchableDropdownSettings"
-                        [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
-                        (onSelectAll)="onSelectAll($event)">
-                    </ng-multiselect-dropdown>
-                </div>
-                <div *ngSwitchCase="'checklistDropdown'">
-                    <!-- cd -->
-                    <ng-multiselect-dropdown class="selector" [placeholder]="columnInfo.column.frontendName + ' (CD)'"
-                        [(ngModel)]="columnInfo.userInputSelection" [settings]="checklistDropdownSettings"
-                        [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
-                        (onSelectAll)="onSelectAll($event)">
-                    </ng-multiselect-dropdown>
-                </div>
-                <div *ngSwitchCase="'searchableChecklistDropdown'">
-                    <!-- scd -->
-                    <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
-                        [placeholder]="columnInfo.column.frontendName + ' ' + columnInfo.returnableID + ' (SCD)'"
-                        [(ngModel)]="columnInfo.userInputSelection" [settings]="searchableChecklistDropdownSettings"
-                        [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
-                        (onSelectAll)="onSelectAll($event)">
-                    </ng-multiselect-dropdown>
-                </div>
-                <div *ngSwitchCase="'text'">
-                    <!-- t -->
-                    <mat-form-field class="selector">
-                        <mat-label>{{columnInfo.column.frontendName}} (text)</mat-label>
-                        <input matInput placeholder="ex: 4.5" [(ngModel)]="columnInfo.userInputSelection">
-                    </mat-form-field>
-                </div>
-                <div *ngSwitchCase="'bool'">
-                    <!-- b -->
-                    <mat-form-field class="selector">
-                        <mat-label>{{columnInfo.column.frontendName}} (bool)</mat-label>
-                        <mat-select [(ngModel)]="columnInfo.userInputSelection">
-                            <mat-option [value]=true>True</mat-option>
-                            <mat-option [value]=false>False</mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                        <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
+                            [placeholder]="columnInfo.column.frontendName  + columnInfo.returnableID+ ' (SD)'"
+                            [(ngModel)]="columnInfo.inputUserSelection" [settings]="searchableDropdownSettings"
+                            [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                            (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div *ngSwitchCase="'searchableDropdown'">
+                        <!-- sd -->
+                        <!-- {{IDtoOptions[columnInfo.returnableID]}} -->
+                        <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
+                            [placeholder]="columnInfo.column.frontendName + ' ' + columnInfo.returnableID+ ' (SD)'"
+                            [(ngModel)]="columnInfo.inputUserSelection" [settings]="searchableDropdownSettings"
+                            [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                            (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div *ngSwitchCase="'checklistDropdown'">
+                        <!-- cd -->
+                        <ng-multiselect-dropdown class="selector"
+                            [placeholder]="columnInfo.column.frontendName + ' (CD)'"
+                            [(ngModel)]="columnInfo.inputUserSelection" [settings]="checklistDropdownSettings"
+                            [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                            (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div *ngSwitchCase="'searchableChecklistDropdown'">
+                        <!-- scd -->
+                        <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
+                            [placeholder]="columnInfo.column.frontendName + ' ' + columnInfo.returnableID + ' (SCD)'"
+                            [(ngModel)]="columnInfo.inputUserSelection" [settings]="searchableChecklistDropdownSettings"
+                            [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                            (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div *ngSwitchCase="'text'">
+                        <!-- t -->
+                        <mat-form-field class="selector">
+                            <mat-label>{{columnInfo.column.frontendName}} (text)</mat-label>
+                            <input matInput placeholder="ex: 4.5" [(ngModel)]="columnInfo.inputUserSelection">
+                        </mat-form-field>
+                    </div>
+                    <div *ngSwitchCase="'bool'">
+                        <!-- b -->
+                        <mat-form-field class="selector">
+                            <mat-label>{{columnInfo.column.frontendName}} (bool)</mat-label>
+                            <mat-select [(ngModel)]="columnInfo.inputUserSelection">
+                                <mat-option [value]=true>True</mat-option>
+                                <mat-option [value]=false>False</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div *ngIf="selectionType=='filter'">
+    <div *ngFor="let treeIDObject of treeIDobjects | keyvalue">
+        {{treeIDObject.value.item.frontendName}}
+        <div *ngFor="let columnInfo of treeIDObject.value[columnsType]">
+            <div *ngIf="columnInfo.column.filterSelector && columnInfo.returnableID">
+                <div [ngSwitch]="columnInfo.column.filterSelector.selectorKey">
+                    <div *ngSwitchCase="'numericChoice'">
+                        <!-- nc -->
+                        <!--  TODO: change how input received -->
+                        <div class="selector" fxLayout="row" fxLayoutAlign="space-between center">
+                            <mat-form-field style="width: 45%;">
+                                <mat-label>Select Relation</mat-label>
+                                <mat-select [(ngModel)]='columnInfo.filterUserSelection.relation'>
+                                    <mat-option *ngFor="let relation of numericRelation" [value]="relation[1]">
+                                        {{relation[0]}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field style="width: 45%;">
+                                <mat-label>{{columnInfo.column.frontendName}} (NC) </mat-label>
+                                <input matInput placeholder="ex: 4.5"
+                                    [(ngModel)]='columnInfo.filterUserSelection.value'>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div *ngSwitchCase="'numericEqual'">
+                        <!-- ne -->
+                        <mat-form-field class="selector">
+                            <mat-label>{{columnInfo.column.frontendName}} (NE) </mat-label>
+                            <input matInput placeholder="ex: 4.5" [(ngModel)]='columnInfo.filterUserSelection'>
+                        </mat-form-field>
+                    </div>
+                    <div *ngSwitchCase="'calendarRange'">
+                        <!-- cr -->
+                        <div class="selector" fxLayout="row" fxLayoutAlign="space-between center">
+                            <mat-form-field style="width: 45%;">
+                                <input matInput class="datetime-picker" type="datetime-local"
+                                    [placeholder]="columnInfo.column.frontendName + ' (CR)'"
+                                    [(ngModel)]="columnInfo.filterUserSelection.start">
+                            </mat-form-field>
+                            <span> to </span>
+                            <mat-form-field style="width: 45%;">
+                                <input matInput class="datetime-picker" type="datetime-local"
+                                    [(ngModel)]="columnInfo.filterUserSelection.end">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div *ngSwitchCase="'calendarEqual'">
+                        <!-- ce -->
+                        <mat-form-field class="selector">
+                            <input matInput type="datetime-local"
+                                [placeholder]="columnInfo.column.frontendName + ' (CE)'"
+                                [(ngModel)]="columnInfo.filterUserSelection">
+                        </mat-form-field>
+                    </div>
+                    <div *ngSwitchCase="'dropdown'">
+                        <!-- d -->
+                        <!-- <mat-form-field class="selector">
+                        <mat-label>{{columnInfo.column.frontendName}} (dropdown) </mat-label>
+                        <mat-select [(ngModel)]="columnInfo.filterUserSelection">
+                        </mat-select>
+                    </mat-form-field> -->
+                        <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
+                            [placeholder]="columnInfo.column.frontendName  + columnInfo.returnableID+ ' (SD)'"
+                            [(ngModel)]="columnInfo.filterUserSelection" [settings]="searchableDropdownSettings"
+                            [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                            (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div *ngSwitchCase="'searchableDropdown'">
+                        <!-- sd -->
+                        <!-- {{IDtoOptions[columnInfo.returnableID]}} -->
+                        <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
+                            [placeholder]="columnInfo.column.frontendName + ' ' + columnInfo.returnableID+ ' (SD)'"
+                            [(ngModel)]="columnInfo.filterUserSelection" [settings]="searchableDropdownSettings"
+                            [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                            (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div *ngSwitchCase="'checklistDropdown'">
+                        <!-- cd -->
+                        <ng-multiselect-dropdown class="selector"
+                            [placeholder]="columnInfo.column.frontendName + ' (CD)'"
+                            [(ngModel)]="columnInfo.filterUserSelection" [settings]="checklistDropdownSettings"
+                            [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                            (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div *ngSwitchCase="'searchableChecklistDropdown'">
+                        <!-- scd -->
+                        <ng-multiselect-dropdown *ngIf="dropdownOptions" class="selector"
+                            [placeholder]="columnInfo.column.frontendName + ' ' + columnInfo.returnableID + ' (SCD)'"
+                            [(ngModel)]="columnInfo.filterUserSelection"
+                            [settings]="searchableChecklistDropdownSettings"
+                            [data]="IDtoOptions[columnInfo.returnableID]" (onSelect)="onItemSelect($event)"
+                            (onSelectAll)="onSelectAll($event)">
+                        </ng-multiselect-dropdown>
+                    </div>
+                    <div *ngSwitchCase="'text'">
+                        <!-- t -->
+                        <mat-form-field class="selector">
+                            <mat-label>{{columnInfo.column.frontendName}} (text)</mat-label>
+                            <input matInput placeholder="ex: 4.5" [(ngModel)]="columnInfo.filterUserSelection">
+                        </mat-form-field>
+                    </div>
+                    <div *ngSwitchCase="'bool'">
+                        <!-- b -->
+                        <mat-form-field class="selector">
+                            <mat-label>{{columnInfo.column.frontendName}} (bool)</mat-label>
+                            <mat-select [(ngModel)]="columnInfo.filterUserSelection">
+                                <mat-option [value]=true>True</mat-option>
+                                <mat-option [value]=false>False</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

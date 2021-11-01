@@ -53,11 +53,13 @@ export class FilterComponent implements OnInit {
   };
 
   // the following variables are for multiselect dropdowns:
-  // dropdownList = FakeData;
   searchableDropdownSettings: IDropdownSettings = SearchableDropdownSettings;
   checklistDropdownSettings: IDropdownSettings = ChecklistDropdownSettings;
   searchableChecklistDropdownSettings: IDropdownSettings = SearchableChecklistDropdownSettings;
   numericRelation: string[][] = [[">=", "gte"], ["<=", "lte"], [">", "gt"], ["<", "lt"], ["=", "equal"]]
+
+  treeIDobjects;
+  returnableIDs;
 
   constructor(private apiService: ApiService,
     public datepipe: DatePipe,
@@ -80,36 +82,9 @@ export class FilterComponent implements OnInit {
   }
 
   parseSetupObject() {
-    // parse global columns
-    this.globalSelectors = this.setupObjectService.getGlobalSelectors(
-      this.setupObject,
-      this.appliedFilterSelections,
-      this.defaultColumnIDs,
-      this.globalReturnableIDs,
-      true
-    );
-
     // get root features
     this.rootFeatures = this.setupObjectService.getRootFeatures(this.setupObject);
-
-    // parse feature columns
-    this.featureSelectors = this.setupObjectService.getFeatureFilterSelectors(
-      this.setupObject,
-      this.appliedFilterSelections,
-      this.defaultColumnIDs);
-
-    // console.log("global selectors:");
-    // console.log(this.globalSelectors);
-    // console.log("feature selectors:");
-    // console.log(this.featureSelectors);
-    // console.log("applied filter selections:");
-    // console.log(this.appliedFilterSelections);
-    // console.log("defaultColumnIDs:");
-    // console.log(this.defaultColumnIDs);
-    // console.log("featuresToChildren:");
-    // console.log(this.featuresToChildren);
     this.applyFilters();
-    this.selectorsLoaded = true
   }
 
   getTableObject() {
@@ -186,18 +161,13 @@ export class FilterComponent implements OnInit {
 
   onFeatureSelection() {
     this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.selectedFeature.index);
-    console.log("this.featureReturnableIDs:")
-    console.log(this.featureReturnableIDs)
-  }
+    this.treeIDobjects = this.setupObjectService.getAllFeatureItemRelatedColumns(this.setupObject, this.selectedFeature.index);
+    this.returnableIDs = this.setupObjectService.getAllIDreturnableIDs(this.treeIDobjects)
+    this.selectorsLoaded = true
 
-
-  applyDateFilter = (val: string) => {
-    val = this.datepipe.transform(val, 'MM-dd-yyyy');
-    // this.rows = this.filteredData.filter(function (item) {
-    //   if (item.dateConducted.toString().toLowerCase().indexOf(val) !== -1 || !val) {
-    //     return true;
-    //   }
-    // });
+    console.log("treeIDobjects:", this.treeIDobjects)
+    console.log("returnable IDS:", this.returnableIDs)
+    console.log("feature returnable IDS:", this.featureReturnableIDs)
   }
 
   // dont delete:

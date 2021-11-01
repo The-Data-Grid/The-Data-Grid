@@ -7,19 +7,9 @@
                 <mat-radio-button value="Submission">Submission</mat-radio-button>
             </mat-radio-group>
 
-            <!-- global filters -->
-            <div class="global-filters" style="padding-top: 10px;">
-                <h3>Global Filters</h3>
-                <div *ngIf="selectorsLoaded">
-                    <app-reusable-template [feature]="globalSelectors"
-                        [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="globalReturnableIDs">
-                    </app-reusable-template>
-                </div>
-            </div>
-
             <!-- feature filters -->
             <div class="features-filters" *ngIf="filterBy!='Submission'">
-                <h3>Feature Filters</h3>
+                <h3>Filters</h3>
                 <mat-form-field class="selector">
                     <mat-label>Features</mat-label>
                     <mat-select [(ngModel)]="selectedFeature" (ngModelChange)="onFeatureSelection()">
@@ -29,7 +19,30 @@
                     </mat-select>
                 </mat-form-field>
 
-                <mat-accordion *ngIf="selectedFeature">
+                <div *ngIf="selectedFeature && selectorsLoaded">
+                    <app-selectors-template [treeIDobjects]="treeIDobjects" [returnableIDs]="returnableIDs"
+                        [selectionType]="'filter'">
+                    </app-selectors-template>
+                </div>
+
+                <!-- <mat-accordion *ngIf="selectedFeature">
+                    <div *ngFor="let feature of rootFeatures">
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title style="width: 100%" fxLayout="row"
+                                    fxLayoutAlign="space-between center">
+                                    <span>
+                                        {{ feature.name }}
+                                    </span>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div *ngIf="selectorsLoaded">
+                            </div>
+                        </mat-expansion-panel>
+                    </div>
+                </mat-accordion> -->
+
+                <!-- <mat-accordion *ngIf="selectedFeature">
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
@@ -40,27 +53,18 @@
                             [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="featureReturnableIDs">
                         </app-reusable-template>
                     </mat-expansion-panel>
+                </mat-accordion> -->
 
-                    <mat-expansion-panel *ngFor="let childIndex of featuresToChildren[selectedFeature.index]">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                {{setupObject.features[childIndex].frontendName}}
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <app-reusable-template [feature]="featureSelectors[childIndex]"
-                            [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="featureReturnableIDs">
-                        </app-reusable-template>
-                    </mat-expansion-panel>
-                </mat-accordion>
             </div>
             <button id="apply-button" mat-button (click)="applyFilters()">APPLY</button>
         </mat-sidenav>
 
         <mat-sidenav-content class="sidenav-content">
             <div *ngIf="tableObject" id="table-buttons" fxLayoutAlign="end center">
-                <button *ngIf="!editingMode" mat-icon-button (click)="toggleEditingMode()">
+                <!-- commented out the in-table editing button: -->
+                <!-- <button *ngIf="!editingMode" mat-icon-button (click)="toggleEditingMode()">
                     <mat-icon>edit</mat-icon>
-                </button>
+                </button> -->
                 <button *ngIf="!editingMode" mat-icon-button>
                     <mat-icon>save_alt</mat-icon>
                 </button>
@@ -72,25 +76,6 @@
                 </button>
             </div>
 
-
-            <!-- try an html table ? -->
-            <!-- <mat-card *ngIf="tableObject"
-                style="width: 85%; border-radius: 0%; margin-right: auto; margin-left: auto; margin-bottom: 20px;">
-                <div style="overflow-x: auto; ">
-                    <table style=" margin: 15px; ">
-                        <tr>
-                            <th *ngFor="let col of dataTableColumns" style="white-space: nowrap;">{{col.name}}
-                                <mat-icon style="font-size: 80%;">info</mat-icon>
-                            </th>
-                        </tr>
-                        <tr *ngFor="let row of tableObject.rowData" >
-                            <td *ngFor="let value of row" >{{value}}</td>
-                        </tr>
-                    </table>
-                </div>
-            </mat-card> -->
-
-
             <!-- table -->
             <ngx-datatable *ngIf="tableObject" id="table" #table class="material" [headerHeight]="50"
                 [footerHeight]="50" rowHeight="auto" [limit]="6" [rows]="rows" [scrollbarH]="true">
@@ -98,8 +83,10 @@
                 <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.returnableID" [name]="col.name">
                     <!-- header cells -->
                     <ng-template let-column="column" ngx-datatable-header-template>
-                        {{col.name}} {{col.returnableID}} 
-                        <button mat-icon-button matTooltipClass="my-tooltip" [matTooltip]="'Item Name: ' + '&#13;Item Path: ' + col.itemPath + '&#13;Column Information: ' " matTooltipPosition="above">
+                        {{col.name}} {{col.returnableID}}
+                        <button mat-icon-button matTooltipClass="my-tooltip"
+                            [matTooltip]="'Item Name: ' + '&#13;Item Path: ' + col.itemPath + '&#13;Column Information: ' "
+                            matTooltipPosition="above">
                             <mat-icon style="font-size: 90%;">info</mat-icon>
                         </button>
                         <!-- <span *ngIf="col.displayMetaInfo==true" style="background-color: pink; overflow: visible;">
