@@ -160,14 +160,12 @@ export class FilterComponent implements OnInit {
   }
 
   onFeatureSelection() {
-    this.featureReturnableIDs = this.setupObjectService.getFeatureReturnableIDs(this.setupObject, this.selectedFeature.index);
     this.treeIDobjects = this.setupObjectService.getAllFeatureItemRelatedColumns(this.setupObject, this.selectedFeature.index);
     this.returnableIDs = this.setupObjectService.getAllIDreturnableIDs(this.treeIDobjects)
     this.selectorsLoaded = true
 
     console.log("treeIDobjects:", this.treeIDobjects)
     console.log("returnable IDS:", this.returnableIDs)
-    console.log("feature returnable IDS:", this.featureReturnableIDs)
   }
 
   // dont delete:
