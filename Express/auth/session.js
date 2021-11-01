@@ -17,6 +17,6 @@ module.exports = session({
         // 1 week
         maxAge: 604_800_000, 
         // make sure this is secure in prod
-        secure: (process.env.NODE_ENV == 'development' ? false : true)
+        secure: (isDeployment ? true : false)
     }
 });
