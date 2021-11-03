@@ -44,7 +44,7 @@ let o11 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&l
 let o12 = observationBase + '66&65&73&70?65[gte]=01-20-2000&65[lte]=01-20-2020&65[gte]=01-20-2020&limit=50&offset=abc&sorta=70';
 let o13 = '/api/audit/item/key/user?limit=10&offset=1&sorta=228'
 let o14 = '/api/audit/observation/key/sink?limit=10&offset=1&sorta=66'
-let o15 = '/api/audit/item/user/265?pk=4'
+let o15 = '/api/audit/item/user/228?pk=4'
 
 /**
  * OBJECTS
@@ -246,7 +246,6 @@ test('Test for item/key query', done => {
     });
 });
 
-/*
 test('Test for observation/key query', done => {
     request
         .get(o14)
@@ -272,7 +271,7 @@ test('Testing universal pk filter', function (done) {
             done();
         });
 });
-*/
+
 // Helper functions
 function checkResponse(res, status) {
     if (!expect(res).toBeDefined() || !expect(res.status).toBe(status)) {

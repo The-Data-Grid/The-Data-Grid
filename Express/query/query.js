@@ -45,7 +45,6 @@ function dataQueryWrapper(queryType) {
                 feature,
                 featureTree
             } = queryHelpers.makeInternalObjects(res.locals.parsed, queryType)
-
             // A lot happens here... The query engine contains an algorithm that trims unneeded joins, asigns aliases to arbitrary columns, stores a lookup of
             // aliases for the where clause, does some SQL formatting, and a bit more.
             let {
@@ -116,7 +115,6 @@ function formatDefault(req, res, next) {
 
     // fill the rows
     keys.forEach((key, i) => {
-        
         // handle primary keys
         if(key === 'observation_pkey' || key === 'item_pkey') {
             res.locals.parsed.finalQuery.rows.forEach((row, ii) => {        

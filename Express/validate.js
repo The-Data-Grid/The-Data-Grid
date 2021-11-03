@@ -155,15 +155,12 @@ let validItems = Object.keys(validateItem);
 
 // Returns a validation middleware function depending on the initialization parameters
 function validationConstructor(init) {
- 
     // if item use item validation objects
     if(init == 'item') {
-
         return itemOrObservation(validateItem, null, validItems)
 
     // if observation use observation object
     } else if(init == 'observation') {
-
         return itemOrObservation(validateObservation, globals, validFeatures)
 
     // else throw
@@ -178,12 +175,10 @@ function validationConstructor(init) {
 
         //// Validate request feature, columns, and filters ////
         return (req, res, next) => {
-
             // item_... or obs_... depending on endpoint
             let feature = (init == 'item' ? 'item_' + res.locals.parsed.features : 'observation_' + res.locals.parsed.features);
             let universalFilters = res.locals.parsed.universalFilters;
 
-            
             if(!validateFeatures.includes(feature)) {
                 return res.status(400).send(`Bad Request 2201: ${feature} is not a valid ${init == 'item' ? 'item' : 'feature'}`);
             };
@@ -269,7 +264,6 @@ function validationConstructor(init) {
                     }
                 }
             }
-
             // Passing to query.js            
             next();
         }

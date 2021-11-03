@@ -301,6 +301,7 @@ function collectQueryItems(parsed, queryType) {
     } = queryHelpers.makeInternalObjects(parsed, queryType);
     // go through all the returnables and get unique items
     const uniqueItems = [];
+    // console.log(allReturnableIDs)
     for(let returnable of allReturnableIDs) {
         let tableName = columnIdItemLookup[returnable.columnID];
         /*
