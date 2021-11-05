@@ -27,8 +27,6 @@ export class FilterComponent implements OnInit {
   filterBy = "Feature";
   setupObject;
   defaultColumnIDs = []; //default denotes which return columns are to be included in queries by default
-  globalReturnableIDs = [];
-  featureReturnableIDs = [];
   rootFeatures = [];
   selectedFeature;
   featuresToChildren = {};
@@ -59,7 +57,8 @@ export class FilterComponent implements OnInit {
   numericRelation: string[][] = [[">=", "gte"], ["<=", "lte"], [">", "gt"], ["<", "lt"], ["=", "equal"]]
 
   treeIDobjects;
-  returnableIDs;
+  IDreturnableIDs;
+  attributeReturnableIDs;
 
   constructor(private apiService: ApiService,
     public datepipe: DatePipe,
@@ -76,8 +75,7 @@ export class FilterComponent implements OnInit {
       console.log("using data from express server")
       this.setupObject = res;
       this.parseSetupObject();
-      console.log("setupObject:");
-      console.log(this.setupObject)
+      console.log("setupObject: :", this.setupObject)
     });
   }
 
@@ -90,7 +88,7 @@ export class FilterComponent implements OnInit {
   getTableObject() {
     // clear the column headers
     this.dataTableColumns = [];
-    this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections, this.globalReturnableIDs.concat(this.featureReturnableIDs)).subscribe((res) => {
+    this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections, this.IDreturnableIDs.concat(this.attributeReturnableIDs)).subscribe((res) => {
       this.tableObject = res;
       console.log(this.tableObject)
       this.rows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
@@ -154,18 +152,16 @@ export class FilterComponent implements OnInit {
 
   applyFilters() {
     if (!this.selectedFeature) { return; }
-    console.log(this.appliedFilterSelections);
-    // console.log(this.globalReturnableIDs);
     this.getTableObject();
   }
 
   onFeatureSelection() {
     this.treeIDobjects = this.setupObjectService.getAllFeatureItemRelatedColumns(this.setupObject, this.selectedFeature.index);
-    this.returnableIDs = this.setupObjectService.getAllIDreturnableIDs(this.treeIDobjects)
+    this.IDreturnableIDs = this.setupObjectService.getAllIDreturnableIDs(this.treeIDobjects);
+    this.attributeReturnableIDs = this.setupObjectService.getAllAttributeReturnableIDs(this.treeIDobjects);
     this.selectorsLoaded = true
 
     console.log("treeIDobjects:", this.treeIDobjects)
-    console.log("returnable IDS:", this.returnableIDs)
   }
 
   // dont delete:
