@@ -180,9 +180,9 @@ async function updateIndividualObservation(updateObservationObject, sessionObjec
     for(let columnsAndValues of listColumnsAndValues) {
         const {itemColumn, columnValue} = columnsAndValues;
         // Insert into the list_... table
-        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+        const primaryKeyOfInsertedValue = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
         // insert into the many to many table
-        await updateObservationManyToMany(primaryKeyOfInsertedValue, observationPrimaryKey, itemColumn.tableName, db);
+        await updateObservationManyToMany(primaryKeyOfInsertedValue.columnValue, observationPrimaryKey, itemColumn.tableName, db);
     }
 
     // Update SOP value if passed

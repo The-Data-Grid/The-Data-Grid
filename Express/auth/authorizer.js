@@ -17,6 +17,8 @@ allItems.forEach(item => {
     };
 });
 
+console.log(itemAuthorizationLookup)
+
 // Database connection and SQL formatter
 const {postgresClient} = require('../db/pg.js');
 // get connection object

@@ -2,16 +2,19 @@
     "items": {
         "create": [
             {
-                "itemTypeID": 15,
-                "requiredItems": [1],
+                "itemTypeID": 13,
+                "requiredItems": [{
+                    "itemTypeID": 15,
+                    "primaryKey": 1
+                }],
                 "newRequiredItemIndices": [],
                 "globalPrimaryKey": 1,
                 "newGlobalItemIndex": null,
                 "data": {
                     "returnableIDs": [
-                        481,
-                        482,
-                        483
+                        339,
+                        340,
+                        341
                     ],
                     "data": [
                         3,
@@ -28,7 +31,7 @@
     "observations": {
         "create": [
             {
-                "itemTypeID": 15,
+                "itemTypeID": 13,
                 "itemPrimaryKey": null,
                 "newItemIndex": 0,
                 "globalPrimaryKey": 1,
@@ -37,15 +40,17 @@
                     "returnableIDs": [
                         65,
                         66,
+                        67,
                         68,
                         70,
                         73,
-                        75,
+                        76,
                         77
                     ],
                     "data": [
                         "01-29-1999",
                         "Absolutely nasty",
+                        "Oliver",
                         "SOP?",
                         3.5,
                         ["Pretty alright", "you know", "yeah, i know"],

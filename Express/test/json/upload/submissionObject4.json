@@ -2,14 +2,14 @@
     "items": {
         "create": [
             {
-                "itemTypeID": 10,
+                "itemTypeID": 9,
                 "requiredItems": [
                     {
                         "itemTypeID": 1,
                         "primaryKey": 1
                     },
                     {
-                        "itemTypeID": 9,
+                        "itemTypeID": 8,
                         "primaryKey": 2
                     }
                 ],
@@ -22,14 +22,14 @@
                 }
             },
             {
-                "itemTypeID": 12,
+                "itemTypeID": 10,
                 "requiredItems": [
                     {
                         "itemTypeID": 1,
                         "primaryKey": 1
                     },
                     {
-                        "itemTypeID": 9,
+                        "itemTypeID": 8,
                         "primaryKey": 2
                     }
                 ],
@@ -38,7 +38,7 @@
                 "newGlobalItemIndex": null,
                 "data": {
                     "returnableIDs": [
-                        400
+                        275
                     ],
                     "data": [
                         "My favorite audit in the whole wide world"

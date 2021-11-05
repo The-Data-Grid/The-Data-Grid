@@ -192,6 +192,7 @@ CREATE TABLE tdg_observation_edit (
 );
 */
 
+/*
 CREATE TABLE item_catalog (
     item_id SERIAL PRIMARY KEY,
     data_title TEXT NOT NULL,
@@ -199,10 +200,11 @@ CREATE TABLE item_catalog (
     -- global_id INTEGER NOT NULL REFERENCES item_global, --fk ** (NOTE: Not in metadata because should not be included in the item requirement tree)
     is_discoverable BOOLEAN NOT NULL DEFAULT TRUE
 );
+*/
 
 CREATE TABLE item_audit (
     item_id SERIAL PRIMARY KEY,
-    item_catalog_id INTEGER, --fk **
+    --item_catalog_id INTEGER, --fk **
     data_audit_name TEXT NOT NULL,
     item_user_id INTEGER NOT NULL, --fk **
     item_organization_id INTEGER NOT NULL, --fk ** 
@@ -302,9 +304,10 @@ ON item_global (item_user_id);
 CREATE INDEX item_global_index4
 ON item_global (item_template_id);
 */
+/*
 CREATE INDEX item_audit_index1
 ON item_audit (item_catalog_id);
-
+*/
 CREATE INDEX item_audit_index2
 ON item_audit (item_user_id);
 
@@ -898,7 +901,7 @@ ALTER TABLE m2m_auditor ADD FOREIGN KEY (observation_count_id) REFERENCES tdg_ob
 
 
 -- Audit
-ALTER TABLE item_audit ADD FOREIGN KEY (item_catalog_id) REFERENCES item_catalog;
+--ALTER TABLE item_audit ADD FOREIGN KEY (item_catalog_id) REFERENCES item_catalog;
 ALTER TABLE item_audit ADD FOREIGN KEY (item_user_id) REFERENCES item_user;
 ALTER TABLE item_audit add FOREIGN KEY (item_organization_id) REFERENCES item_organization;
 
@@ -1554,10 +1557,10 @@ INSERT INTO metadata_item
             (DEFAULT, 'item_state', 'State', 3, 1, null, 3, null),
             (DEFAULT, 'item_country', 'Country', 3, 1, null, 3, null),
             (DEFAULT, 'item_sop', 'Standard Operating Procedure', 3, 1, null, 2, 1),
-            (DEFAULT, 'item_template', 'Template', 3, 1, null, 2, 1),
-            (DEFAULT, 'item_user', 'User', 3, 1, null, 3, null), -- Note upload privilege superuser users are created through the user API
+            -- (DEFAULT, 'item_template', 'Template', 3, 1, null, 2, 1),
+            (DEFAULT, 'item_user', 'User', 3, 3, null, 3, null), -- Note upload privilege superuser users are created through the user API
             (DEFAULT, 'item_global', 'Global Item', 3, 1, null, 2, 1),
-            (DEFAULT, 'item_catalog', 'Catalog', 3, 1, null, 2, 1),
+            -- (DEFAULT, 'item_catalog', 'Catalog', 3, 1, null, 2, 1),
             (DEFAULT, 'item_audit', 'Audit', 3, 1, null, 2, 1);
 
 
@@ -1581,7 +1584,7 @@ CALL "insert_m2m_metadata_item"('item_global', 'item_organization', TRUE, FALSE,
 CALL "insert_m2m_metadata_item"('item_global', 'item_user', TRUE, FALSE, 'Auditing User', NULL);
 --CALL "insert_m2m_metadata_item"('item_global', 'item_template', FALSE, TRUE, 'Template Used', NULL);
 --     audit
-CALL "insert_m2m_metadata_item"('item_audit', 'item_catalog', FALSE, TRUE, 'Catalog of Audit', NULL);
+--CALL "insert_m2m_metadata_item"('item_audit', 'item_catalog', FALSE, TRUE, 'Catalog of Audit', NULL);
 CALL "insert_m2m_metadata_item"('item_audit', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
 CALL "insert_m2m_metadata_item"('item_audit', 'item_organization', FALSE, TRUE, 'Authoring Organization', NULL);
 
@@ -1598,7 +1601,7 @@ CALL "add_history_table"('item_sop');
 CALL "add_history_table"('item_user');
 CALL "add_history_table"('item_global');
 CALL "add_history_table"('item_audit');
-CALL "add_history_table"('item_catalog');
+--CALL "add_history_table"('item_catalog');
 
 
 -- Inserting Columns into metadata
@@ -1636,8 +1639,8 @@ CALL "insert_metadata_column"('data_state_name', 'item_state', NULL, NULL, 'item
 CALL "insert_metadata_column"('data_organization_name_text', 'item_organization', NULL, NULL, 'item_organization', TRUE, FALSE, 'Organization Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 CALL "insert_metadata_column"('data_organization_name_link', 'item_organization', NULL, NULL, 'item_organization', TRUE, TRUE, 'Organization Website', NULL, NULL, 'hyperlink', NULL, NULL, 'TEXT', 'item-non-id');
 
-CALL "insert_metadata_column"('data_description', 'item_catalog', NULL, NULL, 'item_catalog', FALSE, TRUE, 'Catalog Description', NULL, 'text', 'string', 'A description of the audit which will appear in the catalog', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_title', 'item_catalog', NULL, NULL, 'item_catalog', TRUE, FALSE, 'Catalog Title', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+--CALL "insert_metadata_column"('data_description', 'item_catalog', NULL, NULL, 'item_catalog', FALSE, TRUE, 'Catalog Description', NULL, 'text', 'string', 'A description of the audit which will appear in the catalog', NULL, 'TEXT', 'item-non-id');
+--CALL "insert_metadata_column"('data_title', 'item_catalog', NULL, NULL, 'item_catalog', TRUE, FALSE, 'Catalog Title', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 --     user
 CALL "insert_metadata_column"('data_is_email_public', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Email visible to Public', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');
 CALL "insert_metadata_column"('data_is_quarterly_updates', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Receive Quarterly Updates', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');

@@ -471,7 +471,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
-        "presetValues": [],
+        "presetValues": ["Pretty alright", "you know", "yeah, i know"], // temporary for test suite
 
         "frontendName": "Basin Condition",
         "information": null,
@@ -511,7 +511,7 @@
 
         "sqlType": "TEXT",
         "referenceType": "obs-list",
-        "presetValues": [],
+        "presetValues": ["Faucet is nice"],
 
         "frontendName": "Faucet Condition",
         "information": null,

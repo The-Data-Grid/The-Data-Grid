@@ -4,7 +4,7 @@
         "update": [],
         "delete": [
             {
-                "itemTypeID": 16,
+                "itemTypeID": 14,
                 "primaryKey": 1
             }
         ],

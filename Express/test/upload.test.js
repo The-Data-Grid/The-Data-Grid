@@ -130,7 +130,6 @@ test('Create global and audit', done => {
         .end(finishTest(done));
 });
     
-   
 // update and delete item
 // submissionObject5, submissionObject6, submissionObject7
 test('Create, update, and delete item', done => {
@@ -168,7 +167,7 @@ test('Create, update, and delete item', done => {
         .expect(201)
         .end(finishTest(done));
 })})});
-*/
+
 // create observation that references existing item
 // submissionObject8
 test('Create observation that references existing item', done => {
@@ -183,7 +182,7 @@ test('Create observation that references existing item', done => {
         .expect(201)
         .end(finishTest(done));
 });
-/*
+*/
 // create observation that references created item
 // submissionObjet9
 test('Create observation that references created item', done => {
@@ -198,7 +197,7 @@ test('Create observation that references created item', done => {
         .expect(201)
         .end(finishTest(done));
 });
-
+/*
 // update and delete observation
 // submissionObject10, submissionObject11, submissionObject12, submissionObject13
 test('Create, update, and delete observation', done => {
@@ -247,8 +246,8 @@ test('Create, update, and delete observation', done => {
         .expect(201)
         .end(finishTest(done));
 })})})});
-
 */
+
 function finishTest(done) {
     return (err, res) => {
         if (err) {

@@ -2,16 +2,16 @@
     "items": {
         "create": [
             {
-                "itemTypeID": 15,
+                "itemTypeID": 13,
                 "requiredItems": [],
                 "newRequiredItemIndices": [2],
                 "globalPrimaryKey": 1,
                 "newGlobalItemIndex": null,
                 "data": {
                     "returnableIDs": [
-                        481,
-                        482,
-                        483
+                        339,
+                        340,
+                        341
                     ],
                     "data": [
                         2,
@@ -21,16 +21,16 @@
                 }
             },
             {
-                "itemTypeID": 15,
+                "itemTypeID": 13,
                 "requiredItems": [],
                 "newRequiredItemIndices": [2],
                 "globalPrimaryKey": 1,
                 "newGlobalItemIndex": null,
                 "data": {
                     "returnableIDs": [
-                        481,
-                        482,
-                        483
+                        339,
+                        340,
+                        341
                     ],
                     "data": [
                         3,
@@ -40,16 +40,16 @@
                 }
             },
             {
-                "itemTypeID": 17,
+                "itemTypeID": 15,
                 "requiredItems": [],
                 "newRequiredItemIndices": [3],
                 "globalPrimaryKey": 1,
                 "newGlobalItemIndex": null,
                 "data": {
                     "returnableIDs": [
-                        521,
-                        522,
-                        523
+                        379,
+                        380,
+                        381
                     ],
                     "data": [
                         "9001",

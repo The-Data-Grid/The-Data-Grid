@@ -129,7 +129,7 @@ function insertManyToManyGenerator(isObservation, isUpdate) {
     }
     /**
      * Insert item_id|observation_id and list_id into a m2m table
-     * @param {Number} primaryKeyOfInsertedValue 
+     * @param {Number[]|Number} primaryKeyOfInsertedValue 
      * @param {Number} primaryKey 
      * @param {String} listTableName 
      * @param {Object} db 
@@ -194,16 +194,20 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
             // check to see if all values are valid
             try {
                 
-                primaryKey = await db.any(formatSQL(`
-                    select list_id
-                    from $(tableName:name)
-                    WHERE $(columnName:name) IN ($(data:csv))
-                `, {
-                    tableName,
-                    columnName,
-                    data,
-                }));
-                
+                if(data.length === 0) {
+                    primaryKey = [];
+                } else {
+                    primaryKey = (await db.any(formatSQL(`
+                        select list_id
+                        from $(tableName:name)
+                        WHERE $(columnName:name) IN ($(data:csv))
+                    `, {
+                        tableName,
+                        columnName,
+                        data,
+                    }))).map(pk => pk.list_id);
+                }
+
             } catch(err) {
                 console.log(err)
                 throw new ErrorClass({code: 500, msg: `Error when getting current list values from ${tableName}`});
@@ -231,6 +235,7 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                                 value,
                                 primaryKeyColumnName
                             })))[primaryKeyColumnName];
+
                             newPrimaryKeys.push(newKey);
                         }
                         primaryKey = [...primaryKey, ...newPrimaryKeys];

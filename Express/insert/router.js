@@ -101,8 +101,9 @@ async function insertSubmission(submissionObject, sessionObject) {
 }
 
 async function insertSubmissionHandler(req, res, next) {
+    console.log(req.session)
     try {
-        await insertSubmission(req.body, req.session);
+        await insertSubmission(req.body, res.locals.authorization);
         return res.status(201).end();
     } catch(err) {
         console.log("ERROR: ", err)

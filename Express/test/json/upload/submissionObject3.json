@@ -22,14 +22,14 @@
                 }
             },
             {
-                "itemTypeID": 8,
+                "itemTypeID": 10,
                 "requiredItems": [
                     {
                         "itemTypeID": 1,
                         "primaryKey": 1
                     },
                     {
-                        "itemTypeID": 9,
+                        "itemTypeID": 8,
                         "primaryKey": 2
                     }
                 ],
@@ -38,52 +38,7 @@
                 "newGlobalItemIndex": null,
                 "data": {
                     "returnableIDs": [
-                        226,
-                        227
-                    ],
-                    "data": [
-                        {
-                            "supposedly JSON": "idk"
-                        },
-                        "Audit Template"
-                    ]
-                }
-            },
-            {
-                "itemTypeID": 11,
-                "requiredItems": [],
-                "newRequiredItemIndices": [],
-                "globalPrimaryKey": null,
-                "newGlobalItemIndex": null,
-                "data": {
-                    "returnableIDs": [
-                        398,
-                        399
-                    ],
-                    "data": [
-                        "Fancy Dancy Description",
-                        "Catalog Title!"
-                    ]
-                }
-            },
-            {
-                "itemTypeID": 12,
-                "requiredItems": [
-                    {
-                        "itemTypeID": 1,
-                        "primaryKey": 1
-                    },
-                    {
-                        "itemTypeID": 9,
-                        "primaryKey": 2
-                    }
-                ],
-                "newRequiredItemIndices": [],
-                "globalPrimaryKey": null,
-                "newGlobalItemIndex": null,
-                "data": {
-                    "returnableIDs": [
-                        400
+                        275
                     ],
                     "data": [
                         "My favorite audit in the whole wide world"
