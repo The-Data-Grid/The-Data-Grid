@@ -37,19 +37,14 @@ const {writeToBuffer} = require('@fast-csv/format');
  * @param {function} next 
  */
 function dataQueryWrapper(queryType) {
-
     return async (req, res, next) => {   
-    
         try {
-            console.log(res.locals.parsed.filters)
-    
             let {
                 allReturnableIDs,
                 allIDs,
                 feature,
                 featureTree
             } = queryHelpers.makeInternalObjects(res.locals.parsed, queryType)
-    
             // A lot happens here... The query engine contains an algorithm that trims unneeded joins, asigns aliases to arbitrary columns, stores a lookup of
             // aliases for the where clause, does some SQL formatting, and a bit more.
             let {
@@ -63,7 +58,7 @@ function dataQueryWrapper(queryType) {
             if(Object.keys(whereLookup).length != allIDs.length) {        
                 return res.status(500).send('Internal Server Error 7701: Number of columns found different than number of columns requested')
             }
-    
+
             const featureClauseArray = queryHelpers.makeFeatureClauseArray(feature, featureTreeArray, queryType);
     
             const whereClauseArray = queryHelpers.makeWhereClauseArray(whereLookup, res.locals.parsed.filters);
@@ -94,7 +89,6 @@ function dataQueryWrapper(queryType) {
             next()
     
         } catch(err) {
-    
             console.log(err)
             // Error
             return res.status(500).send(`Internal Server Error 1702: Malformed Query`);
@@ -115,16 +109,12 @@ function formatDefault(req, res, next) {
     // fuck .fill(), all my homies hate .fill() 
     // (we don't use .fill([]) here because it fills the array with references to a single array, instead of multiple arrays)
     let rowData = Array(res.locals.parsed.finalQuery.rows.length).fill().map(e => [])
-
     let primaryKey = Array(res.locals.parsed.finalQuery.rows.length).fill(null)
-
-    
     let keys = res.locals.parsed.finalQuery.fields.map(field => field.name);
     let returnableIDs = keys.filter(key => key !== 'observation_pkey' && key !== 'item_pkey').map(key => parseInt(key.slice(1)));
 
     // fill the rows
     keys.forEach((key, i) => {
-        
         // handle primary keys
         if(key === 'observation_pkey' || key === 'item_pkey') {
             res.locals.parsed.finalQuery.rows.forEach((row, ii) => {        
@@ -154,14 +144,11 @@ function formatDefault(req, res, next) {
     }
 
     next()
-
-    
 };
 
 function sendDefault(req, res) {
     return res.json(res.locals.formattedResponse)
 }
-
 
 function sendDownload(req, res) {
 
@@ -270,7 +257,7 @@ function sendKey(req, res) {
     // finalQuery is one row
 
     /* DEBUG */
-    // console.log(res.locals.parsed.finalQuery);
+    //console.log(res.locals.parsed.finalQuery);
 
     let primaryKey = null
 

@@ -4,7 +4,8 @@
  ********************/
 
 const fs = require('fs')
-const Joi = require('joi')
+const Joi = require('joi');
+const { isInteger } = require('lodash');
 
 const {idValidationLookup} = require('./setup.js');
 
@@ -154,15 +155,12 @@ let validItems = Object.keys(validateItem);
 
 // Returns a validation middleware function depending on the initialization parameters
 function validationConstructor(init) {
- 
     // if item use item validation objects
     if(init == 'item') {
-
         return itemOrObservation(validateItem, null, validItems)
 
     // if observation use observation object
     } else if(init == 'observation') {
-
         return itemOrObservation(validateObservation, globals, validFeatures)
 
     // else throw
@@ -177,18 +175,15 @@ function validationConstructor(init) {
 
         //// Validate request feature, columns, and filters ////
         return (req, res, next) => {
-
             // item_... or obs_... depending on endpoint
             let feature = (init == 'item' ? 'item_' + res.locals.parsed.features : 'observation_' + res.locals.parsed.features);
             let universalFilters = res.locals.parsed.universalFilters;
-
 
             if(!validateFeatures.includes(feature)) {
                 return res.status(400).send(`Bad Request 2201: ${feature} is not a valid ${init == 'item' ? 'item' : 'feature'}`);
             };
 
             // Validate columns for feature
-
             for(let column of res.locals.parsed.columns) {
                 if(!validate[feature].column.includes(parseInt(column)) && (init == 'item' || !globals.column.includes(parseInt(column)))) {
                     return res.status(400).send(`Bad Request 2202: ${column} is not a valid column for the ${feature} feature`);
@@ -255,15 +250,13 @@ function validationConstructor(init) {
             // Validate universalFilters input fields
             for(let filter in universalFilters) {
                 // Validate field
-                if(Array.isArray(universalFilters[filter])) {
-                    return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters`);
-                } else if (filter == 'limit' && !isPositiveInteger(universalFilters[filter])) {
+                if (filter == 'limit' && !isPositiveInteger(universalFilters[filter])) {
                     return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
                 } else if (filter == 'offset' && !isPositiveIntegerOrZero(universalFilters[filter])) {
                     return res.status(400).send(`Bad Request 2209: Field for ${filter} must be zero or a positive integer`);
                 } else if (filter == 'sorta' || filter == 'sortd') {
                     if (!validate[feature].column.includes(parseInt(universalFilters[filter])) && (init == 'item' || !globals.filter.includes(parseInt(universalFilters[filter])))) {
-                        return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
+                        return res.status(400).send(`Bad Request 2211: Field for ${filter} must be a valid returnable ID`);
                     }
                 } else if (filter == 'pk') {
                     if (filter == 'pk' && !isPositiveInteger(universalFilters[filter])) {
@@ -271,7 +264,6 @@ function validationConstructor(init) {
                     }
                 }
             }
-
             // Passing to query.js            
             next();
         }
