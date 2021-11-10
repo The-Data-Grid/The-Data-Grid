@@ -5,6 +5,7 @@ import { HttpHeaders } from "@angular/common/http"
 import { first } from 'rxjs/operators';
 import { stringify } from '@angular/compiler/src/util';
 import {Router} from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 interface Month {
   value: string;
@@ -86,7 +87,7 @@ export class DialogComponent implements OnInit {
   }
   
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService, private router:Router) { 
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService, private router:Router, private toastr: ToastrService) { 
   }
 
   ngOnInit() {
@@ -214,9 +215,15 @@ export class DialogComponent implements OnInit {
     this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
     // console.log(this.userLoginObject);
     this.apiService.attemptLogin(this.userLoginObject)
-      .subscribe((res) => {console.log(res); localStorage.setItem("userEmail", "ted")});
+      .subscribe((res) => {
+        console.log(res);
+         localStorage.setItem("userEmail", "ted");
+         this.close();
+         this.toastr.success('Log in Successful', '');
+        return;
+        });
+        console.log("FAIL")
 
-    this.close();
       // .subscribe(res => console.log(res), err => {
       //   if (err.status == 200) {
       //     console.log(err);

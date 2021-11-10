@@ -8,6 +8,7 @@ import {MatMenu, MatMenuTrigger} from '@angular/material/menu'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Clipboard } from '@angular/cdk/clipboard'
 import { black } from 'chalk';
+import { ToastrService } from 'ngx-toastr';
 
 
 const API_URL = environment.apiUrl;
@@ -66,7 +67,7 @@ export class AppComponent implements OnInit {
   }
 
 
-  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private clipboard: Clipboard,) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private clipboard: Clipboard,private toastr: ToastrService) { }
 
 
   clearit() {
@@ -121,6 +122,8 @@ export class AppComponent implements OnInit {
       .subscribe((res) => {
         localStorage.removeItem("userEmail");
         console.log("signed out!")
+        this.toastr.info('Signed out', '');
+
       })
   }
 
