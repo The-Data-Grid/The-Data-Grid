@@ -115,6 +115,15 @@ export class SetupObjectService {
     return returnableIDs;
   }
 
+  getAllAttributeReturnableIDs(treeIDobjects) {
+    let returnableIDs = []
+    let itemInfos = Object.values(treeIDobjects)
+    itemInfos.forEach((itemInfo: any) => {
+      returnableIDs.push(...itemInfo.attributeReturnableIDs)
+    });
+    return returnableIDs;
+  }
+
   // helper function for setting inputUserSelection and filterUserSelection
   // in a treeIDObject columnInfo object
   private getSelection(curColumnSelector) {

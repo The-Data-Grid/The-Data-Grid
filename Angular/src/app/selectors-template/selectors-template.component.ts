@@ -17,7 +17,7 @@ export class SelectorsTemplateComponent implements OnInit {
   @Input() treeIDobjects: {}
   @Input() returnableIDs: []
   @Input() auditName: string
-  @Input() columnsType: string //should be "IDcolumns", "nonIDcolumns", "attributeColumns"
+  @Input() columnsType: string //should be "IDcolumns", "nonIDcolumns", or "attributeColumns"
   @Input() selectionType: string
 
   constructor(private apiService: ApiService, public dialog: MatDialog,) { }
