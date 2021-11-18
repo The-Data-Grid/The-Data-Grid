@@ -6,7 +6,7 @@ response object, and sends an HTTP response.
 ============================================================ */
 
 // Internal setup objects
-const {returnableIDLookup, featureParents, setupObject, setupMobileObject} = require('../setup.js')
+const {returnableIDLookup, featureParents, setupObject, setupMobileObject, filterSetupObject} = require('../setup.js')
 
 // Database connection and SQL formatter
 const {postgresClient} = require('../db/pg.js');
@@ -284,13 +284,17 @@ function sendSetup(req, res) {
     return res.status(200).json(setupObject) // send setupObject
 };
 
-
 // SEND SETUP MOBILE OBJECT
 // ============================================================
 function sendMobileSetup(req, res) {
     return res.status(200).json(setupMobileObject) // send setupMobileObject
 };
 
+// SEND FILTER SETUP OBJECT
+// ============================================================
+function sendFilterSetup(req, res) {
+    return res.status(200).json(filterSetupObject)
+};
 
 
 module.exports = {
@@ -303,5 +307,6 @@ module.exports = {
     sendDownload,
     sendSetup,
     sendMobileSetup,
-    sendKey
+    sendKey,
+    sendFilterSetup,
 };

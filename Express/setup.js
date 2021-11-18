@@ -96,7 +96,7 @@ syncdb.end()
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, ID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, sqlType) {
+    constructor(feature, baseItem, ID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, sqlType) {
         this.ID = ID;
         this.columnID = columnID;
         this.feature = feature;
@@ -106,6 +106,7 @@ class ReturnableID {
         this.appendSQL = appendSQL;
         this.selectSQL = selectSQL;
         this.sqlType = sqlType;
+        this.baseItem = baseItem;
 
         this.joinObject = this.makeJoinObject(Array.from(columnTree), Array.from(tableTree), ID);
 
@@ -156,7 +157,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     let idValidationLookup = {};
     let featureParents = {};
     let setupObject = {};
-    let setupMobileObject = {}
+    let setupMobileObject = {};
 
     // Format frontendTypes                         
     frontendTypes = frontendTypes.map((el) => el.type_name)
@@ -226,7 +227,6 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                     observation: row['c__observation_table_name'],
                     subobservation: row['c__subobservation_table_name'],
                     item: row['i__table_name'],
-                    columnID: row['c__column_id'],
                     columnName: row['c__column_name'],
                     tableName: row['c__table_name'],
                     referenceType: row['rt__type_name'],
@@ -254,7 +254,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     const itemOrder = allItems.map(row => row['i__table_name']);
 
     let mobileItemNodeObjects = []
-    let itemNodeObjects = allItems.map(item => {
+    let itemNodeObjects = allItems.map((item, index) => {
 
         // getting non-id columns
         const nonIDColumns = columnObjects.filter(col => col.additionalInfo.item === item['i__table_name'] && ['item-non-id', 'item-list', 'item-location', 'item-factor'].includes(col.additionalInfo.referenceType));
@@ -356,7 +356,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         }
     })
     let mobileFeatureNodeObjects = []
-    let featureNodeObjects = allFeatures.map((el) => {
+    let featureNodeObjects = allFeatures.map((el, index) => {
 
         let frontendName = el['f__frontend_name']
         let information = el['f__information']
@@ -746,7 +746,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup[returnableID] = new ReturnableID(feature, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, sqlType)
+        returnableIDLookup[returnableID] = new ReturnableID(feature, baseItem, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, sqlType)
 
     }
 
@@ -754,6 +754,9 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     return({
         setupObject,
         setupMobileObject,
+        featureOrder,
+        columnOrder,
+        itemOrder,
         idValidationLookup,
         featureParents,
         returnableIDLookup,
@@ -969,6 +972,9 @@ const {
     featureParents,
     setupObject,
     setupMobileObject,
+    featureOrder,
+    columnOrder,
+    itemOrder,
     columnObjects,
 } = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
@@ -986,6 +992,52 @@ for(let itemData of Object.entries(itemColumnObject)) {
     }
 }
 
+// Make filterSetupObject
+let filterSetupObject = {
+    itemColumnObjectIndices: {},
+    itemReturnableIDs: {},
+    observationColumnObjectIndices: {},
+    observationReturnableIDs: {},
+};
+// go through all returnables and add
+for(let returnable of Object.values(returnableIDLookup)) {
+    // unpack
+    const {
+        ID,
+        columnID,
+        feature,
+        baseItem,
+    } = returnable;
+    // if item
+    if(feature === null) {
+        // get itemNodeObject index
+        const itemNodeObjectIndex = itemOrder.indexOf(baseItem);
+        // check if item exists yet
+        if(!(itemNodeObjectIndex in filterSetupObject.itemColumnObjectIndices)) {
+            filterSetupObject.itemColumnObjectIndices[itemNodeObjectIndex] = [];
+            filterSetupObject.itemReturnableIDs[itemNodeObjectIndex] = [];
+        }
+        // add columnID
+        filterSetupObject.itemColumnObjectIndices[itemNodeObjectIndex].push(columnOrder.indexOf(columnID));
+        // add returnableID
+        filterSetupObject.itemReturnableIDs[itemNodeObjectIndex].push(ID);
+    }
+    // then observation
+    else {
+        // get featureNodeObject index
+        const featureNodeObjectIndex = featureOrder.indexOf(feature);
+        // check if feature exists yet
+        if(!(featureNodeObjectIndex in filterSetupObject.observationColumnObjectIndices)) {
+            filterSetupObject.observationColumnObjectIndices[featureNodeObjectIndex] = [];
+            filterSetupObject.observationReturnableIDs[featureNodeObjectIndex] = [];
+        }
+        // add columnID
+        filterSetupObject.observationColumnObjectIndices[featureNodeObjectIndex].push(columnOrder.indexOf(columnID));
+        // add returnableID
+        filterSetupObject.observationReturnableIDs[featureNodeObjectIndex].push(ID);
+    }
+}
+
 //console.log(itemColumnObject.item_sink);
 //console.log(itemColumnObject['item_sink'])
 //console.log(Object.values(returnableIDLookup).filter(id => [34, 44, 49].includes(id.columnID)))
@@ -996,12 +1048,14 @@ for(let itemData of Object.entries(itemColumnObject)) {
 //console.log(itemColumnObject)
 //console.log(observationItemTableNameLookup)    
 //fs.writeFileSync(__dirname + '/setupObjectTry1.json', JSON.stringify(setupObject))
+
 module.exports = {
     returnableIDLookup,
     idValidationLookup,
     featureParents,
     setupObject,
     setupMobileObject,
+    filterSetupObject,
     allItems,
     itemM2M,
     itemColumnObject,
