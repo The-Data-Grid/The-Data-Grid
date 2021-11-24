@@ -27,7 +27,7 @@ connectPostgreSQL('default');
 
 // Middleware
 const { setupParse } = require('./parse.js');
-const { sendSetup, sendMobileSetup } = require('./query/query.js');
+const { sendSetup, sendMobileSetup, sendFilterSetup } = require('./query/query.js');
 const insertRouter = require('./insert/router.js');
 const auditRouter = require('./query/router.js');
 const authRouter = require('./auth/router.js');
@@ -72,6 +72,9 @@ app.get('/api/setup', setupParse, sendSetup);
 
 // Setup Mobile Object
 app.get('/api/setup/mobile', setupParse, sendMobileSetup);
+
+// Filter Setup Object
+app.get('/api/setup/filter', setupParse, sendFilterSetup)
 
 
 // @kian pls clean up

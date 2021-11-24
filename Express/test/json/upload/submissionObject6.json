@@ -3,12 +3,12 @@
         "create": [],
         "update": [
             {
-                "itemTypeID": 16,
+                "itemTypeID": 14,
                 "primaryKey": 1,
                 "nonIDRequiredItems": [],
                 "data": {
                     "returnableIDs": [
-                        502
+                        360
                     ],
                     "data": [
                         2

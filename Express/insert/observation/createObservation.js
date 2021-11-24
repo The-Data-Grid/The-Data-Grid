@@ -164,11 +164,12 @@ async function createIndividualObservation(createObservationObject, insertedItem
 
             // if the column is external call the proper insertion function based on reference type and pass metadata and value
             if(itemColumn.referenceType in insertExternalColumn) {
-                if(['item-list', 'item-list-mutable'].includes(itemColumn.referenceType)) {
+                if(['obs-list', 'obs-list-mutable'].includes(itemColumn.referenceType)) {
                     listColumnsAndValues.push({
                         itemColumn,
                         columnValue
                     });
+                    i++
                     continue;
                 }
                 const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
@@ -189,14 +190,6 @@ async function createIndividualObservation(createObservationObject, insertedItem
                 }
             // then a local column (obs-global is included)
             } else {
-                // convert data_time_conducted field from MM-DD-YYYY to UTC
-                if(itemColumn.referenceType === 'obs-global' && itemColumn.columnName === 'data_time_conducted') {
-                    try {
-                        columnValue = apiDateToUTC(columnValue)
-                    } catch {
-                        throw new CreateObservationError({code: 400, msg: `${columnValue} must be in MM-DD-YYYY format`});
-                    }
-                }
                 columnNamesAndValues.push({
                     columnName: itemColumn.columnName,
                     columnValue
@@ -229,13 +222,14 @@ async function createIndividualObservation(createObservationObject, insertedItem
         const { itemColumn, columnValue } = columnsAndValues;
 
         // 1. Insert into the list_... table
-        const { primaryKeyOfInsertedValue } = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+        const primaryKeyOfInsertedValue = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
 
         // insert into the many to many table
-        await insertObservationManyToMany(primaryKeyOfInsertedValue, observationPrimaryKey, itemColumn.tableName, db);
+        await insertObservationManyToMany(primaryKeyOfInsertedValue.columnValue, observationPrimaryKey, itemColumn.tableName, db);
     }
 
     // Insert into SOP many to many
+    console.log(sopValue, sessionObject.organizationID, observationCountReference)
     await insertSOP(sopValue, sessionObject.organizationID, observationCountReference);
 
     // 7. Insert insertion record into history tables

@@ -2,10 +2,10 @@
     "items": {
         "create": [
             {
-                "itemTypeID": 16,
+                "itemTypeID": 14,
                 "requiredItems": [
                     {
-                        "itemTypeID": 17,
+                        "itemTypeID": 15,
                         "primaryKey": 1
                     }
                 ],
@@ -14,7 +14,7 @@
                 "newGlobalItemIndex": null,
                 "data": {
                     "returnableIDs": [
-                        502
+                        360
                     ],
                     "data": [
                         1

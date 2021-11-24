@@ -69,14 +69,13 @@ VALUES
 -- audit_id, catalog_id, data_audit_name, user_id, data_time_created
 INSERT INTO item_audit 
 ("item_id",
-"item_catalog_id",
 "data_audit_name",
 "item_user_id",
 "item_organization_id",
 "data_time_created")
 VALUES
-    (default, NULL, 'Powell Sinks', 2, 1, NOW()),
-    (default, NULL, 'YRL Sinks', 1, 1, NOW());
+    (default, 'Powell Sinks', 2, 1, NOW()),
+    (default, 'YRL Sinks', 1, 1, NOW());
 
 
 -- "submission_id", "item_audit_id", "item_organization_id", "item_user_id", "item_template_id", "data_time_submitted", "data_submission_name"

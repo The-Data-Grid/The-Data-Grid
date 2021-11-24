@@ -199,9 +199,9 @@ async function updateIndividualItem(updateItemObject, db) {
     for(let columnsAndValues of listColumnsAndValues) {
         const {itemColumn, columnValue} = columnsAndValues;
         // Insert into the list_... table
-        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+        const primaryKeyOfInsertedValue = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
         // insert into the many to many table
-        await updateItemManyToMany(primaryKeyOfInsertedValue, primaryKey, itemColumn.tableName, db);
+        await updateItemManyToMany(primaryKeyOfInsertedValue.columnValue, primaryKey, itemColumn.tableName, db);
     }
 
     // Insert into history

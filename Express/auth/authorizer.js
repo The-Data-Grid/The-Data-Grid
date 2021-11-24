@@ -56,13 +56,13 @@ class RequestValidationError extends Error {
  * 
  * @param {'query' | 'submission'} queryOrUpload
  */
-function authorizationGenerator(queryOrUpload) {
+function authorizationGenerator(queryOrUpload, queryType) {
 
     return async (req, res, next) => {
         let collectedItems;
         if(queryOrUpload === 'query') {
             // [tableName, ...]
-            collectedItems = collectQueryItems(res.locals.parsed);
+            collectedItems = collectQueryItems(res.locals.parsed, queryType);
         } else {
             // [{
             //    tableName: String,  
@@ -301,6 +301,7 @@ function collectQueryItems(parsed, queryType) {
     } = queryHelpers.makeInternalObjects(parsed, queryType);
     // go through all the returnables and get unique items
     const uniqueItems = [];
+    // console.log(allReturnableIDs)
     for(let returnable of allReturnableIDs) {
         let tableName = columnIdItemLookup[returnable.columnID];
         /*
@@ -362,5 +363,6 @@ function collectSubmissionItems(submissionObject) {
 
 module.exports = {
     authorizeSubmission: authorizationGenerator('upload'),
-    authorizeQuery: authorizationGenerator('query')
+    authorizeItemQuery: authorizationGenerator('query', 'item'),
+    authorizeObservationQuery: authorizationGenerator('query', 'observation')
 };

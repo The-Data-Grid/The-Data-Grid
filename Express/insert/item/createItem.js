@@ -278,10 +278,10 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         const {itemColumn, columnValue} = columnsAndValues;
 
         // 1. Insert into the list_... table
-        const {primaryKeyOfInsertedValue} = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+        const primaryKeyOfInsertedValue = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
 
         // insert into the many to many table
-        await insertItemManyToMany(primaryKeyOfInsertedValue, itemPrimaryKey, itemColumn.tableName, db);
+        await insertItemManyToMany(primaryKeyOfInsertedValue.columnValue, itemPrimaryKey, itemColumn.tableName, db);
     }
 
     // 7. Insert insertion record into history tables
