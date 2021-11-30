@@ -1558,7 +1558,7 @@ INSERT INTO metadata_item
             (DEFAULT, 'item_country', 'Country', 3, 1, null, 3, null),
             (DEFAULT, 'item_sop', 'Standard Operating Procedure', 3, 1, null, 2, 1),
             -- (DEFAULT, 'item_template', 'Template', 3, 1, null, 2, 1),
-            (DEFAULT, 'item_user', 'User', 3, 3, null, 3, null), -- Note upload privilege superuser users are created through the user API
+            (DEFAULT, 'item_user', 'User', 3, 1, null, 3, null), -- Note upload privilege superuser users are created through the user API
             (DEFAULT, 'item_global', 'Global Item', 3, 1, null, 2, 1),
             -- (DEFAULT, 'item_catalog', 'Catalog', 3, 1, null, 2, 1),
             (DEFAULT, 'item_audit', 'Audit', 3, 1, null, 2, 1);
