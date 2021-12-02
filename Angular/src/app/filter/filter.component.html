@@ -3,10 +3,10 @@
         <mat-sidenav class="sidenav" mode="side" opened fxLayout="column" fxLayoutAlign="space-between center">
             <h3>Filter By</h3>
             <mat-radio-group style="padding-top: 30px" aria-label="Select an option" [(ngModel)]="filterBy">
-                <mat-radio-button value="Feature">Feature</mat-radio-button>
-                <mat-radio-button value="Submission">Submission</mat-radio-button>
+                <mat-radio-button value="Feature">Item</mat-radio-button>
+                <mat-radio-button value="Submission">Observation</mat-radio-button>
             </mat-radio-group>
-
+  
             <!-- feature filters -->
             <div class="features-filters" *ngIf="filterBy!='Submission'">
                 <h3>Filters</h3>
@@ -18,7 +18,7 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-
+  
                 <div *ngIf="selectedFeature && selectorsLoaded">
                     <app-selectors-template [treeIDobjects]="treeIDobjects" [returnableIDs]="IDreturnableIDs"
                         [selectionType]="'filter'">
@@ -27,41 +27,33 @@
                         [columnsType]="'attributeColumns'" [selectionType]="'filter'">
                     </app-selectors-template> -->
                 </div>
-
-                <!-- <mat-accordion *ngIf="selectedFeature">
-                    <div *ngFor="let feature of rootFeatures">
-                        <mat-expansion-panel>
-                            <mat-expansion-panel-header>
-                                <mat-panel-title style="width: 100%" fxLayout="row"
-                                    fxLayoutAlign="space-between center">
-                                    <span>
-                                        {{ feature.name }}
-                                    </span>
-                                </mat-panel-title>
-                            </mat-expansion-panel-header>
-                            <div *ngIf="selectorsLoaded">
-                            </div>
-                        </mat-expansion-panel>
-                    </div>
-                </mat-accordion> -->
-
-                <!-- <mat-accordion *ngIf="selectedFeature">
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                {{ selectedFeature.name }}
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <app-reusable-template [feature]="featureSelectors[selectedFeature.index]"
-                            [appliedFilterSelections]="appliedFilterSelections" [returnableIDs]="featureReturnableIDs">
-                        </app-reusable-template>
-                    </mat-expansion-panel>
-                </mat-accordion> -->
-
+  
+               
             </div>
+  
+            <div class="features-filters" *ngIf="filterBy=='Submission'">
+                <h3>Filters</h3>
+                <mat-form-field class="selector">
+                    <mat-label>Observations</mat-label>
+                    <mat-select [(ngModel)]="selectedRoot" (ngModelChange)="onRootSelection()">
+                        <mat-option *ngFor="let info of rootItems" [value]="info">
+                            {{info.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+  
+                <div *ngIf="selectedFeature && selectorsLoaded">
+                    <app-selectors-template [treeIDobjects]="treeIDobjects" [returnableIDs]="returnableIDs"
+                        [selectionType]="'item'">
+                    </app-selectors-template>
+                </div>
+  
+               
+            </div>
+  
             <button id="apply-button" mat-button (click)="applyFilters()">APPLY</button>
         </mat-sidenav>
-
+  
         <mat-sidenav-content class="sidenav-content">
             <div *ngIf="tableObject" id="table-buttons" fxLayoutAlign="end center">
                 <!-- commented out the in-table editing button: -->
@@ -78,11 +70,11 @@
                     <mat-icon>save</mat-icon>
                 </button>
             </div>
-
+  
             <!-- table -->
             <ngx-datatable *ngIf="tableObject" id="table" #table class="material" [headerHeight]="50"
                 [footerHeight]="50" rowHeight="auto" [limit]="6" [rows]="rows" [scrollbarH]="true">
-
+  
                 <ngx-datatable-column *ngFor="let col of dataTableColumns" [prop]="col.returnableID" [name]="col.name">
                     <!-- header cells -->
                     <ng-template let-column="column" ngx-datatable-header-template>
@@ -102,11 +94,11 @@
                             <mat-icon style="font-size: 90%;">info</mat-icon>
                         </button> -->
                     </ng-template>
-
-
+  
+  
                     <!-- row cells -->
                     <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row" let-value="value">
-
+  
                         <!-- depending on the column data type, cell has different ui for editing -->
                         <span [ngSwitch]="col.type">
                             <div *ngSwitchCase="'hyperlink'"
@@ -173,5 +165,6 @@
             </ngx-datatable>
         </mat-sidenav-content>
     </mat-sidenav-container>
-
-</div>
+  
+ </div>
+ 

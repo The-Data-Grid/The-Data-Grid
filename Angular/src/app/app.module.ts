@@ -40,6 +40,7 @@ import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialo
 import { ProfileComponent } from './profile/profile.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { CheckEmailComponent } from './verify-email/check-email/check-email.comp
     ClickOutsideModule,
     MaterialModule,
     MatTooltipModule,
+    ToastrModule.forRoot()
   ],
   providers: [ApiService, DatePipe, SetupObjectService, TableObjectService],
   bootstrap: [AppComponent],
