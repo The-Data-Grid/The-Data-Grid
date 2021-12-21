@@ -65,8 +65,8 @@ function setup (orgId, userId, feature, action, isItem) {
  * @property {String[] | null} presetValues
  * 
  * @param {spreadsheetMetaObject} spreadsheetMetaObject 
- * @param {spreadsheetColumnObject[]} spreadsheetColumnObject 
+ * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
  */
-function generate (spreadsheetMetaObject, spreadsheetColumnObject) {
+function generate (spreadsheetMetaObject, spreadsheetColumnObjectArray) {
     // return res.sendFile(...)
 }
