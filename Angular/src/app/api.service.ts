@@ -46,6 +46,19 @@ export class ApiService {
       }));
   }
 
+  public getSetupFilterObject() {
+    const url = API_URL + '/setup/filter';
+
+    return this.http.get<any>(url, {
+      observe: 'response',
+    })
+      .pipe(map((response: any) => {
+        console.log("SetupObject Request Status: " + response.status + ":::::" + response.statusText);
+        console.log("setupObject", response.body);
+        return response.body;
+      }));
+  }
+
   public getTableObject(feature: string, defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections, returnableIDs): any {
     //DON'T DELETE. once sink is the only feature we can get dropdown info for.
     //we wil need this stuff once sink and default columns are no longer hardcoded

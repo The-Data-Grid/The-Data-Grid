@@ -26,6 +26,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { NgxHorizontalTimelineModule } from 'ngx-horizontal-timeline';
 import { MatStepper } from '@angular/material/stepper';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 
 
@@ -55,7 +56,8 @@ import { MatStepper } from '@angular/material/stepper';
         MatDividerModule,
         MatExpansionModule,
         MatStepperModule,
-        NgxHorizontalTimelineModule
+        NgxHorizontalTimelineModule,
+        MatProgressBarModule
         
     ],
     exports: [
@@ -83,7 +85,8 @@ import { MatStepper } from '@angular/material/stepper';
         MatDividerModule,
         MatExpansionModule,
         MatStepperModule,
-        NgxHorizontalTimelineModule
+        NgxHorizontalTimelineModule,
+        MatProgressBarModule
     ],
 })
 export class MaterialModule { }
