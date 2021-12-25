@@ -17,7 +17,7 @@
             <span class="font-semibold text-[#535353]">Query Type</span>
             <mat-form-field appearance="fill" style="margin-bottom: -21px;">
                 <mat-label>Select Query Type</mat-label>
-                <mat-select value="Observations">
+                <mat-select [(ngModel)]="queryType" (ngModelChange)="onQueryTypeChange()">
                     <mat-option value="Items">Items</mat-option>
                     <mat-option value="Observations">Observations</mat-option>
                 </mat-select>
@@ -27,8 +27,8 @@
             <span class="font-semibold text-[#535353]">Feature</span>
             <mat-form-field appearance="fill" style="margin-bottom: -21px;">
                 <mat-label>Select Feature</mat-label>
-                <mat-select [value]="selectedFeature">
-                  <mat-option *ngFor="let featureName of features" [value]="featureName">{{ featureName }}</mat-option>
+                <mat-select [(ngModel)]="selectedFeature" (ngModelChange)="onFeatureSelectChange()">
+                  <mat-option *ngFor="let obj of featuresOrItems; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
                 </mat-select>
               </mat-form-field>              
         </div>
@@ -36,8 +36,8 @@
             <span class="font-semibold text-[#535353]">Fields</span>
             <mat-form-field appearance="fill" style="margin-bottom: -21px;">
                 <mat-label>Select Fields</mat-label>
-                <mat-select [formControl]="fieldsForm" multiple>
-                  <mat-option *ngFor="let n of fieldsOptions" [value]="n">{{n}}</mat-option>
+                <mat-select [(ngModel)]="selectedFields" (ngModelChange)="onFieldSelection()" multiple>
+                  <mat-option *ngFor="let obj of relevantColumnObjects; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
                 </mat-select>
               </mat-form-field>              
         </div>
@@ -56,8 +56,8 @@
                     <p class="font-semibold text-[#535353] w-full">Sort</p>
                     <mat-form-field appearance="fill" style="margin-top: 10px; margin-bottom: -10px;">
                         <mat-label>Select Field</mat-label>
-                        <mat-select [formControl]="fieldsForm">
-                          <mat-option *ngFor="let n of fieldsOptions" [value]="n">{{n}}</mat-option>
+                        <mat-select [(ngModel)]="selectedSortField" (ngModelChange)="onSortSelection()">
+                            <mat-option *ngFor="let obj of relevantColumnObjects; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
                         </mat-select>
                       </mat-form-field>  
                       <div>
@@ -84,7 +84,7 @@
                         <th *ngFor="let header of headerNames" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
                     </tr>
                     <!-- Data -->
-                    <tr *ngFor="let row of materialTableDataSource" class="h-50px text-sm hover-bg-gray-100">
+                    <tr *ngFor="let row of tableData" class="h-50px text-sm hover-bg-gray-100">
                         <td *ngFor="let cell of row" class="border-t border-gray-200   w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
                     </tr>
                 </table>
@@ -92,13 +92,14 @@
             <div class="flex justify-between">
                 
                 <div class="flex flex-row items-center">
-                    <button class="text-semibold bg-[#569CD7] px-2 mx-2 text-sm" style="height: 25px;" mat-button (click)="runDownload()">Download all pages</button>
+                    <button class="text-semibold bg-[#569CD7] px-2 mx-2 text-sm" style="height: 25px;" mat-button (click)="runDownload()">{{ isDownloading ? 'Downloading...' : 'Download all pages' }}</button>
                     <div>
                         <mat-radio-group class="flex flex-row text-sm" aria-label="Select an option" [(ngModel)]="downloadType">
                           <mat-radio-button style="margin-right: 5px" value="csv">CSV</mat-radio-button>
                           <mat-radio-button value="json">JSON</mat-radio-button>
                         </mat-radio-group>
                     </div>
+                    {{ rootFeatures }}
                 </div>
                 <!-- Paginator -->
                 <mat-paginator [length]="100"

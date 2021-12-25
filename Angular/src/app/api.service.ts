@@ -73,6 +73,41 @@ export class ApiService {
     return this.http.get<TableObject>(url);
   }
 
+  public newGetTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any) {
+    const observationOrItem = isObservation ? 'observation' : 'item';
+    const formattedSort: string = this.formatSort(sortObject);
+    const formattedFilterSelections: string = this.formatFilterSelections(appliedFilterSelections);
+    const urlNoQuery = API_URL + '/audit/' + observationOrItem + '/' + feature + '/' + returnableIDs.join('&');
+    const queryString = [formattedSort, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
+    const finalUrl = queryString.length > 0 ? urlNoQuery + '?' + queryString : urlNoQuery;
+
+    return this.http.get<any>(finalUrl);
+  }
+
+  private formatSort(sortObject: any): string {
+    if(sortObject === null) {
+      return '';
+    }
+    const key = sortObject.isAscending ? 'sorta' : 'sortd';
+    return `${key}=${sortObject.returnableID}`;
+  }
+
+  private formatFilterSelections(appliedFilterSelections): string {
+    return '';
+  }
+
+  public downloadTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, isCSV: boolean) {
+    const observationOrItem = isObservation ? 'observation' : 'item';
+    const formattedSort: string = this.formatSort(sortObject);
+    const formattedFilterSelections: string = this.formatFilterSelections(appliedFilterSelections);
+    const downloadType = isCSV ? 'csv' : 'json'
+    const urlNoQuery = API_URL + '/audit/' + observationOrItem + '/download/' + downloadType + '/' + feature + '/' + returnableIDs.join('&');
+    const queryString = [formattedSort, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
+    const finalUrl = queryString.length > 0 ? urlNoQuery + '?' + queryString : urlNoQuery;
+
+    return this.http.get<any>(finalUrl, { responseType: 'blob' as 'json'} );
+  }
+
   // arg returnableIDS is an array of IDS for which you want to get options
   public getDropdownOptions(returnableIDs, auditName = "sink"): Observable<any> {
     console.log(returnableIDs)

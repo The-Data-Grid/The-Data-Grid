@@ -29,7 +29,7 @@ router.get('/observation/:feature/:include',
     query.sendDefault);
 
 //** Observation Data Query w/ Download **//	
-router.get('/download/:downloadType/observation/:feature/:include',
+router.get('/observation/download/:downloadType/:feature/:include',
     cacheLayer.hitCacheDownload, 
     parse.queryParse, 
     validateObservation, 
@@ -71,7 +71,7 @@ router.get('/item/:feature/:include',
     query.sendDefault);
 
 //** Item Data Query w/ Download **//	
-router.get('/download/:downloadType/item/:feature/:include',
+router.get('/item/download/:downloadType/:feature/:include',
     cacheLayer.hitCacheDownload,
     parse.queryParse, 
     validateItem, 
