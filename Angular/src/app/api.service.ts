@@ -80,7 +80,7 @@ export class ApiService {
     const urlNoQuery = API_URL + '/audit/' + observationOrItem + '/' + feature + '/' + returnableIDs.join('&');
     const queryString = [formattedSort, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
     const finalUrl = queryString.length > 0 ? urlNoQuery + '?' + queryString : urlNoQuery;
-
+    // console.log(finalUrl)
     return this.http.get<any>(finalUrl);
   }
 

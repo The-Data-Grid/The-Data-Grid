@@ -46,33 +46,9 @@ ngOnInit() {
 
 // Table Data
 
-tableData = [
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"],
-	['good basin', 'bad brand', "somethingNew"]
-];
+tableData = [];
 
-dataColumnHeaders = [{
-  returnableID: 10,
-  frontendName: 'Basin Quality'
-},
-{
-  returnableID: 20,
-  frontendName: 'Handle Brand'
-},
-{
-  returnableID: 40,
-  frontendName: 'camelCase?'
-}]
-
-headerNames = this.dataColumnHeaders.map(header => header.returnableID)
+headerNames = [];
 
 // API Requests
 
@@ -117,6 +93,7 @@ getSetupObjects() {
 		console.log(res)
 
 		this.getFilterableColumnIDs(2);
+		this.runQuery();
 	})
   }
   
@@ -168,7 +145,7 @@ runQuery() {
 		this.setupObject.features[this.selectedFeature].frontendName.toLowerCase() :
 		this.setupObject.items[this.selectedFeature].frontendName.toLowerCase();
 	const columnObjectIndices = this.currentColumnObjectIndices;
-	const columnObjectIndicesIndices = this.selectedFields
+	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
 	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);
 	const sortObject = this.selectedSortField ? {
 		isAscending: this.filterBy === 'Ascending',
@@ -193,7 +170,7 @@ selectedFeature = 2; //Sink
 featuresOrItems = [];
 selectedFields = [];
 selectedSortField;
-filterBy;
+filterBy = 'Ascending';
 
 
 // Download
@@ -205,7 +182,7 @@ runDownload() {
 		this.setupObject.features[this.selectedFeature].frontendName.toLowerCase() :
 		this.setupObject.items[this.selectedFeature].frontendName.toLowerCase();
 	const columnObjectIndices = this.currentColumnObjectIndices;
-	const columnObjectIndicesIndices = this.selectedFields
+	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
 	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);
 	const sortObject = this.selectedSortField ? {
 		isAscending: this.filterBy === 'Ascending',
