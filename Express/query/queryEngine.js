@@ -297,7 +297,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
                 idAliasLookup: idAliasLookup
             })
         } else { // then there are more joins
-            console.log('rRS recurse')
+            console.log('SQL Reference Selection Recurse')
             // append the next joinObjectArray to builtArray
             builtArray.push(nextJoinObjectArray)
             // recursively call the function

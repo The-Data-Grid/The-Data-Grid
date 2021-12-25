@@ -102,9 +102,10 @@
                     {{ rootFeatures }}
                 </div>
                 <!-- Paginator -->
-                <mat-paginator [length]="100"
-                [pageSize]="10"
+                <mat-paginator [length]="rowCount"
+                [pageSize]="currentPageSize"
                 [pageSizeOptions]="[10, 25, 100]"
+                (page)="onPageChange($event)"
                 aria-label="Select page">
             </mat-paginator>
             </div>

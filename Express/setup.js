@@ -721,8 +721,22 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
             let attributeForeignKey = `${tableName}_id`;
 
-            // setting item or obsevation reference depending on attribute type
-            let obsOrItem = (attributeType == 'observed' ? feature : (attributeType == 'current' ? '$(alias:raw)' : null));
+            // setting item or observation reference depending on attribute type
+            /* Warning: complicated
+                We first check if this is an item returnable so we can pass the base item right away. In this case there are only
+                'current' attribute types because it is not possible to see observed attributes when querying an item
+
+                Then, if it is an observation returnable, we check to see if it is 'observed' (joined to the observation) or 
+                'current' (joined to the item) and either pass the observation table itself that we know now, or an alias 
+                because it will be joined to the item that the observation is joined to which is assigned an alias when the 
+                query is being processed in the dynamicSQLEngine
+            */
+            let obsOrItem;
+            if(isItemReturnable) {
+                obsOrItem = baseItem;
+            } else {
+                obsOrItem = (attributeType == 'observed' ? feature : (attributeType == 'current' ? '$(alias:raw)' : null));
+            }
             if(obsOrItem === null) throw Error('Invalid attributeType');
 
             appendSQL = formatSQL('LEFT JOIN $(attributeTableName:name) AS $(attributeAlias:name) \

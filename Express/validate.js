@@ -242,7 +242,8 @@ function validationConstructor(init) {
             if(filters.includes('sorta') && filters.includes('sortd')) {
                 return res.status(400).send(`Bad Request 2206: Cannot use both sorta and sortd`);
             } else if(filters.includes('offset') && (!filters.includes('sorta') && !filters.includes('sortd'))) {
-                return res.status(400).send(`Bad Request 2207: Offset requires either sorta or sortd`);
+                // Commented out because there is always an implicit sort added internally if the user doesn't supply one
+                //return res.status(400).send(`Bad Request 2207: Offset requires either sorta or sortd`);
             } else if(filters.includes('limit') && !filters.includes('offset')) {
                 return res.status(400).send(`Bad Request 2208: Limit requires offset`);
             }

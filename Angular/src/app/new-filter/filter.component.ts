@@ -1,13 +1,12 @@
 import { Component, OnInit, HostListener, ViewChild, AfterViewInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import {FormControl} from '@angular/forms';
 import { DatePipe, CommonModule } from '@angular/common';
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../dropdown-settings'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { AppliedFilterSelections } from '../models'
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
-import { ThrowStmt } from '@angular/compiler';
+import {PageEvent} from '@angular/material/paginator';
 
 export interface PeriodicElement {
   name: string;
@@ -61,6 +60,9 @@ relevantColumnObjects = [];
 currentReturnableIDs = [];
 currentColumnObjectIndices = [];
 queryType = 'Observations';
+rowCount;
+currentPageSize = 10;
+currentPageIndex = 0;
 
 onQueryTypeChange() {
 	this.featuresOrItems = this.queryType == 'Observations' ? this.allFeatures : this.allItems;
@@ -78,6 +80,15 @@ onFieldSelection() {
 
 onSortSelection() {
 
+}
+
+onPageChange(event: PageEvent): PageEvent {
+	// update page data
+	this.currentPageSize = event.pageSize;
+	this.currentPageIndex = event.pageIndex;
+	// refresh API
+	this.runQuery();
+	return event;
 }
 
 getSetupObjects() {
@@ -151,13 +162,19 @@ runQuery() {
 		isAscending: this.filterBy === 'Ascending',
 		returnableID: this.getReturnablesFromColumnIDs([this.selectedSortField], isObservation, this.selectedFeature)[0]
 	} : null;
+	const pageObject = {
+		limit: this.currentPageSize,
+		offset: this.currentPageIndex * this.currentPageSize
+	};
 	// 
-	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, '', sortObject).subscribe((res) => {
+	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, '', sortObject, pageObject).subscribe((res) => {
 		console.log(res)
 		console.log(returnableIDs)
 		console.log(res.returnableIDs)
 		this.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[columnObjectIndices[returnableIDs.indexOf(id)]].frontendName)];
 		this.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
+
+		this.rowCount = res.nRows.n;
 
 		this.progressBarMode = 'determinate';
 	  });

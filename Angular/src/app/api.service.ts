@@ -73,12 +73,13 @@ export class ApiService {
     return this.http.get<TableObject>(url);
   }
 
-  public newGetTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any) {
+  public newGetTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, pageObject: any) {
     const observationOrItem = isObservation ? 'observation' : 'item';
     const formattedSort: string = this.formatSort(sortObject);
+    const formattedPage: string = this.formatPage(pageObject);
     const formattedFilterSelections: string = this.formatFilterSelections(appliedFilterSelections);
     const urlNoQuery = API_URL + '/audit/' + observationOrItem + '/' + feature + '/' + returnableIDs.join('&');
-    const queryString = [formattedSort, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
+    const queryString = [formattedSort, formattedPage, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
     const finalUrl = queryString.length > 0 ? urlNoQuery + '?' + queryString : urlNoQuery;
     // console.log(finalUrl)
     return this.http.get<any>(finalUrl);
@@ -90,6 +91,10 @@ export class ApiService {
     }
     const key = sortObject.isAscending ? 'sorta' : 'sortd';
     return `${key}=${sortObject.returnableID}`;
+  }
+
+  private formatPage(pageObject: any): string {
+    return `limit=${pageObject.limit}&offset=${pageObject.offset}`;
   }
 
   private formatFilterSelections(appliedFilterSelections): string {
