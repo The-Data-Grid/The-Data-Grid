@@ -1,12 +1,12 @@
 import { Component, OnInit, HostListener, ViewChild, AfterViewInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import { DatePipe, CommonModule } from '@angular/common';
+import { DatePipe, CommonModule, isPlatformServer } from '@angular/common';
 import { SearchableDropdownSettings, ChecklistDropdownSettings, SearchableChecklistDropdownSettings, FakeData } from '../dropdown-settings'
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { AppliedFilterSelections } from '../models'
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
-import {PageEvent} from '@angular/material/paginator';
+import {MatPaginator, PageEvent} from '@angular/material/paginator';
 
 export interface PeriodicElement {
   name: string;
@@ -26,6 +26,8 @@ export class NewFilterComponent implements OnInit {
    public datepipe: DatePipe,
    private setupObjectService: SetupObjectService,
    private tableObjectService: TableObjectService) { }
+
+@ViewChild('paginator') paginator: MatPaginator;
 
 ngOnInit() {
     let {
@@ -87,7 +89,7 @@ onPageChange(event: PageEvent): PageEvent {
 	this.currentPageSize = event.pageSize;
 	this.currentPageIndex = event.pageIndex;
 	// refresh API
-	this.runQuery();
+	this.runQuery(true);
 	return event;
 }
 
@@ -104,7 +106,7 @@ getSetupObjects() {
 		console.log(res)
 
 		this.getFilterableColumnIDs(2);
-		this.runQuery();
+		this.runQuery(false);
 	})
   }
   
@@ -149,7 +151,7 @@ getReturnablesFromColumnIDs(indices, isObservation, featureID): Array<Number> {
 progressBarMode = 'determinate'
 progressBarValue = 100
 
-runQuery() {
+runQuery(isPaginationQuery) {
 	this.progressBarMode = 'indeterminate';
 	const isObservation = this.queryType === 'Observations';
 	const feature = isObservation ? 
@@ -175,6 +177,9 @@ runQuery() {
 		this.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
 
 		this.rowCount = res.nRows.n;
+		if(!isPaginationQuery) {
+			this.paginator.firstPage();
+		}
 
 		this.progressBarMode = 'determinate';
 	  });

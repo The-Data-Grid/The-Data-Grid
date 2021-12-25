@@ -68,7 +68,7 @@
                       </div>
                       
                 </div>
-                <button class="apply-button text-semibold py-2 w-2-3 mt-4"  mat-button (click)="runQuery()">Run Query</button>
+                <button class="apply-button text-semibold py-2 w-2-3 mt-4"  mat-button (click)="runQuery(false)">Run Query</button>
             </div>
         </div>
         </div>
@@ -102,7 +102,7 @@
                     {{ rootFeatures }}
                 </div>
                 <!-- Paginator -->
-                <mat-paginator [length]="rowCount"
+                <mat-paginator #paginator [length]="rowCount"
                 [pageSize]="currentPageSize"
                 [pageSizeOptions]="[10, 25, 100]"
                 (page)="onPageChange($event)"
