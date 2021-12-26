@@ -10,7 +10,6 @@ import { AuditsComponent } from './audits/audits.component';
 import { FilterComponent } from './filter/filter.component';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { DownloadComponent } from './download/download.component';
@@ -41,6 +40,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
 import { ToastrModule } from 'ngx-toastr';
+import { NewFilterComponent  } from './new-filter/filter.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +69,8 @@ import { ToastrModule } from 'ngx-toastr';
     FilterComponent,
     VerifyEmailComponent,
     CheckEmailComponent,
-    ProfileComponent
+    ProfileComponent,
+    NewFilterComponent
   ],
   imports: [
     BrowserModule,
@@ -83,8 +84,7 @@ import { ToastrModule } from 'ngx-toastr';
     NgMultiSelectDropDownModule.forRoot(),
     ClickOutsideModule,
     MaterialModule,
-    MatTooltipModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
   ],
   providers: [ApiService, DatePipe, SetupObjectService, TableObjectService],
   bootstrap: [AppComponent],

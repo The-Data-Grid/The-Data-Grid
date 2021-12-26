@@ -77,11 +77,18 @@ function dataQueryWrapper(queryType) {
             // Concatenating clauses to make final SQL query
             let finalQuery = query.join(' '); 
             
+            // Number of row query without limit, offset, or sorting
+            let finalQueryForCounting = [selectClause, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, groupByClause].join(' ');
+            const nRowsFinalQuery = `WITH query_to_count AS (${finalQueryForCounting}) SELECT COUNT(*)::INTEGER AS "n" FROM query_to_count`;
+            
             // DEBUG: Show SQL Query //
             // console.log(finalQuery); 
+            // console.log(nRowsFinalQuery);
     
             // Finally querying the database and attaching the result
-            res.locals.parsed.finalQuery = await db.result(finalQuery)
+            const databaseResults = await Promise.all([db.result(finalQuery), db.one(nRowsFinalQuery)]);
+            res.locals.parsed.finalQuery = databaseResults[0];
+            res.locals.queryLength = databaseResults[1];
             // also attaching the returnableIDs 
             res.locals.parsed.finalReturnableIDs = allIDs.map(e => parseInt(e));
     
@@ -140,7 +147,8 @@ function formatDefault(req, res, next) {
     res.locals.formattedResponse = {
         returnableIDs,
         rowData,
-        primaryKey
+        primaryKey,
+        nRows: res.locals.queryLength,
     }
 
     next()

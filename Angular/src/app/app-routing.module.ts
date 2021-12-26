@@ -14,11 +14,12 @@ import { TeamComponent } from './team/team.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
 import { ProfileComponent } from './profile/profile.component';
+import { NewFilterComponent } from './new-filter/filter.component';
 
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
   { path: '', component: IndexComponent },
-  { path: 'filter', component: FilterComponent },
+  // { path: 'filter', component: FilterComponent },
   { path: 'upload', component: UploadComponent },
   { path: 'about', component: AboutComponent },
   { path: 'upload-files', component: UploadFilesComponent },
@@ -30,7 +31,7 @@ const routes: Routes = [
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'check-email', component: CheckEmailComponent },
   { path: 'profile', component: ProfileComponent },
-
+  { path: 'filter', component: NewFilterComponent}
 ];
 
 @NgModule({

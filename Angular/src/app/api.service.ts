@@ -46,6 +46,19 @@ export class ApiService {
       }));
   }
 
+  public getSetupFilterObject() {
+    const url = API_URL + '/setup/filter';
+
+    return this.http.get<any>(url, {
+      observe: 'response',
+    })
+      .pipe(map((response: any) => {
+        console.log("SetupObject Request Status: " + response.status + ":::::" + response.statusText);
+        console.log("setupObject", response.body);
+        return response.body;
+      }));
+  }
+
   public getTableObject(feature: string, defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections, returnableIDs): any {
     //DON'T DELETE. once sink is the only feature we can get dropdown info for.
     //we wil need this stuff once sink and default columns are no longer hardcoded
@@ -58,6 +71,46 @@ export class ApiService {
       + this.formQueryURL(defaultColumnIDs, appliedFilterSelections);
 
     return this.http.get<TableObject>(url);
+  }
+
+  public newGetTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, pageObject: any) {
+    const observationOrItem = isObservation ? 'observation' : 'item';
+    const formattedSort: string = this.formatSort(sortObject);
+    const formattedPage: string = this.formatPage(pageObject);
+    const formattedFilterSelections: string = this.formatFilterSelections(appliedFilterSelections);
+    const urlNoQuery = API_URL + '/audit/' + observationOrItem + '/' + feature + '/' + returnableIDs.join('&');
+    const queryString = [formattedSort, formattedPage, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
+    const finalUrl = queryString.length > 0 ? urlNoQuery + '?' + queryString : urlNoQuery;
+    // console.log(finalUrl)
+    return this.http.get<any>(finalUrl);
+  }
+
+  private formatSort(sortObject: any): string {
+    if(sortObject === null) {
+      return '';
+    }
+    const key = sortObject.isAscending ? 'sorta' : 'sortd';
+    return `${key}=${sortObject.returnableID}`;
+  }
+
+  private formatPage(pageObject: any): string {
+    return `limit=${pageObject.limit}&offset=${pageObject.offset}`;
+  }
+
+  private formatFilterSelections(appliedFilterSelections): string {
+    return '';
+  }
+
+  public downloadTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, isCSV: boolean) {
+    const observationOrItem = isObservation ? 'observation' : 'item';
+    const formattedSort: string = this.formatSort(sortObject);
+    const formattedFilterSelections: string = this.formatFilterSelections(appliedFilterSelections);
+    const downloadType = isCSV ? 'csv' : 'json'
+    const urlNoQuery = API_URL + '/audit/' + observationOrItem + '/download/' + downloadType + '/' + feature + '/' + returnableIDs.join('&');
+    const queryString = [formattedSort, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
+    const finalUrl = queryString.length > 0 ? urlNoQuery + '?' + queryString : urlNoQuery;
+
+    return this.http.get<any>(finalUrl, { responseType: 'blob' as 'json'} );
   }
 
   // arg returnableIDS is an array of IDS for which you want to get options

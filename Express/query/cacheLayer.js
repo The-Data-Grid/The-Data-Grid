@@ -19,7 +19,7 @@ class QueryCache {
     }
 }
 
-const CacheLayer = new QueryCache(100_000)
+const CacheLayer = new QueryCache(500_000);
 
 function hitCacheWrapper(isDownload) {
     return (req, res, next) => {
@@ -29,7 +29,7 @@ function hitCacheWrapper(isDownload) {
             console.log('Cache Hit: ' + CacheLayer.generateKey(req));
 
             // set to formattedResponse so send handlers can see it
-            res.locals.formattedResponse = cacheStatus
+            res.locals.formattedResponse = cacheStatus;
             
             // If download use download handler
             if(isDownload) {
@@ -62,6 +62,6 @@ module.exports = {
     },
 
     clearCache: () => {
-        CacheLayer.LRUCache.reset()
+        CacheLayer.LRUCache.reset();
     }
 }
