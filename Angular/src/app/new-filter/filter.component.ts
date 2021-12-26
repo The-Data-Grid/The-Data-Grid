@@ -97,14 +97,10 @@ getSetupObjects() {
 	this.apiService.getSetupObject().subscribe((res) => {
 		this.setupObject = res;
 		this.parseSetupObject();
-
-	    
 	});
 
 	this.apiService.getSetupFilterObject().subscribe((res) => {
 		this.setupFilterObject = res;
-		console.log(res)
-
 		this.getFilterableColumnIDs(2);
 		this.runQuery(false);
 	})
@@ -155,8 +151,8 @@ runQuery(isPaginationQuery) {
 	this.progressBarMode = 'indeterminate';
 	const isObservation = this.queryType === 'Observations';
 	const feature = isObservation ? 
-		this.setupObject.features[this.selectedFeature].frontendName.toLowerCase() :
-		this.setupObject.items[this.selectedFeature].frontendName.toLowerCase();
+		this.allFeatures[this.selectedFeature].frontendName.toLowerCase() :
+		this.allItems[this.selectedFeature].frontendName.toLowerCase();
 	const columnObjectIndices = this.currentColumnObjectIndices;
 	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
 	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);
@@ -170,9 +166,6 @@ runQuery(isPaginationQuery) {
 	};
 	// 
 	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, '', sortObject, pageObject).subscribe((res) => {
-		console.log(res)
-		console.log(returnableIDs)
-		console.log(res.returnableIDs)
 		this.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[columnObjectIndices[returnableIDs.indexOf(id)]].frontendName)];
 		this.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
 
@@ -201,8 +194,8 @@ runDownload() {
 	this.isDownloading = true;
 	const isObservation = this.queryType === 'Observations';
 	const feature = isObservation ? 
-		this.setupObject.features[this.selectedFeature].frontendName.toLowerCase() :
-		this.setupObject.items[this.selectedFeature].frontendName.toLowerCase();
+		this.allFeatures[this.selectedFeature].frontendName.toLowerCase() :
+		this.allItems[this.selectedFeature].frontendName.toLowerCase();
 	const columnObjectIndices = this.currentColumnObjectIndices;
 	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
 	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);

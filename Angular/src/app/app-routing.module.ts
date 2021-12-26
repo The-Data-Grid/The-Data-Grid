@@ -19,7 +19,7 @@ import { NewFilterComponent } from './new-filter/filter.component';
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
   { path: '', component: IndexComponent },
-  { path: 'filter', component: FilterComponent },
+  // { path: 'filter', component: FilterComponent },
   { path: 'upload', component: UploadComponent },
   { path: 'about', component: AboutComponent },
   { path: 'upload-files', component: UploadFilesComponent },
@@ -31,7 +31,7 @@ const routes: Routes = [
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'check-email', component: CheckEmailComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'new-filter', component: NewFilterComponent}
+  { path: 'filter', component: NewFilterComponent}
 ];
 
 @NgModule({
