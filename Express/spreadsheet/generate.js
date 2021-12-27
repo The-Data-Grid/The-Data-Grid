@@ -97,6 +97,8 @@ function generate (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
         // setup row count, column count
     }
 
+    instructionsSheet.commit();
+
     /* METADATA SHEET */
     const metadataSheet = workbook.addWorksheet('Metadata');
     metadataSheet.state = 'visible';
@@ -106,6 +108,8 @@ function generate (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
     metadataSheet.pageSetup = {
         // setup row count, column count
     }
+
+    metadataSheet.commit();
 
     /* FEATURE DATA SHEET */
     const dataSheet = workbook.addWorksheet(feature + ' Data');
@@ -160,23 +164,30 @@ function generate (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
     // setup border cell
     dataSheet.mergeCells('A4:L4');
 
+    dataSheet.commit();
+
+    await workbook.commit()
+
     /* Protect file */
-    await worksheet.protect('pasword', options)
+    // await worksheet.protect('password', options)
 
     /* Send file to client */
+    
     const file = tempfile('.xlsx');
-    workbook.xlsx.writeFile(file)
+    await workbook.xlsx.writeFile(file)
         .then(() => {
+            /*
             res.sendFile(file, err => {
                 console.log(err);
             });
+            */
         })
         .catch(err => {
             console.log(err);
         });
-
+    
 }
 
 module.exports = {
-    
+
 }
