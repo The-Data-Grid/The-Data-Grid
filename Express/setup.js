@@ -1068,7 +1068,7 @@ module.exports = {
     columnObjects,
     columnIdTableNameLookup,
     columnIdItemLookup,
-    FISLookup,
-    localReturnableLookup,
+    // FISLookup,
+    // localReturnableLookup,
 }
 

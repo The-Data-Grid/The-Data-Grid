@@ -1,11 +1,11 @@
 const excel = require('exceljs');
 const express = require('express');
-
+/*
 const {
     FISLookup,
     localReturnableLookup,
 } = require('../setup.js');
-
+*/
 // metadata setup
 /*
 Get all of the local columns (for user entry)
@@ -43,52 +43,7 @@ function setup (orgId, userId, feature, action, isItem) {
 }
 
 
-function setupInstructions() {}
-
-function setupMetaData() {}
-
-function setupFeatureData() {}
-
-
-/**
- * * Meta information object
- * @typedef {Object} spreadsheetMetaObject
- * @property {String} orgId
- * @property {String} userId
- * @property {String} featureFrontendName
- * @property {String} action
- * @property {Boolean} isItem true: item, false: observation
- * 
- * * spreadsheetColumnObject
- * @typedef {Object} spreadsheetColumnObject
- * @property {String} frontendName 
- * @property {String | null} information 
- * @property {Number} returnableID 
- * @property {Number} colId 
- * @property {Boolean} isNullable 
- * @property {String} xlsxFormattingType
- * @property {String[] | null} presetValues
- * 
- * @param {spreadsheetMetaObject} spreadsheetMetaObject 
- * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
- */
-function generate (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
-    // create workbook
-    const workbook = new excel.Workbook();
-
-    // set workbook properties
-    workbook.creator = ''; // set creator as auditorName or TDG?
-    workbook.lastModifiedBy = 'The Data Grid';
-    workbook.created = new Date();
-    workbook.modified = new Date();
-
-    // force workbook calculation on load
-    workbook.calcProperties.fullCalcOnLoad = true;
-
-    const feature = ''; // what do we get feature from?
-
-    /* INSTRUCTION SHEET */
-    const instructionsSheet = workbook.addWorksheet('Instructions');
+function setupInstructions(instructionsSheet) {
     instructionsSheet.state = 'visible';
     instructionsSheet.properties = {
         // add styling to tab colors / outlines?
@@ -97,10 +52,10 @@ function generate (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
         // setup row count, column count
     }
 
-    instructionsSheet.commit();
+    return instructionsSheet;
+}
 
-    /* METADATA SHEET */
-    const metadataSheet = workbook.addWorksheet('Metadata');
+function setupMetadata(metadataSheet) {
     metadataSheet.state = 'visible';
     metadataSheet.properties = {
         // add styling to tab colors / outlines?
@@ -108,11 +63,12 @@ function generate (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
     metadataSheet.pageSetup = {
         // setup row count, column count
     }
+    
+    return metadataSheet;
+}
 
-    metadataSheet.commit();
-
-    /* FEATURE DATA SHEET */
-    const dataSheet = workbook.addWorksheet(feature + ' Data');
+function setupFeatureData(dataSheet) {
+    const feature = '';
     dataSheet.state = 'visible';
     dataSheet.properties = {
         // add styling to tab colors / outlines?
@@ -164,30 +120,82 @@ function generate (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
     // setup border cell
     dataSheet.mergeCells('A4:L4');
 
-    dataSheet.commit();
+    return dataSheet;
+}
 
-    await workbook.commit()
+
+/**
+ * * Meta information object
+ * @typedef {Object} spreadsheetMetaObject
+ * @property {String} orgId
+ * @property {String} userId
+ * @property {String} featureFrontendName
+ * @property {String} action
+ * @property {Boolean} isItem true: item, false: observation
+ * 
+ * * spreadsheetColumnObject
+ * @typedef {Object} spreadsheetColumnObject
+ * @property {String} frontendName 
+ * @property {String | null} information 
+ * @property {Number} returnableID 
+ * @property {Number} colId 
+ * @property {Boolean} isNullable 
+ * @property {String} xlsxFormattingType
+ * @property {String[] | null} presetValues
+ * 
+ * @param {spreadsheetMetaObject} spreadsheetMetaObject 
+ * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
+ */
+
+async function generateSpreadsheet (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
+    // create workbook
+    const workbook = new excel.Workbook();
+
+    // set workbook properties
+    workbook.creator = ''; // set creator as auditorName or TDG?
+    workbook.lastModifiedBy = 'The Data Grid';
+    workbook.created = new Date();
+    workbook.modified = new Date();
+
+    // force workbook calculation on load
+    workbook.calcProperties.fullCalcOnLoad = true;
+
+    const feature = ''; // what do we get feature from?
+
+    /* INSTRUCTION SHEET */
+    let instructionsSheet = workbook.addWorksheet('Instructions');
+    instructionsSheet = setupInstructions(instructionsSheet);
+
+    /* METADATA SHEET */
+    let metadataSheet = workbook.addWorksheet('Metadata');
+    metadataSheet = setupMetadata(metadataSheet);
+    
+    /* FEATURE DATA SHEET */
+    let dataSheet = workbook.addWorksheet(feature + ' Data');
+    dataSheet = setupFeatureData(dataSheet);
 
     /* Protect file */
     // await worksheet.protect('password', options)
 
     /* Send file to client */
-    
+    await workbook.xlsx.writeFile('./temp.xlsx').then(() => {
+        console.log('Spreadsheet generated.');
+    });
+
+    /*
     const file = tempfile('.xlsx');
     await workbook.xlsx.writeFile(file)
         .then(() => {
-            /*
             res.sendFile(file, err => {
                 console.log(err);
             });
-            */
         })
         .catch(err => {
             console.log(err);
         });
-    
+    */
 }
 
 module.exports = {
-
+    generateSpreadsheet
 }
