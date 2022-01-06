@@ -251,6 +251,19 @@ function setupParse(req, res, next) {
 
 ////// END OF SETUP PARSING //////
 
+function parseOrganizationID(req, res, next) {
+    try {
+        if(!req.query.organizationID || isNaN(parseInt(req.query.organizationID))) {
+            return res.status(400).end();
+        }
+
+        res.locals.requestedOrganizationID = parseInt(req.query.organizationID);
+        return next();
+    } catch(err) {
+        return res.status(500).end();
+    }
+}
+
 ////// STATS PARSING //////
 // ==================================================
 // No parsing needed for stats query
@@ -284,5 +297,6 @@ module.exports = {
     templateParse,
     setupParse,
     timestamptzParse,
-    apiDateToUTC
+    apiDateToUTC,
+    parseOrganizationID,
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiService } from '../api.service';
+import { AuthService } from '../auth.service';
 import { HttpHeaders } from "@angular/common/http"
 import { first } from 'rxjs/operators';
 import { stringify } from '@angular/compiler/src/util';
@@ -82,17 +83,14 @@ export class DialogComponent implements OnInit {
       this.formsFilledOut = false;
     }
 
-    console.log(this.formsFilledOut);
-
   }
   
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService, private router:Router, private toastr: ToastrService) { 
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService, private router:Router, private toastr: ToastrService, private authService: AuthService) { 
   }
 
   ngOnInit() {
     this.dialogRef.updateSize('400px', '550px')
-    console.log(document.cookie);
   }
 
   sign_up_modal() {
@@ -217,31 +215,13 @@ export class DialogComponent implements OnInit {
     this.apiService.attemptLogin(this.userLoginObject)
       .subscribe((res) => {
         console.log(res);
-         localStorage.setItem("userEmail", "ted");
+         this.authService.setSession(res)
          this.close();
          this.toastr.success('Log in Successful', '');
         return;
+        }, (err) => {
+          this.toastr.error('Invalid Credentials', '');
         });
-        console.log("FAIL")
-
-      // .subscribe(res => console.log(res), err => {
-      //   if (err.status == 200) {
-      //     console.log(err);
-      //     console.log(document.cookie);
-      //     let headers = new HttpHeaders()
-      //     headers .set('content-type', 'application/json')
-      //     headers .set('Access-Control-Allow-Origin', '*')
-      //     console.log(headers); 
-      //     console.log(sessionStorage);
-      //     console.log(err.headers);
-      //     console.log(localStorage);
-      //     alert("successful sign in")
-      //   }
-      //   else {
-      //     alert(`HTTP Error ${err.status}: ${err.error}`)
-      //   }
-      // }
-      //     )    ;
   }
 
   close() {

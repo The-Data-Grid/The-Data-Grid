@@ -14,6 +14,52 @@ const PORT = environment.port;
 export class ApiService {
   constructor(private http: HttpClient, private setupObjectService: SetupObjectService) { }
 
+  public uploadNewAudit(auditName: string, organizationID: number, userID) {
+    const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'With-Credentials': 'True' })
+    const submissionObject = {
+      "items": {
+          "create": [
+              {
+                  "itemTypeID": 10,
+                  "requiredItems": [
+                      // Organization
+                      {
+                          "itemTypeID": 1,
+                          "primaryKey": organizationID
+                      },
+                      // User
+                      {
+                          "itemTypeID": 8,
+                          "primaryKey": userID
+                      }
+                  ],
+                  "newRequiredItemIndices": [],
+                  "globalPrimaryKey": null,
+                  "newGlobalItemIndex": null,
+                  "data": {
+                      "returnableIDs": [
+                          272
+                      ],
+                      "data": [
+                          auditName
+                      ]
+                  }
+              }
+          ],
+          "update": [],
+          "delete": [],
+          "requestPermanentDeletion": []
+      },
+      "observations": {
+          "create": [],
+          "update": [],
+          "delete": []
+      }
+  }
+
+    return this.http.post(`${API_URL}/audit/submission`, submissionObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
   public getSetupObject(): Observable<any> {
     var url = API_URL + '/setup';
 
@@ -99,6 +145,115 @@ export class ApiService {
 
   private formatFilterSelections(appliedFilterSelections): string {
     return '';
+  }
+
+  public getAuditManagementTable(organizationID) {
+    const url = API_URL + '/manage/audits?organizationID=' + organizationID;
+    const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+
+    return this.http.get(url, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  public getSignedUrl(fileObject) {
+    const {
+      organizationID,
+      type,
+      fileName,
+    } = fileObject;
+    const url = `${API_URL}/manage/signed-url?organizationID=${organizationID}&type=${type}&fileName=${fileName}`;
+    const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+
+    return this.http.get(url, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  public putFileToBucket(putObject) {
+    const {
+      url,
+      contentType,
+      asset
+    } = putObject; 
+
+    console.log(putObject)
+    
+    const reqHeader = new HttpHeaders({ 'Content-Type': contentType });
+    return this.http.put(url, asset, { headers: reqHeader });
+  }
+
+  public uploadSOP(sopObject) {
+    const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'With-Credentials': 'True' })
+    const submissionObject = {
+      "items": {
+          "create": [
+            {
+              "itemTypeID": 7,
+              "requiredItems": [{
+                  "itemTypeID": 1,
+                  "primaryKey": sopObject.organizationID
+              }],
+              "newRequiredItemIndices": [],
+              "globalPrimaryKey": null,
+              "newGlobalItemIndex": null,
+              "data": {
+                  "returnableIDs": [
+                      209,
+                      210
+                  ],
+                  "data": [
+                      sopObject.name,
+                      sopObject.dataURL
+                  ]
+              }
+            }
+          ],
+          "update": [],
+          "delete": [],
+          "requestPermanentDeletion": []
+      },
+      "observations": {
+          "create": [],
+          "update": [],
+          "delete": []
+      }
+  }
+
+    return this.http.post(`${API_URL}/audit/submission`, submissionObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  public getSOPTable(organizationID) {
+    const url = API_URL + '/manage/sops?organizationID=' + organizationID;
+    const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+
+    return this.http.get(url, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+  public setRole(setRoleObject) {
+    const {
+      organizationID,
+      userEmail,
+      role
+    } = setRoleObject;
+
+    const url = API_URL + '/user/role';
+    const reqHeader = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'No-Auth': 'True',
+      'withCredentials': 'True',
+      'With-Credentials': 'True'
+    });
+
+    return this.http.put(url, setRoleObject, { headers: reqHeader, responseType: 'text', withCredentials: true});
+  }
+
+  public getRoles(organizationID) {
+    const url = API_URL + '/user/role?organizationID=' + organizationID;
+    const reqHeader = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'No-Auth': 'True',
+      'withCredentials': 'True',
+      'With-Credentials': 'True'
+    });
+
+    return this.http.get(url, { headers: reqHeader, responseType: 'json', withCredentials: true});
   }
 
   public downloadTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, isCSV: boolean) {

@@ -8,13 +8,6 @@ import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
 @Component({
  selector: 'app-filter-new',
  templateUrl: './filter.component.html',
@@ -151,8 +144,8 @@ runQuery(isPaginationQuery) {
 	this.progressBarMode = 'indeterminate';
 	const isObservation = this.queryType === 'Observations';
 	const feature = isObservation ? 
-		this.allFeatures[this.selectedFeature].frontendName.toLowerCase() :
-		this.allItems[this.selectedFeature].frontendName.toLowerCase();
+		this.allFeatures[this.selectedFeature].backendName :
+		this.allItems[this.selectedFeature].backendName;
 	const columnObjectIndices = this.currentColumnObjectIndices;
 	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
 	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);
@@ -194,8 +187,8 @@ runDownload() {
 	this.isDownloading = true;
 	const isObservation = this.queryType === 'Observations';
 	const feature = isObservation ? 
-		this.allFeatures[this.selectedFeature].frontendName.toLowerCase() :
-		this.allItems[this.selectedFeature].frontendName.toLowerCase();
+		this.allFeatures[this.selectedFeature].backendName :
+		this.allItems[this.selectedFeature].backendName;
 	const columnObjectIndices = this.currentColumnObjectIndices;
 	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
 	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);

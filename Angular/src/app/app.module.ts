@@ -41,6 +41,9 @@ import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
 import { ToastrModule } from 'ngx-toastr';
 import { NewFilterComponent  } from './new-filter/filter.component';
+import { AuditDashboard } from './audit-dashboard/dashboard.component';
+import { ManagementComponent } from './manage/manage.component';
+import { AuthService } from './auth.service';
 
 @NgModule({
   declarations: [
@@ -70,7 +73,9 @@ import { NewFilterComponent  } from './new-filter/filter.component';
     VerifyEmailComponent,
     CheckEmailComponent,
     ProfileComponent,
-    NewFilterComponent
+    NewFilterComponent,
+    AuditDashboard,
+    ManagementComponent
   ],
   imports: [
     BrowserModule,
@@ -86,7 +91,7 @@ import { NewFilterComponent  } from './new-filter/filter.component';
     MaterialModule,
     ToastrModule.forRoot(),
   ],
-  providers: [ApiService, DatePipe, SetupObjectService, TableObjectService],
+  providers: [ApiService, DatePipe, SetupObjectService, TableObjectService, AuthService],
   bootstrap: [AppComponent],
   entryComponents: [DialogComponent]
 })

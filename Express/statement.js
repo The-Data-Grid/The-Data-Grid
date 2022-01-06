@@ -220,11 +220,15 @@ const login = {
             p.privilege_name AS privilege,
             ARRAY_REMOVE(ARRAY_AGG(rt.type_name), NULL) AS role,
             ARRAY_REMOVE(ARRAY_AGG(r.item_organization_id), NULL) AS "organizationID",
-            u.item_id as "userID"
+            ARRAY_REMOVE(ARRAY_AGG(o.data_organization_name_text), NULL) AS "organizationName",
+            u.item_id as "userID",
+            u.data_first_name as "firstName",
+            u.data_last_name as "lastName"
             FROM item_user AS u
             LEFT JOIN tdg_role AS r ON u.item_id = r.item_user_id
             LEFT JOIN tdg_role_type AS rt ON r.role_type_id = rt.type_id
             LEFT JOIN tdg_privilege AS p ON u.privilege_id = p.privilege_id
+            LEFT JOIN item_organization AS o ON r.item_organization_id = o.item_id
                 WHERE u.data_email = $(checkemail)
                 GROUP BY p.privilege_name, u.item_id
     `,
@@ -255,7 +259,6 @@ insertingUsers: `
     INSERT INTO item_user (
         data_first_name,
         data_last_name, 
-        data_date_of_birth,
         data_email,
         tdg_p_hash,
         data_is_email_public,
@@ -264,7 +267,7 @@ insertingUsers: `
         is_pending,
         privilege_id ) 
         VALUES 
-        ($(userfirstname), $(userlastname), $(userdateofbirth), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), $(token), true, 2)`
+        ($(userfirstname), $(userlastname), $(useremail), $(userpass), $(userpublic), $(userquarterlyupdates), $(token), true, 2)`
     };
 
 const updates  = {

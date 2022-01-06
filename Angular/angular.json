@@ -26,7 +26,10 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/client-scripts/three.js",
+              "src/client-scripts/vanta.net.js"
+            ]
           },
           "configurations": {
             "production": {
