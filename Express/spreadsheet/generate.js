@@ -21,7 +21,7 @@ Get FIS of item's required items (for user selection)
 
 */
 /**
- * @returns {spreadsheetMetaObject, spreadsheetColumnObject}
+ * @returns {{spreadsheetMetaObject: spreadsheetMetaObject, spreadsheetColumnObject: spreadsheetColumnObject}}
  */
 function setup (orgId, userId, feature, action, isItem) {
     // 1. Check org permission to upload to this feature
@@ -48,11 +48,12 @@ function setup (orgId, userId, feature, action, isItem) {
 /**
  * * Meta information object
  * @typedef {Object} spreadsheetMetaObject
- * @property {String} orgId
- * @property {String} userId
+ * @property {Number} orgId
+ * @property {Number} userId
  * @property {String} featureFrontendName
  * @property {String} action
  * @property {Boolean} isItem true: item, false: observation
+ * @property {Number} itemTypeID
  * 
  * * spreadsheetColumnObject
  * @typedef {Object} spreadsheetColumnObject
