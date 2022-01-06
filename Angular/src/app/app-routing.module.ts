@@ -15,6 +15,9 @@ import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
 import { ProfileComponent } from './profile/profile.component';
 import { NewFilterComponent } from './new-filter/filter.component';
+import { AuditDashboard } from './audit-dashboard/dashboard.component';
+import { ManagementComponent } from './manage/manage.component';
+import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
@@ -25,13 +28,15 @@ const routes: Routes = [
   { path: 'upload-files', component: UploadFilesComponent },
   { path: 'upload-audit', component: UploadAuditComponent },
   { path: 'audit-summary', component: AuditSummaryComponent },
-  { path: 'download', component: DownloadComponent },
+  { path: 'audit', component: AuditDashboard, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent },
   { path: 'team', component: TeamComponent },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'check-email', component: CheckEmailComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'filter', component: NewFilterComponent}
+  { path: 'filter', component: NewFilterComponent},
+  { path: 'manage', component: ManagementComponent, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: '', pathMatch: 'full'}
 ];
 
 @NgModule({

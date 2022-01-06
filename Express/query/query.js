@@ -304,6 +304,88 @@ function sendFilterSetup(req, res) {
     return res.status(200).json(filterSetupObject)
 };
 
+async function auditManagment(req, res) {
+    try {
+
+        const data = (await db.any(`
+            SELECT 
+                a.data_audit_name as "name",
+                a.data_time_created as "createdAt",
+                concat(au.data_first_name, ' ', au.data_last_name) as "createdBy",
+                array_remove(array_agg(coalesce(mf.frontend_name, mi.frontend_name)), NULL) as "feature",
+                array_remove(array_agg(s.upload_type), NULL) as "itemOrObs",
+                array_remove(array_agg(gu.data_first_name), NULL) as "uploadedByFirst",
+                array_remove(array_agg(gu.data_last_name), NULL) as "uploadedByLast",
+                array_remove(array_agg(g.time_submitted), NULL) as "uploadedAt",
+                array_remove(array_agg(s.file_key), NULL) as "spreadsheetLink"
+                    FROM item_audit as a
+                    LEFT JOIN item_global as g on g.item_audit_id = a.item_id
+                    LEFT JOIN tdg_spreadsheet_upload as s on g.spreadsheet_id = s.upload_id
+                    LEFT JOIN item_user as au on a.item_user_id = au.item_id
+                    LEFT JOIN metadata_feature as mf on s.feature_id = mf.feature_id
+                    LEFT JOIN metadata_item as mi on s.item_id = mi.item_id
+                    LEFT JOIN item_user as gu on gu.item_id = g.item_user_id
+                        WHERE a.item_organization_id = $(organizationID)
+                        GROUP BY "name", "createdAt", "createdBy"
+                        ORDER BY "createdAt" DESC
+        `, {
+            organizationID: req.query.organizationID
+        })).map(audit => {
+            const {
+                feature,
+                itemOrObs,
+                uploadedByFirst,
+                uploadedByLast,
+                uploadedAt,
+                spreadsheetLink,
+            } = audit;
+            const formattedUploads = uploadedAt.map((u, i) => ({
+                feature: feature[i],
+                itemOrObs: itemOrObs[i],
+                uploadedBy: `${uploadedByFirst[i]} ${uploadedByLast[i]}`,
+                uploadedAt: u,
+                spreadsheetLink: spreadsheetLink[i]
+            }));
+            return {
+                name: audit.name,
+                createdAt: audit.createdAt,
+                createdBy: audit.createdBy,
+                uploads: formattedUploads
+            };
+        });
+
+        const dataAndCount = {
+            count: data.length,
+            audits: data
+        }
+
+        return res.status(200).json(dataAndCount);
+    } catch(err) {
+        console.log(err)
+        return res.status(500).end();
+    }
+}
+
+async function sopManagement(req, res) {
+    try {
+        const data = await db.any(`
+            SELECT
+                data_name as "name",
+                data_body as "link",
+                data_time_uploaded as "createdAt"
+                FROM item_sop
+                WHERE item_organization_id = $(organizationID)
+        `, {
+            organizationID: req.query.organizationID
+        });
+
+        return res.json(data).end();
+    } catch(err) {
+        console.log(err)
+        return res.status(500).end();
+    }
+}
+
 
 module.exports = {
     featureQuery: dataQueryWrapper('observation'),
@@ -317,4 +399,6 @@ module.exports = {
     sendMobileSetup,
     sendKey,
     sendFilterSetup,
+    auditManagment,
+    sopManagement,
 };

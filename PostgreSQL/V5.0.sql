@@ -41,7 +41,9 @@ CREATE TABLE item_global (
     item_id SERIAL PRIMARY KEY,
     item_audit_id INTEGER NOT NULL, --fk **
     item_organization_id INTEGER NOT NULL, --fk ** org that user is submitting as, id will be given by session
-    item_user_id INTEGER NOT NULL --fk **
+    item_user_id INTEGER NOT NULL, --fk **
+    time_submitted TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    spreadsheet_id INTEGER
     --item_template_id INTEGER --fk ** ???
 );
 
@@ -148,7 +150,7 @@ CREATE TABLE item_user (
     -- item_organization_id INTEGER, --fk **
     data_first_name TEXT NOT NULL,
     data_last_name TEXT NOT NULL,
-    data_date_of_birth TIMESTAMPTZ NOT NULL,
+    -- data_date_of_birth TIMESTAMPTZ NOT NULL,
     data_email TEXT NOT NULL,
     tdg_p_hash TEXT NOT NULL,
     data_is_email_public BOOLEAN NOT NULL,
@@ -805,6 +807,26 @@ CREATE VIEW returnable_view AS (SELECT
         LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id
             ORDER BY r__returnable_id ASC
         );
+
+
+-- Down here because it references metadata
+CREATE TABLE tdg_upload_action (
+    action_id SERIAL PRIMARY KEY,
+    action_name TEXT NOT NULL
+);
+
+CREATE TABLE tdg_spreadsheet_upload (
+    upload_id SERIAL PRIMARY KEY,
+    -- action_id INTEGER NOT NULL REFERENCES tdg_upload_action,
+    file_key TEXT NOT NULL,
+    feature_id INTEGER NOT NULL REFERENCES metadata_feature,
+    item_id INTEGER REFERENCES metadata_item,
+    upload_type TEXT NOT NULL,
+    CHECK(upload_type = 'Item' OR upload_type = 'Observation')
+);
+
+ALTER TABLE item_global ADD FOREIGN KEY (spreadsheet_id) REFERENCES tdg_spreadsheet_upload;
+
 
 
 /* ----------------------------------------------------------------------------------------------------------                                                                                                          
@@ -1646,7 +1668,7 @@ CALL "insert_metadata_column"('data_is_email_public', 'item_user', NULL, NULL, '
 CALL "insert_metadata_column"('data_is_quarterly_updates', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Receive Quarterly Updates', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');
 CALL "insert_metadata_column"('data_first_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User First Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_last_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Last Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_date_of_birth', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Date of Birth', 'calendarRange', 'calendarEqual', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+-- CALL "insert_metadata_column"('data_date_of_birth', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Date of Birth', 'calendarRange', 'calendarEqual', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id');
 
 
