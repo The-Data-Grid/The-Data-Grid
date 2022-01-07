@@ -33,6 +33,7 @@ const auditRouter = require('./query/router.js');
 const authRouter = require('./auth/router.js');
 const setSession = require('./auth/session.js');
 const parseCredentials = require('./auth/parseCredentials.js');
+const { generateSpreadsheet } = require('./spreadsheet/generate.js')
 
 // CORS, JSON, URL encoding
 app.use(cors({
@@ -76,6 +77,7 @@ app.get('/api/setup/mobile', setupParse, sendMobileSetup);
 // Filter Setup Object
 app.get('/api/setup/filter', setupParse, sendFilterSetup)
 
+app.get('/api/spreadsheet/generate', generateSpreadsheet);
 
 // @kian pls clean up
 
@@ -103,7 +105,7 @@ app.all('/dist/*', function(req, res){
     //req.path.substring(req.path.indexOf(path.sep));
     res.sendFile(path.resolve('../Deployment/Angular' + req.path));
 });
-	
+
 ////// LISTEN //////
 
 if(isDeployment) {

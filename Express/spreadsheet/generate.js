@@ -1,10 +1,11 @@
+const excel = require('exceljs');
+const express = require('express');
+/*
 const {
     FISLookup,
     localReturnableLookup,
 } = require('../setup.js');
-
-// middleware req res get ordID, isItem, feature
-
+*/
 // metadata setup
 /*
 Get all of the local columns (for user entry)
@@ -41,10 +42,88 @@ function setup (orgId, userId, feature, action, isItem) {
     };
 }
 
-// format and generate spreadsheet
-/**
 
- */
+function setupInstructions(instructionsSheet) {
+    instructionsSheet.state = 'visible';
+    instructionsSheet.properties = {
+        // add styling to tab colors / outlines?
+    };
+    instructionsSheet.pageSetup = {
+        // setup row count, column count
+    }
+
+    return instructionsSheet;
+}
+
+function setupMetadata(metadataSheet) {
+    metadataSheet.state = 'visible';
+    metadataSheet.properties = {
+        // add styling to tab colors / outlines?
+    };
+    metadataSheet.pageSetup = {
+        // setup row count, column count
+    }
+    
+    return metadataSheet;
+}
+
+function setupFeatureData(dataSheet) {
+    const feature = '';
+    dataSheet.state = 'visible';
+    dataSheet.properties = {
+        // add styling to tab colors / outlines?
+    };
+    dataSheet.pageSetup = {
+        // setup row count, column count
+    }
+
+    /* setup title cell */
+    dataSheet.mergeCells('A1', 'E3');
+    let titleBox = dataSheet.getCell('A1');
+    titleBox.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        bgColor: {argb:'cfe2f3'}
+    };
+
+    titleBox.style.border = {
+        bottom: {style:''}
+    };
+
+    titleBox.value = feature + ' Audit';
+
+    titleBox.protection = {
+        locked: true,
+        hidden: true
+    };
+
+    let infoBox = dataSheet.getCell('F1').style;
+    infoBox.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        bgColor: {argb:'cfe2f3'}
+    };
+
+    infoBox.border = {
+        bottom: {style:''},
+        right: {style:''}
+    };
+
+    infoBox.protection = {
+        locked: true,
+        hidden: true,
+    };
+
+    // setup tdg cell
+    dataSheet.mergeCells('F1', 'L3')
+
+    // setup border cell
+    dataSheet.mergeCells('A4:L4');
+
+    return dataSheet;
+}
+
+
 /**
  * * Meta information object
  * @typedef {Object} spreadsheetMetaObject
@@ -68,6 +147,56 @@ function setup (orgId, userId, feature, action, isItem) {
  * @param {spreadsheetMetaObject} spreadsheetMetaObject 
  * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
  */
-function generate (spreadsheetMetaObject, spreadsheetColumnObjectArray) {
-    // return res.sendFile(...)
+
+async function generateSpreadsheet (res, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
+    // create workbook
+    const workbook = new excel.Workbook();
+
+    // set workbook properties
+    workbook.creator = ''; // set creator as auditorName or TDG?
+    workbook.lastModifiedBy = 'The Data Grid';
+    workbook.created = new Date();
+    workbook.modified = new Date();
+
+    // force workbook calculation on load
+    workbook.calcProperties.fullCalcOnLoad = true;
+
+    const feature = ''; // what do we get feature from?
+
+    /* INSTRUCTION SHEET */
+    let instructionsSheet = workbook.addWorksheet('Instructions');
+    instructionsSheet = setupInstructions(instructionsSheet);
+
+    /* METADATA SHEET */
+    let metadataSheet = workbook.addWorksheet('Metadata');
+    metadataSheet = setupMetadata(metadataSheet);
+    
+    /* FEATURE DATA SHEET */
+    let dataSheet = workbook.addWorksheet(feature + ' Data');
+    dataSheet = setupFeatureData(dataSheet);
+
+    /* Protect file */
+    // await worksheet.protect('password', options)
+
+    /* Send file to client */
+    await workbook.xlsx.writeFile('./temp.xlsx').then(() => {
+        console.log('Spreadsheet generated.');
+    });
+
+    /*
+    const file = tempfile('.xlsx');
+    await workbook.xlsx.writeFile(file)
+        .then(() => {
+            res.sendFile(file, err => {
+                console.log(err);
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    */
+}
+
+module.exports = {
+    generateSpreadsheet
 }
