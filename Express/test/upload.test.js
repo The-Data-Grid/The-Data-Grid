@@ -167,7 +167,7 @@ test('Create, update, and delete item', done => {
         .expect(201)
         .end(finishTest(done));
 })})});
-
+*/
 // create observation that references existing item
 // submissionObject8
 test('Create observation that references existing item', done => {
@@ -182,7 +182,7 @@ test('Create observation that references existing item', done => {
         .expect(201)
         .end(finishTest(done));
 });
-*/
+/*
 // create observation that references created item
 // submissionObjet9
 test('Create observation that references created item', done => {

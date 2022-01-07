@@ -306,8 +306,9 @@ data_body,
 data_name,
 item_organization_id)
 VALUES
-(default, 'blah blah blah...', 'Water Audit SOP', 1),
-(default, 'blah blah blah...', 'Waste Audit SOP', 1);
+(default, 'blah blah blah...', 'SOP1', 1),
+(default, 'blah blah blah...', 'SOP2', 1),
+(default, 'blah blah blah...', 'SOP3', 1);
 
 
 INSERT INTO m2m_item_sop

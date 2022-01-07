@@ -12,6 +12,8 @@ const {
     itemObservationTableNameLookup
 } = require('../../setup.js');
 
+console.log(itemTableNames)
+
 const {
     CreateObservationError,
     validateObservationDataColumns,
@@ -120,6 +122,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
         globalReference = createObservationObject.globalPrimaryKey;
     }
 
+    
     // insert every observation
     // Get all of the columns needed to insert the item
     let itemColumns = itemColumnObject[itemTableName];
@@ -133,11 +136,11 @@ async function createIndividualObservation(createObservationObject, insertedItem
         isItem: itemColumns.isItem[i],
         isObservation: itemColumns.isObservation[i]
     }));
-
+    
     const relevantColumnObjects = itemColumns.filter(col => col.isObservation)
     const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID)
     const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
-
+    
     // 3. Go through user supplied data columns and add column names and column values
     //    to the columnNamesAndValues array. For external data columns, either insert
     //    the value into the external table first and add the newly created primary key,
@@ -161,7 +164,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
             const itemColumn = itemColumns.filter(col => col.columnID == columnID)[0];
             // get the user passed insertion value
             let columnValue = createObservationObject.data.data[i];
-
+            
             // if the column is external call the proper insertion function based on reference type and pass metadata and value
             if(itemColumn.referenceType in insertExternalColumn) {
                 if(['obs-list', 'obs-list-mutable'].includes(itemColumn.referenceType)) {
@@ -172,10 +175,11 @@ async function createIndividualObservation(createObservationObject, insertedItem
                     i++
                     continue;
                 }
+                console.log(itemColumn.tableName, itemColumn.columnName, columnValue)
                 const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
                 columnNamesAndValues.push(primaryKeyAndColumnName);
-            // if list add to list array and handle after item insert
-            // handle auditor and sop special types
+                // if list add to list array and handle after item insert
+                // handle auditor and sop special types
             } else if(itemColumn.referenceType == 'special') {
                 if(itemColumn.frontendName === 'Auditor Name') {
                     // always text, never user reference for now
@@ -188,29 +192,29 @@ async function createIndividualObservation(createObservationObject, insertedItem
                 } else {
                     throw new CreateObservationError({code: 500, msg: 'Data column with reference type `special` found with invalid column name: ' + itemColumn.columnName});
                 }
-            // then a local column (obs-global is included)
+                // then a local column (obs-global is included)
             } else {
                 columnNamesAndValues.push({
                     columnName: itemColumn.columnName,
                     columnValue
                 });
             }
-        // then not valid
+            // then not valid
         } else {
             throw new CreateObservationError({code: 400, msg: `returnableID ${id} is not valid for ${observationTableName}`});
         }
         i++;
     }
-
+    
     // Insert and get observation count
     const observationCountReference = (await db.one(`
-        insert into tdg_observation_count 
-            (observation_count_id) 
-            values 
-            (default) 
-                returning observation_count_id
+    insert into tdg_observation_count 
+    (observation_count_id) 
+    values 
+    (default) 
+    returning observation_count_id
     `)).observation_count_id;
-
+    
     // Make the SQL Statement
     const fullSQLStatement = makeObservationSQLStatement(observationTableName, columnNamesAndValues, globalReference, itemReference, observationCountReference);
 
@@ -229,8 +233,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
     }
 
     // Insert into SOP many to many
-    console.log(sopValue, sessionObject.organizationID, observationCountReference)
-    await insertSOP(sopValue, sessionObject.organizationID, observationCountReference);
+    await insertSOP(sopValue, observationCountReference, globalReference, db);
 
     // 7. Insert insertion record into history tables
     await insertObservationHistory(observationTableName, 'create', observationPrimaryKey, db);
