@@ -118,7 +118,7 @@ CREATE TABLE tdg_observation_count (
 CREATE TABLE item_sop (
     item_id SERIAL PRIMARY KEY, 
     data_body TEXT NOT NULL,
-    data_name TEXT NOT NULL,
+    data_name TEXT NOT NULL UNIQUE,
     data_time_uploaded TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     item_organization_id INTEGER NOT NULL --fk **
 );
@@ -1619,7 +1619,7 @@ CALL "insert_metadata_column"('data_county_name', 'item_county', NULL, NULL, 'it
 CALL "insert_metadata_column"('data_country_name', 'item_country', NULL, NULL, 'item_country', TRUE, FALSE, 'Country Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 
 -- CALL "insert_metadata_column"('data_time_uploaded', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Time SOP Uploaded', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
-CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
 CALL "insert_metadata_column"('data_body', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Body', 'text', NULL, 'string', NULL, NULL, 'TEXT', 'item-non-id');
 
 

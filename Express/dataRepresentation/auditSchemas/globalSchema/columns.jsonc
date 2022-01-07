@@ -50,7 +50,7 @@
     
         "frontendName": "Auditor Name",
         "information": "Name of the auditor(s) who conducted this observation",
-        "isNullable": false,
+        "isNullable": true,
         "isDefault": true,
         "filterSelectorName": null,
         "inputSelectorName": "text",
@@ -68,7 +68,7 @@
     
         "frontendName": "Standard Operating Procedure",
         "information": "The standard operating procedure(s) used for the audit on this feature",
-        "isNullable": false,
+        "isNullable": true,
         "isDefault": true,
         "filterSelectorName": "searchableChecklistDropdown",
         "inputSelectorName": "searchableChecklistDropdown",
