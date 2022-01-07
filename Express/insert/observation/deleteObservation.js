@@ -50,7 +50,7 @@ async function deleteObservation(options) {
             deletedPrimaryKey = deletedObservation.observation_id;
     
             // delete observation_count_id. This will trigger deletes in SOP and Auditor m2m's
-            // because of `ON CASCADE DELETE`
+            // because of `ON DELETE CASCADE`
             await formatSQL(`
                 delete from tdg_observation_count
                 where observation_count_id = $(observationCountID)

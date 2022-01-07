@@ -291,6 +291,16 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
             let dataValue = formatSQL('$(data)', {
                 data
             });
+            console.log(formatSQL(`
+            SELECT $(primaryKeyColumnName:name)
+            FROM $(tableName:name)
+            WHERE $(columnName:name) = $(dataValue:raw)
+        `, {
+            tableName,
+            columnName,
+            dataValue,
+            primaryKeyColumnName
+        }))
             try {
                 // note db.many here, we are deciding not to throw
                 // if more than one record is returned with the
@@ -311,13 +321,13 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
             } catch(err) {
                 if(!isMutable) {
                     const validValues = (await db.any(formatSQL(`
-                        SELECT $(columnName:name)::json
+                        SELECT $(columnName:name)
                         FROM $(tableName:name)
                     `, {
                         tableName,
                         columnName
                     }))).map(v => v[columnName]).join(', ');
-                    throw new ErrorClass({code: 400, msg: `The value ${data} is not one of the valid values (${validValues}) for ${tableName}`});
+                    throw new ErrorClass({code: 400, msg: `The value ${dataValue} is not one of the valid values (${validValues}) for ${tableName}`});
                 }
 
                 // Now insert
@@ -449,8 +459,6 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
         const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
         // Get all of the columns needed to insert the item
         let itemColumns = itemColumnObject[tableName];
-        console.log(itemColumns)
-        console.log('ITEM COLUMNS: ', Object.keys(itemColumnObject))
         itemColumns = itemColumns['c__column_id'].map((id, i) => ({
             columnID: id,
             isNullable: itemColumns['c__is_nullable'][i],
@@ -464,7 +472,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
         } else {
             relevantColumnObjects = itemColumns.filter(col => col.isItem);
         }
-
+        console.log(itemColumnObject[tableName])
         const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID);
         
 
@@ -483,7 +491,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
                 // get correct type
                 let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType.toLowerCase()]
                 // make sure it's an array if list reference type or SOP
-                if(['item-list', 'obs-list'].includes(returnableIDLookup[returnableID].referenceType || ('special' === returnableIDLookup[returnableID].rt__type_name && 'Standard Operating Procedure' === returnableIDLookup[returnableID].c__frontend_name))) {
+                if(['item-list', 'obs-list'].includes(returnableIDLookup[returnableID].referenceType) || ('special' === returnableIDLookup[returnableID].referenceType && 'Standard Operating Procedure' === returnableIDLookup[returnableID].frontendName)) {
                     if(type(data[i]) !== 'array') throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} must be of type: array`})
                     // check type for every value
                     data[i].forEach((listElement, i) => {
@@ -578,7 +586,7 @@ function validateRequiredItemsOnUpdate(requiredItemTableNames, tableName) {
 }
 
 function insertSOPGenerator(isUpdate, ErrorClass) {
-    return async (sopValue, organizationID, observationCount) => {
+    return async (sopValue, observationCount, globalPrimaryKey, db) => {
         // if updating remove old values
         if(isUpdate) {
             try {
@@ -594,11 +602,25 @@ function insertSOPGenerator(isUpdate, ErrorClass) {
             }
         }
         // Insert new values
+        // First get organization ID from global
+        let organizationID;
         try {
-            // SOP Value is validated to be an array
-            for(let sopName of sopValue) {
+            organizationID = (await db.one(formatSQL(`
+                select item_organization_id as id
+                from item_global
+                where item_id = $(globalPrimaryKey)
+            `, {
+                globalPrimaryKey
+            }))).id;
+        } catch(err) {
+            console.log(err);
+            throw new ErrorClass({code: 500, msg: `Error when getting organization ID from global with primary key ${globalPrimaryKey}`});
+        }
+        // SOP Value is validated to be an array
+        for(let sopName of sopValue) {
+            try {
                 const sopPrimaryKey = (await db.one(formatSQL(`
-                    select item_id from sop
+                    select item_id from item_sop
                     where data_name = $(sopName)
                     and item_organization_id = $(organizationID)
                 `, {
@@ -615,10 +637,10 @@ function insertSOPGenerator(isUpdate, ErrorClass) {
                     observationCount,
                     sopPrimaryKey
                 }));
+            } catch (err) {
+                console.log(err)
+                throw new ErrorClass({code: 400, msg: `SOP "${sopName}" is not a valid SOP in your organization`});
             }
-    
-        } catch (err) {
-            throw new ErrorClass({code: 400, msg: `SOP "${sopName}" is not a valid SOP in your organization`});
         }
     }
 }
