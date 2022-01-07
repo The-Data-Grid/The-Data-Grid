@@ -5,17 +5,40 @@
 [
     /**
      *  VICTOR STANLEY BIN (WIP)
+     *
+     * Name, Stream, Bin Number, Stream Character, Zone, Location
      */
 
-    { // STREAM TYPE
+    { // BIN ID
         "tableName": "item_vs_bin", // should be able to infer
-        "columnName": "data_stream", // optional, inferred from frontendName
+        "columnName": "data_name", // optional, inferred from frontendName
         "observationTableName": null, // should be able to infer
         "subobservationTableName": null, // should be able to infer
         "itemName": "item_vs_bin", // required
 
         "sqlType": "TEXT", // required
-        "referenceType": "item-non-id", // required
+        "referenceType": "item-id", // required
+        "presetValues": null,
+
+        "frontendName": "Name", // required
+        "information": "Unique alphanumerioc bin identifier", // optional, defaults to null
+        "accuracy": null, // optional, defaults to null
+        "isNullable": false, // required
+        "isDefault": true, // optional, defaults to yes
+        "filterSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
+        "inputSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
+        "frontendType": "string" //infer from sqlType
+    },
+    { // STREAM TYPE
+        "tableName": "attribute_bin_stream", // should be able to infer
+        "columnName": "data_attribute", // optional, inferred from frontendName
+        "observationTableName": null, // should be able to infer
+        "subobservationTableName": null, // should be able to infer
+        "itemName": "item_vs_bin", // required
+
+        "sqlType": "TEXT", // required
+        "referenceType": "attribute", // required
+        "presetValues": ["Landfill", "Compost", "Recycle"],
 
         "frontendName": "Waste Stream", // required
         "information": "Waste Stream Labelled on Bin", // optional, defaults to null
@@ -26,17 +49,18 @@
         "inputSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
         "frontendType": "string" //infer from sqlType
     },
-    { // RNG WP STRING IDENTIFIER
-        "tableName": "item_vs_cluster",
-        "columnName": "data_cluster_type",
+    { // Location
+        "tableName": "location_point",
+        "columnName": "data_point",
         "observationTableName": null,
         "subobservationTableName": null,
-        "itemName": "item_vs_cluster",
+        "itemName": "item_vs_bin",
 
-        "sqlType": "TEXT",
-        "referenceType": "item_id",
+        "sqlType": "Point",
+        "referenceType": "item-location",
+        "presetValues": null,
 
-        "frontendName": "Gallons Per Flush",
+        "frontendName": "Point Location",
         "information": null,
         "accuracy": null,
         "isNullable": false,

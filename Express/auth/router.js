@@ -12,11 +12,12 @@ const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;
 
 const { isValidEmail, isValidDate, isValidPassword } = require('../validate.js');
-const { apiDateToUTC } = require('../parse.js');
+const { apiDateToUTC, parseOrganizationID } = require('../parse.js');
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 const updating = require('../statement.js').updates;
 const { sendMail } = require('../email/mda.js');
+const { authorizeAuditor } = require('./authorizer.js');
 
 // use correct mail depending on testing
 let sendEmail = sendMail;
@@ -41,10 +42,13 @@ router.post('/login', async (req, res) => {
 
             const sessionObject = {
                 loggedIn: true,
+                firstName: sessionData.firstName,
+                lastName: sessionData.lastName,
                 email: req.body.email,
                 role: sessionData.role,
                 userID: sessionData.userID,
                 organizationID: sessionData.organizationID,
+                organizationFrontendName: sessionData.organizationName,
                 privilege: sessionData.privilege,
             };
             
@@ -87,10 +91,12 @@ router.post('/', async (req, res) => {
         return res.status(400).send('Bad Request 2212: Invalid Email'); 
     }
 
+    /*
     if (!isValidDate(req.body.dateOfBirth)) {
         console.log('ERROR:', 'Bad Request 2213: Invalid Date');
         return res.status(400).send('Bad Request 2213: Invalid Date'); 
     }
+    */
 
     //check if email is taken 
     try {   
@@ -114,7 +120,6 @@ router.post('/', async (req, res) => {
             userlastname: req.body.lastName,
             useremail: req.body.email,
             userpass:  hashedPassword,
-            userdateofbirth: apiDateToUTC(req.body.dateOfBirth),
             userpublic: req.body.isEmailPublic,
             userquarterlyupdates: req.body.isQuarterlyUpdates,
             token: rand,
@@ -283,15 +288,15 @@ router.put('/role', async (req, res) => {
             organizationID,
             role
         } = req.body;
-        const roleID = roleIDLookup[role];
+        const roleID = role === null ? null : roleIDLookup[role];
 
         // check for superuser or admin if attempt to set admin role
         if(role === 'admin') {
             if(res.locals.authorization.privilege !== 'superuser') {
-                const orgIndex = res.locals.authorization.organizationID.indexOf(organizationID);
-                if(res.locals.authorization.role[orgIndex] !== 'admin') {
-                    return res.status(401).send('Must be an admin of organization to set roles for it');
-                }  
+                //const orgIndex = res.locals.authorization.organizationID.indexOf(organizationID);
+                //if(res.locals.authorization.role[orgIndex] !== 'admin') {
+                    return res.status(401).send('Must be a database superuser to set admin roles for it');
+                //}  
             }
         }
         // make sure user is an admin of the organization they are attempting to set role of
@@ -302,17 +307,51 @@ router.put('/role', async (req, res) => {
                     return res.status(401).send('Must be an admin of organization to set roles for it');
                 }
             }
-        } else {
+        } 
+        // Then trying to remove a role
+        else if(role === null) {
+            if(res.locals.authorization.privilege !== 'superuser') {
+                const orgIndex = res.locals.authorization.organizationID.indexOf(organizationID);
+                if(res.locals.authorization.role[orgIndex] !== 'admin') {
+                    return res.status(401).send('Must be an admin of organization to remove roles for it');
+                }
+            }
+        } 
+        else {
             return res.status(400).send(`Role must be 'auditor' or 'admin'`);
         }
 
         // first get userID
-        const userID = (await db.one(formatSQL(`
-            SELECT item_id FROM item_user
-            WHERE data_email = $(userEmail)
+        let userID;
+        try {
+            userID = (await db.one(formatSQL(`
+                SELECT item_id FROM item_user
+                WHERE data_email = $(userEmail)
+            `, {
+                userEmail,
+            }))).item_id;
+        } catch(err) {
+            return res.status(400).send('No user with provided email');
+        }
+
+        // get current role for privilege check
+        const currentRole = await db.oneOrNone(formatSQL(`
+            SELECT t.type_name AS type
+            FROM tdg_role_type AS t
+            INNER JOIN tdg_role AS r ON r.role_type_id = t.type_id
+            WHERE r.item_organization_id = $(organizationID)
+            AND r.item_user_id = $(userID)
         `, {
-            userEmail,
-        }))).item_id;
+            userID,
+            organizationID,
+        }));
+
+        if(currentRole !== null) {
+            if(currentRole.type == 'admin' && res.locals.authorization.privilege !== 'superuser') {
+                return res.status(401).send('Must be a superuser to modify the role of an existing admin');
+            }
+        }
+
         // clear existing if exists
         await db.oneOrNone(formatSQL(`
             DELETE FROM tdg_role
@@ -323,21 +362,47 @@ router.put('/role', async (req, res) => {
             organizationID,
         }))
         // now add new
-        await db.none(formatSQL(`
-            INSERT INTO tdg_role
-            (item_organization_id, item_user_id, role_type_id)
-            VALUES
-            ($(organizationID), $(userID), $(roleID))
-        `, {
-            organizationID,
-            userID,
-            roleID,
-        }));
+        if(role !== null) {
+            await db.none(formatSQL(`
+                INSERT INTO tdg_role
+                (item_organization_id, item_user_id, role_type_id)
+                VALUES
+                ($(organizationID), $(userID), $(roleID))
+            `, {
+                organizationID,
+                userID,
+                roleID,
+            }));
+        }
   
         return res.status(201).end();
     } catch(err) {
         console.log(err);
         return res.status(500).send('Server error when setting role');
+    }
+});
+
+router.get('/role', parseOrganizationID, authorizeAuditor, async (req, res) => {
+    try {
+        const data = await db.any(formatSQL(`
+            SELECT 
+                u.data_first_name as "firstName",
+                u.data_last_name as "lastName",
+                rt.type_name as "role",
+                u.data_email as "email"
+                    FROM item_user as u
+                    INNER JOIN tdg_role as r on u.item_id = r.item_user_id
+                    INNER JOIN tdg_role_type as rt on r.role_type_id = rt.type_id
+                        WHERE r.item_organization_id = $(organizationID)
+        `, {
+            organizationID: res.locals.requestedOrganizationID
+        }));
+
+        return res.status(200).json(data)
+
+    } catch(err) {
+        console.log(err);
+        return res.status(500).end();
     }
 })
 

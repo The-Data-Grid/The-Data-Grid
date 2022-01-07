@@ -322,6 +322,7 @@ function setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
         return ({
             children: [IDColumnIndices, IDitemChildNodePointerObjects, nonIDColumnIndices, nonIDitemChildNodePointerObjects, itemAttributeColumnsIndices],
             frontendName: item['i__frontend_name'],
+            backendName: item['i__table_name'].match(/^item_(.*)/)[1],
             information: null
         });
     });

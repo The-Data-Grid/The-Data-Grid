@@ -1,0 +1,179 @@
+<div *ngIf="sessionObject.organizationID.length == 0" class="w-full h-full flex items-center flex-col">
+    <p class="text-center text-lg mt-48 text-gray-400">You must be part of an organization to use the Audit Dashboard</p>
+</div>
+<div *ngIf="sessionObject.organizationID.length > 0" class="w-full h-full flex items-center flex-col">
+    <!-- Pick Organization -->
+    <div class="flex flex-row px-4 -pt-4 bg-gray-100 mt-3">
+        <div class="flex flex-col justify-center text-gray-400 text-semibold mr-4" >
+            Managing for organization:
+        </div>
+        <mat-form-field class='-mb-4 mt-1'>
+            <mat-label>Organization</mat-label>
+            <mat-select [(ngModel)]="managingOrganization" (ngModelChange)="managingOrganizationChange()">
+              <mat-option *ngFor="let id of sessionObject.organizationID; index as i" [value]="id">
+                {{ sessionObject.organizationFrontendName[i] }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+    </div>
+    <!-- Spreadsheet -->
+    <div class="flex flex-col w-2/3 mt-10">
+        <p class="border-b-2 border-gray-300 text-lg text-gray-500">Spreadsheet Upload <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/upload"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
+        <mat-tab-group dynamicHeight class="min-h-56">
+            <mat-tab class="" label="Upload Data">
+                <div class="flex flex-col">
+                    <div class="w-full bg-blue-100 px-4 py-2 text-sm m-6">
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit doloremque eum ab accusantium sit excepturi quos, aliquid dicta eius earum eos obcaecati omnis doloribus odit, in deleniti, sunt laborum commodi.
+                    </div>
+
+                    <div class="flex flex-row items-center">
+                        <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="runUpload()">Upload Spreadsheet Data</button>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab class="" label="Download Spreadsheet Template">
+                <div class="flex flex-col">
+
+                    <div class="w-full bg-blue-100 px-4 py-2 text-sm m-6">
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit doloremque eum ab accusantium sit excepturi quos, aliquid dicta eius earum eos obcaecati omnis doloribus odit, in deleniti, sunt laborum commodi.
+                    </div>
+                    <div class="flex flex-row items-center">
+                        <mat-form-field appearance="fill" class="mr-4" style="margin-bottom: -21px;">
+                            <mat-label>Select Upload Type</mat-label>
+                            <mat-select [(ngModel)]="uploadType" (ngModelChange)="onUploadTypeChange()">
+                                <mat-option value="Items">Items</mat-option>
+                                <mat-option value="Observations">Observations</mat-option>
+                            </mat-select>
+                          </mat-form-field>  
+                          <mat-form-field appearance="fill" class="mr-4" style="margin-bottom: -21px;">
+                            <mat-label>Select Feature</mat-label>
+                            <mat-select [(ngModel)]="selectedFeature" (ngModelChange)="onFeatureSelectChange()">
+                                <mat-option *ngFor="let obj of featuresOrItems; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>   
+                        <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="runDownload()">Download Template</button>
+                    </div>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    <!-- Audit -->
+    <div class="flex flex-col w-2/3 mt-10">
+        <p class="border-b-2 border-gray-300 text-lg text-gray-500">Audits <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/audits"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
+        <mat-accordion *ngIf="auditArray.length > 0">
+            <mat-expansion-panel *ngFor="let audit of fittedAuditArray" hideToggle>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ audit.name }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  Created by&nbsp;<span class="text-black iu">{{ audit.createdBy }}</span>&nbsp;on&nbsp;<span class="text-black">{{ audit.createdAt }}</span>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <!-- List of uploads to audit -->
+              <p *ngIf="audit.uploads.length == 0" class="text-gray-400 text-center" > No uploads for this audit </p>
+              <p *ngIf="audit.uploads.length > 0" class="text-gray-400 font-bold mb-2"> Uploads: </p>
+              <div *ngIf="audit.uploads.length > 0" class="overflow-x-scroll">
+                <table class=" ">
+                    <!-- Heaader -->
+                    <tr class="h-70px text-gray-700   text-sm ">
+                        <th *ngFor="let header of ['Feature', 'Upload Type', 'Uploaded By', 'Uploaded At', 'Spreadsheet Link']" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
+                    </tr>
+                    <!-- Data -->
+                    <tr *ngFor="let row of audit.uploads" class="h-50px text-sm hover-bg-gray-100">
+                        <td *ngFor="let cell of [row.feature, row.itemOrObs, row.uploadedBy, row.uploadedAt]" class="border-t border-gray-200   w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+                        <td class="border-t border-gray-200 text-blue-400 underline  w-1000px  pl-8 text-left min-w-150px"> <a target="_blank"  [href]="row.spreadsheetLink"> Click to open </a> </td>
+                    </tr>
+                </table>
+            </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <mat-paginator *ngIf="auditArray.length > 0" #paginator [length]="auditCount "
+                  [pageSize]="currentPageSize"
+                  [pageSizeOptions]="[5, 10, 25]"
+                  (page)="onPageChange($event)"
+                  aria-label="Select page">
+                </mat-paginator>
+        <div *ngIf="auditArray.length == 0" class="h-32 flex-col flex justify-center">
+            <p class="text-gray-400 text-center">No audits to display</p>
+        </div>
+        <!-- Add a new audit -->
+        <div class="mt-4">
+            <div *ngIf="!newAuditInitiated" class="flex flex-row items-center">
+                <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="initiateNewAudit(true)">New Audit</button>
+            </div>
+            <div *ngIf="newAuditInitiated" class="flex flex-row items-center">
+                <form class="example-form">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>Audit Name</mat-label>
+                      <input matInput [formControl]="auditNameForm" placeholder="Ex. My New Audit" [(ngModel)]="auditName">
+                      <mat-error *ngIf="auditNameForm.hasError('required')">
+                        Audit Name is <strong>required</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </form>
+
+                  <div class="py-2 px-4 border-l-2 border-gray-300 ml-6">
+ 
+                <button *ngIf="!(auditName.length == 0 || auditNameForm.hasError('required'))" style="background-color: #5fa784;" class=" text-white text-semibold p-4"  mat-button (click)="uploadNewAudit()">Create</button>
+                <button *ngIf="auditName.length == 0 || auditNameForm.hasError('required')" disabled style="background-color: #b6b6b6;" class=" text-white text-semibold p-4"  mat-button (click)="uploadNewAudit()">Create</button>
+                <button style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="initiateNewAudit(false)">Cancel</button>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <!-- SOP -->
+    <div class="flex flex-col w-2/3 mt-10 mb-20">
+        <p class="border-b-2 border-gray-300 text-lg text-gray-500">Documents</p>
+        <mat-accordion *ngIf="SOPArray.length > 0">
+            <mat-expansion-panel *ngFor="let sop of fittedSOPArray" hideToggle>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ sop.name }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  Created on&nbsp;<span class="text-black iu">{{ sop.createdAt }}</span>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <!-- Link to SOP -->
+              <a target="_blank" [href]="sop.link" class=" underline text-blue-400" > {{ sop.link.slice(49)}} </a>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <mat-paginator *ngIf="SOPArray.length > 0" #paginator [length]="SOPCount"
+            [pageSize]="currentSOPPageSize"
+            [pageSizeOptions]="[5, 10, 25]"
+            (page)="onSOPPageChange($event)"
+            aria-label="Select page">
+          </mat-paginator>
+        <div *ngIf="SOPArray.length == 0" class="h-32 flex-col flex justify-center">
+            <p class="text-gray-400 text-center">No Documents to display</p>
+        </div>
+        <div class="mt-4">
+            <div *ngIf="!newSOPInitiated" class="flex flex-row items-center">
+                <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="initiateNewSOP(true)">New Document</button>
+            </div>
+            <div *ngIf="newSOPInitiated" class="flex flex-row items-center">
+                <form class="example-form">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>Document name</mat-label>
+                      <input matInput [formControl]="SOPNameForm" placeholder="Ex: My SOP" [(ngModel)]="SOPName">
+                      <mat-error *ngIf="SOPNameForm.hasError('required')">
+                        Document name is <strong>required</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </form>
+                  <input #fileInput hidden="true" type="file" onclick="this.value=null" (change)="fileUploadChange($event)" />
+                  <button *ngIf="selectedFile == null" (click)="fileInput.click()" style="background-color: #569CD7;" class="ml-4 text-white text-semibold p-4"  mat-button >Upload Document</button>
+                  <div style="border-color: #569CD7;" *ngIf="selectedFile != null" class="flex flex-row rounded border-2 p-4 ml-4 underline text-center italic cursor-default">
+                    {{ selectedFile.name }}
+                    <img height="25px" width="25px" class="cursor-pointer ml-3" (click)="selectedFile = null" src="/assets/red_x.png" alt="Cancel">
+                  </div>
+                <div class="py-2 px-4 border-l-2 border-gray-300 ml-6">
+                  <button *ngIf="!(SOPName.length == 0 || SOPNameForm.hasError('required') || selectedFile == null)" style="background-color: #5fa784;" class=" text-white text-semibold p-4"  mat-button (click)="uploadSOPToBucket()">Create</button>
+                  <button *ngIf="SOPName.length == 0 || SOPNameForm.hasError('required') || selectedFile == null" disabled style="background-color: #b6b6b6;" class=" text-white text-semibold p-4"  mat-button (click)="uploadSOPToBucket()">Create</button>
+                  <button style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="initiateNewSOP(false)">Cancel</button>
+                </div>      
+            </div>
+        </div>
+    </div>
+</div>

@@ -31,6 +31,7 @@ const { sendSetup, sendMobileSetup, sendFilterSetup } = require('./query/query.j
 const insertRouter = require('./insert/router.js');
 const auditRouter = require('./query/router.js');
 const authRouter = require('./auth/router.js');
+const managementRouter = require('./manage/router.js');
 const setSession = require('./auth/session.js');
 const parseCredentials = require('./auth/parseCredentials.js');
 const { generateSpreadsheet } = require('./spreadsheet/generate.js')
@@ -75,7 +76,10 @@ app.get('/api/setup', setupParse, sendSetup);
 app.get('/api/setup/mobile', setupParse, sendMobileSetup);
 
 // Filter Setup Object
-app.get('/api/setup/filter', setupParse, sendFilterSetup)
+app.get('/api/setup/filter', setupParse, sendFilterSetup);
+
+// Audit and Organization management router
+app.use('/api/manage', managementRouter);
 
 app.get('/api/spreadsheet/generate', generateSpreadsheet);
 

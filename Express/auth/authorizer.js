@@ -361,8 +361,50 @@ function collectSubmissionItems(submissionObject) {
     return items;
 }
 
+function authorizeSessionGenerator(config) {
+    return (req, res, next) => {
+        try {
+            if(config.privilege === 'user') {
+                if(!['user', 'superuser'].includes(res.locals.authorization.privilege)) {
+                    return res.status(401).end()
+                }
+                return next();
+            }
+            else if(config.privilege === 'superuser') {
+                if(res.locals.authorization.privilege !== 'superuser') {
+                    return res.status(401).end();
+                }
+                return next();
+            }
+            else if(config.role === 'auditor') {
+                // Note use of res.locals.requestedOrganizationID
+                const organizationIDIndex = res.locals.authorization.organizationID.indexOf(res.locals.requestedOrganizationID);
+                if(!['auditor', 'admin'].includes(res.locals.authorization.role[organizationIDIndex])) {
+                    console.log(res.locals.authorization.role[organizationIDIndex])
+                    return res.status(401).end();
+                }
+                return next();
+            } else if(config.role === 'admin') {
+                if(res.locals.authorization.role[organizationIDIndex] !== 'admin') {
+                    return res.status(401).end();
+                }
+                return next();
+            } else {
+                throw Error('Invalid authorizationSessionGenerator configuration');
+            }
+        } catch(err) {
+            console.log(err);
+            return res.status(500).end();
+        }
+    }
+}
+
 module.exports = {
     authorizeSubmission: authorizationGenerator('upload'),
     authorizeItemQuery: authorizationGenerator('query', 'item'),
-    authorizeObservationQuery: authorizationGenerator('query', 'observation')
+    authorizeObservationQuery: authorizationGenerator('query', 'observation'),
+    authorizeLoggedIn: authorizeSessionGenerator({ privilege: 'user'}),
+    authorizeSuperuser: authorizeSessionGenerator({ privilege: 'superuser' }),
+    authorizeAdmin: authorizeSessionGenerator({ role: 'admin' }),
+    authorizeAuditor: authorizeSessionGenerator({ role: 'auditor' }),
 };
