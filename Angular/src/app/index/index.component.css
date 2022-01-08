@@ -10,7 +10,7 @@ body, html {
     font-weight: 600;
     font-size: 45px;
     line-height: 60px;
-    background-color: rgba(255 ,255 ,255, 0.75);
+    background-color: #416a87;
     padding-left: 30px;
     padding-right: 30px;
     border-right: 8px solid white;
@@ -24,7 +24,7 @@ body, html {
     font-weight: 600;
     font-size: 45px;
     line-height: 30px;
-    color:rgb(3, 119, 228)
+    color:white
 }
 
 .tagline-inner2 {

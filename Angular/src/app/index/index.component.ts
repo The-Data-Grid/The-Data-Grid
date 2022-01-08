@@ -23,8 +23,8 @@ export class IndexComponent implements OnInit, OnDestroy {
       mouseControls: true,
       touchControls: true,
       gyroControls: false,
-      color: 0xffffff,
-      backgroundColor: 0x416a87,
+      color: 0x416a87,
+      backgroundColor: 0xffffff,
       points: 13.00,
       maxDistance: this.maxDistance,
       spacing: 14.00
