@@ -42,17 +42,16 @@ INSERT INTO item_user
 ("item_id",
 "data_first_name",
 "data_last_name",
-"data_date_of_birth",
 "data_email",
 "tdg_p_hash",
 "data_is_email_public",
 "data_is_quarterly_updates",
 "privilege_id")
 VALUES
-    (default, 'Oliver', 'Melgrove', 'Tue, 26 Jan 2021 21:53:05 GMT', 'oliver@melgrove.com', 'password', true, true, 3),
-    (default, 'Tanya', 'Zhong', 'Tue, 26 Jan 2021 21:53:05 GMT', 'tanyazhong1@gmail.com', 'password', true, true, 3),
-    (default, 'Kian', 'Nikzad', 'Tue, 26 Jan 2021 21:53:05 GMT', 'kian.nikzad@gmail.com', 'password', true, true, 3),
-    (default, 'Jorden', 'Van Foreest', 'Tue, 26 Jan 2021 21:53:05 GMT', 'jorden-van-foreest@thedatagrid.org', '$2b$10$MWv9JnM4zD6TjnZlpSYC4upMdlGatnZxY9zDxKK/8BdTRjIho0p4S', true, true, 2);
+    (default, 'Oliver', 'Melgrove', 'oliver@melgrove.com', 'password', true, true, 3),
+    (default, 'Tanya', 'Zhong', 'tanyazhong1@gmail.com', 'password', true, true, 3),
+    (default, 'Kian', 'Nikzad', 'kian.nikzad@gmail.com', 'password', true, true, 3),
+    (default, 'Jorden', 'Van Foreest', 'jorden-van-foreest@thedatagrid.org', '$2b$10$MWv9JnM4zD6TjnZlpSYC4upMdlGatnZxY9zDxKK/8BdTRjIho0p4S', true, true, 2);
 
 
 INSERT INTO tdg_role 
@@ -306,8 +305,9 @@ data_body,
 data_name,
 item_organization_id)
 VALUES
-(default, 'blah blah blah...', 'Water Audit SOP', 1),
-(default, 'blah blah blah...', 'Waste Audit SOP', 1);
+(default, 'blah blah blah...', 'SOP1', 1),
+(default, 'blah blah blah...', 'SOP2', 1),
+(default, 'blah blah blah...', 'SOP3', 1);
 
 
 INSERT INTO m2m_item_sop

@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
-import { AppliedFilterSelections, ReturnableIDObject} from './models'
+import { AppliedFilterSelections } from './models'
 
+// setupObject.children
 export const IDX_OF_FEATURES_ARR = 0;
+export const IDX_OF_ITEM_ARR = 1;
 export const IDX_OF_GLOBAL_ITEM_IDX = 2;
+export const IDX_OF_AUDIT_ITEM_IDX = 3;
 
+// itemNodeObject.children
 export const IDX_OF_ID_COL_IDXS = 0;
 export const IDX_OF_ID_ITEM_IDXS = 1;
 export const IDX_OF_NON_ID_COL_IDXS = 2;
 export const IDX_OF_NON_ID_ITEM_IDXS = 3;
+export const IDX_OF_ITEM_ATTRIBUTE_IDXS = 4;
 
+// featureNodeObject.children
 export const IDX_OF_OBSERVATION_COL_IDXS = 0;
 export const IDX_OF_ATTRIBUTE_COL_IDXS = 1;
-export const IDX_OF_ITEM_IDX = 2;  //subject to change when backend implements api
+export const IDX_OF_ITEM_IDX = 2;
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +25,11 @@ export const IDX_OF_ITEM_IDX = 2;  //subject to change when backend implements a
 export class SetupObjectService {
 
   constructor() { }
+
+  private getReturnableID(tree: any[], setupObject): string {
+    let treeID = tree.join('>');
+    return setupObject.treeIDToReturnableID[treeID];
+  }
 
   /* ////////////////////////////////////
      getRootFeatures(setupObject)
@@ -42,142 +53,279 @@ export class SetupObjectService {
     return rootFeatures;
   }
 
-    /* ////////////////////////////////////
-     getFeatureReturnableIDs(setupObject, featureIndex)
-
-     description: gets an array of column returnable IDS for a given feature
-     params: setupObject, 
-             featureIndex: the index of the setupObject 'feaures' array for the feature we are interested in
-     returns: array of numbers (returnableIDS)
-  */////////////////////////////////////////
-  getFeatureReturnableIDs(setupObject, featureIndex) {
-      let returnableIDs = [];
-      let ID = null;
-      
-      let indexOfFeatureIndex = setupObject.children[IDX_OF_FEATURES_ARR].indexOf(featureIndex);
-      // ...find feature's observation columns
-      setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
-        ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject);
-        if (ID) {
-          returnableIDs.push(ID);
-        }
-        else {
-          console.log("undefined returnable ID for observation column:" + i)
-        }
-      });
-      // ...find feature's attribute columns
-      setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
-        ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject);
-        if (ID) {
-          returnableIDs.push(ID);
-        }
-        else {
-          console.log("undefined returnable ID for attribute column:" + i)
-        }
-      });
-      return returnableIDs;
-  }
-
   /* ////////////////////////////////////
-    getFeaturesToChildren(setupObject)
+   getFeatureReturnableIDs(setupObject, featureIndex)
 
-    params: setupObject
+   description: gets an array of column returnable IDS for a given feature
+   params: setupObject, 
+           featureIndex: the index of the setupObject 'feaures' array for the feature we are interested in
+   returns: array of numbers (returnableIDS)
+*/////////////////////////////////////////
+  getFeatureReturnableIDs(setupObject, featureIndex) {
+    let returnableIDs = [];
+    let ID = null;
 
-    returns: object that maps a feature's index in the setupObject 
-      'features' array to the feature's subfeature indices. example:
-       {
-         1: [2,3,4],   //feature 1 has subfeatures 2, 3, and 4
-       }
- */////////////////////////////////////////
-  getFeaturesToChildren(setupObject) {
-    let featuresToChildren = {}
-    setupObject.features.forEach((feature, index) => {
-      // map index to the feature's children
-      featuresToChildren[index] = feature.featureChildren;
+    let indexOfFeatureIndex = setupObject.children[IDX_OF_FEATURES_ARR].indexOf(featureIndex);
+    // ...find feature's observation columns
+    setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
+      ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject);
+      if (ID) {
+        returnableIDs.push(ID);
+      }
+      else {
+        console.log("undefined returnable ID for observation column:" + i)
+      }
     });
-    return featuresToChildren;
+    // ...find feature's attribute columns
+    setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
+      ID = this.getReturnableID([IDX_OF_FEATURES_ARR, indexOfFeatureIndex, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject);
+      if (ID) {
+        returnableIDs.push(ID);
+      }
+      else {
+        console.log("undefined returnable ID for attribute column:" + i)
+      }
+    });
+    return returnableIDs;
   }
 
-
-//recursively find all the columns belonging to an item or a child of that item
-  private getAllItemRelatedColumns(item, columns, path, returnableIDs, setupObject) {
-    item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
-      let newPath = Object.assign([], path);
-      newPath.push(IDX_OF_ID_COL_IDXS, i);
-      let curColumn = setupObject.columns[IDColumnIndex];
-      curColumn["_returnableID"] = this.getReturnableID(newPath, setupObject);
-      columns.push(curColumn);
-      returnableIDs.push(this.getReturnableID(newPath, setupObject));
-    });
-    item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
-      let newPath = Object.assign([], path);
-      newPath.push(IDX_OF_ID_ITEM_IDXS, i);
-      let itemIndex = itemPointer.index;
-      this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, returnableIDs, setupObject);
-    });
-    item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
-      let newPath = Object.assign([], path);
-      newPath.push(IDX_OF_NON_ID_COL_IDXS, i);
-      let curColumn = setupObject.columns[NonIDColumnIndex];
-      curColumn["_returnableID"] = this.getReturnableID(newPath, setupObject);
-      columns.push(curColumn);
-      returnableIDs.push(this.getReturnableID(newPath, setupObject));
-    });
-    item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
-      let newPath = Object.assign([], path);
-      newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
-      let itemIndex = itemPointer.index;
-      this.getAllItemRelatedColumns(setupObject.items[itemIndex], columns, newPath, returnableIDs, setupObject);
-    });
+  getAllAuditItemRelatedColumns(setupObject) {
+    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_AUDIT_ITEM_IDX])
+    return treeIDObjects;
   }
 
-   /* ////////////////////////////////////
-    getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+  getAllGlobalItemRelatedColumns(setupObject) {
+    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, setupObject.children[IDX_OF_GLOBAL_ITEM_IDX], [IDX_OF_GLOBAL_ITEM_IDX])
+    return treeIDObjects;
+  }
 
-    params: -setupObject
-            -appliedFilterSelections: an object that will hold's a user's input for each selector
-            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
-            -wantFilterSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
+  getAllFeatureItemRelatedColumns(setupObject, featureIndex) {
+    let itemIndex = setupObject.features[setupObject.children[IDX_OF_FEATURES_ARR][featureIndex]].children[IDX_OF_ITEM_IDX]
+    const treeIDObjects = this.mapAllItemRelatedColumns(setupObject, itemIndex)
+    return treeIDObjects;
+  }
 
-    returns: selector object that maps selector type to column information. 
-    selector object format:
-    {
-      numericChoice: [],
-      numericEqual: [],
-      calendarRange: [],
-      calendarEqual: [],
-      dropdown: [],
-      searchableDropdown: [],
-      checklistDropdown: [],
-      searchableChecklistDropdown: [],
-      text: [],
-      bool: []
+  //helper function: given all treeIDObjects, return an array of all returnableIDs
+  getAllIDreturnableIDs(treeIDobjects) {
+    let returnableIDs = []
+    let itemInfos = Object.values(treeIDobjects)
+    itemInfos.forEach((itemInfo: any) => {
+      returnableIDs.push(...itemInfo.IDreturnableIDs)
+    });
+    return returnableIDs;
+  }
+
+  getAllAttributeReturnableIDs(treeIDobjects) {
+    let returnableIDs = []
+    let itemInfos = Object.values(treeIDobjects)
+    itemInfos.forEach((itemInfo: any) => {
+      returnableIDs.push(...itemInfo.attributeReturnableIDs)
+    });
+    return returnableIDs;
+  }
+
+  // helper function for setting inputUserSelection and filterUserSelection
+  // in a treeIDObject columnInfo object
+  private getSelection(curColumnSelector) {
+    if (curColumnSelector) {
+      switch (curColumnSelector.selectorKey) {
+        case "numericChoice": {
+          return { relation: null, value: null };
+        }
+        case "calendarRange": {
+          return { start: null, end: null };
+        }
+        case "searchableDropdown": {
+          return [];
+        }
+        case "checklistDropdown": {
+          return [];
+        }
+        case "searchableChecklistDropdown": {
+          return [];
+        }
+        default: {
+          return "";
+        }
+      }
+    }
+  }
+
+  //helper func
+  private mapItemTreeIDtoColumns(setupObject, itemIndex, treeIDObjects, path) {
+    let treeID = path.join('>');
+    let treeIDObject = {
+      item: setupObject.items[itemIndex],
+      itemIndex: itemIndex,
+      IDColumns: [],
+      nonIDColumns: [],
+      attributeColumns: [],
+      IDreturnableIDs: [],
+      nonIDreturnableIDs: [],
+      attributeReturnableIDs: []
     };
+    // if there exists an object for this tree ID already, add to it. 
+    // else, assign this blank treeIDObject to this treeID
+    treeIDObjects[treeID] ? treeIDObject = treeIDObjects[treeID] : treeIDObjects[treeID] = treeIDObject
 
-    where each element inside the arrays is a columnObject
- */////////////////////////////////////////
- getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, returnableIDs, wantFilterSelector: boolean) {
-  let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
-  let globalColumns = [];
-  let path = [IDX_OF_GLOBAL_ITEM_IDX];
+    // for each column that is an ID child of the item, get its returnable ID, push its ID, push the column's info
+    treeIDObject.item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
+      let colPath = Object.assign([], path);
+      colPath.push(IDX_OF_ID_COL_IDXS, i);
+      let curColInfo = {
+        column: setupObject.columns[IDColumnIndex],
+        returnableID: this.getReturnableID(colPath, setupObject),
+        inputUserSelection: this.getSelection(setupObject.columns[IDColumnIndex].inputSelector),
+        filterUserSelection: this.getSelection(setupObject.columns[IDColumnIndex].filterSelector)
+      }
+      treeIDObject.IDreturnableIDs.push(this.getReturnableID(colPath, setupObject));
+      treeIDObject.IDColumns.push(curColInfo);
+    });
+    treeIDObject.item.children[IDX_OF_NON_ID_COL_IDXS].forEach((nonIDColumnIndex, i) => {
+      let colPath = Object.assign([], path);
+      colPath.push(IDX_OF_NON_ID_COL_IDXS, i);
+      let curColInfo = {
+        column: setupObject.columns[nonIDColumnIndex],
+        returnableID: this.getReturnableID(colPath, setupObject),
+        inputUserSelection: this.getSelection(setupObject.columns[nonIDColumnIndex].inputSelector),
+        filterUserSelection: this.getSelection(setupObject.columns[nonIDColumnIndex].filterSelector)
+      }
+      treeIDObject.nonIDreturnableIDs.push(this.getReturnableID(colPath, setupObject));
+      treeIDObject.nonIDColumns.push(curColInfo);
+    });
+    treeIDObject.item.children[IDX_OF_ITEM_ATTRIBUTE_IDXS].forEach((attributeColumnIndex, i) => {
+      let colPath = Object.assign([], path);
+      colPath.push(IDX_OF_ITEM_ATTRIBUTE_IDXS, i);
+      let curColInfo = {
+        column: setupObject.columns[attributeColumnIndex],
+        returnableID: this.getReturnableID(colPath, setupObject),
+        inputUserSelection: this.getSelection(setupObject.columns[attributeColumnIndex].inputSelector),
+        filterUserSelection: this.getSelection(setupObject.columns[attributeColumnIndex].filterSelector)
+      }
+      treeIDObject.attributeReturnableIDs.push(this.getReturnableID(colPath, setupObject));
+      treeIDObject.attributeColumns.push(curColInfo);
+    });
+  }
 
-  this.getAllItemRelatedColumns(setupObject.items[globalItemIndex], globalColumns, path, returnableIDs, setupObject);
-  return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFilterSelector);
-}
+  // helper function
+  private mapItemTreeIDtoIDItems(setupObject, itemIndex, treeIDObjects, path) {
+    let treeID = path.join('>');
+    let treeIDObject = {
+      item: setupObject.items[itemIndex],
+      itemIndex: itemIndex,
+      IDColumns: [],
+      nonIDColumns: [],
+      attributeColumns: [],
+      IDreturnableIDs: [],
+      nonIDreturnableIDs: [],
+      attributeReturnableIDs: []
+    };
+    // if there exists an object for this tree ID already, add to it. 
+    // else, assign this blank treeIDObject to this treeID
+    treeIDObjects[treeID] ? treeIDObject = treeIDObjects[treeID] : treeIDObjects[treeID] = treeIDObject
+
+    treeIDObject.item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let nextItemPath = Object.assign([], path);
+      nextItemPath.push(IDX_OF_ID_ITEM_IDXS, i);
+      let nextItemIndex = itemPointer.index;
+      this.mapItemTreeIDtoColumns(setupObject, nextItemIndex, treeIDObjects, nextItemPath);
+    });
+  }
+
+  //helper function
+  private mapItemTreeIDtoNonIDItems(setupObject, itemIndex, treeIDObjects, path) {
+    let treeID = path.join('>');
+    let treeIDObject = {
+      item: setupObject.items[itemIndex],
+      itemIndex: itemIndex,
+      IDColumns: [],
+      nonIDColumns: [],
+      attributeColumns: [],
+      IDreturnableIDs: [],
+      nonIDreturnableIDs: [],
+      attributeReturnableIDs: []
+    };
+    // if there exists an object for this tree ID already, add to it. 
+    // else, assign this blank treeIDObject to this treeID
+    treeIDObjects[treeID] ? treeIDObject = treeIDObjects[treeID] : treeIDObjects[treeID] = treeIDObject
+
+    treeIDObject.item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let nextItemPath = Object.assign([], path);
+      nextItemPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
+      let nextItemIndex = itemPointer.index;
+      this.mapItemTreeIDtoColumns(setupObject, nextItemIndex, treeIDObjects, nextItemPath);
+    });
+  }
 
 
-   /* ////////////////////////////////////
-    getFeatureFilterSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+  // main entry point fubc
+  //recursively map the columns belonging to an item to that item
+  mapAllItemRelatedColumns(setupObject, itemIndex, path = [IDX_OF_ITEM_ARR, itemIndex]) {
+    let treeIDObjects = {}
+    // traverse ID columns
+    this.mapItemTreeIDtoColumns(setupObject, itemIndex, treeIDObjects, path)
+    // // traverse ID items AND NON id ITEMS
+    this.mapItemTreeIDtoIDItems(setupObject, itemIndex, treeIDObjects, path)
+    // don't do non ID items for now
+    // this.mapItemTreeIDtoNonIDItems(setupObject, itemIndex, treeIDObjects, path)
+    return treeIDObjects;
+  }
 
-    params: -setupObject
-            -appliedFilterSelections: an object that will hold's a user's input for each selector
-            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
 
-    returns: an array of selector objects. each element of this array contains the selectors belonging to
-             one feature, and its index is the same as the index of that feature in the setupObject features array. 
-             see getGlobalSelectors for an example of a selector object.
 
- */////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////      DEPRECATED FUNCTIONS          ////////////////////
+  ////////////////////////////////////////////////////////////////////////
+
+
+  // DEPRECATED: use getAllGlobalItemRelatedColumns
+  /* ////////////////////////////////////
+   getGlobalSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+   
+   params: -setupObject
+           -appliedFilterSelections: an object that will hold's a user's input for each selector
+           -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+           -wantFilterSelector: boolean indicates whether we want to return filterSelectors or inputSelectors
+   
+   returns: selector object that maps selector type to column information. 
+   selector object format:
+   {
+     numericChoice: [],
+     numericEqual: [],
+     calendarRange: [],
+     calendarEqual: [],
+     dropdown: [],
+     searchableDropdown: [],
+     checklistDropdown: [],
+     searchableChecklistDropdown: [],
+     text: [],
+     bool: []
+   };
+   
+   where each element inside the arrays is a columnObject
+  */////////////////////////////////////////
+  getGlobalSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, returnableIDs, wantFilterSelector: boolean) {
+    let globalItemIndex = setupObject.children[IDX_OF_GLOBAL_ITEM_IDX];
+    let globalColumns = [];
+    let path = [IDX_OF_GLOBAL_ITEM_IDX];
+
+    this.getAllItemRelatedColumns(setupObject, setupObject.items[globalItemIndex], globalColumns, path, returnableIDs);
+    return this.parseColumns(globalColumns, appliedFilterSelections, defaultColumnIDs, wantFilterSelector);
+  }
+
+  // DEPRECATED: use mapAllItemRelatedColumns
+  /* ////////////////////////////////////
+   getFeatureFilterSelectors(setupObject, appliedFilterSelections, defaultColumnIDs)
+   
+   params: -setupObject
+           -appliedFilterSelections: an object that will hold's a user's input for each selector
+           -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+   
+   returns: an array of selector objects. each element of this array contains the selectors belonging to
+            one feature, and its index is the same as the index of that feature in the setupObject features array. 
+            see getGlobalSelectors for an example of a selector object.
+   
+  */////////////////////////////////////////
   getFeatureFilterSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs) {
     let allFeatureSelectors = [];
     // for each feature...
@@ -187,13 +335,11 @@ export class SetupObjectService {
       // ...find feature's observation columns
       setupObject.features[featureIndex].children[IDX_OF_OBSERVATION_COL_IDXS].forEach((observationColumnIndex, i) => {
         let curColumn = setupObject.columns[observationColumnIndex];
-        curColumn["_returnableID"] = this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_OBSERVATION_COL_IDXS, i], setupObject);
         featureColumns.push(curColumn);
       });
       // ...find feature's attribute columns
       setupObject.features[featureIndex].children[IDX_OF_ATTRIBUTE_COL_IDXS].forEach((attributeColumnIndex, i) => {
         let curColumn = setupObject.columns[attributeColumnIndex];
-        curColumn["_returnableID"] = this.getReturnableID([IDX_OF_FEATURES_ARR, k, IDX_OF_ATTRIBUTE_COL_IDXS, i], setupObject)
         featureColumns.push(curColumn);
       });
       allFeatureSelectors[featureIndex] = this.parseColumns(featureColumns,
@@ -205,24 +351,60 @@ export class SetupObjectService {
   }
 
 
- /* ////////////////////////////////////
-    getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumnIDs, isObservation: boolean)
+  // DEPRECATED: use mapAllItemRelatedColumns(...)
+  // recursively find all the columns belonging to an item or a child of that item
+  private getAllItemRelatedColumns(setupObject, item, columns, path, returnableIDs = []) {
+    // traverse ID columns
+    item.children[IDX_OF_ID_COL_IDXS].forEach((IDColumnIndex, i) => {
+      let newPath = Object.assign([], path);
+      newPath.push(IDX_OF_ID_COL_IDXS, i);
+      let curColumn = setupObject.columns[IDColumnIndex];
+      columns.push(curColumn);
+      returnableIDs.push(this.getReturnableID(newPath, setupObject));
+    });
+    // traverse ID items
+    item.children[IDX_OF_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let newPath = Object.assign([], path);
+      newPath.push(IDX_OF_ID_ITEM_IDXS, i);
+      let itemIndex = itemPointer.index;
+      this.getAllItemRelatedColumns(setupObject, setupObject.items[itemIndex], columns, newPath, returnableIDs);
+    });
+    // traverse non-ID columns
+    item.children[IDX_OF_NON_ID_COL_IDXS].forEach((NonIDColumnIndex, i) => {
+      let newPath = Object.assign([], path);
+      newPath.push(IDX_OF_NON_ID_COL_IDXS, i);
+      let curColumn = setupObject.columns[NonIDColumnIndex];
+      columns.push(curColumn);
+      returnableIDs.push(this.getReturnableID(newPath, setupObject));
+    });
+    // traverse non-ID items
+    item.children[IDX_OF_NON_ID_ITEM_IDXS].forEach((itemPointer, i) => {
+      let newPath = Object.assign([], path);
+      newPath.push(IDX_OF_NON_ID_ITEM_IDXS, i);
+      let itemIndex = itemPointer.index;
+      this.getAllItemRelatedColumns(setupObject, setupObject.items[itemIndex], columns, newPath, returnableIDs);
+    });
+  }
 
-    params: -setupObject
-            -appliedFilterSelections: an object that will hold's a user's input for each selector
-            -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
-            -isObservation: set to true to get observation selectors, false to get attribute selectors
-
-    returns: an array of selector objects. 
-             each element of this array contains the observation selectors or attribute selectors belonging to
-             one feature, and its index is the same as the index of that feature in the setupObject features array. 
-             see getGlobalSelectors for an example of a selector object.
-
- */////////////////////////////////////////
+  // DEPRECATED: use mapAllItemRelatedColumns
+  /* ////////////////////////////////////
+     getFeatureInputSelectors(setupObject, appliedFilterSelections, defaultColumnIDs, isObservation: boolean)
+   
+     params: -setupObject
+             -appliedFilterSelections: an object that will hold's a user's input for each selector
+             -defaultColumnIDs: array of returnableIDs for all the columns that have default marked true
+             -isObservation: set to true to get observation selectors, false to get attribute selectors
+   
+     returns: an array of selector objects. 
+              each element of this array contains the observation selectors or attribute selectors belonging to
+              one feature, and its index is the same as the index of that feature in the setupObject features array. 
+              see getGlobalSelectors for an example of a selector object.
+   
+  */////////////////////////////////////////
 
   // returns an array that holds key-value mapping from feature's index in setupObj features array 
   // to its input selectors
-  getFeatureInputSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections, 
+  getFeatureInputSelectors(setupObject, appliedFilterSelections: AppliedFilterSelections,
     defaultColumnIDs, isObservation: boolean) {
     let childType;
     isObservation ? childType = IDX_OF_OBSERVATION_COL_IDXS : childType = IDX_OF_ATTRIBUTE_COL_IDXS;
@@ -245,32 +427,28 @@ export class SetupObjectService {
     return allFeatureInputSelectors;
   }
 
-
+  // DEPRECATED
   /* ////////////////////////////////////
     getFeatureItemChildren(setupObject, featureIndex)
-
+   
     params: 
       setupObject, 
       featureIndex: the feature's index of the setupObject.features array
-
+   
     returns: array of the feature's item children. each element is an itemChildNodePointerObject
     see api spec for more info on itemChildNodePointerObject.
- */////////////////////////////////////////
+  */////////////////////////////////////////
   getFeatureItemChildren(setupObject, featureIndex) {
     let itemIndex = setupObject.features[featureIndex].children[IDX_OF_ITEM_IDX];
     return setupObject.items[itemIndex].children[IDX_OF_ID_ITEM_IDXS];
   }
 
-  private getReturnableID(tree: any[], setupObject): string {
-    let treeID = tree.join('>');
-    return setupObject.treeIDToReturnableID[treeID];
-  }
-
+  // DEPRECATED
   // create the appliedFilterSelections object by finding all selectors. 
   // also find all columns that have default marked true
   //fills defaultcolumnIDs with the IDs of default columns
   //wantFilterSelector indicates whether we want to return filterSelectors or inputSelectors
-  private parseColumns(columns, appliedFilterSelections: AppliedFilterSelections , defaultColumnIDs, wantFilterSelector: boolean): any {
+  private parseColumns(columns, appliedFilterSelections: AppliedFilterSelections, defaultColumnIDs, wantFilterSelector: boolean): any {
     let selectors = {
       numericChoice: [],
       numericEqual: [],

@@ -1,4 +1,4 @@
-<div *ngIf="feature">
+<div *ngIf="feature" fxLayout="row wrap" fxLayoutAlign="start center">
     <div *ngFor="let column of feature.numericChoice">
         <ng-template *ngTemplateOutlet="numericChoiceTemplate; context: {$implicit: column}"></ng-template>
     </div>
@@ -38,9 +38,6 @@
         <ng-template *ngTemplateOutlet="boolTemplate; context: {$implicit: column}">
         </ng-template>
     </div>
-
-
-
 </div>
 
 <ng-template #numericChoiceTemplate let-column>
@@ -129,7 +126,6 @@
         [settings]="searchableChecklistDropdownSettings" [data]="IDtoOptions[column._returnableID]"
         (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
     </ng-multiselect-dropdown>
-
 </ng-template>
 
 <ng-template #textTemplate let-column>

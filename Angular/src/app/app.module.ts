@@ -7,9 +7,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from './api.service';
 import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
+import { FilterComponent } from './filter/filter.component';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { DownloadComponent } from './download/download.component';
@@ -19,20 +19,32 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { DialogComponent } from './login-dialog/login-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UploadComponent } from './upload/upload.component';
-import { ViewAuditComponent } from './upload-audit/view-audit/view-audit.component';
+import { AuditSummaryComponent } from './upload-audit/audit-summary/audit-summary.component';
 import { AboutComponent } from './about/about.component';
 import { LockDialogComponent } from './lock-dialog/lock-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
 import { PasswordAuthenticationComponent } from './password-authentication/password-authentication.component';
 import { ClickOutsideModule } from 'ng-click-outside'
 import { MaterialModule } from './material.module';
-import { RootFeaturesComponent } from './upload-audit/root-features/root-features.component';
-import { GlobalPresetsComponent} from './upload-audit/global-presets/global-presets.component';
+import { AddRootFeaturesComponent } from './upload-audit/add-root-features/add-root-features.component';
+import { GlobalPresetsComponent } from './upload-audit/global-presets/global-presets.component';
 import { FeatureAuditComponent } from './upload-audit/feature-audit/feature-audit.component';
+import { ItemCreationComponent } from './upload-audit/item-creation/item-creation.component';
 import { SetupObjectService } from './setup-object.service';
 import { TableObjectService } from './table-object.service';
 import { ReusableTemplateComponent } from './reusable-template/reusable-template.component';
+import { SelectorsTemplateComponent } from './selectors-template/selectors-template.component';
 import { TeamComponent } from './team/team.component';
+import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialog.component';
+import { ProfileComponent } from './profile/profile.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
+import { ToastrModule } from 'ngx-toastr';
+import { NewFilterComponent  } from './new-filter/filter.component';
+import { AuditDashboard } from './audit-dashboard/dashboard.component';
+import { ManagementComponent } from './manage/manage.component';
+import { AuthService } from './auth.service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,12 +60,22 @@ import { TeamComponent } from './team/team.component';
     SettingsComponent,
     PasswordAuthenticationComponent,
     UploadAuditComponent,
-    ViewAuditComponent,
-    RootFeaturesComponent,
+    AuditSummaryComponent,
+    AddRootFeaturesComponent,
     GlobalPresetsComponent,
     FeatureAuditComponent,
     ReusableTemplateComponent,
-    TeamComponent
+    TeamComponent,
+    ItemCreationComponent,
+    DeleteDialogComponent,
+    SelectorsTemplateComponent,
+    FilterComponent,
+    VerifyEmailComponent,
+    CheckEmailComponent,
+    ProfileComponent,
+    NewFilterComponent,
+    AuditDashboard,
+    ManagementComponent
   ],
   imports: [
     BrowserModule,
@@ -67,9 +89,9 @@ import { TeamComponent } from './team/team.component';
     NgMultiSelectDropDownModule.forRoot(),
     ClickOutsideModule,
     MaterialModule,
-    MatTooltipModule,
+    ToastrModule.forRoot(),
   ],
-  providers: [ApiService, DatePipe, SetupObjectService, TableObjectService],
+  providers: [ApiService, DatePipe, SetupObjectService, TableObjectService, AuthService],
   bootstrap: [AppComponent],
   entryComponents: [DialogComponent]
 })

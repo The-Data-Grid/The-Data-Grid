@@ -1,8 +1,8 @@
-html {
-   height: 100%;
-   margin: 0;
-   padding: 0;
-   background-color: green;
+header {
+   position: fixed;
+   width: 100%;
+   background-color: #FBFBFB;
+   z-index: 1000;
 }
 
 body {
@@ -17,7 +17,7 @@ body {
 }
 
 #footer {
-   height: 150px;
+   min-height: 150px;
    width: 100%;
    position: absolute;
    bottom: 0px;
@@ -37,15 +37,21 @@ body {
    padding-left: 0;
 }
 
+.top-box
+{
+    box-shadow: inset 0 7px 20px -7px rgba(0,0,0,0.4);
+}
+
 .bottom-bar {
    background-color: #9EACB8;
-   height: 150px;
+   min-height: 150px;
    padding-top: 30px;
+   margin-top: 20px;
 }
 
 .bottom-card {
    background-color: inherit;
-   width: 20%;
+   width: 40%;
 }
 
 .bot-text {

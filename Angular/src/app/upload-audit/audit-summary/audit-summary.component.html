@@ -1,0 +1,57 @@
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<div id="body">
+  <div fxLayoutAlign="space-between center">
+    <h4 style="font-weight: 700; font-size: 25px;">{{auditName}}</h4>
+    <div id="table-buttons">
+      <button mat-button [routerLink]="'/upload-audit'">
+        Cancel
+      </button>
+      <button mat-button id="save-button" [routerLink]="'/upload-audit'" (click)="save()">
+        Save
+      </button>
+    </div>
+  </div>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span style="font-weight: 700; font-size: 15px;">
+          Audit Metadata
+        </span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-selectors-template [treeIDobjects]="auditTreeIDobjects" [returnableIDs]="auditReturnableIDs" >
+    </app-selectors-template>
+  </mat-expansion-panel>
+  <div id="open-dialog-buttons">
+    <button mat-button (click)="openGlobalPresets()">
+      Global Presets
+    </button>
+    <button mat-button (click)="openRootFeatures()">
+      Add Root Features
+    </button>
+  </div>
+  <mat-accordion>
+    <div *ngFor="let feature of displayedRootFeatures">
+      <mat-expansion-panel [disabled]='auditOpened'>
+        <mat-expansion-panel-header>
+          <mat-panel-title style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
+            <span>
+              {{ feature.name }}
+            </span>
+            <button mat-icon-button class="add-button" aria-label="Add feature" (click)="openFeatureAudit(feature)">
+              <mat-icon style="font-size: small;">add</mat-icon>
+            </button>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ngx-datatable class="material" [rows]="feature.actions" columnMode="force" [headerHeight]="50"
+          [footerHeight]="50" rowHeight="auto" [scrollbarH]="false" [limit]="5">
+          <ngx-datatable-column *ngFor="let col of columns" [prop]="getProp(col)" [name]="col">
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </mat-expansion-panel>
+    </div>
+  </mat-accordion>
+  <div style="padding-bottom: 40px;"></div>
+</div>

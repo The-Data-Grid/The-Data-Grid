@@ -1,0 +1,15 @@
+<div *ngIf="isVerified">
+    <img class="verified" src="/assets/verified_.png">
+    
+    <div class="centertext">
+        <h1 style="font-weight: bold; font-size: 38px; color: #569CD7;">Your email address has been verified!</h1>
+        <button (click)="signIn()" mat-raised-button color="primary">Click to Sign In</button>
+    </div>
+    
+</div>
+
+<div *ngIf="!isVerified">
+    <div style="text-align: center; margin-top: 10rem;" class="w-full text-center ">
+        <h1 style="font-weight: bold; font-size: 38px; color: #569CD7;">Your email address is not verified</h1>
+    </div>
+</div>

@@ -1,17 +1,23 @@
-<body style="overflow-x: hidden;">
+<body style="overflow-x: hidden;" class="popup">
     <div class="top_decoration"></div>
     <div style="margin-left: 20px;">
         <h3>Global Presets</h3>
 
         <div *ngIf="selectorsLoaded">
-            <app-reusable-template [feature]="globalSelectors" [appliedFilterSelections]="appliedFilterSelections"
-                [returnableIDs]="globalReturnableIDs">
-            </app-reusable-template>
+            <app-selectors-template [treeIDobjects]="globalTreeIDobjects" [returnableIDs]="globalReturnableIDs">
+            </app-selectors-template>
+            <!-- 
+                <button mat-button class="create-button transparent-hover"
+                    (click)="openItemCreation(treeIDObject.value)">
+                    Create New
+                </button>
+                <div *ngFor="let child of treeIDObject.value.IDColumns" style="margin-left: 2em;">
+                    {{child.frontendName}}
+                </div> -->
         </div>
     </div>
 
-
-    <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
+    <div class="action-button-group">
         <button mat-button (click)="close()" style="margin-right: 10px;">
             Cancel
         </button>

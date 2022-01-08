@@ -2,9 +2,6 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from '../../api.service';
 import { SetupObjectService } from '../../setup-object.service';
-import { SetupObject, TableObject } from '../../responses'
-import { environment } from '../../../environments/environment';
-const USE_FAKE_DATA = environment.useFakeData;
 import { AppliedFilterSelections } from '../../models'
 
 
@@ -41,22 +38,19 @@ export class GlobalPresetsComponent implements OnInit {
   defaultColumns = [];
   selectorsLoaded: boolean = false;
   globalReturnableIDs = [];
+  globalTreeIDobjects = {}
 
 
   ngOnInit(): void {
-    this.getSetupTableObject();
+    this.getSetupObject();
   }
 
-  getSetupTableObject() {
-    this.apiService.getSetupTableObject().subscribe((res) => {
-      USE_FAKE_DATA ? this.setupObject = SetupObject : this.setupObject = res;
-      this.globalSelectors = this.setupObjectService.getGlobalSelectors(
-        this.setupObject,
-        this.appliedFilterSelections,
-        this.defaultColumns, 
-        this.globalReturnableIDs,
-        false);
-      console.log(this.globalSelectors)
+  getSetupObject() {
+    this.apiService.getSetupObject().subscribe((res) => {
+      this.setupObject = res;
+      this.globalTreeIDobjects = this.setupObjectService.getAllGlobalItemRelatedColumns(this.setupObject)
+      // console.log("globalTreeIDobjects", this.globalTreeIDobjects)
+      this.globalReturnableIDs = this.setupObjectService.getAllIDreturnableIDs(this.globalTreeIDobjects)
       this.selectorsLoaded = true;
     });
   }

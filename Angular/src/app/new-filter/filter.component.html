@@ -1,0 +1,116 @@
+
+<div class="bg-white w-full h-full">
+    <!-- Controller Box -->
+    <div [class.flex-col]="!isL" [class.flex-row]="isL" style="background-color:  rgb(229 231 235);" class="flex">
+        <!-- Meta information -->
+        <div style="box-shadow: 4px 0 8px -2px rgb(138, 138, 138);" [class.w-1-3]="isL" [class.w-full]="!isL" class="flex flex-col p-4 space-y-4 bg-[#569CD7]">
+        <div class="flex flex-row justify-between items-center bg-white pl-8 shadow ">
+            <span class="font-semibold text-[#535353]">Database <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/multi-database"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
+            <mat-form-field appearance="fill" style="margin-bottom: -21px;">
+                <mat-label>Select Database</mat-label>
+                <mat-select value="UCLA Audits">
+                    <mat-option value="UCLA Audits">UCLA Audits</mat-option>
+                </mat-select>
+                </mat-form-field>              
+        </div>
+        <div class="flex flex-row justify-between items-center bg-white pl-8 shadow ">
+            <span class="font-semibold text-[#535353]">Query Type <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/query-type"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
+            <mat-form-field appearance="fill" style="margin-bottom: -21px;">
+                <mat-label>Select Query Type</mat-label>
+                <mat-select [(ngModel)]="queryType" (ngModelChange)="onQueryTypeChange()">
+                    <mat-option value="Items">Items</mat-option>
+                    <mat-option value="Observations">Observations</mat-option>
+                </mat-select>
+              </mat-form-field>              
+        </div>
+        <div class="flex flex-row justify-between items-center bg-white pl-8 shadow ">
+            <span class="font-semibold text-[#535353]">Feature</span>
+            <mat-form-field appearance="fill" style="margin-bottom: -21px;">
+                <mat-label>Select Feature</mat-label>
+                <mat-select [(ngModel)]="selectedFeature" (ngModelChange)="onFeatureSelectChange()">
+                  <mat-option *ngFor="let obj of featuresOrItems; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
+                </mat-select>
+              </mat-form-field>              
+        </div>
+        <div class="flex flex-row justify-between items-center bg-white pl-8 shadow ">
+            <span class="font-semibold text-[#535353]">Fields</span>
+            <mat-form-field appearance="fill" style="margin-bottom: -21px;">
+                <mat-label>Select Fields</mat-label>
+                <mat-select [(ngModel)]="selectedFields" (ngModelChange)="onFieldSelection()" multiple>
+                  <mat-option *ngFor="let obj of relevantColumnObjects; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
+                </mat-select>
+              </mat-form-field>              
+        </div>
+        </div>
+        <!-- Query -->
+        <div [class.w-2-3]="isL" [class.w-full]="!isL" class="p-8">
+        <div [class.flex-row]="!isSm && !isXs" [class.flex-col]="isSm || isXs" class="w-full h-full bg-white rounded flex" style="overflow: hidden">
+            <!-- Query Builder -->
+            <div [class.w-2-3]="!isSm && !isXs" [class.w-full]="isSm || isXs" class=" my-4 mx-8">
+                <span class="font-semibold text-[#535353]">Query Builder</span>
+                <div id="builder"></div>
+            </div>
+            <!-- Sort and Run -->
+            <div [class.w-1-3]="!isSm && !isXs" [class.w-full]="isSm || isXs" [class.border-l-2]="!isSm && !isXs" class=" my-4 px-6 flex flex-col border-gray-200 items-center">
+                <div style="padding-bottom: 5px; border-bottom: 2px solid rgb(229 231 235); margin-left: 1rem; margin-right: 1rem;" class=" w-full">
+                    <p class="font-semibold text-[#535353] w-full">Sort</p>
+                    <mat-form-field appearance="fill" style="margin-top: 10px; margin-bottom: -10px;">
+                        <mat-label>Select Field</mat-label>
+                        <mat-select [(ngModel)]="selectedSortField" (ngModelChange)="onSortSelection()">
+                            <mat-option *ngFor="let obj of relevantColumnObjects; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>  
+                      <div>
+                          <mat-radio-group aria-label="Select an option" [(ngModel)]="filterBy">
+                            <mat-radio-button style="margin-right: 5px" value="Ascending">Ascending</mat-radio-button>
+                            <mat-radio-button value="Descending">Descending</mat-radio-button>
+                          </mat-radio-group>
+                      </div>
+                      
+                </div>
+                <button class="apply-button text-semibold py-2 w-2-3 mt-4"  mat-button (click)="runQuery(false)">Run Query</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <!-- Table -->
+    <div class="bg-white w-full">
+        <div style="box-shadow: 0 5px 5px -3px #0003,0 8px 10px 1px #00000024,0 3px 14px 2px #0000001f;"[class.mx-10]="!isXs" class="bg-white my-6">
+            <mat-progress-bar [mode]="progressBarMode" [value]="progressBarValue" class="mat-progress-bar-buffer"></mat-progress-bar>
+            <div class="overflow-x-scroll">
+                <table class=" ">
+                    <!-- Heaader -->
+                    <tr class="h-70px text-gray-700   text-sm ">
+                        <th *ngFor="let header of headerNames" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
+                    </tr>
+                    <!-- Data -->
+                    <tr *ngFor="let row of tableData" class="h-50px text-sm hover-bg-gray-100">
+                        <td *ngFor="let cell of row" class="border-t border-gray-200   w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="flex justify-between">
+                
+                <div [class.mt-4]="isXs" [class.flex-col]="isXs" [class.flex-row]="!isXs" class="flex items-center">
+                    <button [class.mb-2]="isXs" class="text-semibold bg-[#569CD7] px-2 mx-2 text-sm" style="height: 25px;" mat-button (click)="runDownload()">{{ isDownloading ? 'Downloading...' : 'Download all pages' }}</button>
+                    <div>
+                        <mat-radio-group class="flex flex-row text-sm" aria-label="Select an option" [(ngModel)]="downloadType">
+                          <mat-radio-button style="margin-right: 5px" value="csv">CSV</mat-radio-button>
+                          <mat-radio-button value="json">JSON</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    {{ rootFeatures }}
+                </div>
+                <!-- Paginator -->
+                <mat-paginator #paginator [length]="rowCount"
+                [pageSize]="currentPageSize"
+                [pageSizeOptions]="[10, 25, 100]"
+                (page)="onPageChange($event)"
+                aria-label="Select page">
+            </mat-paginator>
+            </div>
+    </div>
+    
+
+    </div>
+</div>

@@ -8,7 +8,7 @@
     "observations": {
         "create": [
             {
-                "itemTypeID": 15,
+                "itemTypeID": 13,
                 "itemPrimaryKey": 1,
                 "newItemIndex": null,
                 "globalPrimaryKey": 1,
@@ -28,7 +28,7 @@
                         "01-29-1999",
                         "Absolutely nasty",
                         "Oliver Melgrove",
-                        "SOP?",
+                        ["SOP1", "SOP2"],
                         3.5,
                         ["Pretty alright", "you know", "yeah, i know"],
                         "Faucet is nice",

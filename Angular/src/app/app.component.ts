@@ -8,7 +8,8 @@ import {MatMenu, MatMenuTrigger} from '@angular/material/menu'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Clipboard } from '@angular/cdk/clipboard'
 import { black } from 'chalk';
-
+import { ToastrService } from 'ngx-toastr';
+import { AuthService } from './auth.service';
 
 const API_URL = environment.apiUrl;
 const PORT = environment.port;
@@ -38,7 +39,6 @@ export class AppComponent implements OnInit {
   recheckIfInMenu2: boolean;
   recheckIfInMenu3:boolean;
 
-
   openResourceMenu(index:number) {
     this.trigger.toArray()[index].openMenu();
   }
@@ -66,18 +66,14 @@ export class AppComponent implements OnInit {
   }
 
 
-  constructor(private apiService: ApiService, private dialog: MatDialog, private router: Router, private clipboard: Clipboard,) { }
-
-
-  checkStorage() {
-    // console.log(localStorage)
-    if (localStorage.length == 0) {
-      return false
-    }
-    else {
-      return true;
-    }
-  }
+  constructor(
+    private apiService: ApiService, 
+    private dialog: MatDialog, 
+    private router: Router, 
+    private clipboard: Clipboard,
+    private toastr: ToastrService,
+    private authService: AuthService
+  ) { }
 
   // mat-nav bars aren't really designed for dropdowns, so customizing dropdown styles is a bit convoluted. Each index in the dropdownsHovered
   // array corresponds to a dropdown button (eg 0 index corresponds to mission, 1 to How It Works, etc)
@@ -110,14 +106,17 @@ export class AppComponent implements OnInit {
   //   console.log(window.scrollY);
   // }
 
-  
 
   logOut() {
     // localStorage.removeItem("userEmail");
     this.apiService.signOut()
       .subscribe((res) => {
-        localStorage.removeItem("userEmail");
-        console.log("signed out!")
+        this.authService.clearSessionData();
+        this.toastr.info('Signed out', '');
+        this.router.navigateByUrl('/');
+      }, (err) => {
+        this.authService.clearSessionData();
+        this.toastr.info('You are not logged in')
       })
   }
 

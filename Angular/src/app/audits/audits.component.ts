@@ -37,7 +37,6 @@ export class AuditsComponent implements OnInit {
   featureReturnableIDs = [];
   rootFeatures = [];
   selectedFeature;
-  featuresToChildren = {};
   appliedFilterSelections: AppliedFilterSelections = {
     numericChoice: {},
     numericEqual: {},
@@ -80,7 +79,7 @@ export class AuditsComponent implements OnInit {
       this.parseSetupObject();
     }
     else {
-      this.apiService.getSetupTableObject().subscribe((res) => {
+      this.apiService.getSetupObject().subscribe((res) => {
         console.log("using data from express server")
         this.setupObject = res;
         this.parseSetupObject();
@@ -109,19 +108,10 @@ export class AuditsComponent implements OnInit {
       this.appliedFilterSelections,
       this.defaultColumnIDs);
 
-    // map features to children
-    this.featuresToChildren = this.setupObjectService.getFeaturesToChildren(this.setupObject);
-
-    // console.log("global selectors:");
-    // console.log(this.globalSelectors);
-    // console.log("feature selectors:");
-    // console.log(this.featureSelectors);
-    // console.log("applied filter selections:");
-    // console.log(this.appliedFilterSelections);
-    // console.log("defaultColumnIDs:");
-    // console.log(this.defaultColumnIDs);
-    // console.log("featuresToChildren:");
-    // console.log(this.featuresToChildren);
+    console.log("global selectors:", this.globalSelectors);
+    // console.log("feature selectors:", this.featureSelectors);
+    console.log("applied filter selections:", this.appliedFilterSelections);
+    // console.log("defaultColumnIDs:", this.defaultColumnIDs);
     this.applyFilters();
     this.selectorsLoaded = true
   }
@@ -136,10 +126,10 @@ export class AuditsComponent implements OnInit {
     else {
       this.apiService.getTableObject(this.selectedFeature, this.defaultColumnIDs, this.appliedFilterSelections, this.globalReturnableIDs.concat(this.featureReturnableIDs)).subscribe((res) => {
         this.tableObject = res;
-        console.log(this.tableObject)
+        // console.log(this.tableObject)
         this.tableRows = this.tableObjectService.getRows(this.setupObject, this.tableObject, this.dataTableColumns);
-  console.log(this.tableRows)
-  console.log(this.dataTableColumns)
+        // console.log(this.tableRows)
+        // console.log(this.dataTableColumns)
       });
     }
   }

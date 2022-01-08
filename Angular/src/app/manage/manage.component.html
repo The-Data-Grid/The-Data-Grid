@@ -1,0 +1,161 @@
+<div *ngIf="sessionObject.organizationID.length == 0" class="w-full h-full flex items-center flex-col">
+    <p class="text-center text-lg mt-48 text-gray-400">You must be part of an organization to use the Audit Dashboard</p>
+</div>
+<div *ngIf="sessionObject.organizationID.length > 0" class="w-full h-full flex items-center flex-col">
+    <!-- Pick Organization -->
+    <div class="flex flex-row px-4 -pt-4 bg-gray-100 mt-3">
+        <div class="flex flex-col justify-center text-gray-400 text-semibold mr-4" >
+            Managing for organization:
+        </div>
+        <mat-form-field class='-mb-4 mt-1'>
+            <mat-label>Organization</mat-label>
+            <mat-select [(ngModel)]="managingOrganization" (ngModelChange)="managingOrganizationChange()">
+              <mat-option *ngFor="let id of sessionObject.organizationID; index as i" [value]="id">
+                {{ sessionObject.organizationFrontendName[i] }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+    </div>
+    
+    <!-- Database Meta Information -->
+    <div class="flex flex-col w-2/3 mt-10">
+      <p class="text-xs" style="color: #569CD7">DATABASE</p>
+      <div style="border: 3px solid #569CD7; border-radius: 3px;" class="flex flex-col">
+        <div style="background-color: #569CD7;" class="h-12 flex flex-row justify-between px-4 py-2 select-none cursor-default">
+          <span class="text-3xl text-white">{{ databaseMeta.name }}</span>
+          <span class="text-white mt-1">
+            Server location: <span class="font-mono text-white font-bold underline">{{ databaseMeta.location }}</span>
+          </span>
+        </div>
+        <div class="p-6 flex flex-col">
+          <div class="border-b-2 border-gray-200">
+            {{ databaseMeta.description }}
+          </div>
+          <div class="mt-2" style="color: #569CD7">
+            <span class="underline cursor-default" >Organizations</span>: {{ databaseMeta.orgNames.join(', ') }}
+          </div>
+          <div class="mt-2" style="color: #569CD7">
+            <span class="underline cursor-default" >Members</span>: {{ databaseMeta.nMembers }}
+          </div>
+          <div class="mt-2" style="color: #569CD7">
+            <span class="underline cursor-default" >Total Rows</span>: {{ databaseMeta.nRows }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Org Management -->
+    <div class="flex flex-col w-2/3 mt-10">
+      <p class="border-b-2 border-gray-300 text-lg text-gray-500">{{ managingOrganizationName }}</p>
+      <div class="flex flex-row mt-1 bg-blue-50">
+        <span class="underline" style="color: #569CD7">
+          Logged in as:
+        </span>
+        <div class="flex flex-col ml-3">
+          <p class="text-lg font-bold">
+            {{ sessionObject.firstName }} {{ sessionObject.lastName }}
+          </p>
+          <p class="font-mono underline text-lg">
+           {{ sessionObject.email }}
+          </p>
+          <p class="font-bold text-lg" style="color: #569CD7" >
+            {{ managingOrganizationRole[0].toUpperCase() +  managingOrganizationRole.slice(1) }}
+          </p>
+        </div>
+      </div>
+      <div *ngIf="orgMembers.length > 0" class="flex flex-col border-b mt-1">
+        <span class="underline" style="color: #569CD7">
+          Members:
+        </span>
+        <div *ngFor="let member of orgMembers; index as i" class="h-10 border-t hover:bg-gray-100 flex flex-row items-center justify-between">
+          <span>{{ member.firstName }} {{ member.lastName }}<a [href]="'mailto:' + member.email" class="underline font-mono text-blue-400 mx-2">{{ member.email }}</a><span class="italic">{{ member.role }}</span></span>
+          <div>
+            <button *ngIf="managingOrganizationRole === 'admin' && !orgMembersInitiatedRevoke[i] && roleManagementInitiated && member.role == 'auditor'"  class=" text-red-400 underline"  mat-button (click)="initiateRoleRevoke(true, i)">Revoke organization access</button>
+            <button *ngIf="managingOrganizationRole === 'admin' && orgMembersInitiatedRevoke[i] && roleManagementInitiated && member.role == 'auditor'" style="background-color: #ff9999;" class=" text-white text-semibold p-2"  mat-button (click)="revokeRole(member.email, i)">Confirm</button>
+            <button *ngIf="managingOrganizationRole === 'admin' && orgMembersInitiatedRevoke[i] && roleManagementInitiated && member.role == 'auditor'" style="background-color: #b6b6b6;" class="ml-4 text-white text-semibold p-2"  mat-button (click)="initiateRoleRevoke(false, i)">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="orgMembers.length == 0" class="h-32 flex-col flex justify-center">
+          <p class="text-gray-400 text-center">No members to display</p>
+      </div>
+      <!-- manage roles -->
+      <div *ngIf="managingOrganizationRole === 'admin'" class="mt-4">
+          <div *ngIf="!roleManagementInitiated" class="flex flex-row items-center">
+              <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="initiateRoleManagement(true)">Manage Roles</button>
+              <a style="display: inline-block; padding-left: 10px" target="_blank" href="/user-guide/roles"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a>
+          </div>
+          <div *ngIf="roleManagementInitiated" class="flex flex-row items-center">
+              <form class="example-form">
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>User Email</mat-label>
+                    <input matInput [formControl]="roleChangeForm" placeholder="Ex. oliver@thedatagrid.org" [(ngModel)]="roleEmail">
+                    <mat-error *ngIf="roleChangeForm.hasError('required')">
+                      Email is <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="roleChangeForm.hasError('email')">
+                      Email is <strong>invalid</strong>
+                    </mat-error>
+                  </mat-form-field>
+                </form>
+
+                <div class="py-2 px-4 border-l-2 border-gray-300 ml-6">
+
+              <button *ngIf="!(roleEmail.length == 0 || roleChangeForm.hasError('required') || roleChangeForm.hasError('email'))" style="background-color: #5fa784;" class=" text-white text-semibold p-4"  mat-button (click)="setRole()">Add to organization</button>
+              <button *ngIf="roleEmail.length == 0 || roleChangeForm.hasError('required') || roleChangeForm.hasError('email')" disabled style="background-color: #b6b6b6;" class=" text-white text-semibold p-4"  mat-button (click)="setRole()">Add to organization</button>
+              <button style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="initiateRoleManagement(false)">Cancel</button>
+                  </div>
+            </div>
+      </div>
+  </div>
+
+  <!-- Schema -->
+  <div class="flex flex-col w-2/3 mt-10">
+    <p class="border-b-2 border-gray-300 text-lg text-gray-500">Schema Viewer <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/data-model"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p> 
+    <p *ngIf="isLoading" class="text-center pt-10">Loading...</p>
+    <mat-accordion *ngIf="!isLoading && allItems.length > 0">
+      <mat-expansion-panel *ngFor="let feature of allItems; index as i" [(expanded)]="isFeatureExpanded[i]" hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ feature.frontendName }}
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="text-black iu text-sm">{{ setupFilterObject.itemReturnableIDs[i].length }}</span><span class="text-sm">&nbsp;queryable fields</span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <!-- List of required items -->
+        <p *ngIf="setupObject.items[i].information" class="text-sm italics my-1 text-gray-400">{{ setupObject.items[i].information }}</p>
+        <p *ngIf="setupObject.items[i].children[1].concat(setupObject.items[i].children[3]).length == 0" class="text-center" > No required items </p>
+        <p *ngIf="setupObject.items[i].children[1].concat(setupObject.items[i].children[3]).length > 0" class="font-bold mb-2"> Required items: <span class="italic">(click below to open)</span><a style="display: inline-block; padding-left: 10px" target="_blank" href="/user-guide/roles"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
+        <div *ngIf="setupObject.items[i].children[1].concat(setupObject.items[i].children[3]).length > 0" class="mb-2">
+          <table class=" ">
+            <!-- Heaader -->
+            <tr class="h-70px text-gray-700   text-sm ">
+                <th *ngFor="let header of ['Name', 'Relation', 'Nullable']" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
+            </tr>
+            <!-- Data -->
+            <tr onMouseOver="this.style.background='lightgray'; this.style.textDecoration='underline'" onMouseOut="this.style.background='none'; this.style.textDecoration='none'" *ngFor="let reqItem of setupObject.items[i].children[1].concat(setupObject.items[i].children[3])" class="h-10 text-sm cursor-pointer" (click)="openRequiredItem(reqItem.index)">
+                <td *ngFor="let cell of [setupObject.items[reqItem.index].frontendName, reqItem.frontendName, reqItem.nullable]" class="border-t border-gray-200 w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+            </tr>
+          </table>
+        </div>
+        <!-- List of fields -->
+        <p *ngIf="setupFilterObject.itemReturnableIDs[i].length == 0" class="text-center" > No queryable fields </p>
+        <button mat-button style="background-color: #569CD7;" *ngIf="setupFilterObject.itemReturnableIDs[i].length > 0" class=" mb-2 p-2 text-white rounded" (click)="showFields(i)"> {{ showingFields[i] ? 'Hide' : 'Show' }} queryable fields</button>
+        <div *ngIf="setupFilterObject.itemReturnableIDs[i].length > 0 && showingFields[i]" class="">
+          <table class=" ">
+            <!-- Heaader -->
+            <tr class="h-70px text-gray-700   text-sm ">
+                <th *ngFor="let header of ['ID', 'Name', 'Nullable', 'Filterable']" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
+            </tr>
+            <!-- Data -->
+            <tr onMouseOver="this.style.background='lightblue';" onMouseOut="this.style.background='none';" *ngFor="let columnIndex of setupFilterObject.itemColumnObjectIndices[i]; index as ii" class="h-8 text-sm cursor-default" >
+                <td *ngFor="let cell of [setupFilterObject.itemReturnableIDs[i][ii], setupObject.columns[columnIndex].frontendName, setupObject.columns[columnIndex].nullable, setupObject.columns[columnIndex].filterSelector !== null]" class="border-t border-gray-200 w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+            </tr>
+          </table>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+    
+</div>

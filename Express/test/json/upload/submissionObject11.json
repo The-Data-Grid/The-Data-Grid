@@ -29,7 +29,7 @@
                         "02-15-1999",
                         "art",
                         "Sandra",
-                        "SOP??",
+                        ["SOP2"],
                         1.0234,
                         ["Pretty alright", "you know", "yeah, i know"],
                         ["Sensor is nice"],

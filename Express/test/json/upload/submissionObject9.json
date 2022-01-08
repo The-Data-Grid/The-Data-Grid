@@ -51,7 +51,7 @@
                         "01-29-1999",
                         "Absolutely nasty",
                         "Oliver",
-                        "SOP?",
+                        ["SOP1"],
                         3.5,
                         ["Pretty alright", "you know", "yeah, i know"],
                         ["Faucet is nice"],

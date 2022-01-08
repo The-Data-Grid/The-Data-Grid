@@ -1,0 +1,46 @@
+<body style="overflow-x: hidden;" class="popup">
+  <div class="top_decoration"></div>
+  <h3 *ngIf="item.frontendName" style="margin-left:22px;margin-top:25px">"{{item.frontendName}}" Item Creation</h3>
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Global Data
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-reusable-template [feature]="globalSelectors" [appliedFilterSelections]="appliedFilterSelections"
+        [page]="page" [returnableIDs]="globalReturnableIDs">
+      </app-reusable-template>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          "{{item.frontendName}}" ID
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-selectors-template [treeIDobjects]="[treeIDObject]" [returnableIDs]="treeIDObject.IDreturnableIDs">
+      </app-selectors-template>
+    </mat-expansion-panel>
+
+    <!-- no attributes for now -->
+    <!-- <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          "{{item.frontendName}}" Attributes
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-selectors-template [treeIDobjects]="[treeIDObject]" [returnableIDs]="treeIDObject.attributeReturnableIDs"
+        [columnsType]="'attributeColumns'">
+      </app-selectors-template>
+    </mat-expansion-panel> -->
+
+  </mat-accordion>
+  <div style="float: right; margin-top: 30px; padding-right: 30px; padding-bottom: 25px;">
+    <button mat-button (click)="close()" style="margin-right: 10px;">
+      Cancel Changes
+    </button>
+    <button mat-button (click)="save()" style="background-color: #569CD7; color: white;">
+      Save & Back
+    </button>
+  </div>
+</body>
