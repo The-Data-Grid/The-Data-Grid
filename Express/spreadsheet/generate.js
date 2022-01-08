@@ -1,11 +1,37 @@
 const excel = require('exceljs');
 const express = require('express');
-/*
-const {
-    FISLookup,
-    localReturnableLookup,
+const { 
+    itemFISLookup,
+    observationFISLookup,
+    itemLocalReturnableLookup,
+    observationLocalReturnableLookup,
+    itemTableNames,
+    featureTableNames,
 } = require('../setup.js');
-*/
+
+/**
+ * * Meta information object
+ * @typedef {Object} spreadsheetMetaObject
+ * @property {String} organizationId
+ * @property {String} userId
+ * @property {String} featureID
+ * @property {String} action
+ * @property {Boolean} isItem true: item, false: observation
+ * 
+ * * spreadsheetColumnObject
+ * @typedef {Object} spreadsheetColumnObject
+ * @property {String} frontendName 
+ * @property {String | null} information 
+ * @property {Number} returnableID 
+ * @property {Number} colId 
+ * @property {Boolean} isNullable 
+ * @property {String} xlsxFormattingType
+ * @property {String[] | null} presetValues
+ * 
+ * @param {spreadsheetMetaObject} spreadsheetMetaObject 
+ * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
+ */
+
 // metadata setup
 /*
 Get all of the local columns (for user entry)
@@ -24,15 +50,35 @@ Get FIS of item's required items (for user selection)
 /**
  * @returns {spreadsheetMetaObject, spreadsheetColumnObject}
  */
-function setup (orgId, userId, feature, action, isItem) {
+function setup (req, res) {
     // 1. Check org permission to upload to this feature
+    // ... wait until added feature based org permissions
 
     // 2. spreadsheetMetaObject
-    
+    const spreadsheetMetaObject = {
+        organizationID: res.locals.requestedOrganizationID,
+        userID: res.locals.authorization.userID,
+        featureID: req.query.featureID,
+        isItem: req.query.isItem,
+        action: 'upload',
+    };
+
     // 3. spreadsheetColumnObject
     // local columns
-    const localReturnables = getLocalReturnables(feature, isItem);
+    /*
+    if obs
+        get local
+        get item fis
+        get distinct values for item fis
+        for attribute and list local cols get them
 
+    if item
+        get local
+        get item fis
+        get distinct values for item fis
+        for attribute and list local cols get them
+    */
+    const localReturnables = getLocalReturnables(feature, isItem);
     const presetValues = getPresetValues(localReturnables);
     const spreadsheetColumnObject = formatSpreadsheetColumnObject(localReturnables, presetValues);
     

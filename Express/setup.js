@@ -52,7 +52,13 @@ itemM2M = syncdb.querySync(itemM2M);
 frontendTypes = syncdb.querySync(frontendTypes);
 allFeatures = syncdb.querySync(allFeatures);
 // from setupObject, identifies type of item (ex. item_sink vs item_mirror) based on index
-const itemTableNames = allItems.map(item => item['i__table_name']);
+const itemTableNames = allItems.map(item => item.i__table_name);
+const featureTableNames = allFeatures.map(f => f.f__table_name);
+
+const itemFISLookup = Object.fromEntries(itemTableNames.map(name => [name, []]));
+const observationFISLookup = Object.fromEntries(featureTableNames.map(name => [name, []]));
+const itemLocalReturnableLookup = Object.fromEntries(itemTableNames.map(name => [name, []]));
+const observationLocalReturnableLookup = Object.fromEntries(featureTableNames.map(name => [name, []]));
 
 /**
  * Validation lookup to verify proper item insertion
@@ -784,6 +790,7 @@ const featureReturnableMapper = (returnable, currentPath, treeArray, statics) =>
             isAttribute = true;
             childrenIndex = 1;
         }
+        observationLocalReturnableLookup[returnable.f__table_name].push(returnable)
         // sanity check
         if(!isAttribute) {
             if(currentPath.length !== 0) throw Error(`ReturnableID: ${returnable['r__returnable_id']} is an observation returnable but has a non zero length joinObject.tables`)
@@ -819,7 +826,7 @@ const featureReturnableMapper = (returnable, currentPath, treeArray, statics) =>
 }
 
 
-const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
+const itemReturnableMapper = (returnable, currentPath, treeArray, statics, hasTraversedNonID = false) => {
     // destructure statics
     const {
         featureIndices,
@@ -832,15 +839,29 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
     } = statics;
     // if returnable is within item
     if(currentPath.length == 0) {
+        const isLocal = returnable.non_obs_i__table_name === returnable.i__table_name;
         let childrenID;
         // if id-column
         if(['item-id'].includes(returnable['rt__type_name'])) {
             childrenID = 0;
+            // FIS lookup handling
+            if(!hasTraversedNonID && returnable.non_obs_i__table_name !== null) {
+                itemFISLookup[returnable.non_obs_i__table_name].push(returnable)
+            }
+            if(!hasTraversedNonID && returnable.f__table_name !== null) {
+                observationFISLookup[returnable.f__table_name].push(returnable)
+            }
         // attribute
         } else if(returnable['rt__type_name'] == 'attribute') {
+            if(isLocal) {
+                itemLocalReturnableLookup[returnable.non_obs_i__table_name].push(returnable);
+            }
             childrenID = 4;
         // non id column
         } else if(['item-non-id', 'item-list', 'item-location', 'item-factor'].includes(returnable['rt__type_name'])) {
+            if(isLocal) {
+                itemLocalReturnableLookup[returnable.non_obs_i__table_name].push(returnable);
+            }
             childrenID = 2;
         } else {
             console.log(returnable)
@@ -893,7 +914,7 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
             // add index to tree
             treeArray.push(pointerIndex);
             // call recursively
-            return itemReturnableMapper(returnable, currentPath, treeArray, statics);
+            return itemReturnableMapper(returnable, currentPath, treeArray, statics, hasTraversedNonID);
         } else {
             // add index to tree
             treeArray.push(3);
@@ -910,7 +931,7 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics) => {
             // add index to tree
             treeArray.push(pointerIndex);
             // call recursively
-            return itemReturnableMapper(returnable, currentPath, treeArray, statics);
+            return itemReturnableMapper(returnable, currentPath, treeArray, statics, true);
         };
     };
 };
@@ -1038,7 +1059,7 @@ for(let returnable of Object.values(returnableIDLookup)) {
     }
 }
 
-//console.log(itemColumnObject.item_sink);
+console.log(observationLocalReturnableLookup);
 //console.log(itemColumnObject['item_sink'])
 //console.log(Object.values(returnableIDLookup).filter(id => [34, 44, 49].includes(id.columnID)))
 //console.log(Object.values(returnableIDLookup).filter(id => [523].includes(id.columnID)))
@@ -1061,6 +1082,7 @@ module.exports = {
     itemColumnObject,
     requiredItemLookup,
     itemTableNames,
+    featureTableNames,
     observationHistory,
     itemHistory,
     observationItemTableNameLookup,
@@ -1068,7 +1090,9 @@ module.exports = {
     columnObjects,
     columnIdTableNameLookup,
     columnIdItemLookup,
-    // FISLookup,
-    // localReturnableLookup,
+    itemFISLookup,
+    observationFISLookup,
+    itemLocalReturnableLookup,
+    observationLocalReturnableLookup,
 }
 
