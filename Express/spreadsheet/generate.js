@@ -172,7 +172,7 @@ async function generateSpreadsheet (spreadsheetMetaObject, spreadsheetColumnObje
     // force workbook calculation on load
     workbook.calcProperties.fullCalcOnLoad = true;
 
-    const feature = spreadsheetMetaObject.featureFrontendName; // what do we get feature from?
+    const feature = spreadsheetMetaObject.featureFrontendName;
 
     /* INSTRUCTION SHEET */
     // let instructionsSheet = workbook.addWorksheet('Instructions');
@@ -184,70 +184,7 @@ async function generateSpreadsheet (spreadsheetMetaObject, spreadsheetColumnObje
     
     /* FEATURE DATA SHEET */
     let dataSheet = workbook.addWorksheet(feature + ' Data');
-    // dataSheet = setupFeatureData(feature, dataSheet);
-
-    dataSheet.state = 'visible';
-    dataSheet.properties = {
-        // add styling to tab colors / outlines?
-    };
-    dataSheet.pageSetup = {
-        // setup row count, column count
-    }
-
-    /* setup title cell */
-    dataSheet.mergeCells('A1:E3');
-    let titleBox = dataSheet.getCell('A1');
-    titleBox.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'cfe2f3'},
-    };
-
-    titleBox.value = {
-        'richText': [
-            {'font': {'bold': true, 'size': 18, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
-             'text': feature + ' Audit'},
-        ]
-    };
-
-    titleBox.alignment = {
-        vertical: 'middle',
-        //horizontal: 'middle',
-        indent: 2
-    };
-
-    titleBox.protection = {
-        locked: true,
-        hidden: true
-    };
-
-    /*
-    dataSheet.getCell('E3').style.border = {
-        bottom: {style: 'thick', color: {argb: '3c78d8'}}
-    };
-    */
-
-    let infoBox = dataSheet.getCell('F1').style;
-    infoBox.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'cfe2f3'}
-    };
-    /*
-    infoBox.border = {
-        bottom: {style: 'thick', color: {argb: '3c78d8'}}
-    };
-    */
-    infoBox.protection = {
-        locked: true,
-        hidden: true,
-    };
-
-    // setup tdg cell
-    dataSheet.mergeCells('F1', 'L3')
-
-    // setup border cell
-    dataSheet.mergeCells('A4:L4');
+    dataSheet = setupFeatureData(feature, dataSheet);
 
     /* Protect file */
     // await worksheet.protect('password', options)
