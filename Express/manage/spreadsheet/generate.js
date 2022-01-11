@@ -7,10 +7,10 @@ const {
     observationLocalReturnableLookup,
     itemTableNames,
     featureTableNames,
-} = require('../setup.js');
+} = require('../../setup.js');
 const { x } = require('joi');
-const { itemQuery, featureQuery } = require('../query/query.js');
-const { getPresetValues } = require('../query/direct.js');
+const { itemQuery, featureQuery } = require('../../query/query.js');
+const { getPresetValues } = require('../../query/direct.js');
 
 function getXlsxFormattingType(referenceType, SQLType) {
     const referenceTypeGroups = {

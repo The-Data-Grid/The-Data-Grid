@@ -12,7 +12,7 @@ const { authorizeObservationQuery, authorizeItemQuery } =  require('../auth/auth
 const { sendSignedUrl } = require('./signedUrl.js');
 const { authorizeAuditor } = require('../auth/authorizer.js');
 const { parseOrganizationID, parseSignedUrl } = require('../parse.js');
-const { itemOrObservationQuery, setupSpreadsheet, formatObjectsSpreadsheet, generateSpreadsheet } = require('../spreadsheet/generate.js');
+const { itemOrObservationQuery, setupSpreadsheet, formatObjectsSpreadsheet, generateSpreadsheet } = require('./spreadsheet/generate.js');
 
 
 router.get('/audits', parseOrganizationID, authorizeAuditor, auditManagment);
