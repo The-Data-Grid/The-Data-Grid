@@ -34,7 +34,6 @@ const authRouter = require('./auth/router.js');
 const managementRouter = require('./manage/router.js');
 const setSession = require('./auth/session.js');
 const parseCredentials = require('./auth/parseCredentials.js');
-const { generateSpreadsheet } = require('./spreadsheet/generate.js')
 
 // CORS, JSON, URL encoding
 app.use(cors({
@@ -80,8 +79,6 @@ app.get('/api/setup/filter', setupParse, sendFilterSetup);
 
 // Audit and Organization management router
 app.use('/api/manage', managementRouter);
-
-app.get('/api/spreadsheet/generate', generateSpreadsheet);
 
 // @kian pls clean up
 

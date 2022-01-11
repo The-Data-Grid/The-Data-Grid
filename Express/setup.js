@@ -966,8 +966,6 @@ const initialReturnableMapper = (returnable, statics) => {
     // init treeArray
     let treeArray = [];
     // set current path to joinObject tables
-    //console.log(returnable)
-    //console.log(returnable['r__join_object'])
     let currentPath = Array.from(returnable['r__join_object'].tables);
 
     // if non observational
@@ -1074,7 +1072,7 @@ for(let returnable of Object.values(returnableIDLookup)) {
     }
 }
 
-console.log(observationLocalReturnableLookup);
+//console.log(returnableIDLookup[78]);
 //console.log(itemColumnObject['item_sink'])
 //console.log(Object.values(returnableIDLookup).filter(id => [34, 44, 49].includes(id.columnID)))
 //console.log(Object.values(returnableIDLookup).filter(id => [523].includes(id.columnID)))

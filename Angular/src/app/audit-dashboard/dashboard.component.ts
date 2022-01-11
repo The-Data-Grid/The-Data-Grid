@@ -78,7 +78,11 @@ export class AuditDashboard implements OnInit {
 
   // Download spreadsheet template
   runDownload() {
+    this.apiService.getSpreadsheet(this.selectedFeature, this.uploadType === 'Items', this.managingOrganization).subscribe((res) => {
 
+    }, (err) => {
+
+    });
   }
 
   // Upload spreadsheet template

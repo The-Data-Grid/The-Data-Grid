@@ -116,7 +116,7 @@ export class AppComponent implements OnInit {
         this.router.navigateByUrl('/');
       }, (err) => {
         this.authService.clearSessionData();
-        this.toastr.info('You are not logged in')
+        this.toastr.info('Your login session expired')
       })
   }
 

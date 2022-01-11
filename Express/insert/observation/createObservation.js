@@ -12,8 +12,6 @@ const {
     itemObservationTableNameLookup
 } = require('../../setup.js');
 
-console.log(itemTableNames)
-
 const {
     CreateObservationError,
     validateObservationDataColumns,

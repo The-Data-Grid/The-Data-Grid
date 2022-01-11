@@ -286,6 +286,18 @@ export class ApiService {
       }));
   }
 
+  public getSpreadsheet(featureID, isItem, organizationID) {
+    const url = API_URL + `/manage/spreadsheet?organizationID=${organizationID}&isItem=${isItem}&featureID=${featureID}`;
+    const reqHeader = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'No-Auth': 'True',
+      'withCredentials': 'True',
+      'With-Credentials': 'True'
+    });
+
+    return this.http.get<any>(url, { headers: reqHeader, responseType: 'blob' as 'json', withCredentials: true});
+  }
+
   private formQueryURL(defaultColumnIDs: any, appliedFilterSelections: AppliedFilterSelections) {
     // create the "columns" part of the query by joining the default column IDS with '&'
     let columnsString = defaultColumnIDs.join('&');

@@ -264,6 +264,22 @@ function parseOrganizationID(req, res, next) {
     }
 }
 
+function parseSignedUrl(req, res, next) {
+    try {
+        if(!req.query.organizationID || !req.query.type || !req.query.fileName || isNaN(parseInt(req.query.organizationID))) {
+            return res.status(400).end();
+        }
+
+        res.locals.requestedOrganizationID = parseInt(req.query.organizationID);
+        res.locals.contentType = req.query.type;
+        res.locals.fileName = req.query.fileName;
+
+        return next();
+    } catch(err) {
+        return res.status(500).end();
+    }
+}
+
 ////// STATS PARSING //////
 // ==================================================
 // No parsing needed for stats query
@@ -299,4 +315,5 @@ module.exports = {
     timestamptzParse,
     apiDateToUTC,
     parseOrganizationID,
+    parseSignedUrl,
 }
