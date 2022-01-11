@@ -8,6 +8,7 @@ const {
     itemTableNames,
     featureTableNames,
 } = require('../../setup.js');
+const { x } = require('joi');
 const { itemQuery, featureQuery } = require('../../query/query.js');
 const { getPresetValues } = require('../../query/direct.js');
 
@@ -202,8 +203,7 @@ function setupMetadata(metadataSheet) {
     return metadataSheet;
 }
 
-function setupFeatureData(dataSheet) {
-    const feature = '';
+function setupFeatureData(feature, dataSheet) {
     dataSheet.state = 'visible';
     dataSheet.properties = {
         // add styling to tab colors / outlines?
@@ -213,37 +213,49 @@ function setupFeatureData(dataSheet) {
     }
 
     /* setup title cell */
-    dataSheet.mergeCells('A1', 'E3');
+    dataSheet.mergeCells('A1:E3');
     let titleBox = dataSheet.getCell('A1');
     titleBox.style.fill = {
         type: 'pattern',
         pattern: 'solid',
-        bgColor: {argb:'cfe2f3'}
+        fgColor: {argb: 'cfe2f3'},
     };
 
-    titleBox.style.border = {
-        bottom: {style:''}
+    titleBox.value = {
+        'richText': [
+            {'font': {'bold': true, 'size': 18, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+             'text': feature + ' Audit'},
+        ]
     };
 
-    titleBox.value = feature + ' Audit';
+    titleBox.alignment = {
+        vertical: 'middle',
+        //horizontal: 'middle',
+        indent: 2
+    };
 
     titleBox.protection = {
         locked: true,
         hidden: true
     };
 
+    /*
+    dataSheet.getCell('E3').style.border = {
+        bottom: {style: 'thick', color: {argb: '3c78d8'}}
+    };
+    */
+
     let infoBox = dataSheet.getCell('F1').style;
     infoBox.fill = {
         type: 'pattern',
         pattern: 'solid',
-        bgColor: {argb:'cfe2f3'}
+        fgColor: {argb: 'cfe2f3'}
     };
-
+    /*
     infoBox.border = {
-        bottom: {style:''},
-        right: {style:''}
+        bottom: {style: 'thick', color: {argb: '3c78d8'}}
     };
-
+    */
     infoBox.protection = {
         locked: true,
         hidden: true,
@@ -301,19 +313,19 @@ async function generateSpreadsheet (req, res) {
     // force workbook calculation on load
     workbook.calcProperties.fullCalcOnLoad = true;
 
-    const feature = ''; // what do we get feature from?
+    const feature = spreadsheetMetaObject.featureFrontendName;
 
     /* INSTRUCTION SHEET */
-    let instructionsSheet = workbook.addWorksheet('Instructions');
-    instructionsSheet = setupInstructions(instructionsSheet);
+    // let instructionsSheet = workbook.addWorksheet('Instructions');
+    // instructionsSheet = setupInstructions(instructionsSheet);
 
     /* METADATA SHEET */
-    let metadataSheet = workbook.addWorksheet('Metadata');
-    metadataSheet = setupMetadata(metadataSheet);
+    // let metadataSheet = workbook.addWorksheet('Metadata');
+    // metadataSheet = setupMetadata(metadataSheet);
     
     /* FEATURE DATA SHEET */
     let dataSheet = workbook.addWorksheet(feature + ' Data');
-    dataSheet = setupFeatureData(dataSheet);
+    dataSheet = setupFeatureData(feature, dataSheet);
 
     /* Protect file */
     // await worksheet.protect('password', options)
