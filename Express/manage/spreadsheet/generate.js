@@ -335,6 +335,13 @@ async function generateSpreadsheet (req, res) {
         console.log('Spreadsheet generated.');
     });
 
+    const buffer = await workbook.xlsx.writeBuffer();
+    res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ["Content-Disposition", "attachment; filename=" + `template.xlsx`]
+    ]);
+    res.end(Buffer.from(buffer, 'base64'));
+
     /*
     const file = tempfile('.xlsx');
     await workbook.xlsx.writeFile(file)

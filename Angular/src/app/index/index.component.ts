@@ -30,7 +30,7 @@ export class IndexComponent implements OnInit, OnDestroy {
       spacing: 14.00
     })
 
-    this.updater(100, this.effect);
+    this.updater(150, this.effect);
   }
 
   ngOnDestroy() {
@@ -50,7 +50,7 @@ export class IndexComponent implements OnInit, OnDestroy {
     console.log(this.maxDistance)
     this.maxDistance = this.goingUp ? this.maxDistance + 0.25 : this.maxDistance - 0.25;
     // set direction
-    if(this.maxDistance > 25 && this.goingUp) {
+    if(this.maxDistance > 23 && this.goingUp) {
       this.goingUp = false;
     } else if(this.maxDistance < 11 && !this.goingUp) {
       this.goingUp = true;

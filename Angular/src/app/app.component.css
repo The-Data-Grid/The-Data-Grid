@@ -19,7 +19,6 @@ body {
 #footer {
    min-height: 150px;
    width: 100%;
-   position: absolute;
    bottom: 0px;
 }
 
@@ -46,7 +45,6 @@ body {
    background-color: #9EACB8;
    min-height: 150px;
    padding-top: 30px;
-   margin-top: 20px;
 }
 
 .bottom-card {

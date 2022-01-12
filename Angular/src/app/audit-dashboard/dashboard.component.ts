@@ -78,12 +78,22 @@ export class AuditDashboard implements OnInit {
 
   // Download spreadsheet template
   runDownload() {
+    const currentFeature = this.featuresOrItems[this.selectedFeature].frontendName;
+    const currentUploadType = this.uploadType;
     this.apiService.getSpreadsheet(this.selectedFeature, this.uploadType === 'Items', this.managingOrganization).subscribe((res) => {
+      this.blob = new Blob([res], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+
+      var downloadURL = window.URL.createObjectURL(res);
+      var link = document.createElement('a');
+      link.href = downloadURL;
+      link.download = `${currentFeature} ${currentUploadType} TDG Template.xlsx`
+      link.click();
 
     }, (err) => {
 
     });
   }
+  blob;
 
   // Upload spreadsheet template
   runUpload() {
