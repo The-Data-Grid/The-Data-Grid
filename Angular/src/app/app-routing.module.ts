@@ -18,6 +18,11 @@ import { NewFilterComponent } from './new-filter/filter.component';
 import { AuditDashboard } from './audit-dashboard/dashboard.component';
 import { ManagementComponent } from './manage/manage.component';
 import { AuthGuard } from './auth.guard';
+import { GuideComponent } from './guide/guide.component';
+import { GuideManageComponent } from './guide-manage/guide.component';
+import { GuideQueryComponent } from './guide-query/guide.component';
+import { GuideSchemaComponent } from './guide-schema/guide.component';
+import { GuideUploadComponent } from './guide-upload/guide.component';
 
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
@@ -36,11 +41,16 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'filter', component: NewFilterComponent},
   { path: 'manage', component: ManagementComponent, canActivate: [AuthGuard] },
+  { path: 'guide', component: GuideComponent },
+  { path: 'guide/manage', component: GuideManageComponent },
+  { path: 'guide/query', component: GuideQueryComponent },
+  { path: 'guide/schema', component: GuideSchemaComponent },
+  { path: 'guide/upload', component: GuideUploadComponent },
   { path: '**', redirectTo: '', pathMatch: 'full'}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {scrollPositionRestoration: 'enabled'})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

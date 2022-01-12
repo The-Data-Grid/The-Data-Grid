@@ -1,181 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-
-<body style="background-color: #FBFBFB;">
-  <mat-horizontal-stepper style="background-color: #FBFBFB;" [linear]=false #stepper labelPosition="bottom">
-    <ng-template matStepperIcon="done">
-      <mat-icon></mat-icon>
-    </ng-template>
-
-    <ng-template matStepperIcon="edit">
-      <mat-icon style="color: pink;"></mat-icon>
-    </ng-template>
-
-    <ng-template matStepperIcon="event">
-      <mat-icon></mat-icon>
-    </ng-template>
-
-    <div *ngFor="let event of events">
-      <mat-step style="font-size: 55px;" label="{{ event.date }}" state="event">
-        <div style="margin-top: 20px; margin-left: 15%; width: 70%; border: 1px solid black; overflow: auto;">
-          <h1 style="text-align: center; font-size: 24px; font-weight: 900;"> {{ event.title }} </h1>
-          <img
-            style="position: relative; height: 100px; margin-left: 10px; margin-top: -20px; padding-bottom: 20px; float: left; padding-right: 20px;"
-            src="assets/powell.jpg">
-          <p style="padding-right: 10px; padding-bottom: 10px;"> {{ event.description }} </p>
-        </div>
-
-      </mat-step>
-
-
+<div class="document">
+    <h1>
+        About
+    </h1>
+    <h2>
+        What is it?
+    </h2>
+    <div style="margin-bottom: 15px;" class="callout">
+        <span class="callout-caret">></span>The Data Grid is a free and open source database creation, data collection, and data management platform for environmental auditing. 
     </div>
-
-
-
-  </mat-horizontal-stepper>
-
-  <div class="about-container" fxLayout="row wrap" fxLayoutAlign="space-around start">
-    <mat-card class="mat-elevation-z4">
-      <mat-card-header>
-        <mat-card-title>What is The Data Grid?</mat-card-title>
-      </mat-card-header>
-      <mat-divider></mat-divider>
-      <mat-card-content>
-        <p>
-          The Data Grid is a data management website
-          that helps communities monitor and improve their resource usage.
-          It is composed of a web application and mobile data collection
-          app for in-field data collection.
-        </p>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="mat-elevation-z4">
-      <mat-card-header>
-        <mat-card-title>What is the purpose of The Data Grid?</mat-card-title>
-      </mat-card-header>
-      <mat-divider></mat-divider>
-      <mat-card-content>
-        <p>
-          To get an accurate and detailed picture of resource usage
-          within our communities. Building an accurate and detailed
-          picture of the collective impact consumptive activities
-          make is the first step in recognizing areas in need of improvement
-          and formulating comprehensive solutions to address them.
-          When forming recommendations, we examine the intersection
-          between financial, environmental, and social metrics.
-        </p>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="mat-elevation-z4">
-      <mat-card-header>
-        <mat-card-title>Our Goals</mat-card-title>
-      </mat-card-header>
-      <mat-divider></mat-divider>
-      <mat-card-content>
-        <ul>
-          <li>
-            Store accurate and precise resource usage data
-          </li>
-          <li>
-            Provide data analysis and form recommendations
-          </li>
-          <li>
-            Drive change in areas of need
-            <ul>
-              <li>Connect donors/orgs directly</li>
-              <li>Connect government programs that can decrease costs of improvements</li>
-              <li>Leverage relationships with government agencies to aid in competitive bids</li>
-            </ul>
-          </li>
-          <li>
-            Drive innovation in resource usage data collection methods
-            <ul>
-              <li>R&D funding available</li>
-            </ul>
-          </li>
-          <li>
-            Foster development of new resource audit programs and strengthen existing ones
-            <ul>
-              <li>Program development tools available
-                <ul>
-                  <li>SOPs</li>
-                  <li>Contacts</li>
-                </ul>
-              </li>
-              <li>Funding available</li>
-            </ul>
-          </li>
-          <li>
-            Public education
-          </li>
-        </ul>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="mat-elevation-z4">
-      <mat-card-header>
-        <mat-card-title> What data is collected?</mat-card-title>
-      </mat-card-header>
-      <mat-divider></mat-divider>
-      <mat-card-content>
-        <ul>
-          <li> Water
-            <ul>
-              <li>Irrigation</li>
-              <li>Restroom</li>
-            </ul>
-          </li>
-          <li>Electricity</li>
-          <li>Waste</li>
-          <li>Food</li>
-        </ul>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="mat-elevation-z4">
-      <mat-card-header>
-        <mat-card-title>Who is involved?</mat-card-title>
-      </mat-card-header>
-      <mat-divider></mat-divider>
-      <mat-card-content>
-        <p>
-          --table--
-        </p>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="mat-elevation-z6">
-      <mat-card-header>
-        <mat-card-title> History</mat-card-title>
-      </mat-card-header>
-      <mat-divider></mat-divider>
-      <mat-card-content>
-        <p>
-          In 2019 students at UCLA started compiling utility audit
-          data from various organizations on campus to get a big-picture
-          view of campus sustainability and macro-trends. They realized
-          many independent organizations had developed diverse and novel
-          methods of studying usage but detailed documentation and
-          standardization was scarce. Knowledge was being
-          lost or stored away. When data was available, the variety
-          of storages made them hard to compare. As they
-          continued compiling, they saw the potential for a centralized
-          system to provide coordination and support
-          for these diverse groups while maintaining their independence
-          and unique strengths. And thus The Data
-          Grid was born.
-        </p>
-        <p>
-          Timeline
-          January 2019 - Idea conceived by Kamryn Kubose
-          October 2019 - Development on website began
-          March 19 2020 - First website iteration went live
-        </p>
-      </mat-card-content>
-    </mat-card>
-  </div>
-</body>
-
-</html>
+    <div class="body">
+        The platform allows organizations to upload their data to their database, manage auditors, and view the data they have uploaded. This way, environmental data can be easily standardized within and across organizations
+    </div>
+    <h2>
+        How does it work?
+    </h2>
+    <div class="body">
+        The Data Grid provides a way to represent and manage arbitrary data in a standardized way. It is designed to be flexible enough for many different applications, a core part of the functionality being that any data format can be represented and used. This is implemented by allowing the user to generate their own database schema based on their own requirements using our universal data representation format. The user can then use The Data Grid to upload, update, and delete data according to their schema, perform complex queries on that data, and manage their organization. 
+    </div>
+    <h2>
+        Mission
+    </h2>
+    <div class="mission">
+        To allow communities to monitor and analyze their resource usage easily and at no cost 
+    </div>
+    <h2>
+        History and Motivation
+    </h2>
+    <div class="body">
+        In academic year 2018-2019, student facility auditing organizations at UCLA, led by Bruin Home Solutions came together to form the Bruin Audit Partnership.
+    </div>
+    <div class="body">
+        It was determined the facility audit data produced by student organizations on campus were lacking standardization, centralization, and supporting documentation. Data was being lost and could not be aggregated across organizations. Documentation data collection procedures were missing, calling into question the accuracy of the data and diluting its ability to drive policy. There were missed opportunities for these organizations to work together to share best practices, coordinate outreach/recruitment, and develop comprehensive solutions for improving campus. A common platform.
+    </div>
+    <div class="body">
+        The goal was to form a coordinated and united push to develop an impartial full picture of campus resource usage, identify areas of improvement, and drive change through UCLA Facilities Management. It was quickly determined that we needed a shared centralized system that continues to maintain the independence and diversity of each organization's unique strengths. Bruin Home Solutions formed a team to develop the software that became The Data Grid.
+    </div>
+</div>

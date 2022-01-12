@@ -62,7 +62,7 @@ export class AppComponent implements OnInit {
           this.trigger.toArray()[index].closeMenu();
         }  
       }
-    }, 175);
+    }, 225);
   }
 
 

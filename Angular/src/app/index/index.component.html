@@ -9,7 +9,10 @@
         </span>
     </div>
     <div class="-mt-56 w-full justify-center z-10 absolute flex flex-row" >
-        <div style="font-weight: 500; " class="text-xl w-1/2 bg-blue-100 shadow-xl px-12 py-6 callout">
+        <div *ngIf="isM || isL" style="font-weight: 500; " class="text-xl w-1/2 bg-blue-100 shadow-xl px-12 py-6 callout">
+            The Data Grid is a free and open source database creation, data collection, and data management platform for environmental auditing.
+        </div>
+        <div *ngIf="!(isM || isL)" style="font-weight: 500; " class="text-xl w-5/6 mt-20 bg-blue-100 shadow-xl px-12 py-6 callout">
             The Data Grid is a free and open source database creation, data collection, and data management platform for environmental auditing.
         </div>
     </div>
@@ -34,15 +37,15 @@
                     </div>
                     <a style="margin-left: auto;" class="linker border-t border-b border-white text-white py-1 mr-4" routerLink="/filter">See the open databases >>></a>
                 </div>
-                <img style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/data-icon.svg" alt="Database Icon">
+                <img *ngIf="isM || isL" style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/data-icon.svg" alt="Database Icon">
             </div>
             <div class="flex flex-row my-14">
                 <div class="flex flex-col mr-8">
                     <div style="margin-left: auto; text-align: right;" class="text-lg text-white mx-4 my-8 w-2/3">
                         The platform allows organizations to upload their data to their database, manage auditors, and view the data they have uploaded. This way, environmental data can be easily standardized within and across organizations.                </div>
-                    <a style="margin-left: auto;" class="linker border-t border-b border-white text-white py-1 mr-4" routerLink="/about">Learn more about our organization >>></a>
+                    <a style="margin-left: auto;" class="linker border-t border-b border-white text-white py-1 mr-4" routerLink="/about">Learn more about our mission >>></a>
                 </div>
-                <img style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/environment.svg" alt="Database Icon">
+                <img *ngIf="isM || isL" style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/environment.svg" alt="Database Icon">
             </div>
         </div>
     </div>
@@ -63,7 +66,7 @@
             </div>
         </div>
         <div class="flex flex-col w-2/3">
-            <div class="flex flex-row mt-4">
+            <div class="flex flex-row mt-4 mb-12">
                 <div class="flex flex-col mr-8">
                     <div style="margin-left: auto; text-align: right; color: #569CD7" class="text-lg mx-4 mt-8 w-2/3">
                         The Data Grid allows you to generate a custom <a class="linker-3 underline" target="_blank" href="https://www.postgresql.org/">PostgreSQL</a> database without code, and manage that database in the cloud using <span class="font-mono">thedatagrid.org</span>. Databases schemas are created using a <a class="linker-3 underline" routerLink="/guide/schema">universal data representation format</a> that we invented in order to allow people to make databases without needing to know how they work internally. With this:
@@ -81,7 +84,7 @@
                     </ul>
                     <a style="margin-left: auto; color: #569CD7; border-color: #569CD7;" class="linker-blue border-t border-b py-1 mr-4" routerLink="/guide">Read the user guide >>></a>
                 </div>
-                <img style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/data-collection.svg" alt="Database Icon">
+                <img *ngIf="isM || isL" style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/data-collection.svg" alt="Database Icon">
             </div>
         </div>
     </div>

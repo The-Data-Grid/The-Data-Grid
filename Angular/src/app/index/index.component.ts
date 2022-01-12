@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 declare var VANTA;
 
 
@@ -31,6 +31,19 @@ export class IndexComponent implements OnInit, OnDestroy {
     })
 
     this.updater(150, this.effect);
+
+    let {
+    	isXs,
+    	isSm,
+    	isM,
+    	isL
+	} = this.calcBreakpoints(window.innerWidth);
+
+	this.isXs = isXs;
+	this.isSm = isSm;
+	this.isM = isM;
+	this.isL = isL;
+
   }
 
   ngOnDestroy() {
@@ -47,7 +60,6 @@ export class IndexComponent implements OnInit, OnDestroy {
     effect.setOptions({
       maxDistance: this.goingUp ? this.maxDistance + 0.25 : this.maxDistance - 0.25
     });
-    console.log(this.maxDistance)
     this.maxDistance = this.goingUp ? this.maxDistance + 0.25 : this.maxDistance - 0.25;
     // set direction
     if(this.maxDistance > 23 && this.goingUp) {
@@ -58,5 +70,51 @@ export class IndexComponent implements OnInit, OnDestroy {
     // recurse
     this.updater(ms, effect);
   }
+
+  // Breakpoints
+
+  isXs;
+  isSm;
+  isM;
+  isL
+
+calcBreakpoints(width) {
+	let isXs = false;
+	let isSm = false
+	let isM = false
+	let isL = false
+	if(width > 1100) {
+		isL = true;
+	}
+	else if(width > 768) {
+		isM = true;
+	}
+	else if(width > 640) {
+		isSm = true;
+	}
+	else {
+		isXs = true;
+	}
+	return {
+		isXs,
+		isSm,
+		isM,
+		isL
+  }};
+
+  @HostListener('window:resize')
+onResize() {
+	let {
+		isXs,
+		isSm,
+		isM,
+		isL
+	} = this.calcBreakpoints(window.innerWidth);
+
+	this.isXs = isXs;
+	this.isSm = isSm;
+	this.isM = isM;
+	this.isL = isL;
+}
 
 }

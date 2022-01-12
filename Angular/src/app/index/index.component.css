@@ -4,14 +4,6 @@ body, html {
     text-align: center;
 }
 
-.grad {
-    background: rgb(65,106,135);
-    background: -moz-linear-gradient(0deg, rgba(65,106,135,1) 0%, rgba(65,106,135,0) 100%);
-    background: -webkit-linear-gradient(0deg, rgba(65,106,135,1) 0%, rgba(65,106,135,0) 100%);
-    background: linear-gradient(0deg, rgba(65,106,135,1) 0%, rgba(65,106,135,0) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#416a87",endColorstr="#416a87",GradientType=1); 
-}
-
 .linker {
     font-family: IBM Plex Mono;
     font-style: normal;

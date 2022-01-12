@@ -89,7 +89,7 @@
                 </a> -->
                 <div>
                     <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
-                        #rla8="routerLinkActive" [active]="rla8.isActive" routerLink="/team"
+                        #rla8="routerLinkActive" [active]="rla8.isActive" routerLink="/about"
                         style="overflow: hidden;">
                         <button [matMenuTriggerFor]="menu_" #menuTrigger="matMenuTrigger"
                             (mouseenter)="openResourceMenu(0); recheckIfInMenu1 = true"
@@ -97,23 +97,40 @@
                             <span *ngIf="currentWindowWidth >= 700"> About </span>
                             <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
                         </button>
-                        <mat-menu #menu_="matMenu" [overlapTrigger]="false" class="customize">
-                            <span (mouseenter)="recheckIfInMenu = true"
-                                (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false">
-                                <button mat-menu-item routerLink="/team" (mouseover)="adjustDropdownHover(0)"
-                                    (mouseout)="adjustDropdownHover(0)"
-                                    [ngStyle]="{'background-color': isActiveButton('/about',0)}">
-                                    About
+                    </a>
+                </div>
+                <div>
+                    <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
+                        #rla9="routerLinkActive" [active]="rla9.isActive" routerLink="/guide"
+                        style="overflow: hidden;">
+                        <button [matMenuTriggerFor]="menu__" #menuTrigger="matMenuTrigger"
+                            (mouseenter)="openResourceMenu(1); recheckIfInMenu2 = true"
+                            (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false" class="upload">
+                            <span *ngIf="currentWindowWidth >= 700"> User Guide </span>
+                            <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
+                        </button>
+                        <mat-menu #menu__="matMenu" [overlapTrigger]="false" class="customize2">
+                            <span (mouseenter)="recheckIfInMenu2 = true"
+                                (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false">
+                                <button mat-menu-item routerLink="/guide/schema" (mouseover)="adjustDropdownHover(4)"
+                                    (mouseout)="adjustDropdownHover(4)"
+                                    [ngStyle]="{'background-color': isActiveButton('/about',4)}">
+                                    Custom Schemas
                                 </button>
-                                <button mat-menu-item routerLink="/team" (mouseover)="adjustDropdownHover(1)"
-                                    (mouseout)="adjustDropdownHover(1)"
-                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',1)}">
-                                    How it Works
+                                <button mat-menu-item routerLink="/guide/manage" (mouseover)="adjustDropdownHover(5)"
+                                    (mouseout)="adjustDropdownHover(5)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway',5)}">
+                                    Organization Management
                                 </button>
-                                <button mat-menu-item routerLink="/about" (mouseover)="adjustDropdownHover(3)"
-                                    (mouseout)="adjustDropdownHover(3)"
-                                    [ngStyle]="{'background-color': isActiveButton('/throwaway2',3)}">
-                                    Contact
+                                <button mat-menu-item routerLink="/guide/upload" (mouseover)="adjustDropdownHover(6)"
+                                    (mouseout)="adjustDropdownHover(6)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway2',6)}">
+                                    Data Upload
+                                </button>
+                                <button mat-menu-item routerLink="/guide/query" (mouseover)="adjustDropdownHover(7)"
+                                    (mouseout)="adjustDropdownHover(7)"
+                                    [ngStyle]="{'background-color': isActiveButton('/throwaway2',7)}">
+                                    Querying the Database
                                 </button>
                             </span>
                         </mat-menu>

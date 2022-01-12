@@ -44,6 +44,11 @@ import { NewFilterComponent  } from './new-filter/filter.component';
 import { AuditDashboard } from './audit-dashboard/dashboard.component';
 import { ManagementComponent } from './manage/manage.component';
 import { AuthService } from './auth.service';
+import { GuideComponent } from './guide/guide.component';
+import { GuideManageComponent } from './guide-manage/guide.component';
+import { GuideUploadComponent } from './guide-upload/guide.component';
+import { GuideSchemaComponent } from './guide-schema/guide.component';
+import { GuideQueryComponent } from './guide-query/guide.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +80,12 @@ import { AuthService } from './auth.service';
     ProfileComponent,
     NewFilterComponent,
     AuditDashboard,
-    ManagementComponent
+    ManagementComponent,
+    GuideComponent,
+    GuideManageComponent,
+    GuideUploadComponent,
+    GuideSchemaComponent,
+    GuideQueryComponent
   ],
   imports: [
     BrowserModule,

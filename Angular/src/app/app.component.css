@@ -103,7 +103,18 @@ button:focus { outline: none; }
    top: 0%;
    display: block;
    box-sizing: border-box;
-   border-top: 1px solid #569CD7;
+   border-top: 2px solid #569CD7;
+}
+
+::ng-deep .customize2 {
+   background: white;
+   width: 200px;
+   margin-left: -10px;
+   position: absolute;
+   top: 0%;
+   display: block;
+   box-sizing: border-box;
+   border-top: 2px solid #569CD7;
 }
  
 .dropdown-btn {
