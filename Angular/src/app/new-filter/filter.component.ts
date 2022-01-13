@@ -7,6 +7,9 @@ import { AppliedFilterSelections } from '../models'
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import * as $ from 'jquery';
+import { queryBuilder } from '../../../../node_modules/jQuery-QueryBuilder/dist/js/query-builder.js';
+import 'jQuery-QueryBuilder/dist/css/query-builder.default.css';
 
 export interface PeriodicElement {
   name: string;
@@ -43,6 +46,37 @@ ngOnInit() {
 	this.isL = isL;
 
 	this.getSetupObjects();
+	this.getQueryBuilder();
+}
+
+rules = {
+	condition: "OR",
+	rules: [
+		{
+		  condition: "AND",
+		  rules: [
+			{
+			  id: "lead_mob",
+			  field: "lead_mob",
+			  operator: "between",
+			  value: [1, 3]
+			}
+		  ]
+		}
+	]
+}
+
+getQueryBuilder() {
+	$(document).ready(function(){
+		$('#builder').queryBuilder({
+			plugins: [],
+			filters: [{
+				id: "lead_mob",
+				label: "Lead MOB | Lead"
+			}],
+			rules: this.rules
+		})
+	})
 }
 
 // Table Data
