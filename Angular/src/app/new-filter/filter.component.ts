@@ -8,8 +8,7 @@ import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import * as $ from 'jquery';
-import { queryBuilder } from '../../../../node_modules/jQuery-QueryBuilder/dist/js/query-builder.js';
-import 'jQuery-QueryBuilder/dist/css/query-builder.default.css';
+import 'jQuery-QueryBuilder/dist/js/query-builder.js';
 
 export interface PeriodicElement {
   name: string;
@@ -66,9 +65,10 @@ rules = {
 	]
 }
 
+
 getQueryBuilder() {
 	$(document).ready(function(){
-		$('#builder').queryBuilder({
+		(<any>$('#builder')).queryBuilder({
 			plugins: [],
 			filters: [{
 				id: "lead_mob",
