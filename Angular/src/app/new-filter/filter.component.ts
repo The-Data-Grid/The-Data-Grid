@@ -7,6 +7,8 @@ import { AppliedFilterSelections } from '../models'
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import * as $ from 'jquery';
+import 'jQuery-QueryBuilder/dist/js/query-builder.js';
 
 @Component({
  selector: 'app-filter-new',
@@ -36,6 +38,38 @@ ngOnInit() {
 	this.isL = isL;
 
 	this.getSetupObjects();
+	this.getQueryBuilder();
+}
+
+rules = {
+	condition: "OR",
+	rules: [
+		{
+		  condition: "AND",
+		  rules: [
+			{
+			  id: "lead_mob",
+			  field: "lead_mob",
+			  operator: "between",
+			  value: [1, 3]
+			}
+		  ]
+		}
+	]
+}
+
+
+getQueryBuilder() {
+	$(document).ready(function(){
+		(<any>$('#builder')).queryBuilder({
+			plugins: [],
+			filters: [{
+				id: "lead_mob",
+				label: "Lead MOB | Lead"
+			}],
+			rules: this.rules
+		})
+	})
 }
 
 // Table Data
