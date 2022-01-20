@@ -2,6 +2,7 @@ node_modules/*
 PostgreSQL/data/*
 PostgreSQL/logs/*
 Deployment/*
+Angular/dist/*
 pg_upgrade_internal.log
 pg_upgrade_server.log
 pg_upgrade_utility.log

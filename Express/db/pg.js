@@ -2,6 +2,8 @@
 const pgp = require('pg-promise')();
 // pg-native for native libpq C library bindings which we need for sync queries
 const SyncClient = require('pg-native');
+require('dotenv').config();
+const isDeployment = ['-d', '--deploy'].includes(process.argv[2])
 
 // PostgreSQL -> Javascript type parsing
 pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
@@ -9,7 +11,8 @@ pgp.pg.types.setTypeParser(1184, require('../parse.js').timestamptzParse) //Pars
 
 var tdgdbname = 'v5';
 var tdgdbuser = 'postgres';
-var tdgpassword = process.env.PGPASSWORD ? process.env.PGPASSWORD : null
+var tdgpassword = isDeployment ? process.env.PGPASSWORD : null;
+var tdghost = isDeployment ? process.env.PGHOST : 'localhost';
 
 const postgresClient = {
     format: pgp.as.format
@@ -22,12 +25,12 @@ function connectPostgreSQL(config) {
 
         // sync setup connection
         const syncdb = new SyncClient;
-        syncdb.connectSync(`host=localhost port=5432 dbname=${tdgdbname} connect_timeout=5 user=${tdgdbuser} ${tdgpassword !== null ? 'password=' + tdgpassword : ''}`);
+        syncdb.connectSync(`host=${tdghost} port=5432 dbname=${tdgdbname} connect_timeout=5 user=${tdgdbuser} ${tdgpassword !== null ? 'password=' + tdgpassword : ''}`);
         console.log(`New PostgreSQL Connection: setup`)
 
         // Default runtime database connection
         const defaultConnection = { //connection info
-            host: 'localhost',
+            host: tdghost,
             port: 5432,
             database: tdgdbname,
             user: tdgdbuser,
@@ -47,7 +50,7 @@ function connectPostgreSQL(config) {
 
         // Schema construction CLI database connection
         const constructionConnection = { 
-            host: 'localhost',
+            host: tdghost,
             port: 5432,
             database: tdgdbname,
             user: tdgdbuser,

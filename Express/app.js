@@ -38,7 +38,7 @@ const parseCredentials = require('./auth/parseCredentials.js');
 // CORS, JSON, URL encoding
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:4200'
+    origin: isDeployment ? 'https://thedatagrid.org' : 'http://localhost:4200'
 }));
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false}));
@@ -92,6 +92,9 @@ app.use('/api/manage', managementRouter);
 //     res.sendFile(path.resolve('../Deployment/Angular/dist' + req.path));
 // });
 
+app.use('*', (req, res) => res.status(404).end());
+
+/*
 app.get('/', function(req,res){
     res.sendFile(path.resolve('../Deployment/Angular/dist/index.html'));
 });
@@ -106,10 +109,12 @@ app.all('/dist/*', function(req, res){
     //req.path.substring(req.path.indexOf(path.sep));
     res.sendFile(path.resolve('../Deployment/Angular' + req.path));
 });
-
+*/
 ////// LISTEN //////
 
 if(isDeployment) {
+    app.listen(httpsPort, () => console.log(`TDG Backend Node.js server is running on port ${httpsPort}`));
+    /*
     // set TLS options
     const options = {
         key: fs.readFileSync('/etc/letsencrypt/live/thedatagrid.org/privkey.pem'),
@@ -123,6 +128,7 @@ if(isDeployment) {
         httpApp.all('*', (req, res) => res.redirect(301, 'https://' + req.hostname + req.url));    
         const httpServer = http.createServer(httpApp).listen(httpPort, () => console.log(`TDG Backend Node.js HTTP server is running on port ${httpPort}`));
     }
+    */
 }
 // Testing?
 else if(isTesting) {

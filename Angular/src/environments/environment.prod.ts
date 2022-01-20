@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: "/api",
+  apiUrl: "https://api.thedatagrid.org/api",
   port: "443",
   useFakeData: false
 };
