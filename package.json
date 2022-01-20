@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Development management at UCLA Bruin Home Solutions",
   "main": "index.js",
+  "engines": {
+    "node": "14.17.5"
+  },
   "scripts": {
     "dev": "nodemon ./Express/app.js",
     "test-audit": "jest audit.test.js --detectOpenHandles --silent=false",
