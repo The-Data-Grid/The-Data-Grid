@@ -35,7 +35,7 @@
     "ng-click-outside": "^7.0.0",
     "ng-multiselect-dropdown": "^0.2.10",
     "ngx-horizontal-timeline": "0.0.6",
-    "ngx-toastr": "^14.1.4",
+    "ngx-toastr": "14.1.4",
     "rxjs": "^6.6.3",
     "selectize": "^0.12.6",
     "strip-json-comments": "^3.1.1",

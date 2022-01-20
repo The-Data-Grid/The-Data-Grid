@@ -7,7 +7,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from './api.service';
 import { IndexComponent } from './index/index.component';
 import { AuditsComponent } from './audits/audits.component';
-import { FilterComponent } from './filter/filter.component';
 import { DatePipe } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
@@ -36,7 +35,6 @@ import { ReusableTemplateComponent } from './reusable-template/reusable-template
 import { SelectorsTemplateComponent } from './selectors-template/selectors-template.component';
 import { TeamComponent } from './team/team.component';
 import { DeleteDialogComponent } from './upload-audit/delete-dialog/delete-dialog.component';
-import { ProfileComponent } from './profile/profile.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
 import { ToastrModule } from 'ngx-toastr';
@@ -74,10 +72,8 @@ import { GuideQueryComponent } from './guide-query/guide.component';
     ItemCreationComponent,
     DeleteDialogComponent,
     SelectorsTemplateComponent,
-    FilterComponent,
     VerifyEmailComponent,
     CheckEmailComponent,
-    ProfileComponent,
     NewFilterComponent,
     AuditDashboard,
     ManagementComponent,

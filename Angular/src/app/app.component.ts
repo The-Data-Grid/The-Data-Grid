@@ -72,7 +72,7 @@ export class AppComponent implements OnInit {
     private router: Router, 
     private clipboard: Clipboard,
     private toastr: ToastrService,
-    private authService: AuthService
+    public authService: AuthService
   ) { }
 
   // mat-nav bars aren't really designed for dropdowns, so customizing dropdown styles is a bit convoluted. Each index in the dropdownsHovered

@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuditsComponent } from './audits/audits.component';
-import { FilterComponent } from './filter/filter.component';
 import { IndexComponent } from './index/index.component';
 import { UploadComponent } from './upload/upload.component';
 import { AboutComponent } from './about/about.component';
@@ -13,7 +12,6 @@ import { SettingsComponent } from './settings/settings.component'
 import { TeamComponent } from './team/team.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
-import { ProfileComponent } from './profile/profile.component';
 import { NewFilterComponent } from './new-filter/filter.component';
 import { AuditDashboard } from './audit-dashboard/dashboard.component';
 import { ManagementComponent } from './manage/manage.component';
@@ -38,7 +36,6 @@ const routes: Routes = [
   { path: 'team', component: TeamComponent },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'check-email', component: CheckEmailComponent },
-  { path: 'profile', component: ProfileComponent },
   { path: 'filter', component: NewFilterComponent},
   { path: 'manage', component: ManagementComponent, canActivate: [AuthGuard] },
   { path: 'guide', component: GuideComponent },
