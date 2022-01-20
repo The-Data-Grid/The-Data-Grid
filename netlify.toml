@@ -1,3 +1,2 @@
 [build]
   publish = "/Angular/dist"
-  base = "/Angular"
