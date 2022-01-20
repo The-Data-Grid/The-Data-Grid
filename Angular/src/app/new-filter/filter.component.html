@@ -5,7 +5,7 @@
         <!-- Meta information -->
         <div style="box-shadow: 4px 0 8px -2px rgb(138, 138, 138);" [class.w-1-3]="isL" [class.w-full]="!isL" class="flex flex-col p-4 space-y-4 bg-[#569CD7]">
         <div class="flex flex-row justify-between items-center bg-white pl-8 shadow ">
-            <span class="font-semibold text-[#535353]">Database <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/multi-database"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
+            <span class="font-semibold text-[#535353]">Database <a style="display: inline-block; padding-left: 3px" target="_blank" href="/guide/query#multi-database"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
             <mat-form-field appearance="fill" style="margin-bottom: -21px;">
                 <mat-label>Select Database</mat-label>
                 <mat-select value="UCLA Audits">
@@ -14,7 +14,7 @@
                 </mat-form-field>              
         </div>
         <div class="flex flex-row justify-between items-center bg-white pl-8 shadow ">
-            <span class="font-semibold text-[#535353]">Query Type <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/query-type"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
+            <span class="font-semibold text-[#535353]">Query Type <a style="display: inline-block; padding-left: 3px" target="_blank" href="/guide/query#query-type"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
             <mat-form-field appearance="fill" style="margin-bottom: -21px;">
                 <mat-label>Select Query Type</mat-label>
                 <mat-select [(ngModel)]="queryType" (ngModelChange)="onQueryTypeChange()">
@@ -47,7 +47,7 @@
         <div [class.flex-row]="!isSm && !isXs" [class.flex-col]="isSm || isXs" class="w-full h-full bg-white rounded flex" style="overflow: hidden">
             <!-- Query Builder -->
             <div [class.w-2-3]="!isSm && !isXs" [class.w-full]="isSm || isXs" class=" my-4 mx-8">
-                <span class="font-semibold text-[#535353]">Query Builder</span>
+                <span class="font-semibold text-[#535353]">Query Builder <a style="display: inline-block; padding-left: 3px" target="_blank" href="/guide/query#query-builder"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
                 <div id="builder"></div>
             </div>
             <!-- Sort and Run -->

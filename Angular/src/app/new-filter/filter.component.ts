@@ -63,9 +63,18 @@ getQueryBuilder() {
 	$(document).ready(function(){
 		(<any>$('#builder')).queryBuilder({
 			plugins: [],
+			// This is just toy data
 			filters: [{
-				id: "lead_mob",
-				label: "Lead MOB | Lead"
+				id: "15",
+				label: "Commentary"
+			},
+			{
+				id: "16",
+				label: "Building Name"
+			},
+			{
+				id: "17",
+				label: "Condition Code"
 			}],
 			rules: this.rules
 		})
