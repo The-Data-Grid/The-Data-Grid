@@ -21,7 +21,12 @@
             "aot": false,
             "assets": [
               "src/assets",
-              "src/favicon.png"
+              "src/favicon.png",
+              {
+                "glob": "_redirects",
+                "input": "src",
+                "output": "/"
+              }
             ],
             "styles": [
               "src/styles.css"
