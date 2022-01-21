@@ -130,15 +130,23 @@ onPageChange(event: PageEvent): PageEvent {
 }
 
 getSetupObjects() {
+	let finishSetup;
+	let hasSetupFinished = new Promise((resolve, reject) => {
+		finishSetup = resolve;
+	})
+
 	this.apiService.getSetupObject().subscribe((res) => {
 		this.setupObject = res;
 		this.parseSetupObject();
+		finishSetup();
 	});
 
 	this.apiService.getSetupFilterObject().subscribe((res) => {
-		this.setupFilterObject = res;
-		this.getFilterableColumnIDs(2);
-		this.runQuery(false);
+		hasSetupFinished.then(() => {
+			this.setupFilterObject = res;
+			this.getFilterableColumnIDs(2);
+			this.runQuery(false);
+		});
 	})
   }
   
