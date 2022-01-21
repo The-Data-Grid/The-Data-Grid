@@ -87,31 +87,25 @@
                     <span *ngIf="currentWindowWidth >= 700"> Get Involved </span>
                     <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
                 </a> -->
-                <div>
-                    <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
-                        #rla8="routerLinkActive" [active]="rla8.isActive" routerLink="/about"
-                        style="overflow: hidden;">
-                        <button [matMenuTriggerFor]="menu_" #menuTrigger="matMenuTrigger"
-                            (mouseenter)="openResourceMenu(0); recheckIfInMenu1 = true"
-                            (mouseleave)="closeResourceMenu(0); recheckIfInMenu1 = false" class="upload">
-                            <span *ngIf="currentWindowWidth >= 700"> About </span>
-                            <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
-                        </button>
-                    </a>
-                </div>
+                <a mat-tab-link routerLink="/about" routerLinkActive="activeButton"
+                    [routerLinkActiveOptions]="{exact: true}" #rla3="routerLinkActive" [active]="rla3.isActive">
+                    <span *ngIf="currentWindowWidth >= 700"> About </span>
+                    <i *ngIf="currentWindowWidth < 700" class="fa fa-bar-chart" style="font-size: 20px;"></i>
+                </a>
+                
                 <div>
                     <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
                         #rla9="routerLinkActive" [active]="rla9.isActive" routerLink="/guide"
                         style="overflow: hidden;">
                         <button [matMenuTriggerFor]="menu__" #menuTrigger="matMenuTrigger"
-                            (mouseenter)="openResourceMenu(1); recheckIfInMenu2 = true"
-                            (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false" class="upload">
+                            (mouseenter)="openResourceMenu(0); recheckIfInMenu = true"
+                            (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false" class="upload">
                             <span *ngIf="currentWindowWidth >= 700"> User Guide </span>
                             <i *ngIf="currentWindowWidth < 700" class="fa fa-users" style="font-size: 20px;"></i>
                         </button>
                         <mat-menu #menu__="matMenu" [overlapTrigger]="false" class="customize2">
-                            <span (mouseenter)="recheckIfInMenu2 = true"
-                                (mouseleave)="closeResourceMenu(1); recheckIfInMenu2 = false">
+                            <span (mouseenter)="recheckIfInMenu = true"
+                                (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false">
                                 <button mat-menu-item routerLink="/guide/schema" (mouseover)="adjustDropdownHover(4)"
                                     (mouseout)="adjustDropdownHover(4)"
                                     [ngStyle]="{'background-color': isActiveButton('/about',4)}">
