@@ -178,6 +178,100 @@ function formatObjectsSpreadsheet(req, res, next) {
     return next();
 }
 
+/**
+ * * Meta information object
+ * @typedef {Object} spreadsheetMetaObject
+ * @property {String} organizationId
+ * @property {String} userId
+ * @property {String} featureID // setup
+ * @property {String} action
+ * @property {Boolean} isItem true: item, false: observation
+ * 
+ * * spreadsheetColumnObject
+ * @typedef {Object} spreadsheetColumnObject
+ * @property {String} frontendName 
+ * @property {String | null} information 
+ * @property {Number} returnableID 
+ * @property {Number} colId 
+ * @property {Boolean} isNullable 
+ * @property {String} xlsxFormattingType
+ * @property {String[] | null} presetValues
+ * 
+ * @param {spreadsheetMetaObject} spreadsheetMetaObject 
+ * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
+ */
+
+async function generateSpreadsheet (req, res) {
+    const {
+        spreadsheetMetaObject,
+        spreadsheetColumnObjectArray
+    } = res.locals.spreadsheetObjects;
+
+    // create workbook
+    const workbook = new excel.Workbook();
+    /*
+    userID = (await db.one(formatSQL(`
+                SELECT data_first item_id FROM item_user
+                WHERE data_email = $(userEmail)
+            `, {
+                userEmail,
+            }))).item_id;
+            */
+
+    // set workbook properties
+    workbook.creator = spreadsheetMetaObject.userID; // set creator as auditorName or TDG?
+    workbook.lastModifiedBy = 'The Data Grid';
+    workbook.created = new Date();
+    workbook.modified = new Date();
+
+    // force workbook calculation on load\
+    /*
+    workbook.calcProperties.fullCalcOnLoad = true;
+    */
+    console.log(spreadsheetColumnObjectArray);
+    console.log(spreadsheetMetaObject);
+
+    const feature = spreadsheetMetaObject.featureID;
+
+    /* INSTRUCTION SHEET */
+    // let instructionsSheet = workbook.addWorksheet('Instructions');
+    // instructionsSheet = setupInstructions(instructionsSheet);
+
+    /* METADATA SHEET */
+    // let metadataSheet = workbook.addWorksheet('Metadata');
+    // metadataSheet = setupMetadata(metadataSheet);
+    
+    /* FEATURE DATA SHEET */
+    let dataSheet = workbook.addWorksheet(feature + ' Data');
+    dataSheet = setupFeatureData(feature, workbook.created, dataSheet);
+
+    /* Protect file */
+    // await worksheet.protect('password', options)
+
+    /* Send file to client */
+    await workbook.xlsx.writeFile('./temp.xlsx');
+    console.log('Spreadsheet generated.');
+    
+    const buffer = await workbook.xlsx.writeBuffer();
+    res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ["Content-Disposition", "attachment; filename=" + `template.xlsx`]
+    ]);
+    res.end(Buffer.from(buffer, 'base64'));
+    
+    /*
+    const file = tempfile('.xlsx');
+    await workbook.xlsx.writeFile(file)
+        .then(() => {
+            res.sendFile(file, err => {
+                console.log(err);
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    */
+}
 
 function setupInstructions(instructionsSheet) {
     instructionsSheet.state = 'visible';
@@ -203,7 +297,7 @@ function setupMetadata(metadataSheet) {
     return metadataSheet;
 }
 
-function setupFeatureData(feature, dataSheet) {
+function setupFeatureData(feature, dateCreated, dataSheet) {
     dataSheet.state = 'visible';
     dataSheet.properties = {
         // add styling to tab colors / outlines?
@@ -212,9 +306,26 @@ function setupFeatureData(feature, dataSheet) {
         // setup row count, column count
     }
 
-    /* setup title cell */
+    /* right border for title section */
+
+    dataSheet.mergeCells('Q1:Q4');
+    let titleBorderRight = dataSheet.getCell('Q1');
+
+    titleBorderRight.border = {
+        left: {style: 'thick', color: {argb: '4a86e8'}}
+    };
+
+    titleBorderRight.protection = {
+        locked: true,
+        hidden: true
+    };
+
+
+    /* title section */
+
     dataSheet.mergeCells('A1:E3');
-    let titleBox = dataSheet.getCell('A1');
+    let titleBox = dataSheet.getCell('B1');
+
     titleBox.style.fill = {
         type: 'pattern',
         pattern: 'solid',
@@ -223,14 +334,13 @@ function setupFeatureData(feature, dataSheet) {
 
     titleBox.value = {
         'richText': [
-            {'font': {'bold': true, 'size': 18, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+            {'font': {'bold': true, 'size': 24, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
              'text': feature + ' Audit'},
         ]
     };
 
     titleBox.alignment = {
         vertical: 'middle',
-        //horizontal: 'middle',
         indent: 2
     };
 
@@ -239,121 +349,181 @@ function setupFeatureData(feature, dataSheet) {
         hidden: true
     };
 
-    /*
-    dataSheet.getCell('E3').style.border = {
-        bottom: {style: 'thick', color: {argb: '3c78d8'}}
-    };
-    */
+    /* description section */
 
-    let infoBox = dataSheet.getCell('F1').style;
-    infoBox.fill = {
+    dataSheet.mergeCells('F1:P3'); 
+    let infoBox = dataSheet.getCell('F2');
+
+    infoBox.style.fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: {argb: 'cfe2f3'}
     };
-    /*
-    infoBox.border = {
-        bottom: {style: 'thick', color: {argb: '3c78d8'}}
+
+    infoBox.value = {
+        'richText': [
+            {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+             'text': 'Spreadsheet generated by '},
+            {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+            'text': 'The Data Grid ', 'hyperlinks': { 'hyperlink': 'https://thedatagrid.org/', 'tooltip': 'https://thedatagrid.org/' }},
+            {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+            'text': 'at ' + dateCreated + ' for ' },
+            {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+             'text': 'Bruin Home Solutions.' }
+        ]
     };
-    */
+   
     infoBox.protection = {
         locked: true,
         hidden: true,
     };
 
-    // setup tdg cell
-    dataSheet.mergeCells('F1', 'L3')
+    /* gray border section */
 
-    // setup border cell
-    dataSheet.mergeCells('A4:L4');
+    dataSheet.mergeCells('A4:G4');
+    let grayBox1 = dataSheet.getCell('G4');
+
+    grayBox1.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'cccccc'}
+    };
+
+    grayBox1.border = {
+        top: {style: 'thick', color: {argb: '4a86e8'}},
+        bottom: {style: 'thick', color: {argb: 'e69138'}},
+    };
+
+    grayBox1.protection = {
+        locked: true,
+        hidden: true
+    };
+
+    dataSheet.mergeCells('H4:P4');
+
+    let grayBox2 = dataSheet.getCell('P4');
+
+    grayBox2.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'cccccc'}
+    };
+
+    grayBox2.border = {
+        top: {style: 'thick', color: {argb: '4a86e8'}},
+    };
+
+    grayBox2.protection = {
+        locked: true,
+        hidden: true
+    };
+    
+    /* required cell */
+
+    let requiredHeader = dataSheet.getCell('D5');
+
+    requiredHeader.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'f4cccc'}
+    }
+
+    requiredHeader.value = {
+        'richText': [
+            {'font': {'bold': false, 'italic': true, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+             'text': 'Required'},
+        ]
+    };
+
+    requiredHeader.border = {
+        top: {style: 'thick', color: {argb: 'e69138'}},
+        bottom: {style: 'thick', color: {argb: 'e69138'}}
+    };
+
+    requiredHeader.alignment = {
+        horizontal: 'center'
+    }
+
+    /* required section borders */
+
+    dataSheet.mergeCells('A5:C5');
+    let borderRequired1 = dataSheet.getCell('C5');
+    
+    borderRequired1.border = {
+        top: {style: 'thick', color: {argb: 'e69138'}},
+        bottom: {style: 'thick', color: {argb: 'e69138'}}
+    };
+
+    dataSheet.mergeCells('E5:G5');
+    let borderRequired2 = dataSheet.getCell('G5');
+    
+    borderRequired2.border = {
+        top: {style: 'thick', color: {argb: 'e69138'}},
+        bottom: {style: 'thick', color: {argb: 'e69138'}}
+    };
+
+    /* setup column information section */
+
+    dataSheet.mergeCells('H5:I5');
+    let columnInfoTitleBox = dataSheet.getCell('H5');
+
+    columnInfoTitleBox.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: '38761d'}
+    };
+
+    columnInfoTitleBox.value = {
+        'richText': [
+            {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'argb': 'ffffff'}, 'family': 2, 'scheme': 'minor'}, 
+             'text': 'Column Information'},
+        ]
+    };
+
+    // setup empty space after column information
+    dataSheet.mergeCells('J5:P5');
+    let whiteBar = dataSheet.getCell('J5');
+    whiteBar.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'ffffff'}
+    }
+    
+    // setup column information 
+
+    dataSheet.mergeCells('H6:I6');
+    let col_1 = dataSheet.getCell('H6');
+    
+    col_1.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'b6d7a8'}
+    }
+
+    col_1.border = {
+        top: {style: 'thick', color: {argb: '38761d'}},
+        bottom: {style: 'thick', color: {argb: '38761d'}},
+    }
+
+    dataSheet.mergeCells('J6:P6');
+    let col_1_description = dataSheet.getCell('J6');
+    col_1_description.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'd9ead3'}
+    }
+
+    col_1_description.border = {
+        top: {style: 'thick', color: {argb: '38761d'}},
+        bottom: {style: 'thick', color: {argb: '38761d'}},
+    }
+
+    let col_1_right_border = dataSheet.getCell('Q6');
+    col_1_right_border.border = {
+        left: {style: 'thick', color: {argb: '38761d'}}
+    }
 
     return dataSheet;
-}
-
-
-/**
- * * Meta information object
- * @typedef {Object} spreadsheetMetaObject
- * @property {Number} orgId
- * @property {Number} userId
- * @property {String} featureFrontendName
- * @property {String} action
- * @property {Boolean} isItem true: item, false: observation
- * @property {Number} itemTypeID
- * 
- * * spreadsheetColumnObject
- * @typedef {Object} spreadsheetColumnObject
- * @property {String} frontendName 
- * @property {String | null} information 
- * @property {Number} returnableID 
- * @property {Number} colId 
- * @property {Boolean} isNullable 
- * @property {String} xlsxFormattingType
- * @property {String[] | null} presetValues
- * 
- * @param {spreadsheetMetaObject} spreadsheetMetaObject 
- * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
- */
-
-async function generateSpreadsheet (req, res) {
-    const {
-        spreadsheetMetaObject,
-        spreadsheetColumnObjectArray
-    } = res.locals.spreadsheetObjects;
-
-    // create workbook
-    const workbook = new excel.Workbook();
-
-    // set workbook properties
-    workbook.creator = ''; // set creator as auditorName or TDG?
-    workbook.lastModifiedBy = 'The Data Grid';
-    workbook.created = new Date();
-    workbook.modified = new Date();
-
-    // force workbook calculation on load
-    workbook.calcProperties.fullCalcOnLoad = true;
-
-    const feature = spreadsheetMetaObject.featureFrontendName;
-
-    /* INSTRUCTION SHEET */
-    // let instructionsSheet = workbook.addWorksheet('Instructions');
-    // instructionsSheet = setupInstructions(instructionsSheet);
-
-    /* METADATA SHEET */
-    // let metadataSheet = workbook.addWorksheet('Metadata');
-    // metadataSheet = setupMetadata(metadataSheet);
-    
-    /* FEATURE DATA SHEET */
-    let dataSheet = workbook.addWorksheet(feature + ' Data');
-    dataSheet = setupFeatureData(feature, dataSheet);
-
-    /* Protect file */
-    // await worksheet.protect('password', options)
-
-    /* Send file to client */
-    await workbook.xlsx.writeFile('./temp.xlsx').then(() => {
-        console.log('Spreadsheet generated.');
-    });
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    res.writeHead(200, [
-        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-        ["Content-Disposition", "attachment; filename=" + `template.xlsx`]
-    ]);
-    res.end(Buffer.from(buffer, 'base64'));
-
-    /*
-    const file = tempfile('.xlsx');
-    await workbook.xlsx.writeFile(file)
-        .then(() => {
-            res.sendFile(file, err => {
-                console.log(err);
-            });
-        })
-        .catch(err => {
-            console.log(err);
-        });
-    */
 }
 
 module.exports = { 
