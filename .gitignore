@@ -1,10 +1,14 @@
 node_modules/*
+Angular/node_modules/*
+Express/node_modules/*
 PostgreSQL/data/*
 PostgreSQL/logs/*
 Deployment/*
+Angular/dist/*
 pg_upgrade_internal.log
 pg_upgrade_server.log
 pg_upgrade_utility.log
+api_dist/*
 
 # exclude
 !node_modules/.gitkeep

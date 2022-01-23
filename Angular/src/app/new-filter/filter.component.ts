@@ -7,6 +7,8 @@ import { AppliedFilterSelections } from '../models'
 import { SetupObjectService } from '../setup-object.service';
 import { TableObjectService } from '../table-object.service';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import * as $ from 'jquery';
+import 'jQuery-QueryBuilder/dist/js/query-builder.js';
 
 @Component({
  selector: 'app-filter-new',
@@ -36,6 +38,47 @@ ngOnInit() {
 	this.isL = isL;
 
 	this.getSetupObjects();
+	this.getQueryBuilder();
+}
+
+rules = {
+	condition: "OR",
+	rules: [
+		{
+		  condition: "AND",
+		  rules: [
+			{
+			  id: "lead_mob",
+			  field: "lead_mob",
+			  operator: "between",
+			  value: [1, 3]
+			}
+		  ]
+		}
+	]
+}
+
+
+getQueryBuilder() {
+	$(document).ready(function(){
+		(<any>$('#builder')).queryBuilder({
+			plugins: [],
+			// This is just toy data
+			filters: [{
+				id: "15",
+				label: "Commentary"
+			},
+			{
+				id: "16",
+				label: "Building Name"
+			},
+			{
+				id: "17",
+				label: "Condition Code"
+			}],
+			rules: this.rules
+		})
+	})
 }
 
 // Table Data
@@ -87,15 +130,23 @@ onPageChange(event: PageEvent): PageEvent {
 }
 
 getSetupObjects() {
+	let finishSetup;
+	let hasSetupFinished = new Promise((resolve, reject) => {
+		finishSetup = resolve;
+	})
+
 	this.apiService.getSetupObject().subscribe((res) => {
 		this.setupObject = res;
 		this.parseSetupObject();
+		finishSetup();
 	});
 
 	this.apiService.getSetupFilterObject().subscribe((res) => {
-		this.setupFilterObject = res;
-		this.getFilterableColumnIDs(2);
-		this.runQuery(false);
+		hasSetupFinished.then(() => {
+			this.setupFilterObject = res;
+			this.getFilterableColumnIDs(2);
+			this.runQuery(false);
+		});
 	})
   }
   
