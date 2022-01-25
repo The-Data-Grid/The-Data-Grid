@@ -1,6 +1,9 @@
 <p align="center"><a href="https://www.thedatagrid.org"><img alt="The Data Grid Logo" width="350px" src="https://www.thedatagrid.org/assets/logo.png" /></a></p>  
 
 ---  
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FThe-Data-Grid%2FThe-Data-Grid%2Fbadge%3Fref%3Dexpress&style=flat)](https://actions-badge.atrox.dev/The-Data-Grid/The-Data-Grid/goto?ref=express)
+![GitHub open issues](https://img.shields.io/github/issues-raw/The-Data-Grid/The-Data-Grid)
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/The-Data-Grid/The-Data-Grid?color=brightgreen)
 
 <p align="center"><a href="https://www.thedatagrid.org"><b>www.thedatagrid.org</b></a></p>  
 
