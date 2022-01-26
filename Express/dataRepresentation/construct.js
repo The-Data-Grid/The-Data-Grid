@@ -1302,6 +1302,7 @@ function readSchema(file) { // Schema read function
     return JSON.parse(stripJsonComments(fs.readFileSync(__dirname + file, 'utf8')))
 }
 
+// These aren't used in any code
 async function makeAssets(featureOutput) {
     const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup, itemParentLookup} = featureOutput;
     
