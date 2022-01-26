@@ -80,7 +80,7 @@ app.get('/setup/mobile', setupParse, sendMobileSetup);
 app.get('/setup/filter', setupParse, sendFilterSetup);
 
 // Audit and Organization management router
-app.use('/api/manage', managementRouter);
+app.use('/manage', managementRouter);
 
 // Route not found
 app.use('*', (req, res) => res.status(404).end());
