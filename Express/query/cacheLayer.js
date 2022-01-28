@@ -28,6 +28,8 @@ function hitCacheWrapper(isDownload) {
         if(cacheStatus !== undefined) {
             console.log('Cache Hit: ' + CacheLayer.generateKey(req));
 
+            cacheStatus.cached = true;
+
             // set to formattedResponse so send handlers can see it
             res.locals.formattedResponse = cacheStatus;
             
@@ -57,10 +59,6 @@ module.exports = {
 
     setCache: (req, res, next) => {
         console.log('Set Cache: ' + res.locals.formattedResponse)
-        
-        // Add cached boolean
-        res.locals.formattedResponse.cached = true;
-
         CacheLayer.set(CacheLayer.generateKey(req), res.locals.formattedResponse)
         next()
     },
