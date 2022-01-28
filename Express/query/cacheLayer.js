@@ -57,6 +57,10 @@ module.exports = {
 
     setCache: (req, res, next) => {
         console.log('Set Cache: ' + res.locals.formattedResponse)
+        
+        // Add cached boolean
+        res.locals.formattedResponse.cached = true;
+
         CacheLayer.set(CacheLayer.generateKey(req), res.locals.formattedResponse)
         next()
     },
