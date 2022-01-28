@@ -41,44 +41,53 @@ ngOnInit() {
 	this.getQueryBuilder();
 }
 
-rules = {
-	condition: "OR",
-	rules: [
-		{
-		  condition: "AND",
-		  rules: [
-			{
-			  id: "lead_mob",
-			  field: "lead_mob",
-			  operator: "between",
-			  value: [1, 3]
-			}
-		  ]
-		}
-	]
-}
+isFirstQuery = true;
+filters = [{
+	id: "15",
+	label: "Commentary",
+	type: 'datetime'
+}];
 
 
 getQueryBuilder() {
-	$(document).ready(function(){
+	$(document).ready(() => {
 		(<any>$('#builder')).queryBuilder({
 			plugins: [],
 			// This is just toy data
-			filters: [{
-				id: "15",
-				label: "Commentary"
-			},
-			{
-				id: "16",
-				label: "Building Name"
-			},
-			{
-				id: "17",
-				label: "Condition Code"
+			filters: this.filters,
+			select_placeholder: '-',
+			rules: [{
+				/* empty rule */
+				empty: true
 			}],
-			rules: this.rules
+			allow_empty: true
 		})
 	})
+
+}
+
+refreshQueryBuilder() {
+	(<any>$('#builder')).queryBuilder('reset');
+	(<any>$('#builder')).queryBuilder('setOptions', {
+		plugins: [],
+		filters: this.filters,
+		select_placeholder: '-',
+		rules: [{
+			/* empty rule */
+			empty: true
+		}],
+		allow_empty: true
+	})
+}
+
+getRulesQueryBuilder() {
+	console.log( (<any>$('#builder')).queryBuilder('getRules', { skip_empty: true }) )
+}
+
+formatQueryString(rules) {
+	if(rules === null) return '';
+
+
 }
 
 // Table Data
@@ -191,12 +200,24 @@ getReturnablesFromColumnIDs(indices, isObservation, featureID): Array<Number> {
 progressBarMode = 'determinate'
 progressBarValue = 100
 
+queryTime = null;
+queryStart = null;
+isCached = null;
+queryTimer(start) {
+	if(start) {
+		this.queryStart = Date.now();
+	} else {
+		this.queryTime = Date.now() - this.queryStart
+	}
+}
+
 runQuery(isPaginationQuery) {
+	this.queryTimer(true);
 	this.progressBarMode = 'indeterminate';
 	const isObservation = this.queryType === 'Observations';
 	const feature = isObservation ? 
-		this.allFeatures[this.selectedFeature].backendName :
-		this.allItems[this.selectedFeature].backendName;
+	this.allFeatures[this.selectedFeature].backendName :
+	this.allItems[this.selectedFeature].backendName;
 	const columnObjectIndices = this.currentColumnObjectIndices;
 	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
 	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);
@@ -208,8 +229,13 @@ runQuery(isPaginationQuery) {
 		limit: this.currentPageSize,
 		offset: this.currentPageIndex * this.currentPageSize
 	};
+	let queryString = '';
+	if(!this.isFirstQuery) {
+		const rules = this.getRulesQueryBuilder();
+		queryString = this.formatQueryString(rules)
+	} 
 	// 
-	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, '', sortObject, pageObject).subscribe((res) => {
+	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject).subscribe((res) => {
 		this.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[columnObjectIndices[returnableIDs.indexOf(id)]].frontendName)];
 		this.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
 
@@ -218,7 +244,11 @@ runQuery(isPaginationQuery) {
 			this.paginator.firstPage();
 		}
 
+		this.isCached = res.cached === true;
+
 		this.progressBarMode = 'determinate';
+		this.isFirstQuery = false;
+		this.queryTimer(false)
 	  });
 }
 

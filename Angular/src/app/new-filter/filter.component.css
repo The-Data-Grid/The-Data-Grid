@@ -839,6 +839,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
+.result-text {
+  font-size: 13px;
+  color:#5fa784;
+  margin-top: 14px;
+}
+
 @media (min-width: 640px) {
   .sm\:w-2-3 {
     width: 66.666667%;
