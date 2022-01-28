@@ -70,7 +70,7 @@
                 </div>
                 <button class="apply-button text-semibold py-2 w-2-3 mt-4"  mat-button (click)="runQuery(false)">Run Query</button>
                 <div *ngIf="queryTime !== null && progressBarMode === 'determinate'" class="result-text">
-                    {{queryTime}}ms {{isCached ? '(Cached)' : ''}}
+                    {{queryTime}}ms {{isCached ? 'Cached' : ''}}
                 </div>
             </div>
         </div>
