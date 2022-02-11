@@ -1,21 +1,7 @@
-"use strict";
-const nodemailer = require("nodemailer");
+// const sgMail = require('@sendgrid/mail')
+const url = "https://api.sendgrid.com/v3/mail/send";
+const axios = require('axios')
 
-/**
- * Creates mail transporter instance
- * @returns instance of mail transporter
- */
-function createTransport() {
-    return nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: "thedatagridnoreply@gmail.com", // generated ethereal user
-            pass: "mlcickxcaxnqyfhc", // generated ethereal password
-        },
-    });
-}
-
-// async..await is not allowed in global scope, must use a wrapper
 
 /**
  * Sends an email. Will throw if error.
@@ -24,28 +10,41 @@ function createTransport() {
  * @param {string} body - Email body
  * @param {string} receiversList - Comma separated list of receiver emails
  */
-async function send(transporter, subject, body, receiversList) {
-    // Generate test SMTP service account from ethereal.email
-    // Only needed if you don't have a real mail account for testing
-    //let testAccount = await nodemailer.createTestAccount();
+ async function send(receiversList, link) {
 
-    // create reusable transporter object using the default SMTP transport
+    console.log(link)
 
+    var data = {
+        'from' :{
+            "email":"info@thedatagrid.org"
+         },
+        'personalizations':[
+            {
+               "to":[
+                  {
+                     "email": receiversList
+                  }
+               ], 
+               "dynamic_template_data":{
+                "emailVerificationLink": link
+              }
+            }
+        ],
+        'template_id':"d-067ed5fa12a94d818ccb204660ffa23f"
+    }
 
-    // send mail with defined transport object
-    let info = await transporter.sendMail({
-        from: '"🌎 The Data Grid 🌎" <thedatagridnoreply@gmail.com>', // sender address
-        to: receiversList, // list of receivers
-        subject: subject, // Subject line
-        text: body, // plain text body
+    var headers = {
+        'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+        'Content-Type': 'application/json'
+    }
+    
+    axios.post(url, data, {headers: headers})
+    .then((res) => {
+        console.log("Email sent!")
+    })
+    .catch((err) => {
+        console.log("Error!")
     });
-
-    //console.log("Message sent: %s", info.messageId);
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-    // Preview only available when sending through an Ethereal account
-    //console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
 async function sendMail(config) {
@@ -55,11 +54,10 @@ async function sendMail(config) {
         body
     } = config;
 
-    await send(createTransport(), title, body, address);
+    await send(address, body);
 }
 
 module.exports = {
-    createTransport,
     send,
     sendMail
 };
