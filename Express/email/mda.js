@@ -16,7 +16,8 @@ const axios = require('axios')
 
     var data = {
         'from' :{
-            "email":"info@thedatagrid.org"
+            "email":"info@thedatagrid.org",
+            "name": "🌎 The Data Grid 🌎"
          },
         'personalizations':[
             {
