@@ -371,6 +371,12 @@ export class ApiService {
   }
 
 
+  resetPassword(recoverObject, withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/user/password/request-reset`, recoverObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+  }
+
+
   signOut(withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
     return this.http.post(`${API_URL}/user/logout`, {
