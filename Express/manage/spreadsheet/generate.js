@@ -7,6 +7,7 @@ const {
     observationLocalReturnableLookup,
     itemTableNames,
     featureTableNames,
+    
 } = require('../../setup.js');
 const { x } = require('joi');
 const { itemQuery, featureQuery } = require('../../query/query.js');
@@ -14,9 +15,9 @@ const { getPresetValues } = require('../../query/direct.js');
 
 function getXlsxFormattingType(referenceType, SQLType) {
     const referenceTypeGroups = {
-        obs: 1,
+        'obs': 1,
         'obs-global': 1,
-        special: 1,
+        'special': 1,
         'item-non-id': 1,
         'item-id': 1,
         'obs-list': 2,
@@ -245,6 +246,7 @@ async function generateSpreadsheet (req, res) {
     let dataSheet = workbook.addWorksheet(feature + ' Data');
     dataSheet = setupFeatureData(feature, workbook.created, dataSheet);
 
+    console.log('get me out of here. this is a sign for help. please oliver.')
     /* Protect file */
     // await worksheet.protect('password', options)
 
