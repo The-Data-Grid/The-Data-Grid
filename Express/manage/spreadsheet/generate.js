@@ -210,14 +210,6 @@ async function generateSpreadsheet (req, res) {
 
     // create workbook
     const workbook = new excel.Workbook();
-    /*
-    userID = (await db.one(formatSQL(`
-                SELECT data_first item_id FROM item_user
-                WHERE data_email = $(userEmail)
-            `, {
-                userEmail,
-            }))).item_id;
-            */
 
     // set workbook properties
     workbook.creator = spreadsheetMetaObject.userID; // set creator as auditorName or TDG?
@@ -250,29 +242,18 @@ async function generateSpreadsheet (req, res) {
     /* Protect file */
     // await worksheet.protect('password', options)
 
-    /* Send file to client */
-    await workbook.xlsx.writeFile('./temp.xlsx');
-    console.log('Spreadsheet generated.');
+    // write file contents
+    // await workbook.xlsx.writeFile('./temp.xlsx');
+
     
+    // export file to xlsx 
     const buffer = await workbook.xlsx.writeBuffer();
     res.writeHead(200, [
         ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
         ["Content-Disposition", "attachment; filename=" + `template.xlsx`]
     ]);
     res.end(Buffer.from(buffer, 'base64'));
-    
-    /*
-    const file = tempfile('.xlsx');
-    await workbook.xlsx.writeFile(file)
-        .then(() => {
-            res.sendFile(file, err => {
-                console.log(err);
-            });
-        })
-        .catch(err => {
-            console.log(err);
-        });
-    */
+    console.log('Spreadsheet generated.');
 }
 
 function setupInstructions(instructionsSheet) {
@@ -321,7 +302,6 @@ function setupFeatureData(feature, dateCreated, dataSheet) {
         locked: true,
         hidden: true
     };
-
 
     /* title section */
 
