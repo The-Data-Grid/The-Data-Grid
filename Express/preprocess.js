@@ -9,10 +9,8 @@
 const {postgresClient, connectPostgreSQL} = require('./db/pg.js');
 connectPostgreSQL('default');
 // get connection object
-const syncdb = {
-    querySync: postgresClient.getConnection.db.any,
-    self: postgresClient.getConnection.db
-}
+const db = postgresClient.getConnection.db;
+
 // get SQL formatter
 const formatSQL = postgresClient.format;
 const fs = require('fs');
@@ -49,12 +47,12 @@ let itemObservationTableNameLookup = {};
 let requiredItemView;
 const itemColumnObject = {};
 async function prefetch() {
-    metadataItemColums = await syncdb.querySync('select * from metadata_item_columns');
+    metadataItemColums = await db.any('select * from metadata_item_columns');
 
-    (await syncdb.querySync('select * from observation_history_type')).forEach(el => observationHistory[el.type_name] = el.type_id);
-    (await syncdb.querySync('select * from item_history_type')).forEach(el => itemHistory[el.type_name] = el.type_id);
+    (await db.any('select * from observation_history_type')).forEach(el => observationHistory[el.type_name] = el.type_id);
+    (await db.any('select * from item_history_type')).forEach(el => itemHistory[el.type_name] = el.type_id);
     
-    (await syncdb.querySync('select * from observation_item_table_name_lookup')).forEach(el => {
+    (await db.any('select * from observation_item_table_name_lookup')).forEach(el => {
         observationItemTableNameLookup[el.observation] = el.item;
         itemObservationTableNameLookup[el.item] = el.observation;
     });
@@ -64,12 +62,12 @@ async function prefetch() {
         itemColumnObject[item.i__table_name].isItem = item.r__type_name.map(type => referenceTypes.item.includes(type));
         itemColumnObject[item.i__table_name].isObservation = item.r__type_name.map(type => referenceTypes.observation.includes(type));
     });
-    returnableQuery = await syncdb.querySync('select * from returnable_view');
-    columnQuery = await syncdb.querySync(columnQuery);
-    allItems = await syncdb.querySync(allItems);
-    itemM2M = await syncdb.querySync(itemM2M);
-    frontendTypes = await syncdb.querySync(frontendTypes);
-    allFeatures = await syncdb.querySync(allFeatures);
+    returnableQuery = await db.any('select * from returnable_view');
+    columnQuery = await db.any(columnQuery);
+    allItems = await db.any(allItems);
+    itemM2M = await db.any(itemM2M);
+    frontendTypes = await db.any(frontendTypes);
+    allFeatures = await db.any(allFeatures);
     // from setupObject, identifies type of item (ex. item_sink vs item_mirror) based on index
     itemTableNames = allItems.map(item => item.i__table_name);
     featureTableNames = allFeatures.map(f => f.f__table_name);
@@ -79,7 +77,7 @@ async function prefetch() {
     itemLocalReturnableLookup = Object.fromEntries(itemTableNames.map(name => [name, []]));
     observationLocalReturnableLookup = Object.fromEntries(featureTableNames.map(name => [name, []]));
     
-    requiredItemView = await syncdb.querySync('SELECT * FROM required_item_view')
+    requiredItemView = await db.any('SELECT * FROM required_item_view')
 }
 
 await prefetch()
@@ -119,8 +117,8 @@ requiredItemView.forEach(item => {
 
 
 // closing db connection
+db.$pool.end;
 console.log('Closed PostgreSQL Connection: setup');
-syncdb.self.$pool.end;
 
 // RETURNABLE ID CLASS
 // ============================================================
@@ -1134,9 +1132,18 @@ return {
 }
 
 async function writeToFile() {
-    const internalObjects = await asyncWrapper();
+    try {
+        var internalObjects = await asyncWrapper();
+    } catch(err) {
+        console.log(err);
+        console.log('Preprocessing failed. Exiting')
+        process.exit(1);
+    }
 
     fs.writeFileSync('./internalObjects.json', JSON.stringify(internalObjects));
+    console.log('Preprocessing finished. Wrote internalObjects.json to Express/')
+
+    process.exit(0);
 }
 
 writeToFile();

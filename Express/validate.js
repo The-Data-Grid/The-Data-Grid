@@ -5,24 +5,10 @@
 
 const fs = require('fs')
 const Joi = require('joi');
-const { isInteger } = require('lodash');
 
 const {idValidationLookup} = require('./setup.js');
 
-try {
-    featureItemLookup = JSON.parse(fs.readFileSync(`${__dirname}/dataRepresentation/schemaAssets/featureItemLookup.json`))
-    allItems = JSON.parse(fs.readFileSync(`${__dirname}/dataRepresentation/schemaAssets/allItems.json`))
-} catch(err) {
-    throw Error('Error reading schema assets. Have you constructed the schema yet? Use `npm run construct -- make-schema ...` or `bash ./Express/db/init.sh`')
-}
-
-let a = Object.values(idValidationLookup).map(e => [e.feature, e.baseItem])
-// console.log([...new Set(a.map(e => e[0] + ' ' + e[1]))])
-
 /*
-Below is a bunch of generated validation objects which are used in the middleware function below. Validation
-is different for the observation query and the item query
-
 *************
 ** Imports **
 *************
@@ -136,21 +122,6 @@ for (let id in idValidationLookup) {
 
 let validFeatures = Object.keys(validateObservation);
 let validItems = Object.keys(validateItem);
-
-
-/********************/
-//console.log(featureItemLookup);
-
-//console.log('idValidationLookup', idValidationLookup);
-//console.log('validate', validateObservation)
-//console.log('globals', globals);
-//console.log('validateFeatures', validFeatures);
-
-
-
-
-
-
 
 
 // Returns a validation middleware function depending on the initialization parameters

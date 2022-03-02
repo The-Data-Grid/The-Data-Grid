@@ -1,8 +1,6 @@
-// DATABASE CONNECTION AND QUERY //
 // ============================================================
-// We need to query the metadata tables at the beginning of each session to get data for the setup object,
-// querying, upload, and more. Everything that queries the metadata tables to recieve this information
-// should go here and then the other files can import the information
+// Functionality has been moved to a preprocessing step (preprocess.js) which
+// writes a JSON file with all the internal objects right before the API starts
 // ============================================================
 
 const fs = require('fs');
