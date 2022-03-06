@@ -43,7 +43,7 @@
         </div>
         </div>
         <!-- Query -->
-        <div [class.w-2-3]="isL" [class.w-full]="!isL" class="p-8">
+        <div [class.w-2-3]="isL" [class.w-full]="!isL" [class.p-8]="!(isXs || isSm)">
         <div [class.flex-row]="!isSm && !isXs" [class.flex-col]="isSm || isXs" class="w-full h-full bg-white rounded flex" style="overflow: hidden">
             <!-- Query Builder -->
             <div [class.w-2-3]="!isSm && !isXs" [class.w-full]="isSm || isXs" class=" my-4 px-6">
@@ -70,7 +70,7 @@
                 </div>
                 <button class="apply-button text-semibold py-2 w-2-3 mt-4"  mat-button (click)="runQuery(false)">Run Query</button>
                 <div *ngIf="queryTime !== null && progressBarMode === 'determinate'" class="result-text">
-                    {{queryTime}}ms {{isCached ? 'Cached' : ''}}
+                    {{queryTime}}ms <abbr *ngIf="isCached" class="cache-text" title="Results stored in memory">Cached</abbr>
                 </div>
             </div>
         </div>

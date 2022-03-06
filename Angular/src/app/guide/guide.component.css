@@ -2,40 +2,51 @@ h1 {
     width: 55%;
     font-family: IBM Plex Mono;
     font-style: normal;
-    font-weight: 600;
-    font-size: 40px;
-    color: #569CD7;
-    padding-top: 50px;
+    font-weight: 400;
+    font-size: 45px;
+    color: #5fa784;
+    margin-top: 50px;
+    border-bottom: #5fa784 dotted 1.5px;
+    border-top: #5fa784 dotted 1.5px;
 }
 
 h2 {
     width: 55%;
-    font-family: IBM Plex Mono;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 30px;
-    color: #5fa784;
-    padding-top: 40px;
+    color: #569CD7;
+    padding-top: 30px;
 }
 
 h3 {
     width: 55%;
-    font-family: IBM Plex Mono;
     font-style: normal;
-    font-weight: 600;
-    font-size: 20px;
-    color: #5fa784;
-    padding-top: 30px;
+    font-weight: 500;
+    font-size: 25px;
+    color: #569CD7;
+    padding-top: 25px;
 }
 
-.mission {
-    width: 40%;
-    font-family: IBM Plex Mono;
+h4 {
+    width: 55%;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 20px;
     color: #569CD7;
+    padding-top: 20px;
+}
+
+.quote {
+    width: 40%;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 20px;
+    color: #5fa784;
+    font-family: Lora;
+    font-weight: 500;
     padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .callout-caret {
@@ -53,7 +64,8 @@ h3 {
     width: 40%;
     display: flex;
     flex-direction: row;
-    color: #569CD7
+    color: #569CD7;
+    font-family: 'Open Sans';
 }
 
 .document {
@@ -65,10 +77,14 @@ h3 {
 
 .body {
     width: 55%;
-    padding-top: 10px;
+    font-family: 'Open Sans';
     font-size: 1rem;
-    line-height: 1.5rem;
+    line-height: 2rem;
     margin-bottom: 5px;
+}
+
+.para-break {
+    margin-top: 10px;
 }
 
 .linker {
@@ -90,16 +106,54 @@ h3 {
 }
 
 .linker-3:hover {
-    background-color: #569dd756;
+    background-color: #569dd731;
 }
 
 .linker-3 {
-    color: #569CD7;
+    color: #569dd7;
     text-decoration: underline;
+    transition: 0.3s;
+    font-family: 'Open Sans';
 }
 
 .linker:hover {
     background-color: rgba(255, 255, 255, 0.3);
+}
+
+.code-block {
+    padding: 10px 15px 10px 15px;
+    background-color: #5fa7841a;
+    border-radius: 5px;
+    border: 1px solid #5fa784;
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    color: black;
+    font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+    white-space: pre ;
+    transition: opacity 0.3s ease;
+    position: relative;
+}
+
+.code-block:hover > .code-block-copy {
+    opacity: 1.0;
+    transition: opacity .55s ease-in-out;
+    -moz-transition: opacity .55s ease-in-out;
+    -webkit-transition: opacity .55s ease-in-out;
+}
+
+.code-block-copy {
+    fill: #5fa784;
+    width: 1.4rem;
+    height: 1.4rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    opacity: 0.2;
+    transition: opacity .5s ease-in-out;
+    -moz-transition: opacity .5s ease-in-out;
+    -webkit-transition: opacity .5s ease-in-out;
 }
 
 .guide-button {
@@ -115,13 +169,56 @@ h3 {
     width: 55%;
     justify-items:stretch;
     margin-bottom: 15px;
+    transition: .3s;
 }
 
 .guide-button:hover {
     background-color: rgba(59, 130, 246, 0.12);
+    box-shadow: 4px 2px 8px rgba(0, 0, 0, 0.288);
 }
 
 .guide-button-stack {
     display: flex;
     flex-direction: column;
+    font-family: 'Open Sans';
+}
+
+ol {
+    list-style: none;
+    counter-reset: counter;
+    font-size: 1rem;
+    line-height: 2rem;
+    width: 45%;
+  }
+  ol li {
+    counter-increment: counter;
+    font-family: 'Open Sans';
+  }
+  ol li::before {
+    content: counter(counter);
+    width: calc(1.5rem);
+    height: calc(1.5rem);
+    line-height: calc(1.5rem);
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    background-color: #5fa784;
+    border-radius: 50%;
+    margin: 0.25rem 0 0 -2.5rem;
+    position: absolute;
+    text-align: center;
+  }
+ 
+.inline-li {
+    width: calc(1.5rem);
+    height: calc(1.5rem);
+    display: inline-block;
+    line-height: calc(1.5rem);
+    font-size: 13px;
+    font-family: 'Open Sans';
+    font-weight: 700;
+    color: white;
+    background-color: #5fa784;
+    border-radius: 50%; 
+    text-align: center;
 }

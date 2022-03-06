@@ -843,9 +843,13 @@ Ensure the default browser behavior of the `hidden` attribute.
   font-size: 13px;
   color:#5fa784;
   margin-top: 14px;
+}
+
+.cache-text {
   text-decoration-style: dotted;
   text-decoration-line: underline;
   text-decoration-color: #5fa784;
+  cursor: help;
 }
 
 @media (min-width: 640px) {

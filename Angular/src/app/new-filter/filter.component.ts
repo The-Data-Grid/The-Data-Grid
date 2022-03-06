@@ -44,8 +44,42 @@ ngOnInit() {
 isFirstQuery = true;
 filters = [{
 	id: "15",
-	label: "Commentary",
-	type: 'datetime'
+	label: "Factor",
+	type: 'string',
+	input: 'select',
+	values: ['YRL', 'Powell', 'Math Sciences'],
+	operators: ['equal']
+},
+{
+	id: "16",
+	label: "List",
+	type: 'string',
+	input: 'select',
+	values: ['YRL', 'Powell', 'Math Sciences'],
+	operators: ['contains']
+},
+{
+	id: "17",
+	label: "Numeric",
+	type: 'string',
+	input: 'number',
+	values: ['YRL', 'Powell', 'Math Sciences'],
+	operators: ['equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal']
+},
+{
+	id: "18",
+	label: "Text",
+	type: 'string',
+	input: 'text',
+	operators: ['equal']
+},
+{
+	id: "19",
+	label: "Boolean",
+	type: 'string',
+	input: 'radio',
+	values: ['true', 'false'],
+	operators: ['equal']
 }];
 
 
@@ -212,7 +246,6 @@ queryTimer(start) {
 }
 
 runQuery(isPaginationQuery) {
-	this.queryTimer(true);
 	this.progressBarMode = 'indeterminate';
 	const isObservation = this.queryType === 'Observations';
 	const feature = isObservation ? 
@@ -235,6 +268,7 @@ runQuery(isPaginationQuery) {
 		queryString = this.formatQueryString(rules)
 	} 
 	// 
+	this.queryTimer(true);
 	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject).subscribe((res) => {
 		this.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[columnObjectIndices[returnableIDs.indexOf(id)]].frontendName)];
 		this.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
