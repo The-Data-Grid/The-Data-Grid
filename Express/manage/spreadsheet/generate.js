@@ -217,35 +217,29 @@ async function generateSpreadsheet (req, res) {
     workbook.created = new Date();
     workbook.modified = new Date();
 
-    // force workbook calculation on load\
-    /*
-    workbook.calcProperties.fullCalcOnLoad = true;
-    */
+    // force workbook calculation on load
+    // workbook.calcProperties.fullCalcOnLoad = true;
+    
     console.log(spreadsheetColumnObjectArray);
     console.log(spreadsheetMetaObject);
 
     const feature = spreadsheetMetaObject.featureID;
 
-    /* INSTRUCTION SHEET */
+    // INSTRUCTION SHEET
     // let instructionsSheet = workbook.addWorksheet('Instructions');
     // instructionsSheet = setupInstructions(instructionsSheet);
 
-    /* METADATA SHEET */
+    // METADATA SHEET
     // let metadataSheet = workbook.addWorksheet('Metadata');
     // metadataSheet = setupMetadata(metadataSheet);
     
-    /* FEATURE DATA SHEET */
+    // FEATURE DATA SHEET
     let dataSheet = workbook.addWorksheet(feature + ' Data');
     dataSheet = setupFeatureData(feature, workbook.created, dataSheet);
 
-    console.log('get me out of here. this is a sign for help. please oliver.')
     /* Protect file */
     // await worksheet.protect('password', options)
 
-    // write file contents
-    // await workbook.xlsx.writeFile('./temp.xlsx');
-
-    
     // export file to xlsx 
     const buffer = await workbook.xlsx.writeBuffer();
     res.writeHead(200, [
@@ -280,16 +274,9 @@ function setupMetadata(metadataSheet) {
     return metadataSheet;
 }
 
-function setupFeatureData(feature, dateCreated, dataSheet) {
-    dataSheet.state = 'visible';
-    dataSheet.properties = {
-        // add styling to tab colors / outlines?
-    };
-    dataSheet.pageSetup = {
-        // setup row count, column count
-    }
+function setupTitle(dataSheet) {
 
-    /* right border for title section */
+    // right border for title section
 
     dataSheet.mergeCells('Q1:Q4');
     let titleBorderRight = dataSheet.getCell('Q1');
@@ -303,7 +290,7 @@ function setupFeatureData(feature, dateCreated, dataSheet) {
         hidden: true
     };
 
-    /* title section */
+    // main title section
 
     dataSheet.mergeCells('A1:E3');
     let titleBox = dataSheet.getCell('B1');
@@ -331,7 +318,10 @@ function setupFeatureData(feature, dateCreated, dataSheet) {
         hidden: true
     };
 
-    /* description section */
+    return dataSheet;
+}
+
+function setupInfoBox(dataSheet, dateCreated) {
 
     dataSheet.mergeCells('F1:P3'); 
     let infoBox = dataSheet.getCell('F2');
@@ -360,10 +350,15 @@ function setupFeatureData(feature, dateCreated, dataSheet) {
         hidden: true,
     };
 
-    /* gray border section */
+    return dataSheet;
+}
+
+function setupGrayBorder(dataSheet){
 
     dataSheet.mergeCells('A4:G4');
     let grayBox1 = dataSheet.getCell('G4');
+
+    // gray box 1 includes orange border for required section
 
     grayBox1.style.fill = {
         type: 'pattern',
@@ -381,8 +376,9 @@ function setupFeatureData(feature, dateCreated, dataSheet) {
         hidden: true
     };
 
-    dataSheet.mergeCells('H4:P4');
+    // gray box 2 is any space not covered by orange border for required sections
 
+    dataSheet.mergeCells('H4:P4');
     let grayBox2 = dataSheet.getCell('P4');
 
     grayBox2.style.fill = {
@@ -399,6 +395,11 @@ function setupFeatureData(feature, dateCreated, dataSheet) {
         locked: true,
         hidden: true
     };
+
+    return dataSheet;
+}
+
+function setupColumns(dataSheet) {
     
     /* required cell */
 
@@ -444,66 +445,92 @@ function setupFeatureData(feature, dateCreated, dataSheet) {
         bottom: {style: 'thick', color: {argb: 'e69138'}}
     };
 
-    /* setup column information section */
+    return dataSheet;
+}
 
-    dataSheet.mergeCells('H5:I5');
-    let columnInfoTitleBox = dataSheet.getCell('H5');
+function setupColumnInformation(dataSheet) {
 
-    columnInfoTitleBox.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: '38761d'}
+     /* setup column information section */
+
+     dataSheet.mergeCells('H5:I5');
+     let columnInfoTitleBox = dataSheet.getCell('H5');
+ 
+     columnInfoTitleBox.style.fill = {
+         type: 'pattern',
+         pattern: 'solid',
+         fgColor: {argb: '38761d'}
+     };
+ 
+     columnInfoTitleBox.value = {
+         'richText': [
+             {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'argb': 'ffffff'}, 'family': 2, 'scheme': 'minor'}, 
+              'text': 'Column Information'},
+         ]
+     };
+ 
+     // setup empty space after column information
+     dataSheet.mergeCells('J5:P5');
+     let whiteBar = dataSheet.getCell('J5');
+     whiteBar.style.fill = {
+         type: 'pattern',
+         pattern: 'solid',
+         fgColor: {argb: 'ffffff'}
+     }
+     
+     // setup column information 
+ 
+     dataSheet.mergeCells('H6:I6');
+     let col_1 = dataSheet.getCell('H6');
+     
+     col_1.style.fill = {
+         type: 'pattern',
+         pattern: 'solid',
+         fgColor: {argb: 'b6d7a8'}
+     }
+ 
+     col_1.border = {
+         top: {style: 'thick', color: {argb: '38761d'}},
+         bottom: {style: 'thick', color: {argb: '38761d'}},
+     }
+ 
+     dataSheet.mergeCells('J6:P6');
+     let col_1_description = dataSheet.getCell('J6');
+     col_1_description.style.fill = {
+         type: 'pattern',
+         pattern: 'solid',
+         fgColor: {argb: 'd9ead3'}
+     }
+ 
+     col_1_description.border = {
+         top: {style: 'thick', color: {argb: '38761d'}},
+         bottom: {style: 'thick', color: {argb: '38761d'}},
+     }
+ 
+     let col_1_right_border = dataSheet.getCell('Q6');
+     col_1_right_border.border = {
+         left: {style: 'thick', color: {argb: '38761d'}}
+     }
+
+    return dataSheet;
+}
+
+function setupFeatureData(feature, dateCreated, dataSheet) {
+
+    dataSheet.state = 'visible';
+
+    dataSheet.properties = {
+        // add styling to tab colors / outlines?
     };
 
-    columnInfoTitleBox.value = {
-        'richText': [
-            {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'argb': 'ffffff'}, 'family': 2, 'scheme': 'minor'}, 
-             'text': 'Column Information'},
-        ]
-    };
-
-    // setup empty space after column information
-    dataSheet.mergeCells('J5:P5');
-    let whiteBar = dataSheet.getCell('J5');
-    whiteBar.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'ffffff'}
-    }
-    
-    // setup column information 
-
-    dataSheet.mergeCells('H6:I6');
-    let col_1 = dataSheet.getCell('H6');
-    
-    col_1.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'b6d7a8'}
+    dataSheet.pageSetup = {
+        // setup row count, column count
     }
 
-    col_1.border = {
-        top: {style: 'thick', color: {argb: '38761d'}},
-        bottom: {style: 'thick', color: {argb: '38761d'}},
-    }
-
-    dataSheet.mergeCells('J6:P6');
-    let col_1_description = dataSheet.getCell('J6');
-    col_1_description.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'd9ead3'}
-    }
-
-    col_1_description.border = {
-        top: {style: 'thick', color: {argb: '38761d'}},
-        bottom: {style: 'thick', color: {argb: '38761d'}},
-    }
-
-    let col_1_right_border = dataSheet.getCell('Q6');
-    col_1_right_border.border = {
-        left: {style: 'thick', color: {argb: '38761d'}}
-    }
+    dataSheet = setupTitle(dataSheet);
+    dataSheet = setupInfoBox(dataSheet, dateCreated);
+    dataSheet = setupGrayBorder(dataSheet);
+    dataSheet = setupColumns(dataSheet);
+    dataSheet = setupColumnInformation(dataSheet);
 
     return dataSheet;
 }
