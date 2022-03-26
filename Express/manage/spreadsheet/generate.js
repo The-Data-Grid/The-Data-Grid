@@ -289,24 +289,14 @@ function setupMetadata(metadataSheet) {
 
 function setupTitle(dataSheet, title) {
 
-    // right border for title section
-
-    dataSheet.mergeCells('Q1:Q4');
-    let titleBorderRight = dataSheet.getCell('Q1');
-
-    titleBorderRight.border = {
-        left: {style: 'thick', color: {argb: '4a86e8'}}
-    };
-
-    titleBorderRight.protection = {
-        locked: true,
-        hidden: true
-    };
+    // determine how many columns title box needs
+    let rowColEnd = 'E';
 
     // main title section
 
-    dataSheet.mergeCells('A1:E3');
-    let titleBox = dataSheet.getCell('B1');
+    dataSheet.mergeCells('A1:' + rowColEnd + '3');
+    let titleBox = dataSheet.getCell('A1');
+    titleBox.name = 'Title';
 
     titleBox.style.fill = {
         type: 'pattern',
@@ -328,22 +318,31 @@ function setupTitle(dataSheet, title) {
 
     titleBox.protection = {
         locked: true,
-        hidden: true
+        lockText: true
     };
 
-    return dataSheet;
+    return {sheet: dataSheet, columnEnd: rowColEnd};
 }
 
-function setupInfoBox(dataSheet, dateCreated) {
+function setupInfoBox(dataSheet, dateCreated, titleColumnEnd) {
 
-    dataSheet.mergeCells('F1:P3'); 
-    let infoBox = dataSheet.getCell('F2');
+    // use titleColumnEnd to determine rowColStart
+    let rowColStart = 'F';
+    // determine number of columns needed
+    let rowColEnd = 'S';
+
+    dataSheet.mergeCells(rowColStart + '1:' + rowColEnd + '3'); 
+    let infoBox = dataSheet.getCell(rowColStart + '1');
 
     infoBox.style.fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: {argb: 'cfe2f3'}
     };
+
+    infoBox.border = {
+        right: {style: 'thick', color: {argb: '4a86e8'}}
+    }
 
     infoBox.value = {
         'richText': [
@@ -357,17 +356,37 @@ function setupInfoBox(dataSheet, dateCreated) {
              'text': 'Bruin Home Solutions.' }
         ]
     };
+
+    infoBox.alignment = {
+        vertical: 'middle',
+        indent: 2
+    };
    
     infoBox.protection = {
         locked: true,
         hidden: true,
     };
 
-    return dataSheet;
+    return {sheet: dataSheet, columnEnd: rowColEnd};
 }
 
-function setupGrayBorder(dataSheet){
+function setupGrayBorder(dataSheet, infoBoxColEnd){
 
+    dataSheet.mergeCells('A4:' + infoBoxColEnd + 'G')
+    let grayBox = dataSheet.getCell('A4');
+
+    grayBox.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'cccccc'}
+    };
+
+    grayBox.protection = {
+        locked: true,
+        lockText: true
+    };
+
+    /*
     dataSheet.mergeCells('A4:G4');
     let grayBox1 = dataSheet.getCell('G4');
 
@@ -408,13 +427,49 @@ function setupGrayBorder(dataSheet){
         locked: true,
         hidden: true
     };
+    */
 
     return dataSheet;
 }
 
-function setupColumns(dataSheet) {
+function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
+
+    let rowNum = 0;
+    let rowCol = 'A';
     
-    /* required cell */
+    for (let i = 0; i < spreadsheetColumnObjectArray.length; i++) {
+
+        const colObj = spreadsheetColumnObjectArray[i];
+
+        switch (colObj.xlsxFormattingType){
+
+            case 'text':
+                break;
+            
+            case 'date':
+                break;
+
+            case 'decimal':
+                break;
+            
+            case 'wholeNumber':
+                break;
+            
+            case 'checkbox':
+                break;
+
+            case 'checkboxList':
+                break;
+            
+            case 'dropdown':
+                break;
+
+        }
+    }
+
+
+    /*
+    // required cell
 
     let requiredHeader = dataSheet.getCell('D5');
 
@@ -440,7 +495,7 @@ function setupColumns(dataSheet) {
         horizontal: 'center'
     }
 
-    /* required section borders */
+    // required section borders
 
     dataSheet.mergeCells('A5:C5');
     let borderRequired1 = dataSheet.getCell('C5');
@@ -457,6 +512,7 @@ function setupColumns(dataSheet) {
         top: {style: 'thick', color: {argb: 'e69138'}},
         bottom: {style: 'thick', color: {argb: 'e69138'}}
     };
+    */
 
     return dataSheet;
 }
@@ -566,12 +622,18 @@ function setupColumnInformation(dataSheet, spreadsheetColumnObjectArray) {
             };
         }
 
+        colName.border = {
+            bottom: {style: 'hair', color: {argb: '000000'}}
+        }
+
         colInfo.border = {
-            right: {style: 'thick', color: {argb: '38761d'}}
+            right: {style: 'thick', color: {argb: '38761d'}},
+            bottom: {style: 'hair', color: {argb: '000000'}}
         }
     }
 
     // add border on bottom
+    
     rowNum += 1;
     dataSheet.mergeCells(rowColTitleStart + rowNum + ':' + rowColInfoEnd + rowNum);
     let colInfoBorder = dataSheet.getCell(rowColTitleStart + rowNum);
@@ -604,7 +666,7 @@ function setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetC
     dataSheet = setupTitle(dataSheet, title);
     dataSheet = setupInfoBox(dataSheet, workbook.created);
     dataSheet = setupGrayBorder(dataSheet);
-    dataSheet = setupColumns(dataSheet);
+    dataSheet = setupColumns(dataSheet, spreadsheetColumnObjectArray);
     dataSheet = setupColumnInformation(dataSheet, spreadsheetColumnObjectArray);
 
     return workbook;
