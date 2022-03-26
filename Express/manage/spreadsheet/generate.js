@@ -7,11 +7,20 @@ const {
     observationLocalReturnableLookup,
     itemTableNames,
     featureTableNames,
-    
 } = require('../../setup.js');
 const { x } = require('joi');
 const { itemQuery, featureQuery } = require('../../query/query.js');
 const { getPresetValues } = require('../../query/direct.js');
+const { 
+    userName,
+    featureName 
+    } = require('../../statement.js').generate;
+
+//connect to db
+const { postgresClient } = require('../../db/pg.js'); 
+const indexOf = require('lodash/indexOf');
+const db = postgresClient.getConnection.db;
+const formatSQL = postgresClient.format;
 
 function getXlsxFormattingType(referenceType, SQLType) {
     const referenceTypeGroups = {
@@ -82,7 +91,7 @@ async function setupSpreadsheet (req, res, next) {
     const spreadsheetMetaObject = {
         organizationID: res.locals.requestedOrganizationID,
         userID: res.locals.authorization.userID,
-        featureID: parseInt(req.query.featureID),
+        featureID: parseInt(req.query.featureID)+1, // frontend giving featureID-1, so temp fix of adding 1.
         isItem: req.query.isItem === 'true',
         action: 'upload',
     };
@@ -209,21 +218,21 @@ async function generateSpreadsheet (req, res) {
     } = res.locals.spreadsheetObjects;
 
     // create workbook
-    const workbook = new excel.Workbook();
+    let workbook = new excel.Workbook();
+
+    // get user's name from ID - query not working right now, fix. 
+    /*
+    const user = (await db.one(formatSQL(userName), {
+        user_id: spreadsheetMetaObject.userID
+    })).user_name;
+    */
 
     // set workbook properties
-    workbook.creator = spreadsheetMetaObject.userID; // set creator as auditorName or TDG?
+    //workbook.creator = user;
+    workbook.creator = 'Yash';
     workbook.lastModifiedBy = 'The Data Grid';
     workbook.created = new Date();
     workbook.modified = new Date();
-
-    // force workbook calculation on load
-    // workbook.calcProperties.fullCalcOnLoad = true;
-    
-    console.log(spreadsheetColumnObjectArray);
-    console.log(spreadsheetMetaObject);
-
-    const feature = spreadsheetMetaObject.featureID;
 
     // INSTRUCTION SHEET
     // let instructionsSheet = workbook.addWorksheet('Instructions');
@@ -232,10 +241,14 @@ async function generateSpreadsheet (req, res) {
     // METADATA SHEET
     // let metadataSheet = workbook.addWorksheet('Metadata');
     // metadataSheet = setupMetadata(metadataSheet);
-    
-    // FEATURE DATA SHEET
-    let dataSheet = workbook.addWorksheet(feature + ' Data');
-    dataSheet = setupFeatureData(feature, workbook.created, dataSheet);
+
+    // get frontend name for feature
+    const feature = (await db.one(formatSQL(featureName), {
+        feature_id: spreadsheetMetaObject.featureID
+    })).table_name;
+
+    // setup Feature Data Sheet
+    workbook = setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetColumnObjectArray);
 
     /* Protect file */
     // await worksheet.protect('password', options)
@@ -274,7 +287,7 @@ function setupMetadata(metadataSheet) {
     return metadataSheet;
 }
 
-function setupTitle(dataSheet) {
+function setupTitle(dataSheet, title) {
 
     // right border for title section
 
@@ -303,8 +316,8 @@ function setupTitle(dataSheet) {
 
     titleBox.value = {
         'richText': [
-            {'font': {'bold': true, 'size': 24, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
-             'text': feature + ' Audit'},
+            {'font': {'bold': true, 'size': 20, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+             'text': title},
         ]
     };
 
@@ -448,91 +461,157 @@ function setupColumns(dataSheet) {
     return dataSheet;
 }
 
-function setupColumnInformation(dataSheet) {
+function setupColumnInformation(dataSheet, spreadsheetColumnObjectArray) {
 
-     /* setup column information section */
+    // TO:DO - determine where to end column title row and start column information rows 
 
-     dataSheet.mergeCells('H5:I5');
-     let columnInfoTitleBox = dataSheet.getCell('H5');
- 
-     columnInfoTitleBox.style.fill = {
-         type: 'pattern',
-         pattern: 'solid',
-         fgColor: {argb: '38761d'}
-     };
- 
-     columnInfoTitleBox.value = {
-         'richText': [
-             {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'argb': 'ffffff'}, 'family': 2, 'scheme': 'minor'}, 
-              'text': 'Column Information'},
-         ]
-     };
- 
-     // setup empty space after column information
-     dataSheet.mergeCells('J5:P5');
-     let whiteBar = dataSheet.getCell('J5');
-     whiteBar.style.fill = {
-         type: 'pattern',
-         pattern: 'solid',
-         fgColor: {argb: 'ffffff'}
-     }
-     
-     // setup column information 
- 
-     dataSheet.mergeCells('H6:I6');
-     let col_1 = dataSheet.getCell('H6');
-     
-     col_1.style.fill = {
-         type: 'pattern',
-         pattern: 'solid',
-         fgColor: {argb: 'b6d7a8'}
-     }
- 
-     col_1.border = {
-         top: {style: 'thick', color: {argb: '38761d'}},
-         bottom: {style: 'thick', color: {argb: '38761d'}},
-     }
- 
-     dataSheet.mergeCells('J6:P6');
-     let col_1_description = dataSheet.getCell('J6');
-     col_1_description.style.fill = {
-         type: 'pattern',
-         pattern: 'solid',
-         fgColor: {argb: 'd9ead3'}
-     }
- 
-     col_1_description.border = {
-         top: {style: 'thick', color: {argb: '38761d'}},
-         bottom: {style: 'thick', color: {argb: '38761d'}},
-     }
- 
-     let col_1_right_border = dataSheet.getCell('Q6');
-     col_1_right_border.border = {
-         left: {style: 'thick', color: {argb: '38761d'}}
-     }
+    let rowNum = 20;
+    let rowColTitleStart = 'A'
+    let rowColTitleEnd = 'C';
+    let rowColInfoStart = 'D';
+    let rowColInfoEnd = 'P';
+
+    // setup column information section
+
+    dataSheet.mergeCells(rowColTitleStart + rowNum + ':' + rowColTitleEnd + rowNum);
+    let infoTitleBox = dataSheet.getCell(rowColTitleStart + rowNum);
+
+    infoTitleBox.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: '38761d'}
+    };
+
+    infoTitleBox.value = {
+        'richText': [
+            {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'argb': 'ffffff'}, 'family': 2, 'scheme': 'minor'}, 
+            'text': 'Column Information'},
+        ]
+    };
+
+    infoTitleBox.protection = {
+        locked: true,
+        lockText: true
+    };
+
+    infoTitleBox.border = {
+        bottom: {style: 'thick', color: {argb: '38761d'}}
+    };
+
+    // setup empty space after column information
+
+    dataSheet.mergeCells(rowColInfoStart + rowNum + ':' + rowColInfoEnd + rowNum);
+    let whiteBar = dataSheet.getCell(rowColInfoStart + rowNum);
+    
+    whiteBar.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'ffffff'}
+    };
+
+    whiteBar.protection = {
+        locked: true,
+        lockText: true
+    };
+
+    whiteBar.border = {
+        bottom: {style: 'thick', color: {argb: '38761d'}}
+    };
+    
+    // setup column information 
+
+    for (let i = 0; i < spreadsheetColumnObjectArray.length; i++) {
+        
+        // get obj
+        const colObj = spreadsheetColumnObjectArray[i];
+
+        // increment row
+        rowNum+=1;
+        
+        // setup name of column
+
+        dataSheet.mergeCells(rowColTitleStart + rowNum + ':' + rowColTitleEnd + rowNum);
+        let colName = dataSheet.getCell(rowColTitleStart + rowNum);
+
+        colName.style.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {argb: 'b6d7a8'}
+        };
+
+        colName.value = {
+            'richText': [
+                {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
+                'text': colObj.frontendName},
+            ]
+        };
+
+        // setup information of column
+
+        dataSheet.mergeCells(rowColInfoStart + rowNum + ':' + rowColInfoEnd + rowNum);
+        let colInfo = dataSheet.getCell(rowColInfoStart + rowNum);
+
+        colInfo.style.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {argb: 'd9ead3'}
+        }
+
+        if (colObj.information !== null){
+            colInfo.value = {
+                'richText': [
+                    {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
+                    'text': colObj.information},
+                ]
+            };
+        }
+
+        colInfo.border = {
+            right: {style: 'thick', color: {argb: '38761d'}}
+        }
+    }
+
+    // add border on bottom
+    rowNum += 1;
+    dataSheet.mergeCells(rowColTitleStart + rowNum + ':' + rowColInfoEnd + rowNum);
+    let colInfoBorder = dataSheet.getCell(rowColTitleStart + rowNum);
+
+    colInfoBorder.border = {
+        top: {style: 'thick', color: {argb: '38761d'}}
+    };
 
     return dataSheet;
 }
 
-function setupFeatureData(feature, dateCreated, dataSheet) {
+function setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
 
-    dataSheet.state = 'visible';
-
-    dataSheet.properties = {
-        // add styling to tab colors / outlines?
-    };
-
-    dataSheet.pageSetup = {
-        // setup row count, column count
+    let title;
+    if (spreadsheetMetaObject.isItem) {
+        title = feature + ' Item Audit';
+    } else {
+        title = feature + ' Observation Audit'
     }
+        
+    // create sheet
+    let dataSheet = workbook.addWorksheet(feature + ' Data');
 
-    dataSheet = setupTitle(dataSheet);
-    dataSheet = setupInfoBox(dataSheet, dateCreated);
+    // meta properties of sheet
+    dataSheet.state = 'visible';
+    
+    // set default column width
+    // dataSheet.columns.forEach(column => column.width = 10);
+
+    dataSheet = setupTitle(dataSheet, title);
+    dataSheet = setupInfoBox(dataSheet, workbook.created);
     dataSheet = setupGrayBorder(dataSheet);
     dataSheet = setupColumns(dataSheet);
-    dataSheet = setupColumnInformation(dataSheet);
+    dataSheet = setupColumnInformation(dataSheet, spreadsheetColumnObjectArray);
 
-    return dataSheet;
+    return workbook;
+}
+
+function numBoxes(text) {
+    // determines number of boxes needed for text to span without flowing into unwanted box territory
 }
 
 module.exports = { 

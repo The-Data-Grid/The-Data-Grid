@@ -196,7 +196,7 @@ const setup = {
         i.table_name as i__table_name, i.frontend_name as i__frontend_name \
         FROM metadata_feature AS f \
         LEFT JOIN metadata_feature as ff ON f.parent_id = ff.feature_id \
-        LEFT JOIN metadata_item as i ON f.observable_item_id = i.item_id'
+        LEFT JOIN metadata_item as i ON f.observable_item_id = i.item_id',
 
 };
 
@@ -276,8 +276,12 @@ const updates  = {
     updatePassword: 'UPDATE item_user SET tdg_p_hash = $(password) WHERE data_email = $(email)'
 };
 
+// SQL for generate.js
 
-
+const generate = {
+    userName: 'SELECT u.name AS user_name FROM users AS u WHERE u.id = $(user_id)',
+    featureName: 'SELECT f.frontend_name AS table_name FROM metadata_feature AS f WHERE f.feature_id = $(feature_id)'
+}
 
 module.exports = {
     query,
@@ -285,7 +289,8 @@ module.exports = {
     setup,
     login,
     addingUsers,
-    updates
+    updates,
+    generate
 };
 
 
