@@ -289,14 +289,10 @@ function setupMetadata(metadataSheet) {
 
 function setupTitle(dataSheet, title) {
 
-    // determine how many columns title box needs
-    let rowColEnd = 'E';
-
     // main title section
 
-    dataSheet.mergeCells('A1:' + rowColEnd + '3');
+    dataSheet.mergeCells('A1:F3');
     let titleBox = dataSheet.getCell('A1');
-    titleBox.name = 'Title';
 
     titleBox.style.fill = {
         type: 'pattern',
@@ -313,7 +309,8 @@ function setupTitle(dataSheet, title) {
 
     titleBox.alignment = {
         vertical: 'middle',
-        indent: 2
+        indent: 2,
+        wrapText: false
     };
 
     titleBox.protection = {
@@ -321,18 +318,13 @@ function setupTitle(dataSheet, title) {
         lockText: true
     };
 
-    return {sheet: dataSheet, columnEnd: rowColEnd};
+    return dataSheet;
 }
 
-function setupInfoBox(dataSheet, dateCreated, titleColumnEnd) {
+function setupInfoBox(dataSheet, dateCreated) {
 
-    // use titleColumnEnd to determine rowColStart
-    let rowColStart = 'F';
-    // determine number of columns needed
-    let rowColEnd = 'S';
-
-    dataSheet.mergeCells(rowColStart + '1:' + rowColEnd + '3'); 
-    let infoBox = dataSheet.getCell(rowColStart + '1');
+    dataSheet.mergeCells('G1:S3'); 
+    let infoBox = dataSheet.getCell('G1');
 
     infoBox.style.fill = {
         type: 'pattern',
@@ -342,7 +334,7 @@ function setupInfoBox(dataSheet, dateCreated, titleColumnEnd) {
 
     infoBox.border = {
         right: {style: 'thick', color: {argb: '4a86e8'}}
-    }
+    };
 
     infoBox.value = {
         'richText': [
@@ -359,7 +351,8 @@ function setupInfoBox(dataSheet, dateCreated, titleColumnEnd) {
 
     infoBox.alignment = {
         vertical: 'middle',
-        indent: 2
+        indent: 2,
+        wrapText: false
     };
    
     infoBox.protection = {
@@ -367,12 +360,12 @@ function setupInfoBox(dataSheet, dateCreated, titleColumnEnd) {
         hidden: true,
     };
 
-    return {sheet: dataSheet, columnEnd: rowColEnd};
+    return dataSheet;
 }
 
-function setupGrayBorder(dataSheet, infoBoxColEnd){
+function setupGrayBorder(dataSheet){
 
-    dataSheet.mergeCells('A4:' + infoBoxColEnd + 'G')
+    dataSheet.mergeCells('A4:S4');
     let grayBox = dataSheet.getCell('A4');
 
     grayBox.style.fill = {
@@ -384,6 +377,10 @@ function setupGrayBorder(dataSheet, infoBoxColEnd){
     grayBox.protection = {
         locked: true,
         lockText: true
+    };
+
+    grayBox.border = {
+        right: {style: 'thick', color: {argb: '4a86e8'}}
     };
 
     /*
@@ -432,14 +429,83 @@ function setupGrayBorder(dataSheet, infoBoxColEnd){
     return dataSheet;
 }
 
+/**
+ * * Meta information object
+ * @typedef {Object} spreadsheetMetaObject
+ * @property {String} organizationId
+ * @property {String} userId
+ * @property {String} featureID // setup
+ * @property {String} action
+ * @property {Boolean} isItem true: item, false: observation
+ * 
+ * * spreadsheetColumnObject
+ * @typedef {Object} spreadsheetColumnObject
+ * @property {String} frontendName 
+ * @property {String | null} information 
+ * @property {Number} returnableID 
+ * @property {Number} colId 
+ * @property {Boolean} isNullable 
+ * @property {String} xlsxFormattingType
+ * @property {String[] | null} presetValues
+ * 
+ * @param {spreadsheetMetaObject} spreadsheetMetaObject 
+ * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
+ */
+
+function sortSpreadsheetColumnObjects(spreadsheetColumnObjectArray) {
+
+    let colObjsNullable = [];
+    let colObjsNotNullable = [];
+
+    for (const obj in spreadsheetColumnObjectArray) {
+
+        if (obj.isNullable) {
+            colObjsNullable.push(obj);
+        } else {
+            colObjsNotNullable.push(obj);
+        }
+    }
+
+    // returns array with nullable objects first, preceded by not nullable objects
+    return colObjsNullable.concat(colObjsNotNullable);
+}
+
+function spannedColumns(startColumnChar, numColumns) {
+
+    const incrementedChar = String.fromCharCode(startColumnChar.charCodeAt(0) + numColumns);
+    if (incrementedChar > 'S') {
+        return ['A', String.fromCharCode('A'.charCodeAt(0) + numColumns)];
+    } else {
+        return [startColumnChar, incrementedChar];
+    }
+
+}
+
 function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
 
-    let rowNum = 0;
-    let rowCol = 'A';
-    
-    for (let i = 0; i < spreadsheetColumnObjectArray.length; i++) {
+    // setup orange border
 
-        const colObj = spreadsheetColumnObjectArray[i];
+    dataSheet.mergeCells('A5:S5');
+    let orangeBorder = dataSheet.getCell('A5');
+
+    orangeBorder.border = {
+        top: {style: 'thick', color: {argb: 'e69138'}},
+        bottom: {style: 'thick', color: {argb: 'e69138'}}
+    };
+
+    // track column for columnObject placement
+    let colNum = 'A';
+
+    // track largest number of rows used
+    let largestRow = 0;
+
+    // sort column objects
+    const columnObjects = sortSpreadsheetColumnObjects(spreadsheetColumnObjectArray);
+    
+    for (let i = 0; i < columnObjects.length; i++) {
+
+        const colObj = columnObjects[i];
+        console.log(colObj);
 
         switch (colObj.xlsxFormattingType){
 
@@ -464,6 +530,9 @@ function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
             case 'dropdown':
                 break;
 
+            default:
+                console.log('Error');
+                break;
         }
     }
 
@@ -519,18 +588,12 @@ function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
 
 function setupColumnInformation(dataSheet, spreadsheetColumnObjectArray) {
 
-    // TO:DO - determine where to end column title row and start column information rows 
-
-    let rowNum = 20;
-    let rowColTitleStart = 'A'
-    let rowColTitleEnd = 'C';
-    let rowColInfoStart = 'D';
-    let rowColInfoEnd = 'P';
+    let rowNum = 20; //temp
 
     // setup column information section
 
-    dataSheet.mergeCells(rowColTitleStart + rowNum + ':' + rowColTitleEnd + rowNum);
-    let infoTitleBox = dataSheet.getCell(rowColTitleStart + rowNum);
+    dataSheet.mergeCells('A' + rowNum + ':' + 'C' + rowNum);
+    let infoTitleBox = dataSheet.getCell('A' + rowNum);
 
     infoTitleBox.style.fill = {
         type: 'pattern',
@@ -556,8 +619,8 @@ function setupColumnInformation(dataSheet, spreadsheetColumnObjectArray) {
 
     // setup empty space after column information
 
-    dataSheet.mergeCells(rowColInfoStart + rowNum + ':' + rowColInfoEnd + rowNum);
-    let whiteBar = dataSheet.getCell(rowColInfoStart + rowNum);
+    dataSheet.mergeCells('D' + rowNum + ':' + 'P' + rowNum);
+    let whiteBar = dataSheet.getCell('D' + rowNum);
     
     whiteBar.style.fill = {
         type: 'pattern',
@@ -586,8 +649,8 @@ function setupColumnInformation(dataSheet, spreadsheetColumnObjectArray) {
         
         // setup name of column
 
-        dataSheet.mergeCells(rowColTitleStart + rowNum + ':' + rowColTitleEnd + rowNum);
-        let colName = dataSheet.getCell(rowColTitleStart + rowNum);
+        dataSheet.mergeCells('A' + rowNum + ':' + 'C' + rowNum);
+        let colName = dataSheet.getCell('A' + rowNum);
 
         colName.style.fill = {
             type: 'pattern',
@@ -602,10 +665,14 @@ function setupColumnInformation(dataSheet, spreadsheetColumnObjectArray) {
             ]
         };
 
+        colName.alignment = {
+            wrapText: false
+        };
+
         // setup information of column
 
-        dataSheet.mergeCells(rowColInfoStart + rowNum + ':' + rowColInfoEnd + rowNum);
-        let colInfo = dataSheet.getCell(rowColInfoStart + rowNum);
+        dataSheet.mergeCells('D' + rowNum + ':' + 'P' + rowNum);
+        let colInfo = dataSheet.getCell('D' + rowNum);
 
         colInfo.style.fill = {
             type: 'pattern',
@@ -635,8 +702,8 @@ function setupColumnInformation(dataSheet, spreadsheetColumnObjectArray) {
     // add border on bottom
     
     rowNum += 1;
-    dataSheet.mergeCells(rowColTitleStart + rowNum + ':' + rowColInfoEnd + rowNum);
-    let colInfoBorder = dataSheet.getCell(rowColTitleStart + rowNum);
+    dataSheet.mergeCells('A' + rowNum + ':' + 'P' + rowNum);
+    let colInfoBorder = dataSheet.getCell('A' + rowNum);
 
     colInfoBorder.border = {
         top: {style: 'thick', color: {argb: '38761d'}}
@@ -659,9 +726,6 @@ function setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetC
 
     // meta properties of sheet
     dataSheet.state = 'visible';
-    
-    // set default column width
-    // dataSheet.columns.forEach(column => column.width = 10);
 
     dataSheet = setupTitle(dataSheet, title);
     dataSheet = setupInfoBox(dataSheet, workbook.created);
@@ -670,10 +734,6 @@ function setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetC
     dataSheet = setupColumnInformation(dataSheet, spreadsheetColumnObjectArray);
 
     return workbook;
-}
-
-function numBoxes(text) {
-    // determines number of boxes needed for text to span without flowing into unwanted box territory
 }
 
 module.exports = { 
