@@ -83,6 +83,20 @@ h4 {
     margin-bottom: 5px;
 }
 
+.body .b {
+    font-family: 'Open Sans';
+    font-size: 1rem;
+    line-height: 2rem;
+    font-weight: 700;
+}
+
+.body .i {
+    font-family: 'Open Sans';
+    font-size: 1rem;
+    line-height: 2rem;
+    font-style: italic;
+}
+
 .para-break {
     margin-top: 10px;
 }
@@ -183,6 +197,26 @@ h4 {
     font-family: 'Open Sans';
 }
 
+ul {
+    list-style-type: none;
+    font-size: 1rem;
+    line-height: 2rem;
+    width: 45%;
+  }
+  ul li {
+    font-family: 'Open Sans';
+  }
+  ul li::before {
+    content: "";
+    width: calc(.55rem);
+    height: calc(.55rem);
+    background-color: #5fa784;
+    border-radius: 50%;
+    margin: 0.75rem 0 0 -2rem;
+    position: absolute;
+    text-align: center;
+  }
+
 ol {
     list-style: none;
     counter-reset: counter;
@@ -221,4 +255,15 @@ ol {
     background-color: #5fa784;
     border-radius: 50%; 
     text-align: center;
+}
+
+img {
+    max-width: 100%;
+    max-height: 300px;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+    box-shadow: 4px 2px 12px rgba(0, 0, 0, 0.3);
 }
