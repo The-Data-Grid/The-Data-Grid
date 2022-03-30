@@ -16,6 +16,9 @@
         This section covers <span class="inline-li">1</span>, which more descriptively, is a tool to create highly <a class="linker-3" target="_blank" href="https://en.wikipedia.org/wiki/Database_normalization">normalized</a> and performant <a class="linker-3" target="_blank" href="https://www.postgresql.org/">PostgreSQL</a> databases by defining a custom schema using our data representation model. In a lot of ways, this is similar to an <a class="linker-3" target="_blank" href="https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping">ORM</a>. The data representation model, which is represented internally as a collection of objects, is converted into a relational database. The first part of this guide motivates and gives a high level understanding of the data representation model. The second part talks about how to actually use this model to create a custom database.
     </div>
     <h2 id="data-representation-model">Data Representation Model</h2>
+    <div class="body">
+        This section is a work in progress
+    </div>
     <h3>Motivation and Scope</h3>
     <div class="body">
         The overarching goal of TDG is to provide a way to represent and manage arbitrary data in a standardized way. This motivates the model: an opinionated format in which unopinionated data can be represented. ie: by specifying your arbitrary data format in the language of a non-arbitrary model, your data now has a bridge to be compared to and stored with data unlike it. This document discusses only the model itself and not its implementation. Although PostgreSQL and JavaScript examples are given, the model is meant to be generalizable across languages and environments. We present the model as a high level standard for representing arbitrary data, implemented on www.thedatagrid.org.
@@ -42,13 +45,24 @@
         Now that you have an understanding of how the model works, let's make a schema. Custom schemas are represented as <a class="linker-3" target="_blank" href="https://developer.mozilla.org/en-US/docs/Glossary/JSON">JSON</a>, and then TDG converts them into PostgreSQL relations. Currently, the only way to create a schema is to write the JSON yourself. We are working on a UI so schemas can be created on www.thedatagrid.org. However, this isn't so complicated! We will walk you through the fields you need to fill out.
     </div>
     <h3 id="object-format">Object Format</h3>
-    <h4>Item</h4>
+    <h4>Column</h4>
     <div class="code-block"><svg (click)="copyToClipboard(schemaFormat)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="code-block-copy"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path><path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"></path></svg>{{schemaFormat}}</div>
-    <h4>Observation</h4>
+    <h4>Feature</h4>
     <div class="code-block"><svg (click)="copyToClipboard(exampleFormat)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="code-block-copy"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path><path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"></path></svg>{{exampleFormat}}</div>
     <h3 id="field-definitions">Field Definitions</h3>
-    <h2 id="complete-example">Complete Example</h2>
     <div class="body">
-        This simple example is intended to make things more clear.
+        This is a work in progress. Detailed field definitions will be added soon.
+    </div>
+    <h2 id="complete-example">Complete Example</h2>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div style="display: flex; flex-direction: column; align-items: flex-start; width: 55%;">
+        <div routerLink="/guide/manage" class="guide-button">
+            <div class="guide-button-stack">
+                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Next Guide: Organization Management</span>
+            </div>
+        </div>
     </div>
 </div>

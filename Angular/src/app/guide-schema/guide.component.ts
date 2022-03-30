@@ -21,15 +21,46 @@ export class GuideSchemaComponent implements OnInit {
     this.toastr.success('Copied to clipboard')
   }
 
-  schemaFormat = JSON.stringify({
-    a: 1,
-    b: 2
+  schemaFormat = JSON.stringify({ 
+    "itemOrObservation": "Item",
+
+    "name": "Waste Bin",
+    "information": "Unique alphanumeric bin identifier", // optional, defaults to null
+    
+    "sqlType": "TEXT", // required
+    "referenceType": "item-id", // required
+    "presetValues": null,
+    "isNullable": false // required
   }, null, 4)
 
   exampleFormat = JSON.stringify({
-    a: 1,
-    b: 2
-  }, undefined, 4)
+    "frontendName": "Victor Stanley Waste Bin", // required
+    "information": "A Compost, Landfill, or Recycle Waste Bin", // optional, default null
+    "observableItem" : {
+        "requiredItem": [
+            {
+                "name": "item_entity", 
+                "isID": true, 
+                "isNullable": false, 
+                "frontendName": "Entity of Cluster", 
+                "information": null
+            }
+        ],
+        "realGeo": {
+            "itemName": "item_vs_bin",
+            "tableName": "location_point",
+            "columnName": "data_point"
+        },
+        "frontendName": "Victor Stanley Waste Bin",
+        "creationPrivilege": 2
+    },
+    "authorization": {
+        "queryPrivilege": "guest",
+        "queryRole": null,
+        "uploadPrivilege": "user",
+        "uploadRole": "auditor"
+    }
+}, undefined, 4)
 
   ngOnInit() {
   }
