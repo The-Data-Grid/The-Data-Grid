@@ -323,6 +323,8 @@ function setupTitle(dataSheet, title) {
 
 function setupInfoBox(dataSheet, dateCreated) {
 
+    // info section
+
     dataSheet.mergeCells('G1:S3'); 
     let infoBox = dataSheet.getCell('G1');
 
@@ -428,6 +430,74 @@ function setupGrayBorder(dataSheet){
 
     return dataSheet;
 }
+/*
+function sortSpreadsheetColumnObjects(spreadsheetColumnObjectArray) {
+
+    let colObjsNullable = [];
+    let colObjsNotNullable = [];
+
+    for (const obj in spreadsheetColumnObjectArray) {
+
+        if (spreadsheetColumnObjectArray[obj].isNullable) {
+            colObjsNullable.push(spreadsheetColumnObjectArray[obj]);
+        } else {
+            colObjsNotNullable.push(spreadsheetColumnObjectArray[obj]);
+        }
+    }
+
+    // returns array with nullable objects first, preceded by not nullable objects
+    return colObjsNullable.concat(colObjsNotNullable);
+}
+*/
+
+function spannedColumns(startColumnChar, numColumns, rowNum) {
+
+    const incrementedChar = String.fromCharCode(startColumnChar.charCodeAt(0) + numColumns);
+    
+    if (incrementedChar > 'S') {
+        rowNum += 3; 
+        return ['A', String.fromCharCode('A'.charCodeAt(0) + numColumns), rowNum];
+    } else {
+        return [startColumnChar, incrementedChar, rowNum];
+    }
+
+}
+
+function inputBox(dataSheet, columnName, columnChar, rowNum) {
+
+    // get spanned columns and determine row to place objects
+    const columns = spannedColumns(columnChar, 1, rowNum);
+    let startCol = columns[0];
+    let endCol = columns[1]
+    rowNum = columns[2];
+    console.log(columns);
+
+    dataSheet.mergeCells(startCol + rowNum + ':' + endCol + rowNum);
+    let colName = dataSheet.getCell(startCol + rowNum);
+
+    colName.value = {
+        'richText': [
+            {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
+            'text': columnName},
+        ]
+    };
+
+    // TO-DO: add protection to prevent changing of column name cells
+
+    rowNum += 1;
+    dataSheet.mergeCells(startCol + rowNum + ':' + endCol + rowNum);
+    let inputBox = dataSheet.getCell(startCol + rowNum);
+    rowNum -=1;
+
+    inputBox.border = {
+        top: {style: 'thin', color: {argb: '000000'}},
+        left: {style: 'thin', color: {argb: '000000'}},
+        right: {style: 'thin', color: {argb: '000000'}},
+        bottom: {style: 'thin', color: {argb: '000000'}},
+    };
+
+    return {sheet: dataSheet, spannedColumns: [startCol, endCol], nextColumn: String.fromCharCode(endCol.charCodeAt(0) + 1), nextRow: rowNum};
+}
 
 /**
  * * Meta information object
@@ -452,35 +522,6 @@ function setupGrayBorder(dataSheet){
  * @param {spreadsheetColumnObject[]} spreadsheetColumnObjectArray
  */
 
-function sortSpreadsheetColumnObjects(spreadsheetColumnObjectArray) {
-
-    let colObjsNullable = [];
-    let colObjsNotNullable = [];
-
-    for (const obj in spreadsheetColumnObjectArray) {
-
-        if (obj.isNullable) {
-            colObjsNullable.push(obj);
-        } else {
-            colObjsNotNullable.push(obj);
-        }
-    }
-
-    // returns array with nullable objects first, preceded by not nullable objects
-    return colObjsNullable.concat(colObjsNotNullable);
-}
-
-function spannedColumns(startColumnChar, numColumns) {
-
-    const incrementedChar = String.fromCharCode(startColumnChar.charCodeAt(0) + numColumns);
-    if (incrementedChar > 'S') {
-        return ['A', String.fromCharCode('A'.charCodeAt(0) + numColumns)];
-    } else {
-        return [startColumnChar, incrementedChar];
-    }
-
-}
-
 function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
 
     // setup orange border
@@ -493,45 +534,106 @@ function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
         bottom: {style: 'thick', color: {argb: 'e69138'}}
     };
 
-    // track column for columnObject placement
-    let colNum = 'A';
+    // track columns for columnObject placement
+    let startCol = 'A';
+    let endCol = '';
+    let nextCol = 'A';
+
+    // track row for columnObject placement
+    let rowNum = 7;
 
     // track largest number of rows used
     let largestRow = 0;
 
     // sort column objects
-    const columnObjects = sortSpreadsheetColumnObjects(spreadsheetColumnObjectArray);
+    // const columnObjects = sortSpreadsheetColumnObjects(spreadsheetColumnObjectArray);
     
-    for (let i = 0; i < columnObjects.length; i++) {
+    for (let i = 0; i < spreadsheetColumnObjectArray.length; i++) {
 
-        const colObj = columnObjects[i];
+        const colObj = spreadsheetColumnObjectArray[i];
         console.log(colObj);
 
-        switch (colObj.xlsxFormattingType){
+        let columnName = colObj.frontendName;
+        const format = colObj.xlsxFormattingType;
+        
+        if (!colObj.isNullable) {
+            columnName += '*';
+        }
 
-            case 'text':
-                break;
+        if (format === 'text' || format === 'date' || format === 'decimal' || format === 'wholeNumber' || format === 'checkbox' || format === 'dropdown'){
+            const inputObj = inputBox(dataSheet, columnName, nextCol, rowNum);
+            dataSheet = inputObj.sheet;
+            nextCol = inputObj.nextColumn;
+            rowNum = inputObj.nextRow;
+            startCol = inputObj.spannedColumns[0];
+            endCol = inputObj.spannedColumns[1];
+        }
+
+        // add data validation
+        switch (format){
             
             case 'date':
+                // add formula to check MM-DD-YYYY
                 break;
 
             case 'decimal':
+                console.log('here');
+                rowNum+=1;
+                let decimalInput = dataSheet.getCell(startCol + rowNum);
+                decimalInput.dataValidation = {
+                    type: 'decimal',
+                    allowBlank: colObj.isNullable,
+                    promptTitle: 'Decimal',
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'The value must be a decimal.'
+                };
+                rowNum-=1;
                 break;
             
             case 'wholeNumber':
+                rowNum+=1;
+                let wholeNumberInput = dataSheet.getCell(startCol + rowNum);
+                wholeNumberInput.dataValidation = {
+                    type: 'whole',
+                    allowBlank: colObj.isNullable,
+                    promptTitle: 'Integer',
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'The value must be an integer / whole number.'
+                };
+                rowNum-=1;
                 break;
             
             case 'checkbox':
+                rowNum+=1;
+                let checkboxInput = dataSheet.getCell(startCol + rowNum);
+                checkboxInput.dataValidation = {
+                    type: 'list',
+                    allowBlank: colObj.isNullable,
+                    formulae: ['True', 'False'],
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'True or False must be selected.'
+                };
+                rowNum-=1;
                 break;
 
             case 'checkboxList':
                 break;
             
             case 'dropdown':
-                break;
-
-            default:
-                console.log('Error');
+                rowNum+=1;
+                let dropdownInput = dataSheet.getCell(startCol + rowNum);
+                dropdownInput.dataValidation = {
+                    type: 'list',
+                    allowBlank: colObj.isNullable,
+                    formulae: colObj.presetValues,
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'One of the values must be selected.'
+                };
+                rowNum-=1;
                 break;
         }
     }
@@ -731,7 +833,7 @@ function setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetC
     dataSheet = setupInfoBox(dataSheet, workbook.created);
     dataSheet = setupGrayBorder(dataSheet);
     dataSheet = setupColumns(dataSheet, spreadsheetColumnObjectArray);
-    dataSheet = setupColumnInformation(dataSheet, spreadsheetColumnObjectArray);
+    //dataSheet = setupColumnInformation(dataSheet, spreadsheetColumnObjectArray);
 
     return workbook;
 }
