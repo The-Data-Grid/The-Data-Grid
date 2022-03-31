@@ -279,9 +279,9 @@ const updates  = {
 // SQL for generate.js
 
 const generate = {
-    userName: 'SELECT u.name AS user_name FROM users AS u WHERE u.id = $(user_id)',
+    userName: 'SELECT u.data_first_name AS first_name, u.data_last_name AS last_name FROM item_user AS u WHERE u.item_id = $(user_id)',
     featureName: 'SELECT f.frontend_name AS table_name FROM metadata_feature AS f WHERE f.feature_id = $(feature_id)'
-}
+};
 
 module.exports = {
     query,
