@@ -104,17 +104,11 @@ export class DialogComponent implements OnInit {
   }
 
   checkSuccess() {
-    //console.log(this.month + "-" + this.day + "-" + this.year);
-    //return;
-    // this.signUpObject = {
-    //   firstName: "Private",
-    //   lastName: "Joker",
-    //   email: "me@me.com",
-    //   pass: "marrone12345",
-    //   dateOfBirth: "03-02-1123",
-    //   isEmailPublic: true,
-    //   isQuarterlyUpdates: true
-    // }
+
+    if(this.authService.isLocalStorageBlocked) {
+      this.toastr.error('Your browser is blocking access to local storage. Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
+      return;
+    }
 
     if (this.day < 10) {
       this.day = "0" + stringify(this.day);
@@ -209,19 +203,24 @@ export class DialogComponent implements OnInit {
   }
 
   signIn() {
-    // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);
-    this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
-    // console.log(this.userLoginObject);
-    this.apiService.attemptLogin(this.userLoginObject)
-      .subscribe((res) => {
-        console.log(res);
-         this.authService.setSession(res)
-         this.close();
-         this.toastr.success('Log in Successful', '');
-        return;
-        }, (err) => {
-          this.toastr.error('Invalid Credentials', '');
-        });
+    // Check for localStorage being blocked
+    if(this.authService.isLocalStorageBlocked) {
+      this.toastr.error('Your browser is blocking access to local storage. Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
+    } else {
+      // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);
+      this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
+      // console.log(this.userLoginObject);
+      this.apiService.attemptLogin(this.userLoginObject)
+        .subscribe((res) => {
+          console.log(res);
+           this.authService.setSession(res)
+           this.close();
+           this.toastr.success('Log in Successful', '');
+          return;
+          }, (err) => {
+            this.toastr.error('Invalid Credentials', '');
+          });
+    }
   }
 
   close() {

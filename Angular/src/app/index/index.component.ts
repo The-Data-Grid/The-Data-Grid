@@ -30,7 +30,8 @@ export class IndexComponent implements OnInit, OnDestroy {
       spacing: 14.00
     })
 
-    this.updater(150, this.effect);
+    // Commented out for performance. When enabled updates the effect to pulse larger and smaller
+    // this.updater(150, this.effect);
 
     let {
     	isXs,

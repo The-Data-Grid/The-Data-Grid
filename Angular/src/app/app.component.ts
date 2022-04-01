@@ -108,16 +108,19 @@ export class AppComponent implements OnInit {
 
 
   logOut() {
-    // localStorage.removeItem("userEmail");
-    this.apiService.signOut()
-      .subscribe((res) => {
-        this.authService.clearSessionData();
-        this.toastr.info('Signed out', '');
-        this.router.navigateByUrl('/');
-      }, (err) => {
-        this.authService.clearSessionData();
-        this.toastr.info('Your login session expired')
-      })
+    if(this.authService.isLocalStorageBlocked) {
+      this.toastr.error('Your browser is blocking access to local storage. Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
+    } else {
+      this.apiService.signOut()
+        .subscribe((res) => {
+          this.authService.clearSessionData();
+          this.toastr.info('Signed out', '');
+          this.router.navigateByUrl('/');
+        }, (err) => {
+          this.authService.clearSessionData();
+          this.toastr.info('Your login session expired')
+        })
+    }
   }
 
   openDialog() {
@@ -146,8 +149,6 @@ export class AppComponent implements OnInit {
     dialogConfig.height = "700px";
     this.currentWindowWidth = window.innerWidth;
     this.recheckIfInMenu = false;
-
-    // this.dialog.open(LockDialogComponent, dialogConfig);
   }
 
   copyEmail() {
