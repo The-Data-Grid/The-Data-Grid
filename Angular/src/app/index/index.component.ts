@@ -15,7 +15,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   effect;
   goingUp = true;
   stop = false;
-  maxDistance = 13;
+  maxDistance = 16;
 
   ngOnInit() {
     this.effect = VANTA.NET({
