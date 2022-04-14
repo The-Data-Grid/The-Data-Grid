@@ -28,6 +28,8 @@ function hitCacheWrapper(isDownload) {
         if(cacheStatus !== undefined) {
             console.log('Cache Hit: ' + CacheLayer.generateKey(req));
 
+            cacheStatus.cached = true;
+
             // set to formattedResponse so send handlers can see it
             res.locals.formattedResponse = cacheStatus;
             

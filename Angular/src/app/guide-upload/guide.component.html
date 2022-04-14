@@ -1,44 +1,97 @@
 <div class="document">
-    <h1>User Guide</h1>
+    <h1>Data Upload</h1>
+    <div class="body">
+        The Data Grid (TDG) provides organizations multiple ways to upload data to their custom database. To upload data, a user must be a <a class="linker-3" routerLink="/guide/manage">part of the organization</a> they want to upload data to, and be logged in. 
+    </div>
+    <h2>Overview</h2>
+    <div class="body">
+        The two ways to upload data on TDG are <span class="inline-li">1</span><span class="b"> uploading pre-formatted spreadsheets</span> on www.thedatagrid.org, and <span class="inline-li">2</span><span class="b"> uploading programmatically</span> using the API. <span class="inline-li">1</span> is the main supported method, optimized for common data collection workflows that use spreadsheets and spreadsheet software like Excel and Google Sheets. <span class="inline-li">2</span> is the behind the scenes method, which is useful for those who want to stream data into TDG using their own external software. If you aren't sure which method to choose, it's likely that you should use <span class="inline-li">1</span>, since this is the method designed for general purpose use.    </div>
+    <h2>Spreadsheet Upload</h2>
+    <div class="body">
+        For most organizations, this is the only method that is needed in order to completely and successfully upload data to their database. This method is made to leverage the widespread use and understanding of spreadsheets, allowing users to do in-field data collection with the spreadsheet software of their choosing, and upload those spreadsheet files (.xlsx) to TDG after the fact. Formatting spreadsheets from scratch is tedious, and organizations have already declared their data format when creating their database, so TDG automatically generates pre-formatted spreadsheet templates for organizations to download, input their data into, and reupload. No formatting of columns, data validations, sheets, or formulas is required!
+    </div>
+    <h3>Steps</h3>
+    <div class="body">
+        The following steps detail how to upload data using the spreadsheet upload method:
+    </div>
+    <ol>
+        <li>Go to the 'Audit Dashboard' page and download a pre-formatted spreadsheet template for an upload type and feature</li>
+        <img src="/assets/guide_upload_2.png" alt="Screencap showing the Upload Spreadsheet tab">
+        <li>TDG will prompt you to download a .xlsx file, which is an open spreadsheet format supported by Excel, Google Sheets, and many others</li>
+        <li>Input your data into the spreadsheet with the software of your choosing</li>
+        <img src="/assets/guide_upload_3.png" alt="Screencap showing Google Sheets">
+        <li>Go to the 'Audit Dashboard' page and upload your completed template</li>
+        <img src="/assets/guide_upload_1.png" alt="Screencap showing the Download Spreadsheet tab">
+    </ol>
+    <h2>API Upload</h2>
+    <div class="body">
+        API upload is meant for organizations who want to upload data to the database programmatically. Some examples of where this can be useful are:
+    </div>
+    <ul>
+        <li>An IoT device which collects and uploads in-field data automatically</li>
+        <li>A stream where data is constantly uploaded to TDG in order to be as close as possible to the ground truth</li>
+        <li>A service which allows users to upload data to TDG as part of a larger system</li>
+        <li>A workflow where dealing with raw JSON files is preferred to .xlsx files</li>
+    </ul>
+    <div class="body">
+        Members of organizations who want to use this method must generate a <span class="b">secret API key</span>, which is a passcode that authenticates that they are authorized to upload data. They then use that key to send an HTTP POST request to api.thedatagrid.org with their data.
+    </div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
     <div class="callout">
-        <span class="callout-caret">></span> In order to optimize the accessibility of The Data Grid, we have developed a user guide to help one understand its capabilities and use it effectively.
+        <span class="callout-caret">!</span>Warning: do not share your API key with anyone outside of your organization, post it publicly, or include it in public source code (like websites). Anyone who has your key is able to upload to your organization.
     </div>
-    <h2>Getting Started</h2>
+    <h3>Steps</h3>
+    <ol>
+        <li>If you don't already have an API key, go to the 'Audit Dashboard' page and generate an API key. TDG will show you your key, which you must copy and store securely, since this is the only time TDG will show it to you.</li>
+        <li>Collect your data and format it into the submissionObject format below, including your API key in the request header where specified below.</li>
+        <li>Send an HTTP POST request to the URL below. See the HTTP response code and body to understand if the upload has been processed.</li>
+    </ol>
+    <h3>Object and Endpoint</h3>
     <div class="body">
-        The Data Grid provides centralization and management services for sustainability data such as electricity audits, water audits, and apiary inspections. Our public software suite creates specialized applications for your environmental project to allow for flexible data collection, upload, storage, and analysis.
+        The <span class="b">submissionObject</span> is the JSON object which is used to upload data via the api. Its structure is specified below:
     </div>
-    <h3>Interested in viewing data?</h3>
+    <div class="code-block"><svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="code-block-copy"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path><path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"></path></svg>{{submissionObject}}</div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
     <div class="body">
-        Read the <a class="linker-3" routerLink="/guide/query">data filtration guide</a> or just go to the <a class="linker-3" routerLink="/filter">filtering page</a> directly.
+        Note the flexibility of using the API endpoint. Instead of only allowing a single upload type and single feature per upload like when using spreadsheets, API upload allows for any combination of upload types and features. You can even have dependencies within your submission where one of the uploaded items depends on another.
     </div>
-    <h3>Interested in hosting your own data?</h3>
+    <div class="para-break"></div>
     <div class="body">
-        To help you get started, read through each of the sections below for more details.
+        The <span class="b">endpoint</span> to make the API request to is the following:
     </div>
-    <h2>Guides</h2>
-    <div style="display: flex; flex-direction: column; align-items: flex-start; width: 66.7%;">
-        <div class="guide-button">
+    <div class="code-block">
+        <svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="code-block-copy"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path><path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"></path></svg>
+        {{endpoint}}
+    </div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="body">
+        The <span class="b">API key</span> should go in the HTTP header as follows:
+    </div>
+    <div class="code-block">
+        <svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="code-block-copy"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path><path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"></path></svg>
+        {{authHeader}}
+    </div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="callout">
+        <span class="callout-caret">!</span> You should not be making this API request in a browser with fetch(), this will expose your private API key. If you want to use a web platform, you must use a proxy and make the actual request from a server which can keep the key secret.
+    </div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="body">
+        The API upload section is a work in progress, more information as well as detailed object documentation will be released soon.
+    </div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div style="display: flex; flex-direction: column; align-items: flex-start; width: 55%;">
+        <div routerLink="/guide/query" class="guide-button">
             <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Custom Schemas</span>
-                How the data representation model works, how The Data Grid represents custom data, and how to create custom databases
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Organization Management</span>
-                How to make an account, join an organization, and manage your organization
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Data Upload</span>
-                How to create and upload audit data for your organization
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Querying the Database</span>
-                How to use the filtering page to browse and download data
+                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Next Guide: Querying the Database</span>
             </div>
         </div>
     </div>

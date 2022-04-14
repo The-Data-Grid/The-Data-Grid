@@ -31,7 +31,9 @@ body, html {
 }
 
 .callout {
-    border-left: solid 8px #569CD7;
+    border: solid 1px #5fa784;
+    border-radius: 7px;
+    background-color: #e4f0ea;
 }
 
 .tagline {

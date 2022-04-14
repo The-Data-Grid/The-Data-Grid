@@ -1,44 +1,75 @@
 <div class="document">
-    <h1>User Guide</h1>
-    <div class="callout">
-        <span class="callout-caret">></span> In order to optimize the accessibility of The Data Grid, we have developed a user guide to help one understand its capabilities and use it effectively.
-    </div>
-    <h2>Getting Started</h2>
+    <h1>Organization Management</h1>
     <div class="body">
-        The Data Grid provides centralization and management services for sustainability data such as electricity audits, water audits, and apiary inspections. Our public software suite creates specialized applications for your environmental project to allow for flexible data collection, upload, storage, and analysis.
+        Organizations are groups that interface with The Data Grid (TDG) through uploading audit data or accessing it.
     </div>
-    <h3>Interested in viewing data?</h3>
+    <div class="para-break"></div>
     <div class="body">
-        Read the <a class="linker-3" routerLink="/guide/query">data filtration guide</a> or just go to the <a class="linker-3" routerLink="/filter">filtering page</a> directly.
+        Currently Listed TDG Organizations for the <span class="i">UCLA Audits</span> database:
     </div>
-    <h3>Interested in hosting your own data?</h3>
+    <ul>
+        <li>Bruin Home Solutions</li>
+        <li>Renewable Energy Association at UCLA</li>
+        <li>UCLA Facilities</li>
+    </ul>
+    <h2 id="getting-started">Getting Started</h2>
     <div class="body">
-        To help you get started, read through each of the sections below for more details.
+        Creating a TDG account is easy, just do the following:
     </div>
-    <h2>Guides</h2>
-    <div style="display: flex; flex-direction: column; align-items: flex-start; width: 66.7%;">
-        <div class="guide-button">
+    <ol>
+        <li>Click the “Log In” button on the menu bar</li>
+        <img src="/assets/guide_manage_1.png" alt="Screencap showing where the log in button is">
+        <li>Click the “SIGN UP” button in the Log In portal</li>
+        <img src="/assets/guide_manage_2.png" alt="Screencap showing the log in modal">
+        <li>Fill in your information</li>
+        <img src="/assets/guide_manage_3.png" alt="Screencap showing the sign up modal">
+        <li>Verify your email address, and you’re done!</li>
+        <img src="/assets/guide_manage_4.png" alt="Screencap showing the verification email">
+    </ol>
+    <h2 id="privileges-and-roles">Privileges & Roles</h2>
+    <h3 id="privileges">Privileges</h3>
+    <div class="body">
+        There are assigned privileges for users of The Data Grid. A <span class="b">guest</span> is anyone who is on the website, and has immediate access to all public audit data through the data query. Guests become a <span class="b">user</span> once an account has been made with an associated email address, and can manage their personal data on the website. A <span class="b">superuser</span> is a user with administrative privileges, and can manage all server data.
+    </div>
+    <h3 id="roles">Roles</h3>
+    <div class="body">
+        Roles are for users, not guests or superusers. There are two roles within an organization on The Data Grid. The <span class="b">audior</span> role is given to users who conduct an audit within an organization. Auditors can:
+    </div>
+    <ul>
+        <li>Upload, edit, and query data</li>
+        <li>Upload documents</li>
+        <li>See database features</li>
+    </ul>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="body">
+        The <span class="b">admin</span> role is given to users that manage the audit process, and have extended privileges to give and revoke the auditor role to others in the organization. In addition to all the permissions of auditors, admins can:
+    </div>
+    <ul>
+        <li>Grant or revoke access to auditors</li>
+        <li>Delete data</li>
+    </ul>
+    <h3 id="managing-roles">Managing Roles</h3>
+    <div class="body">
+        You must be logged in to an <span class="b">admin</span> account to manage roles within your organization. Go to the "Organization Management" tab to begin.
+    </div>
+    <img src="/assets/guide_manage_5.png" alt="Screencap of the role management section">
+    <div class="body">
+        After clicking the “Manage Roles” button, you will have the option to add additional users to the organization as <span class="b">auditors</span>, and to remove existing auditors. To add users, enter their email address into the text box and click “Add to organization.”
+    </div>
+    <img src="/assets/guide_manage_6.png" alt="Screencap of the role management section after clicking 'Manage Roles'">
+    <div class="body">
+        To revoke access from users, click the “Revoke organization access” buttons as shown below. A confirmation prompt will appear, and clicking confirm will remove the user from the organization. Users can be added back to the organization. You cannot remove other admins from the organization.
+    </div>
+    <img src="assets/guide_manage_7.png" alt="Screencap of the revoke access button">
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div class="para-break"></div>
+    <div style="display: flex; flex-direction: column; align-items: flex-start; width: 55%;">
+        <div routerLink="/guide/upload" class="guide-button">
             <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Custom Schemas</span>
-                How the data representation model works, how The Data Grid represents custom data, and how to create custom databases
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Organization Management</span>
-                How to make an account, join an organization, and manage your organization
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Data Upload</span>
-                How to create and upload audit data for your organization
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Querying the Database</span>
-                How to use the filtering page to browse and download data
+                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Next Guide: Data Upload</span>
             </div>
         </div>
     </div>

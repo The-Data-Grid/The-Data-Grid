@@ -6,10 +6,6 @@ import { ApiService } from './api.service';
   providedIn: 'root'
 })
 export class AuthService {
-
-  sessionObject = JSON.parse(localStorage.getItem('sessionObject'));
-  
-  isLoggedIn = this.getIsLoggedIn();
   
   loginStatusChange: Subject<boolean> = new Subject<boolean>();
   sessionObjectChange: Subject<string> = new Subject<string>();
@@ -21,8 +17,8 @@ export class AuthService {
 
     this.sessionObjectChange.subscribe((value) => {
       // Don't need to stringify because it comes from the API as a string
-      localStorage.setItem('sessionObject', value);
       this.sessionObject = JSON.parse(value);
+      localStorage.setItem('sessionObject', value);
     })
    }
 
@@ -41,4 +37,18 @@ export class AuthService {
     this.loginStatusChange.next(this.getIsLoggedIn());
   }
 
+  getSessionObject() {
+    try {
+      return JSON.parse(localStorage.getItem('sessionObject'));
+    } catch(err) {
+      this.isLocalStorageBlocked = true;
+      return null;
+    }
+  }
+
+  isLocalStorageBlocked = false;
+
+  sessionObject = this.getSessionObject();
+  
+  isLoggedIn = this.getIsLoggedIn();
 }

@@ -95,7 +95,7 @@ import { GuideQueryComponent } from './guide-query/guide.component';
     NgMultiSelectDropDownModule.forRoot(),
     ClickOutsideModule,
     MaterialModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({timeOut: 2500, maxOpened: 5, autoDismiss: true}),
   ],
   providers: [ApiService, DatePipe, SetupObjectService, TableObjectService, AuthService],
   bootstrap: [AppComponent],

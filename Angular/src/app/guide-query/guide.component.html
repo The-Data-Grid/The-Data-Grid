@@ -1,45 +1,80 @@
 <div class="document">
-    <h1>User Guide</h1>
-    <div class="callout">
-        <span class="callout-caret">></span> In order to optimize the accessibility of The Data Grid, we have developed a user guide to help one understand its capabilities and use it effectively.
-    </div>
-    <h2>Getting Started</h2>
+    <h1>Querying the Database</h1>
     <div class="body">
-        The Data Grid provides centralization and management services for sustainability data such as electricity audits, water audits, and apiary inspections. Our public software suite creates specialized applications for your environmental project to allow for flexible data collection, upload, storage, and analysis.
+        This guide shows how to query the database using the <a routerLink="/filter"
+            class="linker-3">filtering page</a>. You
+        are able to filter, sort, fetch, and download data uploaded to The Data
+        Grid.
     </div>
-    <h3>Interested in viewing data?</h3>
+    <h2>Query Options</h2>
+    <h3>Database</h3>
     <div class="body">
-        Read the <a class="linker-3" routerLink="/guide/query">data filtration guide</a> or just go to the <a class="linker-3" routerLink="/filter">filtering page</a> directly.
+        This option is the name of the Database you are querying from. You are
+        able to select the database to query from, and query from databases
+        outside of your organization if they are visible. Currently, the only
+        publicly visible database is "UCLA Audits".
     </div>
-    <h3>Interested in hosting your own data?</h3>
+    <h3>Query Type</h3>
     <div class="body">
-        To help you get started, read through each of the sections below for more details.
+        This option is a selection of either viewing <span class="b">items</span>
+        or <span class="b">observations</span>.
+        Items are static (do not change over time) and are often physically
+        existent, while observations are dynamic "snapshots" of items over time,
+        where multiple observations can be made for a single item. For example,
+        each individual sink is a unique item, and every time it is audited for
+        flow rate a new observation is recorded. There can then be multiple
+        observations of the same sink, or no observations of that sink. Note how
+        there are more available <span class="i">Fields</span> when viewing
+        observations. This is
+        because when viewing items, dynamic fields that change over time are not
+        included. The item-observation dichotomy is core to TDG's data model,
+        and can be read about in more depth in the <a routerLink="/guide/schema"
+            class="linker-3">"Custom Schema" guide</a>.
     </div>
-    <h2>Guides</h2>
-    <div style="display: flex; flex-direction: column; align-items: flex-start; width: 66.7%;">
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Custom Schemas</span>
-                How the data representation model works, how The Data Grid represents custom data, and how to create custom databases
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Organization Management</span>
-                How to make an account, join an organization, and manage your organization
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Data Upload</span>
-                How to create and upload audit data for your organization
-            </div>
-        </div>
-        <div class="guide-button">
-            <div class="guide-button-stack">
-                <span style="color: #569CD7; font-weight: bold; padding-bottom: 4px; font-size: 1.15rem;">Querying the Database</span>
-                How to use the filtering page to browse and download data
-            </div>
-        </div>
+    <h3>Feature</h3>
+    <div class="body">
+        Use the feature field to select the type of item you are querying.
+        Databases can contain many items that relate to each other, or as little
+        as one.
     </div>
+    <h3>Fields</h3>
+    <div class="body">
+        A multiselect list of fields you can use to query more or less columns
+        of data per item or observation. Each field selected will appear in the
+        results table after running the query.
+    </div>
+    <h3>Query Builder</h3>
+    <div class="body">
+        The query builder allows one to create complex logical filters to
+        constrain the results of the query. Every entry of the query builder is
+        a single constraint that the data must pass ino order to be shown in the
+        results
+        (i.e. a filter). Using the "Add rule" and "Add group" buttons,
+        individual filters can be combined with either a <a
+            href="https://en.wikipedia.org/wiki/Logical_disjunction"
+            class="linker-3">logical or</a>, or <a
+            href="https://en.wikipedia.org/wiki/Logical_conjunction"
+            class="linker-3">logical and</a>. Every filter is made upon one of
+        the available fields shown in the <span class="i">Fields</span>
+        dropdown.
+        Depending on the type of field, different filtering
+        options are shown. In the example below, the query will return all
+        results where "Factor" equals "YRL", or "Text" and "Boolean" equal
+        "Clean" and "true" respectively. Arbitrarily complex filters can be made
+        using the query builder.
+    </div>
+    <img src="/assets/guide_query_1.png" alt="Screencap of the query builder">
+    <h3>Sort</h3>
+    <div class="body">
+        After all your criteria are selected, you can sort the data first by
+        selecting a field, and then choosing ascending or descending order.
+    </div>
+    <h2>Viewing and Downloading the data</h2>
+    <div class="body">
+        After you click the "Run Query" button, your results will display in the
+        table and are ready to be downloaded. The download button is at the
+        bottom left of the results shown on the page. You can choose either CSV
+        or JSON format.
+    </div>
+    <img src="/assets/guide_query_2.png" alt="Screencap of the results table">
 </div>

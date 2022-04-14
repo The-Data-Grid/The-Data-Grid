@@ -1,92 +1,136 @@
 
 <div style="background-color: transparent;">
-    <div style="width: 100%; height: 750px; position: fixed; z-index: -10;" id="vanta"></div>
+    <div style="width: 100%; height: 750px; position: fixed; z-index: -10;"
+        id="vanta"></div>
     <div style="padding-top: 150px; height: 500px;">
         <span class="tagline">
             <span class="tagline-inner1">Data Management</span>
-            <span class="tagline-inner3" style="font-weight: 100; color: rgb(60, 60, 60)">&nbsp;for the&nbsp;</span>
+            <span class="tagline-inner3" style="font-weight: 100; color: rgb(60,
+                60, 60)">&nbsp;for the&nbsp;</span>
             <span class="tagline-inner2">Environment</span>
         </span>
     </div>
-    <div class="-mt-56 w-full justify-center z-10 absolute flex flex-row" >
-        <div *ngIf="isM || isL" style="font-weight: 500; " class="text-xl w-1/2 bg-blue-100 shadow-xl px-12 py-6 callout">
-            The Data Grid is a free and open source database creation, data collection, and data management platform for environmental auditing.
+    <div class="-mt-56 w-full justify-center z-10 absolute flex flex-row">
+        <div *ngIf="isM || isL" style="font-weight: 500;"class="text-xl w-1/2
+            shadow-xl px-12 py-6 callout">
+            The Data Grid is a free and open source database creation, data
+            collection, and data management platform for environmental auditing.
         </div>
-        <div *ngIf="!(isM || isL)" style="font-weight: 500; " class="text-xl w-5/6 mt-20 bg-blue-100 shadow-xl px-12 py-6 callout">
-            The Data Grid is a free and open source database creation, data collection, and data management platform for environmental auditing.
+        <div *ngIf="!(isM || isL)" style="font-weight: 500;"class="text-xl w-5/6
+            mt-20 shadow-xl px-12 py-6 callout">
+            The Data Grid is a free and open source database creation, data
+            collection, and data management platform for environmental auditing.
         </div>
     </div>
-    <div style="background-color: #416a87; min-height: 400px;" class=" flex flex-row  pt-16 ">
+    <div style="background-color: #416a87; min-height: 400px;" class="flex
+        flex-row pt-16">
         <div class="flex flex-col w-1/3">
-            <div     style="font-family: IBM Plex Mono;
-            font-style: normal;
-            font-weight: 400;
-            font-size: 35px;
-            line-height: 60px;
-            color: white;
-            cursor: default;
-            user-select: none;" class=" border-b-2 border-white text-right">
+            <div style="font-family: IBM Plex Mono;
+                font-style: normal;
+                font-weight: 400;
+                font-size: 35px;
+                line-height: 60px;
+                color: white;
+                cursor: default;
+                user-select: none;" class="border-b-2 border-white text-right">
                 Open data for everyone
             </div>
         </div>
         <div class="flex flex-col w-2/3">
             <div class="flex flex-row mt-4">
                 <div class="flex flex-col mr-8">
-                    <div style="margin-left: auto; text-align: right;" class="text-lg text-white mx-4 my-8 w-2/3">
-                        The Data Grid hosts open databases in the cloud so anyone can view, filter, sort, and download publicly available data easily and at no cost.
+                    <div style="margin-left: auto; text-align: right;"
+                        class="text-lg text-white mx-4 my-8 w-2/3">
+                        The Data Grid hosts open databases in the cloud so
+                        anyone can view, filter, sort, and download publicly
+                        available data easily and at no cost.
                     </div>
-                    <a style="margin-left: auto;" class="linker border-t border-b border-white text-white py-1 mr-4" routerLink="/filter">See the open databases >>></a>
+                    <a style="margin-left: auto;" class="linker border-t
+                        border-b border-white text-white py-1 mr-4"
+                        routerLink="/filter">See the open databases >>></a>
                 </div>
-                <img *ngIf="isM || isL" style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/data-icon.svg" alt="Database Icon">
+                <img *ngIf="isM || isL" style="margin-left: auto; width: 100px;"
+                    class="mr-8 mt-16" src="/assets/data-icon.svg" alt="Database
+                    Icon">
             </div>
             <div class="flex flex-row my-14">
                 <div class="flex flex-col mr-8">
-                    <div style="margin-left: auto; text-align: right;" class="text-lg text-white mx-4 my-8 w-2/3">
-                        The platform allows organizations to upload their data to their database, manage auditors, and view the data they have uploaded. This way, environmental data can be easily standardized within and across organizations.                </div>
-                    <a style="margin-left: auto;" class="linker border-t border-b border-white text-white py-1 mr-4" routerLink="/about">Learn more about our mission >>></a>
+                    <div style="margin-left: auto; text-align: right;"
+                        class="text-lg text-white mx-4 my-8 w-2/3">
+                        The platform allows organizations to upload their data
+                        to their database, manage auditors, and view the data
+                        they have uploaded. This way, environmental data can be
+                        easily standardized within and across organizations.
+                    </div>
+                    <a style="margin-left: auto;" class="linker border-t
+                        border-b border-white text-white py-1 mr-4"
+                        routerLink="/about">Learn more about our mission >>></a>
                 </div>
-                <img *ngIf="isM || isL" style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/environment.svg" alt="Database Icon">
+                <img *ngIf="isM || isL" style="margin-left: auto; width: 100px;"
+                    class="mr-8 mt-16" src="/assets/environment.svg"
+                    alt="Database Icon">
             </div>
         </div>
     </div>
     <!-- 
         <img class="bg-gray-100" style="background-color: #416a87; height: 700px; filter: blur(8px); -webkit-filter: blur(8px);"  src="assets/forest.svg" alt="Forest Background">
     -->
-    <div style="min-height: 600px" class="w-full bg-white opacity-90  flex flex-row pt-16">
+    <div style="min-height: 600px" class="w-full bg-white opacity-90 flex
+        flex-row pt-16">
         <div class="flex flex-col w-1/3">
-            <div     style="font-family: IBM Plex Mono;
-            font-style: normal;
-            font-weight: 400;
-            font-size: 35px;
-            line-height: 60px;
-            color: #569CD7;
-            cursor: default;
-            user-select: none; border-color: #569CD7" class=" border-b-2 text-right">
+            <div style="font-family: IBM Plex Mono;
+                font-style: normal;
+                font-weight: 400;
+                font-size: 35px;
+                line-height: 60px;
+                color: #569CD7;
+                cursor: default;
+                user-select: none; border-color: #569CD7" class="border-b-2
+                text-right">
                 How it works
             </div>
         </div>
         <div class="flex flex-col w-2/3">
             <div class="flex flex-row mt-4 mb-12">
                 <div class="flex flex-col mr-8">
-                    <div style="margin-left: auto; text-align: right; color: #569CD7" class="text-lg mx-4 mt-8 w-2/3">
-                        The Data Grid allows you to generate a custom <a class="linker-3 underline" target="_blank" href="https://www.postgresql.org/">PostgreSQL</a> database without code, and manage that database in the cloud using <span class="font-mono">thedatagrid.org</span>. Databases schemas are created using a <a class="linker-3 underline" routerLink="/guide/schema">universal data representation format</a> that we invented in order to allow people to make databases without needing to know how they work internally. With this:
+                    <div style="margin-left: auto; text-align: right; color:
+                        #569CD7" class="text-lg mx-4 mt-8 w-2/3">
+                        The Data Grid allows you to generate a custom <a
+                            class="linker-3 underline" target="_blank"
+                            href="https://www.postgresql.org/">PostgreSQL</a>
+                        database without code, and manage that database in the
+                        cloud using <span class="font-mono">thedatagrid.org</span>.
+                        Databases schemas are created using a <a class="linker-3
+                            underline" routerLink="/guide/schema">universal data
+                            representation format</a> that we created in order
+                        to allow people to make databases without needing to
+                        know how they work internally. With this:
                     </div>
-                    <ul style="margin-left: auto; text-align: right; color: #569CD7" class=" text-lg mt-6 mx-10 mb-8 w-2/3" >
+                    <ul style="margin-left: auto; text-align: right; color:
+                        #569CD7" class="text-lg mt-6 mx-10 mb-8 w-2/3">
                         <li>
-                            <a class="underline mt-2 linker-3" routerLink="/guide/upload">Generate preformatted spreadsheets for data upload</a> <
-                        </li>
-                        <li>
-                            <a class="underline mt-2 linker-3" routerLink="/guide/manage">Manage data manipulation privileges</a> <
-                        </li>
-                        <li>
-                            <a class="underline mt-2 linker-3" routerLink="/guide/query">Perform complex queries on the data</a> <
-                        </li>
-                    </ul>
-                    <a style="margin-left: auto; color: #569CD7; border-color: #569CD7;" class="linker-blue border-t border-b py-1 mr-4" routerLink="/guide">Read the user guide >>></a>
+                            <a class="underline mt-2 linker-3"
+                                routerLink="/guide/upload">Generate preformatted
+                                spreadsheets for data upload</a> <</li>
+                            <li>
+                                <a class="underline mt-2 linker-3"
+                                    routerLink="/guide/manage">Manage data
+                                    manipulation privileges</a> <</li>
+                                <li>
+                                    <a class="underline mt-2 linker-3"
+                                        routerLink="/guide/query">Perform
+                                        complex queries on the data</a> <</li>
+                                </ul>
+                                <a style="margin-left: auto; color: #569CD7;
+                                    border-color: #569CD7;" class="linker-blue
+                                    border-t border-b py-1 mr-4"
+                                    routerLink="/guide">Read the user guide >>></a>
+                            </div>
+                            <img *ngIf="isM || isL" style="margin-left: auto;
+                                width: 100px;" class="mr-8 mt-16"
+                                src="/assets/data-collection.svg" alt="Database
+                                Icon">
+                        </div>
+                    </div>
                 </div>
-                <img *ngIf="isM || isL" style="margin-left: auto; width: 100px;" class="mr-8 mt-16" src="/assets/data-collection.svg" alt="Database Icon">
             </div>
-        </div>
-    </div>
-</div>
-    
