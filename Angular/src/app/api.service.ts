@@ -219,6 +219,18 @@ export class ApiService {
     return this.http.post(`${API_URL}/audit/submission`, submissionObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
+  public putApiKey() {
+    const reqHeader = new HttpHeaders({ 'With-Credentials': 'True' });
+
+    return this.http.put(`${API_URL}/manage/key`, undefined, { headers: reqHeader, responseType: 'json', withCredentials: true })
+  }
+
+  public deleteApiKey() {
+    const reqHeader = new HttpHeaders({ 'With-Credentials': 'True' });
+
+    return this.http.delete(`${API_URL}/manage/key`, { headers: reqHeader, withCredentials: true });
+  }
+
   public getSOPTable(organizationID) {
     const url = API_URL + '/manage/sops?organizationID=' + organizationID;
     const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });

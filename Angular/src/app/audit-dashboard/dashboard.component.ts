@@ -4,6 +4,8 @@ import { SetupObjectService } from '../setup-object.service';
 import {FormControl, Validators} from '@angular/forms';
 import { AuthService } from '../auth.service';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import { ToastrService } from 'ngx-toastr';
+import { Clipboard } from '@angular/cdk/clipboard'
 
 @Component({
   selector: 'audit-dashboard',
@@ -15,8 +17,15 @@ export class AuditDashboard implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private setupObjectService: SetupObjectService
+    private setupObjectService: SetupObjectService,
+    private toastr: ToastrService,
+    private clipboard: Clipboard
   ) { }
+
+  copyToClipboard(data: string) {
+    this.clipboard.copy(data);
+    this.toastr.success('Copied to clipboard')
+  }
 
   
   ngOnInit(): void {
@@ -279,5 +288,49 @@ export class AuditDashboard implements OnInit {
     }, (err) => {
       console.log(err)
     })
+  }
+
+  /* API KEY */
+  newKey = false;
+  newKeyValue = null;
+  deleteSuccess = null;
+  regenerating = false;
+  deleting = false;
+
+  initRegenerateAPIKey() {
+    this.regenerating = true;
+  }
+
+  initDeleteAPIKey() {
+    this.deleting = true
+  }
+
+  generateAPIKey() {
+    this.apiService.putApiKey().subscribe((res: any) => {
+      const newSessionObject = Object.assign({}, this.sessionObject);
+      newSessionObject.isApiKeySet = true;
+      this.authService.setSession(JSON.stringify(newSessionObject));
+      this.sessionObject = this.authService.sessionObject;
+      this.toastr.success('New API key successfully generated');
+      this.regenerating = false;
+      this.newKey = true;
+      this.newKeyValue = res.key;      
+    }, (err) => {
+      console.log(err);
+    })
+  }
+
+  deleteAPIKey() {
+    this.apiService.deleteApiKey().subscribe((res) => {
+      this.deleteSuccess = true;
+      const newSessionObject = Object.assign({}, this.sessionObject);
+      newSessionObject.isApiKeySet = false;
+      this.authService.setSession(JSON.stringify(newSessionObject));
+      this.sessionObject = this.authService.sessionObject;
+      this.deleting = false;
+      this.toastr.success('API key successfully deleted');
+    }), (err) => {
+      console.log(err);
+    }
   }
 }

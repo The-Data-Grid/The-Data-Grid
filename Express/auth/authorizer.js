@@ -377,18 +377,37 @@ function authorizeSessionGenerator(config) {
                 return next();
             }
             else if(config.role === 'auditor') {
-                // Note use of res.locals.requestedOrganizationID
-                const organizationIDIndex = res.locals.authorization.organizationID.indexOf(res.locals.requestedOrganizationID);
-                if(!['auditor', 'admin'].includes(res.locals.authorization.role[organizationIDIndex])) {
-                    console.log(res.locals.authorization.role[organizationIDIndex])
-                    return res.status(401).end();
+                // Needs to be an auditor of any organization to pass
+                if(config.anyOrg) {
+                    if(!res.locals.authorization.role.some(role => ['auditor', 'admin'].includes(role))) {
+                        console.log(res.locals.authorization)
+                        return res.status(401).end();
+                    }
+                    return next();
+                // Needs to be an auditor of the organization that has been requested to modify to pass
+                } else {
+                    const organizationIDIndex = res.locals.authorization.organizationID.indexOf(res.locals.requestedOrganizationID);
+                    if(!['auditor', 'admin'].includes(res.locals.authorization.role[organizationIDIndex])) {
+                        console.log(res.locals.authorization.role[organizationIDIndex])
+                        return res.status(401).end();
+                    }
+                    return next();
                 }
-                return next();
             } else if(config.role === 'admin') {
-                if(res.locals.authorization.role[organizationIDIndex] !== 'admin') {
-                    return res.status(401).end();
+                // Needs to be an admin of any organization to pass
+                if(config.anyOrg) {
+                    if(!res.locals.authorization.role.some(role => role === 'admin')) {
+                        return res.status(401).end();
+                    }
+                    return next();
+                // Needs to be an admin of the organization that has been requested to modify to pass
+                } else {
+                    const organizationIDIndex = res.locals.authorization.organizationID.indexOf(res.locals.requestedOrganizationID);
+                    if(res.locals.authorization.role[organizationIDIndex] !== 'admin') {
+                        return res.status(401).end();
+                    }
+                    return next();
                 }
-                return next();
             } else {
                 throw Error('Invalid authorizationSessionGenerator configuration');
             }
@@ -407,4 +426,6 @@ module.exports = {
     authorizeSuperuser: authorizeSessionGenerator({ privilege: 'superuser' }),
     authorizeAdmin: authorizeSessionGenerator({ role: 'admin' }),
     authorizeAuditor: authorizeSessionGenerator({ role: 'auditor' }),
+    authorizeAuditorAnyOrg: authorizeSessionGenerator({ role: 'auditor', anyOrg: true }),
+    authorizeAdminAnyOrg: authorizeSessionGenerator({ role: 'admin', anyOrg: true }),
 };

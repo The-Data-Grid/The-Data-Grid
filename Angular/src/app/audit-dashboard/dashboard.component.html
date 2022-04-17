@@ -23,7 +23,7 @@
             <mat-tab class="" label="Upload Spreadsheet">
                 <div class="flex flex-col">
                     <div *ngIf="selectedSpreadsheet == null">
-                      <div class="w-full bg-blue-100 px-4 py-2 text-sm m-6">
+                      <div style="box-shadow: 2px 2px 5px lightgray;" class="bg-blue-100 px-4 py-2 text-sm m-6 rounded flex">
                           Upload a completed spreadsheet. Must be a filled in TDG spreadsheet template, which is an .xlsx file.
                       </div>
   
@@ -32,12 +32,12 @@
                         <button (click)="spreadsheetInput.click()" style="background-color: #569CD7;" class="ml-4 text-white text-semibold p-4"  mat-button >Upload Spreadsheet</button>
                       </div>
                     </div>
-                    <div *ngIf="selectedSpreadsheet != null" class="flex flex-row p-4 space-x-6 ">
+                    <div *ngIf="selectedSpreadsheet != null" class="flex flex-row  p-4 space-x-6 ">
                       <!-- File Information -->
                       <mat-expansion-panel  class="w-1/3 flex-none" style="height: max-content;" [(expanded)]="isSpreadsheetExpanded[0]">
                         <mat-expansion-panel-header>
                           <mat-panel-title >
-                            <mat-icon style="color:#569CD7;"> attach_file</mat-icon>
+                            <mat-icon style="color:#569CD7;"> cloud_upload</mat-icon>
                             {{ '&nbsp;&nbsp;' + selectedSpreadsheet.name }}
                           </mat-panel-title>
                         </mat-expansion-panel-header>
@@ -89,7 +89,7 @@
                             <button *ngIf="supplemental.length > 0" style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button  mat-button (click)="supplemental = [];">Clear</button>
                           </div>
                         </div>
-                        <div *ngIf="selectingDocument" class="m-4 flex flex-col space-y-5 justify-center items-center bg-blue-100 rounded p-3">
+                        <div *ngIf="selectingDocument" style="box-shadow: 2px 2px 5px lightgray;" class="m-4 flex flex-col space-y-5 justify-center items-center bg-blue-100 rounded p-3">
                           <p>Click the <em>Add Document</em> button on files in the <em>Documents</em> section below to associate them with this upload</p>
                           <button style="background-color: #569CD7;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="selectingDocument = false">Done</button>
                         </div>
@@ -105,7 +105,7 @@
             <mat-tab class="" label="Download Spreadsheet Template">
                 <div class="flex flex-col">
 
-                    <div class="w-full bg-blue-100 px-4 py-2 text-sm m-6">
+                    <div style="box-shadow: 2px 2px 5px lightgray;" class="rounded flex bg-blue-100 px-4 py-2 text-sm m-6">
                       Download a pre-formatted spreadsheet template for your database. Input your data into the spreadsheet and upload it on the 'Upload Data' tab.
                     </div>
                     <div class="flex flex-row items-center">
@@ -126,8 +126,78 @@
                     </div>
                 </div>
             </mat-tab>
+            <!-- API Upload -->
             <mat-tab class="" label="API Upload">
+              <div class="flex flex-row p-4 space-x-6 ">
+                <mat-expansion-panel class="w-1/2" style="height: max-content;" >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <mat-icon style="color:#569CD7;">library_books</mat-icon>
+                      &nbsp;&nbsp; Instructions
+                    </mat-panel-title>
 
+                  </mat-expansion-panel-header>
+                  <p>
+                    Read the <a class="linker-3" routerLink="/guide/upload">Data Upload Guide</a> for more information
+                  </p>
+                </mat-expansion-panel>
+                <mat-expansion-panel class="w-1/2" style="height: max-content;" >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <mat-icon style="color:#569CD7;">vpn_key</mat-icon>
+                      &nbsp;&nbsp;Credentials
+                    </mat-panel-title>
+
+                  </mat-expansion-panel-header>
+                  <p>
+                    <span style="color:#569CD7; font-weight: bold;">Name:&nbsp;</span>{{ sessionObject.firstName + ' ' + sessionObject.lastName }}
+                  </p>
+                  <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                  <p>
+                    <span style="color:#569CD7; font-weight: bold;">Organization:&nbsp;</span>{{ managingOrganizationName }}
+                  </p>
+                  <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                  <p>
+                    <span style="color:#569CD7; font-weight: bold;">Role:&nbsp;</span>{{ role[0].toUpperCase() + role.slice(1) }}
+                  </p>
+                  <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                  <p>
+                    <span style="color:#569CD7; font-weight: bold;">API Key:&nbsp;</span>{{ sessionObject.isApiKeySet ? 'API key exists for account' : 'No API key for account' }}
+                  </p>
+                  <p style="margin-top: 6px; margin-bottom: 15px; height: 1px " class=" bg-slate-200"></p>
+                  <div *ngIf="!regenerating && !deleting && !newKey">
+                    <button *ngIf="!sessionObject.isApiKeySet" style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="generateAPIKey()">Generate API Key</button>
+                    <button *ngIf="sessionObject.isApiKeySet" style="background-color: #569CD7;" class="text-white text-semibold p-4 mr-4"  mat-button (click)="initRegenerateAPIKey()">Regenerate API Key</button>
+                    <button *ngIf="sessionObject.isApiKeySet" style="background-color: #ff9999;" class="text-white text-semibold p-4"  mat-button (click)="initDeleteAPIKey()">Disable API Key</button>
+                  </div>
+                  <!-- Confirm Regenerate -->
+                  <div style="box-shadow: 2px 2px 5px lightgray;" *ngIf="regenerating" class="m-4 flex flex-col space-y-5 justify-center items-center bg-blue-100 rounded p-3">
+                    <p>Are you sure? As soon as you regenerate your API key, your current API key will be revoked and will no longer work.</p>
+                    <div class="flex flex-row">
+                      <button style="background-color: #569CD7;" class="mr-4 text-white text-semibold p-4"  mat-button (click)="generateAPIKey()">Confirm</button>
+                      <button *ngIf="sessionObject.isApiKeySet" style="background-color: #ff9999;" class="text-white text-semibold p-4"  mat-button (click)="regenerating = false;">Cancel</button>
+                    </div>
+                  </div>
+                  <!-- Confirm Delete -->
+                  <div style="box-shadow: 2px 2px 5px lightgray;" *ngIf="deleting" class="m-4 flex flex-col space-y-5 justify-center items-center bg-blue-100 rounded p-3">
+                    <p>Are you sure? This will revoke your current API key so it will no longer work.</p>
+                    <div class="flex flex-row">
+                      <button style="background-color: #569CD7;" class="mr-4 text-white text-semibold p-4"  mat-button (click)="deleteAPIKey()">Confirm</button>
+                      <button *ngIf="sessionObject.isApiKeySet" style="background-color: #ff9999;" class="text-white text-semibold p-4"  mat-button (click)="deleting = false;">Cancel</button>
+                    </div>
+                  </div>
+                  <!-- New Key Panel -->
+                  <div style="box-shadow: 2px 2px 5px lightgray;" *ngIf="newKey" class="m-4 flex flex-col space-y-5 justify-center items-center bg-blue-100 rounded p-3">
+                    <p style="color:#569CD7; font-weight: bold;">A new API Key has been successfully generated</p>
+                    <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                    <p>Keep this API key a secret, anyone who has access to it can upload to TDG with your credentials.
+                      For security purposes, this is the only time TDG will tell you your API key. Once you click <em>Done</em> 
+                      you will never see it in plaintext again.</p>
+                      <div class="code-block"><svg (click)="copyToClipboard(newKeyValue)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="code-block-copy"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path><path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"></path></svg>{{newKeyValue}}</div>
+                    <button style="background-color: #569CD7;" class="mt-4 text-white text-semibold p-4"  mat-button (click)="newKey = false; newKeyValue = null;">Done</button>
+                  </div>
+                </mat-expansion-panel>
+              </div>
             </mat-tab>
         </mat-tab-group>
     </div>

@@ -687,3 +687,50 @@ Ensure the default browser behavior of the `hidden` attribute.
   -webkit-text-decoration-line: underline;
           text-decoration-line: underline;
 }
+
+.code-block {
+  padding: 10px 15px 10px 15px;
+  background-color: #5fa7841a;
+  border-radius: 5px;
+  border: 1px solid #5fa784;
+  width: 90%;
+  display: flex;
+  word-break: break-all;
+  flex-direction: row;
+  color: black;
+  font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+  transition: opacity 0.3s ease;
+  position: relative;
+}
+
+.code-block:hover > .code-block-copy {
+  opacity: 1.0;
+  transition: opacity .55s ease-in-out;
+  -moz-transition: opacity .55s ease-in-out;
+  -webkit-transition: opacity .55s ease-in-out;
+}
+
+.code-block-copy {
+  fill: #5fa784;
+  width: 1.4rem;
+  height: 1.4rem;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  opacity: 0.2;
+  transition: opacity .5s ease-in-out;
+  -moz-transition: opacity .5s ease-in-out;
+  -webkit-transition: opacity .5s ease-in-out;
+}
+
+.linker-3:hover {
+  background-color: #569dd731;
+}
+
+.linker-3 {
+  color: #569dd7;
+  text-decoration: underline;
+  transition: 0.3s;
+  font-family: 'Open Sans';
+}

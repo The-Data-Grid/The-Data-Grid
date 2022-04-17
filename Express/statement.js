@@ -223,7 +223,8 @@ const login = {
             ARRAY_REMOVE(ARRAY_AGG(o.data_organization_name_text), NULL) AS "organizationName",
             u.item_id as "userID",
             u.data_first_name as "firstName",
-            u.data_last_name as "lastName"
+            u.data_last_name as "lastName",
+            u.api_key is not null as "isApiKeySet"
             FROM item_user AS u
             LEFT JOIN tdg_role AS r ON u.item_id = r.item_user_id
             LEFT JOIN tdg_role_type AS rt ON r.role_type_id = rt.type_id
