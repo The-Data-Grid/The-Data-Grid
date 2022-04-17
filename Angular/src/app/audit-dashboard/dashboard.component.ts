@@ -36,6 +36,8 @@ export class AuditDashboard implements OnInit {
   
   managingOrganization = this.canViewPage ? this.sessionObject.organizationID[0] : null;
 
+  managingOrganizationName = this.sessionObject.organizationFrontendName[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+
   setupObject;
   setupFilterObject;
   allFeatures;
@@ -122,7 +124,7 @@ export class AuditDashboard implements OnInit {
   }
 
   initiateNewAudit(open) {
-    this.newAuditInitiated = open ? true : false;
+    this.newAuditInitiated = open;
   }
 
   uploadNewAudit() {
@@ -153,6 +155,7 @@ export class AuditDashboard implements OnInit {
   currentSOPPageIndex = 0;
   SOPSignedUrl;
   selectedFile = null;
+  selectedSpreadsheet = null;
   fittedSOPArray = this.SOPArray.slice((this.currentSOPPageSize * this.currentSOPPageIndex), (this.currentSOPPageSize * (this.currentSOPPageIndex + 1)));
   signedUrlObject = null;
   
@@ -179,6 +182,12 @@ export class AuditDashboard implements OnInit {
       this.SOPName = '';
     }
   }
+
+  uploadSpreadsheetToBucket() {
+
+  }
+
+  isSpreadsheetExpanded = [false, false, false];
 
   uploadSOPToBucket() {
     this.newSOPInitiated = false;
@@ -227,6 +236,22 @@ export class AuditDashboard implements OnInit {
     this.selectedFile = fileInputEvent.target.files[0];
     console.log(this.selectedFile)
   }
+
+  async openInitially() {
+    await new Promise(r => setTimeout(r, 400));
+    this.isSpreadsheetExpanded = [true, true, true];
+  }
+
+  spreadsheetUploadChange(fileInputEvent: any) {
+    this.selectedSpreadsheet = fileInputEvent.target.files[0];
+    console.log(this.selectedSpreadsheet);
+    this.openInitially();
+  }
+
+
+  formatBytes(a,b=2,k=1024) {let d=Math.floor(Math.log(a)/Math.log(k));return 0==a?"0 Bytes":parseFloat((a/Math.pow(k,d)).toFixed(Math.max(0,b)))+" "+["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}
+
+  formatEpoch(t) {return (new Date(t)).toLocaleString()}
 
   getSignedUrl(fileObject) {
     

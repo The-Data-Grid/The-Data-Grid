@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import './tailwind.css';
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500;600&family=Lora:ital,wght@0,500;0,700;1,500;1,700&family=Open+Sans:wght@400;700&display=swap');
 @import '~@swimlane/ngx-datatable/index.css';

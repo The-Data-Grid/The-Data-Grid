@@ -9,7 +9,7 @@
                         <!--
                             <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px; float: left;">
                         -->
-                        <img src="/assets/logo.png" alt="tdg logo" class="no-drag" style="padding: 4px; height: 27px; float: left; margin-top: 3px;">
+                        <img src="/assets/logo.png" alt="tdg logo" class="no-drag" style="padding: 4px; width: 168px; float: left; margin-top: 3px;">
                     </div>
                 </div>
                 <div *ngIf="authService.isLoggedIn" routerLink=""  routerLinkActive="activeButton" mat-tab-link id="logo-button"[routerLinkActiveOptions]="{exact: true}" #rla1="routerLinkActive" [active]="rla1.isActive">
@@ -17,7 +17,7 @@
                         <!--
                             <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px; float: left;">
                         -->
-                        <img src="/assets/logo.png" alt="tdg logo" style="padding: 4px; height: 27px; float: left; margin-top: 3px">
+                        <img src="/assets/logo.png" alt="tdg logo" style="padding: 4px; width: 168px; float: left; margin-top: 3px">
                     </div>
                     <div  style="float: right; margin-left: 20px; font-size:small; border-radius: 5px; padding-right: 8px; padding-left: 8px; padding-top: 9px; padding-bottom:5px; margin-bottom: 6px; margin-top:6px; border: 1px solid rgb(86 156 215); color: rgb(86 156 215)">
                         UCLA Audits
@@ -213,34 +213,36 @@
         <footer id="footer">
             <nav>
                 <div fxLayout="row" fxLayoutAlign="space-around start" class="bottom-bar top-box">
-                    <div style="margin-top: 50px;  width: 50%; margin-right: auto; margin-left: 22px; background-color: #9EACB8">
+                    <div class="flex flex-row" style="margin-top: 50px;  width: 50%; margin-right: auto; margin-left: 22px; background-color: #9EACB8">
     
                             <a target="_blank" href="https://www.facebook.com/thedatagrid">
-                                <img src="assets/_facebook.png" alt="Facebook" class="social-button">
+                                <img width="36px"src="assets/_facebook.png" alt="Facebook" class="social-button">
                             </a>
                             <a target="_blank" href="https://www.instagram.com/thedatagrid/">
-                                <img src="assets/instalogo.png" alt="Instagram" class="social-button">
+                                <img width="36px" src="assets/instalogo.png" alt="Instagram" class="social-button">
                             </a>
                             <a target="_blank" href="https://www.linkedin.com/company/the-data-grid/">
-                                <img src="assets/LinkedIn.png" alt="LinkedIn" style="margin-bottom: 3px; margin-left: 9px" class="social-button">
+                                <img width="36px" src="assets/LinkedIn.png" alt="LinkedIn" style="margin-bottom: 3px; margin-left: 9px" class="social-button">
                             </a>
                             <a target="_blank" href="https://github.com/The-Data-Grid/The-Data-Grid">
-                                <img height="36px" width="36px" src="assets/github-logo.png" alt="GitHub" style="margin-bottom: 6px; margin-left: 7px;">
+                                <img width="36px" src="assets/github-logo.png" alt="GitHub" style="margin-top: 6px; margin-left: 7px;">
                             </a>
-                            <img src="./assets/textLogoWhite.png" alt="tdg logo" style="height: 35px;  padding:5px; margin-left: 15px;">
+                            <img src="./assets/textLogoWhite.png" alt="tdg logo" style="height: 55px;  padding:5px; margin-left: 20px;">
 
                     </div>
-                    <div class="bottom-card" *ngIf="currentWindowWidth > 500">
-                        <p class="bot-text" style="font-weight: 500;">Contact us</p>
-                        <button mat-button matTooltip="Copy Email" (click)="copyEmail()" style="text-align: left;">
-                            <div style="margin-top: -8px;">
-                                <a class="bot-text"
-                                    style="vertical-align: left; margin-left: -14px;">info@thedatagrid.org </a>
-                                <a style="margin-left: 20%">
-                                    <img src="assets/copy_icon.png" alt="Copy"
-                                        style="height: 18px; vertical-align: middle;">
-                                </a>
+                    <div class="bottom-card flex flex-row" style="margin-top: 50px;" *ngIf="currentWindowWidth > 500">
+                        <p class="bot-text mr-4" style="font-weight: 500;">Contact us</p>
+                        <button mat-button matTooltip="Copy Email" (click)="copyEmail()" style="text-align: left; display: flex;flex-direction: row;">
+                            <div style="margin-top: -8px;" class="inline">
+                                <span class="bot-text"
+                                    style="margin-left: -14px;">
+                                    info@thedatagrid.org 
+                                </span>
+                                
                             </div>
+                            <mat-icon>copy</mat-icon>
+                            <img src="assets/copy_icon.png" class="pl-3" alt="Copy"
+                                style="height: 18px;">
                         </button>
                     </div>
                    

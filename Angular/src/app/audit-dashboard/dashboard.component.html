@@ -17,17 +17,68 @@
           </mat-form-field>
     </div>
     <!-- Spreadsheet -->
-    <div class="flex flex-col w-2/3 mt-10">
+    <div class="flex flex-col w-2/3 mt-10"> 
         <p class="border-b-2 border-gray-300 text-lg text-gray-500">Spreadsheet Upload <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/upload"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
         <mat-tab-group dynamicHeight class="min-h-56">
-            <mat-tab class="" label="Upload Data">
+            <mat-tab class="" label="Upload Spreadsheet">
                 <div class="flex flex-col">
-                    <div class="w-full bg-blue-100 px-4 py-2 text-sm m-6">
-                        Upload a completed spreadsheet. Must be a filled in TDG spreadsheet template, not an arbitrary .xlsx file.
+                    <div *ngIf="selectedSpreadsheet == null">
+                      <div class="w-full bg-blue-100 px-4 py-2 text-sm m-6">
+                          Upload a completed spreadsheet. Must be a filled in TDG spreadsheet template, which is an .xlsx file.
+                      </div>
+  
+                      <div class="flex flex-row items-center">
+                        <input #spreadsheetInput hidden="true" type="file" onclick="this.value=null" (change)="spreadsheetUploadChange($event)" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+                        <button (click)="spreadsheetInput.click()" style="background-color: #569CD7;" class="ml-4 text-white text-semibold p-4"  mat-button >Upload Spreadsheet</button>
+                      </div>
                     </div>
+                    <div *ngIf="selectedSpreadsheet != null" class="flex flex-row p-4 space-x-6 ">
+                      <!-- File Information -->
+                      <mat-expansion-panel  class="w-1/3 flex-none" style="height: max-content;" [(expanded)]="isSpreadsheetExpanded[0]">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title >
+                            <mat-icon style="color:#569CD7;"> attach_file</mat-icon>
+                            {{ '&nbsp;&nbsp;' + selectedSpreadsheet.name }}
+                          </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Last Modified:&nbsp;</span>{{ formatEpoch(selectedSpreadsheet.lastModified) }}
+                        </p>
+                        <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Size:&nbsp;</span>{{ formatBytes(selectedSpreadsheet.size) }}
+                        </p>
+                      </mat-expansion-panel>
+                      <!-- User Information -->
+                      <mat-expansion-panel class="w-1/3" style="height: max-content;" [(expanded)]="isSpreadsheetExpanded[1]">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>
+                            <mat-icon style="color:#569CD7;">people</mat-icon>
+                            {{ '&nbsp;&nbsp;' + sessionObject.firstName + ' ' + sessionObject.lastName }}
+                          </mat-panel-title>
 
-                    <div class="flex flex-row items-center">
-                        <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="runUpload()">Upload Spreadsheet Data</button>
+                        </mat-expansion-panel-header>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Organization:&nbsp;</span>{{ managingOrganizationName }}
+                        </p>
+                      </mat-expansion-panel>
+                      <!-- SOP -->
+                      <mat-expansion-panel class="w-1/3" style="height: max-content;" [(expanded)]="isSpreadsheetExpanded[2]">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>
+                            <mat-icon style="color:#569CD7;">insert_comment</mat-icon>
+                            &nbsp;&nbsp;Add Document
+                          </mat-panel-title>
+
+                        </mat-expansion-panel-header>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Organization:&nbsp;</span>{{ managingOrganizationName }}
+                        </p>
+                      </mat-expansion-panel>
+                    </div>
+                    <div *ngIf="selectedSpreadsheet != null"> 
+                      <button *ngIf="!(SOPName.length == 0 || SOPNameForm.hasError('required') || selectedFile == null)" style="background-color: #5fa784;" class=" text-white text-semibold p-4"  mat-button (click)="uploadSOPToBucket()">Submit</button>
+                      <button style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="initiateNewSOP(false)">Cancel</button>
                     </div>
                 </div>
             </mat-tab>
