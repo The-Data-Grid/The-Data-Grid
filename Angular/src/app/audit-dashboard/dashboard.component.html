@@ -18,7 +18,7 @@
     </div>
     <!-- Spreadsheet -->
     <div class="flex flex-col w-2/3 mt-10"> 
-        <p class="border-b-2 border-gray-300 text-lg text-gray-500">Spreadsheet Upload <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/upload"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
+        <p class="border-b-2 border-gray-300 text-lg text-gray-500">Spreadsheet Upload <a style="display: inline-block; padding-left: 3px" target="_blank" href="/guide/upload"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
         <mat-tab-group dynamicHeight class="min-h-56">
             <mat-tab class="" label="Upload Spreadsheet">
                 <div class="flex flex-col">
@@ -61,24 +61,44 @@
                         <p>
                           <span style="color:#569CD7; font-weight: bold;">Organization:&nbsp;</span>{{ managingOrganizationName }}
                         </p>
+                        <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Role:&nbsp;</span>{{ role[0].toUpperCase() + role.slice(1) }}
+                        </p>
                       </mat-expansion-panel>
                       <!-- SOP -->
                       <mat-expansion-panel class="w-1/3" style="height: max-content;" [(expanded)]="isSpreadsheetExpanded[2]">
                         <mat-expansion-panel-header>
                           <mat-panel-title>
                             <mat-icon style="color:#569CD7;">insert_comment</mat-icon>
-                            &nbsp;&nbsp;Add Document
+                            &nbsp;&nbsp;Supplementary Documents
                           </mat-panel-title>
 
                         </mat-expansion-panel-header>
-                        <p>
-                          <span style="color:#569CD7; font-weight: bold;">Organization:&nbsp;</span>{{ managingOrganizationName }}
-                        </p>
+                        <div >
+                          <p *ngIf="supplemental.length == 0">
+                            Associate one or more {{ managingOrganizationName }} documents with this upload. Useful for standard operating procedures or metadata about the data collection process. 
+                          </p>
+                          <div *ngFor="let sop of supplemental">
+                            <p>{{ sop.name }}</p>
+                            <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                          </div>
+                          <p *ngIf="supplemental.length == 0" style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                          <div *ngIf="!selectingDocument">
+                            <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="selectingDocument = true">Add Document</button>
+                            <button *ngIf="supplemental.length > 0" style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button  mat-button (click)="supplemental = [];">Clear</button>
+                          </div>
+                        </div>
+                        <div *ngIf="selectingDocument" class="m-4 flex flex-col space-y-5 justify-center items-center bg-blue-100 rounded p-3">
+                          <p>Click the <em>Add Document</em> button on files in the <em>Documents</em> section below to associate them with this upload</p>
+                          <button style="background-color: #569CD7;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="selectingDocument = false">Done</button>
+                        </div>
+
                       </mat-expansion-panel>
                     </div>
                     <div *ngIf="selectedSpreadsheet != null"> 
-                      <button *ngIf="!(SOPName.length == 0 || SOPNameForm.hasError('required') || selectedFile == null)" style="background-color: #5fa784;" class=" text-white text-semibold p-4"  mat-button (click)="uploadSOPToBucket()">Submit</button>
-                      <button style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="initiateNewSOP(false)">Cancel</button>
+                      <button style="background-color: #5fa784;" class=" text-white text-semibold p-4"  mat-button (click)="uploadSpreadsheet()">Submit</button>
+                      <button style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="selectedSpreadsheet = null;">Cancel</button>
                     </div>
                 </div>
             </mat-tab>
@@ -112,7 +132,7 @@
     <div class="flex flex-col w-2/3 mt-10">
         <p class="border-b-2 border-gray-300 text-lg text-gray-500">Audits <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/audits"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
         <mat-accordion *ngIf="auditArray.length > 0">
-            <mat-expansion-panel *ngFor="let audit of fittedAuditArray" hideToggle>
+            <mat-expansion-panel *ngFor="let audit of fittedAuditArray">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   {{ audit.name }}
@@ -180,6 +200,7 @@
             <mat-expansion-panel *ngFor="let sop of fittedSOPArray" hideToggle>
               <mat-expansion-panel-header>
                 <mat-panel-title>
+                  <button *ngIf="selectingDocument" (click)="addSupplement(sop); $event.stopPropagation()" style="background-color: #569CD7; height: 30px; padding-right: 5px; padding-left: 5px; margin-right: 10px" class="text-white text-semibold"  mat-button >Add Document</button>
                   {{ sop.name }}
                 </mat-panel-title>
                 <mat-panel-description>

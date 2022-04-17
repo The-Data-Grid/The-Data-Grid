@@ -28,6 +28,9 @@ export class AuditDashboard implements OnInit {
   managingOrganizationChange() {
     this.getAudits();
     this.getSOPs();
+    this.managingOrganizationName = this.sessionObject.organizationFrontendName[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+    this.role = this.sessionObject.role[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+    this.supplemental = [];
   }
   
   sessionObject = this.authService.sessionObject;
@@ -37,6 +40,8 @@ export class AuditDashboard implements OnInit {
   managingOrganization = this.canViewPage ? this.sessionObject.organizationID[0] : null;
 
   managingOrganizationName = this.sessionObject.organizationFrontendName[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+
+  role = this.sessionObject.role[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
 
   setupObject;
   setupFilterObject;
@@ -183,10 +188,6 @@ export class AuditDashboard implements OnInit {
     }
   }
 
-  uploadSpreadsheetToBucket() {
-
-  }
-
   isSpreadsheetExpanded = [false, false, false];
 
   uploadSOPToBucket() {
@@ -238,7 +239,7 @@ export class AuditDashboard implements OnInit {
   }
 
   async openInitially() {
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 200));
     this.isSpreadsheetExpanded = [true, true, true];
   }
 
@@ -248,14 +249,21 @@ export class AuditDashboard implements OnInit {
     this.openInitially();
   }
 
+  supplemental = [];
+  selectingDocument = false
+
+  addSupplement(sop) {
+    this.supplemental.push(sop)
+    console.log(this.supplemental)
+  }
+
+  uploadSpreadsheet() {
+
+  }
 
   formatBytes(a,b=2,k=1024) {let d=Math.floor(Math.log(a)/Math.log(k));return 0==a?"0 Bytes":parseFloat((a/Math.pow(k,d)).toFixed(Math.max(0,b)))+" "+["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}
 
   formatEpoch(t) {return (new Date(t)).toLocaleString()}
-
-  getSignedUrl(fileObject) {
-    
-  }
 
   getSOPs() {
     this.apiService.getSOPTable(this.managingOrganization).subscribe((res) => {

@@ -76,7 +76,8 @@ async function sopManagement(req, res) {
             SELECT
                 data_name as "name",
                 data_body as "link",
-                data_time_uploaded as "createdAt"
+                data_time_uploaded as "createdAt",
+                item_id as "id"
                 FROM item_sop
                 WHERE item_organization_id = $(organizationID)
         `, {
