@@ -14,8 +14,8 @@ module.exports = session({
     saveUninitialized: false,
     name: 'sessionID',
     cookie: {
-        // 1 week
-        maxAge: 604_800_000, 
+        // 1 month
+        maxAge: 2_628_000_000, 
         // make sure this is secure in prod
         secure: isDeployment ? true : false,
     }

@@ -163,7 +163,8 @@ CREATE TABLE item_user (
     -- Note: TDG must be the first organization added in the database for now! (must have PK = 1)
     -- CHECK((privilege_id = 3 AND item_organization_id = 1) OR (privilege_id != 3))
     api_key TEXT,
-    UNIQUE(data_email)
+    UNIQUE(data_email),
+    UNIQUE(api_key)
 );
 
 /*
