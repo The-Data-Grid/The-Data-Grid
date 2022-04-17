@@ -103,8 +103,17 @@ export class AuditDashboard implements OnInit {
   blob;
 
   // Upload spreadsheet template
-  runUpload() {
+  uploadSpreadsheet() {
+    this.apiService.uploadSpreadsheet(this.selectedSpreadsheet, [], this.managingOrganization).subscribe((res) => {
+      console.log(res);
+    }, (err) => {
+      console.log(err);
+    })
+  }
 
+  cancelUploadSpreadsheet() {
+    this.selectedSpreadsheet = null;
+    this.isSpreadsheetExpanded = [false, false, false];
   }
 
   // Audits
@@ -239,7 +248,7 @@ export class AuditDashboard implements OnInit {
   }
 
   async openInitially() {
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 100));
     this.isSpreadsheetExpanded = [true, true, true];
   }
 
@@ -255,10 +264,6 @@ export class AuditDashboard implements OnInit {
   addSupplement(sop) {
     this.supplemental.push(sop)
     console.log(this.supplemental)
-  }
-
-  uploadSpreadsheet() {
-
   }
 
   formatBytes(a,b=2,k=1024) {let d=Math.floor(Math.log(a)/Math.log(k));return 0==a?"0 Bytes":parseFloat((a/Math.pow(k,d)).toFixed(Math.max(0,b)))+" "+["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}

@@ -355,6 +355,16 @@ export class ApiService {
 
   // POST REQUESTS
 
+  uploadSpreadsheet(file, sops, organizationID) {
+    const reqHeader = new HttpHeaders({ 'No-Auth': 'True', 'With-Credentials': 'True' })
+    const formData: FormData = new FormData();
+    formData.append('spreadsheet', file);
+    formData.append('sops', JSON.stringify(sops));
+
+    const url = API_URL + '/manage/spreadsheet?organizationID=' + organizationID;
+    return this.http.post<any>(url, formData, { headers: reqHeader, withCredentials: true});
+  }
+
   attemptLogin(loginObject, withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
     return this.http.post(`${API_URL}/user/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
