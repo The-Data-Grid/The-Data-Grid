@@ -1,5 +1,5 @@
-<div *ngIf="sessionObject.organizationID.length == 0" class="w-full h-full flex items-center flex-col">
-    <p class="text-center text-lg mt-48 text-gray-400">You must be part of an organization to use the Audit Dashboard</p>
+<div *ngIf="sessionObject.organizationID.length == 0" class="w-full h-full flex items-center flex-col" style="height: 90vh">
+    <p class="text-center text-lg mt-48 text-gray-400">You must be part of an organization to use the Organization Management page</p>
 </div>
 <div *ngIf="sessionObject.organizationID.length > 0" class="w-full h-full flex items-center flex-col">
     <!-- Pick Organization -->

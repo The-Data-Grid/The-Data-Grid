@@ -826,7 +826,15 @@ const featureReturnableMapper = (returnable, currentPath, treeArray, statics) =>
             isAttribute = true;
             childrenIndex = 1;
         }
-        observationLocalReturnableLookup[returnable.f__table_name].push(returnable)
+
+        // Adding to the local column lookup for spreadsheet generation. Should add all returnableIDs
+        // within the search path *except* current attributes, because these reference the item and
+        // are static. When attempting to upload current attributes to an observation, it doesn't 
+        // throw, but instead always interprets them as observed since they have the same columnID
+        if(returnable['r__attribute_type'] !== 'current') {
+            observationLocalReturnableLookup[returnable.f__table_name].push(returnable)
+        }
+
         // sanity check
         if(!isAttribute) {
             if(currentPath.length !== 0) throw Error(`ReturnableID: ${returnable['r__returnable_id']} is an observation returnable but has a non zero length joinObject.tables`)

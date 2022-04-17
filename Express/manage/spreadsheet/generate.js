@@ -7,14 +7,17 @@ const {
     observationLocalReturnableLookup,
     itemTableNames,
     featureTableNames,
+    allItems,
+    observationItemTableNameLookup,
+    columnObjects,
+    itemColumnObject,
 } = require('../../setup.js');
 const { x } = require('joi');
 const { itemQuery, featureQuery } = require('../../query/query.js');
 const { getPresetValues } = require('../../query/direct.js');
 const { 
-    userName,
-    featureName 
-    } = require('../../statement.js').generate;
+    userName    
+} = require('../../statement.js').generate;
 
 //connect to db
 const { postgresClient } = require('../../db/pg.js'); 
@@ -74,7 +77,7 @@ function getXlsxFormattingType(referenceType, SQLType) {
  * @property {String} frontendName 
  * @property {String | null} information 
  * @property {Number} returnableID 
- * @property {Number} colId 
+ * @property {Number} columnId 
  * @property {Boolean} isNullable 
  * @property {String} xlsxFormattingType
  * @property {String[] | null} presetValues
@@ -118,21 +121,16 @@ async function setupSpreadsheet (req, res, next) {
         // get table name
         tableName = featureTableNames[req.query.featureID];
         localReturnables = observationLocalReturnableLookup[tableName];
+        
+        // remove SOP because it is added with the UI
+        localReturnables = localReturnables.filter(obj => obj.c__frontend_name !== 'Standard Operating Procedure');
 
         FIS = observationFISLookup[tableName];
         FISReturnables = FIS.map(returnable => returnable.r__returnable_id);
         backendName = tableName.match(/^(?:sub)?observation_(.*)/)[1];
     }
-    /**
-     *  * @property {String} frontendName 
-        * @property {String | null} information 
-        * @property {Number} returnableID 
-        * @property {Number} colId 
-        * @property {Boolean} isNullable 
-        * @property {String} xlsxFormattingType
-        * @property {String[] | null} presetValues
-     */
-    const presetValueReferenceTypes = req.query.isItem === 'true' ? ['obs-list', 'attribute', 'obs-factor'] : ['item-list', 'attribute', 'item-factor'];
+
+    const presetValueReferenceTypes = req.query.isItem === 'true' ? ['item-list', 'attribute', 'item-factor'] : ['obs-list', 'attribute', 'obs-factor'];
     // format spreadsheetColumnObjects
     for(let returnable of [...localReturnables, ...FIS]) {
         const spreadsheetColumnObject = {};
@@ -182,8 +180,19 @@ function itemOrObservationQuery(req, res, next) {
 function formatObjectsSpreadsheet(req, res, next) {
     res.locals.formattedResponse.returnableIDs.forEach((returnable, i) =>  {
         const objectIndex = res.locals.spreadsheetObjects.spreadsheetColumnObjectArray.map(r => r.returnableID).indexOf(returnable);
-        // inject presets
+        // inject item requirement presets
         res.locals.spreadsheetObjects.spreadsheetColumnObjectArray[objectIndex].presetValues = res.locals.formattedResponse.columnData[i];
+        
+        // Make a selectable dropdown for every column in the FIS, so the spreadsheet has selections to identify the item being
+        // audited. In the case of item upload, make the local ID columns in the FIS text fields, because these must be new
+        // values to create a new unique item
+        const featureID = res.locals.spreadsheetObjects.spreadsheetMetaObject.featureID;
+        const columnID = res.locals.spreadsheetObjects.spreadsheetColumnObjectArray[objectIndex].columnID;
+        const relevantColumnObjectInfo = columnObjects[columnID - 1].additionalInfo;
+        if(!(res.locals.spreadsheetObjects.spreadsheetMetaObject.isItem && 
+            (relevantColumnObjectInfo.referenceType == 'item-id' && itemColumnObject[itemTableNames[featureID - 1]].c__column_id.includes(columnID)))) {
+            res.locals.spreadsheetObjects.spreadsheetColumnObjectArray[objectIndex].xlsxFormattingType = 'dropdown';
+        } 
     });
 
     return next();
@@ -203,7 +212,7 @@ function formatObjectsSpreadsheet(req, res, next) {
  * @property {String} frontendName 
  * @property {String | null} information 
  * @property {Number} returnableID 
- * @property {Number} colId 
+ * @property {Number} columnId 
  * @property {Boolean} isNullable 
  * @property {String} xlsxFormattingType
  * @property {String[] | null} presetValues
@@ -241,9 +250,13 @@ async function generateSpreadsheet (req, res) {
     // metadataSheet = setupMetadata(metadataSheet);
 
     // get frontend name for feature
-    const feature = (await db.one(formatSQL(featureName), {
-        feature_id: spreadsheetMetaObject.featureID
-    })).table_name;
+    let feature;
+    if(spreadsheetMetaObject.isItem) {
+        feature = allItems.filter(item => item.i__item_id === spreadsheetMetaObject.featureID)[0].i__frontend_name;
+    } else {
+        let itemTableName = observationItemTableNameLookup[featureTableNames[spreadsheetMetaObject.featureID - 1]];
+        feature = allItems.filter(item => item.i__table_name === itemTableName)[0].i__frontend_name;
+    }
 
     // setup Feature Data Sheet
     workbook = setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetColumnObjectArray);
@@ -592,8 +605,6 @@ function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
             let colorStr = 'e69138';
 
             if (format === 'checkboxList') {
-                // temp because no data for preset values
-                colObj.presetValues = ['A', 'B', 'C'];
                 numCols = colObj.presetValues.length - 1;
                 colorStr = '38761d';
             }
@@ -739,7 +750,9 @@ function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
                 break;
             
             case 'dropdown':
-                let dropdownVals = colObj.presetValues.join(",");
+                // First need to remove all commas (",") because they can only be used as
+                // a separator, then join each value with a comma
+                let dropdownVals = colObj.presetValues.map(str => String(str).replaceAll(',', '')).join(",");
                 for (let i = 0; i <= n; i++) {
                     rowNum += 1;
                     dataSheet.mergeCells(startCol + rowNum + ':' + endCol + rowNum);
