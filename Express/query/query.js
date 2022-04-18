@@ -77,6 +77,7 @@ function dataQueryWrapper(queryType) {
             
             // Number of row query without limit, offset, or sorting
             let finalQueryForCounting = [selectClause, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, groupByClause].join(' ');
+            // SQLi safe because `finalQueryForCouting` is sanitized
             const nRowsFinalQuery = `WITH query_to_count AS (${finalQueryForCounting}) SELECT COUNT(*)::INTEGER AS "n" FROM query_to_count`;
             
             // DEBUG: Show SQL Query //
