@@ -258,6 +258,10 @@ async function generateSpreadsheet (req, res) {
         feature = allItems.filter(item => item.i__table_name === itemTableName)[0].i__frontend_name;
     }
 
+    // setup Field Information Sheet
+    let fieldInformationSheet = workbook.addWorksheet('Field Information');
+    fieldInformationSheet = setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArray);
+
     // setup Feature Data Sheet
     workbook = setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetColumnObjectArray);
 
@@ -308,6 +312,154 @@ function setupMetadata(metadataSheet) {
     
     return metadataSheet;
 }
+
+function setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArray) {
+
+    // initialize column widths 
+
+    let rowNum = 1;
+    let titleStartCol = 'A';
+    let titleEndCol = 'B';
+    let infoStartCol = 'C';
+    let infoEndCol = 'L';
+
+    // setup column information title
+
+    fieldInformationSheet.mergeCells(titleStartCol + rowNum + ':' + titleEndCol + rowNum);
+    let infoTitleBox = fieldInformationSheet.getCell(titleStartCol + rowNum);
+
+    infoTitleBox.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: '38761d'}
+    };
+
+    infoTitleBox.value = {
+        'richText': [
+            {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'argb': 'ffffff'}, 'family': 2, 'scheme': 'minor'}, 
+            'text': 'Column Information'},
+        ]
+    };
+
+    infoTitleBox.protection = {
+        locked: true,
+        lockText: true
+    };
+
+    infoTitleBox.border = {
+        bottom: {style: 'thick', color: {argb: '38761d'}}
+    };
+
+    // setup empty space after column information
+    
+    fieldInformationSheet.mergeCells(infoStartCol + rowNum + ':' + infoEndCol + rowNum);
+    let whiteBar = fieldInformationSheet.getCell('W' + rowNum);
+    
+    whiteBar.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'ffffff'}
+    };
+
+    whiteBar.protection = {
+        locked: true,
+        lockText: true
+    };
+
+    whiteBar.border = {
+        bottom: {style: 'thick', color: {argb: '38761d'}}
+    };
+    
+    // setup column information 
+
+    for (let colObj in spreadsheetColumnObjectArray) {
+        
+        // get obj
+        // const colObj = spreadsheetColumnObjectArray[i];
+
+        // increment row
+        rowNum+=1;
+        
+        // place name of column
+
+        fieldInformationSheet.mergeCells(titleStartCol + rowNum + ':' + titleEndCol + rowNum);
+        let colName = fieldInformationSheet.getCell(titleStartCol + rowNum);
+
+        colName.style.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {argb: 'b6d7a8'}
+        };
+
+        colName.value = {
+            'richText': [
+                {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
+                'text': colObj.frontendName},
+            ]
+        };
+
+        colName.alignment = {
+            wrapText: false
+        };
+
+        // input information of column
+
+        fieldInformationSheet.mergeCells(infoStartCol + rowNum + ':' + infoEndCol + rowNum);
+        let colInfo = fieldInformationSheet.getCell(infoStartCol + rowNum);
+
+        colInfo.style.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {argb: 'd9ead3'}
+        };
+
+        if (colObj.information !== null){
+            colInfo.value = {
+                'richText': [
+                    {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
+                    'text': colObj.information},
+                ]
+            };
+        }
+
+        colName.border = {
+            bottom: {style: 'hair', color: {argb: '000000'}}
+        };
+
+        colInfo.border = {
+            bottom: {style: 'hair', color: {argb: '000000'}}
+        };
+    }
+
+    return fieldInformationSheet;
+}
+
+/* Sets up Feature Data Sheet */
+
+function setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
+
+    let title;
+    if (spreadsheetMetaObject.isItem) {
+        title = feature + ' Item Audit';
+    } else {
+        title = feature + ' Observation Audit'
+    }
+        
+    // create sheet
+    let dataSheet = workbook.addWorksheet(feature + ' Data');
+
+    // meta properties of sheet
+    dataSheet.state = 'visible';
+
+    dataSheet = setupTitle(dataSheet, title);
+    dataSheet = setupInfoBox(dataSheet, workbook.created);
+    dataSheet = setupGrayBorder(dataSheet);
+    dataSheet = setupColumns(dataSheet, spreadsheetColumnObjectArray);
+
+    return workbook;
+}
+
+/* Helpers for Feature Data Sheet */
 
 function setupTitle(dataSheet, title) {
 
@@ -826,175 +978,6 @@ function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
     */
 
     return dataSheet;
-}
-
-function setupColumnInformation(dataSheet, spreadsheetColumnObjectArray) {
-
-    let rowNum = 1;
-    let titleRange = 2;
-    let infoRange = 6;
-
-    let titleStartCol = 'U';
-    let titleEndCol = spannedColumns(titleStartCol, titleRange)[1];
-    let infoStartCol = incLastChar(titleEndCol, 1);
-    let infoEndCol = spannedColumns(infoStartCol, infoRange)[1];
-
-    // setup column information section
-
-    dataSheet.mergeCells(titleStartCol + rowNum + ':' + titleEndCol + rowNum);
-    let infoTitleBox = dataSheet.getCell(titleStartCol + rowNum);
-
-    infoTitleBox.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: '38761d'}
-    };
-
-    infoTitleBox.value = {
-        'richText': [
-            {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'argb': 'ffffff'}, 'family': 2, 'scheme': 'minor'}, 
-            'text': 'Column Information'},
-        ]
-    };
-
-    infoTitleBox.protection = {
-        locked: true,
-        lockText: true
-    };
-
-    infoTitleBox.border = {
-        bottom: {style: 'thick', color: {argb: '38761d'}}
-    };
-
-    // setup empty space after column information
-    /*
-    dataSheet.mergeCells('W' + rowNum + ':' + 'AF' + rowNum);
-    let whiteBar = dataSheet.getCell('W' + rowNum);
-    
-    whiteBar.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'ffffff'}
-    };
-
-    whiteBar.protection = {
-        locked: true,
-        lockText: true
-    };
-
-    whiteBar.border = {
-        bottom: {style: 'thick', color: {argb: '38761d'}}
-    };
-    */
-    
-    // setup column information 
-
-    for (let i = 0; i < spreadsheetColumnObjectArray.length; i++) {
-        
-        // get obj
-        const colObj = spreadsheetColumnObjectArray[i];
-
-        // increment row
-        rowNum+=1;
-
-        // console.log('Title columns: ' + titleStartCol + ':' + titleEndCol);
-        // console.log('Info columns: ' + infoStartCol + ':' + infoEndCol);
-        // console.log('Row Number: ' + rowNum);
-
-        if (rowNum > 6){
-            rowNum = 2;
-
-            let newTitleCols = spannedColumns(incLastChar(infoEndCol, 1), titleRange);
-            titleStartCol = newTitleCols[0];
-            titleEndCol = newTitleCols[1];
-            // console.log(newTitleCols);
-
-            let newInfoCols = spannedColumns(incLastChar(titleEndCol, 1), infoRange);
-            infoStartCol = newInfoCols[0];
-            infoEndCol = newInfoCols[1];
-            // console.log(newInfoCols);
-        }
-        
-        // setup name of column
-
-        dataSheet.mergeCells(titleStartCol + rowNum + ':' + titleEndCol + rowNum);
-        let colName = dataSheet.getCell(titleStartCol + rowNum);
-
-        colName.style.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: {argb: 'b6d7a8'}
-        };
-
-        colName.value = {
-            'richText': [
-                {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
-                'text': colObj.frontendName},
-            ]
-        };
-
-        colName.alignment = {
-            wrapText: false
-        };
-
-        // setup information of column
-
-        dataSheet.mergeCells(infoStartCol + rowNum + ':' + infoEndCol + rowNum);
-        let colInfo = dataSheet.getCell(infoStartCol + rowNum);
-
-        colInfo.style.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: {argb: 'd9ead3'}
-        };
-
-        if (colObj.information !== null){
-            colInfo.value = {
-                'richText': [
-                    {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
-                    'text': colObj.information},
-                ]
-            };
-        }
-
-        colName.border = {
-            bottom: {style: 'hair', color: {argb: '000000'}}
-        };
-
-        colInfo.border = {
-            bottom: {style: 'hair', color: {argb: '000000'}}
-        };
-    }
-
-    // merge cells right to column title section
-    const whiteColStart = incLastChar('U', titleRange+1);
-    dataSheet.mergeCells(whiteColStart + '1:' + infoEndCol + '1');
-
-    return dataSheet;
-}
-
-function setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetColumnObjectArray) {
-
-    let title;
-    if (spreadsheetMetaObject.isItem) {
-        title = feature + ' Item Audit';
-    } else {
-        title = feature + ' Observation Audit'
-    }
-        
-    // create sheet
-    let dataSheet = workbook.addWorksheet(feature + ' Data');
-
-    // meta properties of sheet
-    dataSheet.state = 'visible';
-
-    dataSheet = setupTitle(dataSheet, title);
-    dataSheet = setupInfoBox(dataSheet, workbook.created);
-    dataSheet = setupGrayBorder(dataSheet);
-    dataSheet = setupColumns(dataSheet, spreadsheetColumnObjectArray);
-    dataSheet = setupColumnInformation(dataSheet, spreadsheetColumnObjectArray);
-
-    return workbook;
 }
 
 module.exports = { 
