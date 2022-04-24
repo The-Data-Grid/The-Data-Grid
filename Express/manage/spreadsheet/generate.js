@@ -23,6 +23,7 @@ const {
 const { postgresClient } = require('../../db/pg.js'); 
 const indexOf = require('lodash/indexOf');
 const e = require('express');
+const fill = require('lodash/fill');
 const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;
 
@@ -258,15 +259,15 @@ async function generateSpreadsheet (req, res) {
         feature = allItems.filter(item => item.i__table_name === itemTableName)[0].i__frontend_name;
     }
 
+    // setup Feature Data Sheet
+    workbook = setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetColumnObjectArray);
+
     // setup Field Information Sheet
     let fieldInformationSheet = workbook.addWorksheet('Field Information');
     fieldInformationSheet = setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArray);
 
-    // setup Feature Data Sheet
-    workbook = setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetColumnObjectArray);
-
-     // set dateFormat of feature worksheet
-     const options = {
+    // set dateFormat of feature worksheet
+    const options = {
         dateFormat: ['MM-DD-YYYY']
     };
 
@@ -313,6 +314,14 @@ function setupMetadata(metadataSheet) {
     return metadataSheet;
 }
 
+function formatSpannedCells(startCol, endCol, rowNum){
+    if (endCol) {
+        return startCol + rowNum + ':' + endCol + rowNum;
+    } else {
+        return startCol + rowNum;
+    }
+}
+
 function setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArray) {
 
     // initialize column widths 
@@ -321,12 +330,15 @@ function setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArr
     let titleStartCol = 'A';
     let titleEndCol = 'B';
     let infoStartCol = 'C';
-    let infoEndCol = 'L';
+    let infoEndCol = 'Z';
+
+    // border style
+    const borderStyle = {style: 'thick', color: {argb: '38761d'}};
 
     // setup column information title
 
-    fieldInformationSheet.mergeCells(titleStartCol + rowNum + ':' + titleEndCol + rowNum);
-    let infoTitleBox = fieldInformationSheet.getCell(titleStartCol + rowNum);
+    fieldInformationSheet.mergeCells(formatSpannedCells(titleStartCol, titleEndCol, rowNum));
+    let infoTitleBox = fieldInformationSheet.getCell(formatSpannedCells(titleStartCol, null, rowNum));
 
     infoTitleBox.style.fill = {
         type: 'pattern',
@@ -347,13 +359,13 @@ function setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArr
     };
 
     infoTitleBox.border = {
-        bottom: {style: 'thick', color: {argb: '38761d'}}
+        bottom: borderStyle
     };
 
     // setup empty space after column information
     
-    fieldInformationSheet.mergeCells(infoStartCol + rowNum + ':' + infoEndCol + rowNum);
-    let whiteBar = fieldInformationSheet.getCell('W' + rowNum);
+    fieldInformationSheet.mergeCells(formatSpannedCells(infoStartCol, infoEndCol, rowNum));
+    let whiteBar = fieldInformationSheet.getCell(formatSpannedCells(infoEndCol, null, rowNum));
     
     whiteBar.style.fill = {
         type: 'pattern',
@@ -367,23 +379,24 @@ function setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArr
     };
 
     whiteBar.border = {
-        bottom: {style: 'thick', color: {argb: '38761d'}}
+        botom: borderStyle,
+        right: borderStyle
     };
     
     // setup column information 
-
-    for (let colObj in spreadsheetColumnObjectArray) {
+    
+    for (const i in spreadsheetColumnObjectArray) {
         
         // get obj
-        // const colObj = spreadsheetColumnObjectArray[i];
+        const colObj = spreadsheetColumnObjectArray[i];
 
         // increment row
         rowNum+=1;
         
         // place name of column
 
-        fieldInformationSheet.mergeCells(titleStartCol + rowNum + ':' + titleEndCol + rowNum);
-        let colName = fieldInformationSheet.getCell(titleStartCol + rowNum);
+        fieldInformationSheet.mergeCells(formatSpannedCells(titleStartCol, titleEndCol, rowNum));
+        let colName = fieldInformationSheet.getCell(formatSpannedCells(titleStartCol, null, rowNum));
 
         colName.style.fill = {
             type: 'pattern',
@@ -402,15 +415,23 @@ function setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArr
             wrapText: false
         };
 
+        colName.border = {
+            right: borderStyle
+        }
+
         // input information of column
 
-        fieldInformationSheet.mergeCells(infoStartCol + rowNum + ':' + infoEndCol + rowNum);
-        let colInfo = fieldInformationSheet.getCell(infoStartCol + rowNum);
+        fieldInformationSheet.mergeCells(formatSpannedCells(infoStartCol, infoEndCol, rowNum));
+        let colInfo = fieldInformationSheet.getCell(formatSpannedCells(infoEndCol, null, rowNum));
 
         colInfo.style.fill = {
             type: 'pattern',
             pattern: 'solid',
             fgColor: {argb: 'd9ead3'}
+        };
+
+        colInfo.border = {
+            right: borderStyle
         };
 
         if (colObj.information !== null){
@@ -429,6 +450,14 @@ function setupFieldInformation(fieldInformationSheet, spreadsheetColumnObjectArr
         colInfo.border = {
             bottom: {style: 'hair', color: {argb: '000000'}}
         };
+    }
+
+    rowNum += 1;
+    fieldInformationSheet.mergeCells(formatSpannedCells('A', 'P', rowNum));
+    let bottomBar = fieldInformationSheet.getCell(formatSpannedCells('A', null, rowNum));
+
+    bottomBar.border = {
+        top: borderStyle
     }
 
     return fieldInformationSheet;
@@ -451,8 +480,11 @@ function setupFeatureData(workbook, feature, spreadsheetMetaObject, spreadsheetC
     // meta properties of sheet
     dataSheet.state = 'visible';
 
+    // format date
+    const date = workbook.created.toLocaleDateString("en-US");
+
     dataSheet = setupTitle(dataSheet, title);
-    dataSheet = setupInfoBox(dataSheet, workbook.created);
+    dataSheet = setupInfoBox(dataSheet, date);
     dataSheet = setupGrayBorder(dataSheet);
     dataSheet = setupColumns(dataSheet, spreadsheetColumnObjectArray);
 
@@ -519,7 +551,7 @@ function setupInfoBox(dataSheet, dateCreated) {
             {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
             'text': 'The Data Grid ', 'hyperlinks': { 'hyperlink': 'https://thedatagrid.org/', 'tooltip': 'https://thedatagrid.org/' }},
             {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
-            'text': 'at ' + dateCreated + ' for ' },
+            'text': 'on ' + dateCreated + ' for ' },
             {'font': {'bold': true, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
              'text': 'Bruin Home Solutions.' }
         ]
@@ -534,6 +566,23 @@ function setupInfoBox(dataSheet, dateCreated) {
     infoBox.protection = {
         locked: true,
         hidden: true,
+    };
+
+    // spreadsheet key
+    dataSheet.mergeCells(formatSpannedCells('T', 'V', 4));
+    let key = dataSheet.getCell(formatSpannedCells('T', null, 4));
+
+    key.style.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'fd908a'}
+    };
+
+    key.value = {
+        'richText': [
+            {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
+             'text': '* = required column'},
+        ]
     };
 
     return dataSheet;
@@ -561,57 +610,10 @@ function setupGrayBorder(dataSheet){
         lockText: true
     };
 
-    /*
-
-    // IF WANT TO USE REQUIRED CELL -- RETOOL THIS
-
-    dataSheet.mergeCells('A4:G4');
-    let grayBox1 = dataSheet.getCell('G4');
-
-    // gray box 1 includes orange border for required section
-
-    grayBox1.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'cccccc'}
-    };
-
-    grayBox1.border = {
-        top: {style: 'thick', color: {argb: '4a86e8'}},
-        bottom: {style: 'thick', color: {argb: 'e69138'}},
-    };
-
-    grayBox1.protection = {
-        locked: true,
-        hidden: true
-    };
-
-    // gray box 2 is any space not covered by orange border for required sections
-
-    dataSheet.mergeCells('H4:P4');
-    let grayBox2 = dataSheet.getCell('P4');
-
-    grayBox2.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'cccccc'}
-    };
-
-    grayBox2.border = {
-        top: {style: 'thick', color: {argb: '4a86e8'}},
-    };
-
-    grayBox2.protection = {
-        locked: true,
-        hidden: true
-    };
-    */
-
     return dataSheet;
 }
 
-// there's a recursive solution that's better than my solution now, but that can be something we improve on as product scales
-
+// there's probably a recursive solution that's better than my solution now, but that can be something we improve on as product scales
 function spannedColumns(startColumnChar, numColumns) {
 
     // determines columns spanned from 'A' - 'ZZ'
@@ -658,22 +660,37 @@ function incLastChar(endCol, num) {
     return nextCol.join('');
 }
 
-function inputBox(dataSheet, columnName, columnChar, rowNum, size, colorStr) {
+function createColumns(dataSheet, columnName, columnChar, rowNum, colObj, numRows) {
+
+    const format = colObj.xlsxFormattingType;
+    const presetValues = colObj.presetValues;
+    let textColor = '0058FF'; 
+    let fillColor = '71A2FF';
+    let numCols = 2;
+
+    if (format === 'dropdown') {
+        fillColor = 'FFDD8E';
+        textColor = 'FFB300';
+    }
+
+    if (format === 'checkboxList') {
+        numCols = (colObj.presetValues.length - 1)*2;
+        textColor = '38761D';
+        fillColor = 'D9EAD3';
+    }
 
     // get spanned columns and determine row to place objects
-
-    const columns = spannedColumns(columnChar, size);
+    const columns = spannedColumns(columnChar, numCols);
     let startCol = columns[0];
     let endCol = columns[1];
 
     // place column title
-
-    dataSheet.mergeCells(startCol + rowNum + ':' + endCol + rowNum);
-    let colName = dataSheet.getCell(startCol + rowNum);
+    dataSheet.mergeCells(formatSpannedCells(startCol, endCol, rowNum));
+    let colName = dataSheet.getCell(formatSpannedCells(startCol, null, rowNum));
 
     colName.value = {
         'richText': [
-            {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': colorStr}, 'family': 2, 'scheme': 'minor'}, 
+            {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': textColor}, 'family': 2, 'scheme': 'minor'}, 
             'text': columnName},
         ]
     };
@@ -683,40 +700,159 @@ function inputBox(dataSheet, columnName, columnChar, rowNum, size, colorStr) {
         lockText: true
     };
 
-    rowNum += 1;
-    dataSheet.mergeCells(startCol + rowNum + ':' + endCol + rowNum);
-    let inputBox = dataSheet.getCell(startCol + rowNum);
-    rowNum -=1;
+    rowNum +=1;
+    if (format !== 'checkboxList') {
 
-    const borderStyle = {style: 'thin', color: {argb: colorStr}};
+        dataSheet.mergeCells(formatSpannedCells(startCol, endCol, rowNum));
+        let filled = dataSheet.getCell(formatSpannedCells(startCol, null, rowNum));
+        filled.style.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {argb: fillColor}
+        };
+        dataSheet = createInputBox(dataSheet, format, startCol, endCol, rowNum+1, numRows, fillColor, colObj.isNullable, presetValues);
+    } else {
 
-    inputBox.border = {
-        top: borderStyle,
-        left: borderStyle,
-        right: borderStyle,
-        bottom: borderStyle
-    };
+        let nextCol = startCol;
 
-    inputBox.protection = {
-        locked: false,
-        lockText: false
-    };
+        for (let i = 0; i < presetValues.length; i++) {
+            let endNextCol = incLastChar(nextCol, 1);
+            dataSheet.mergeCells(formatSpannedCells(nextCol, endNextCol, rowNum));
+            let column = dataSheet.getCell(formatSpannedCells(nextCol, null, rowNum));
+            column.style.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: {argb: 'd9ead3'}
+            };
 
+            column.value = {
+                'richText': [
+                    {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': textColor}, 'family': 2, 'scheme': 'minor'}, 
+                    'text': presetValues[i]},
+                ]
+            };
+
+            dataSheet = createInputBox(dataSheet, format, nextCol, endNextCol, rowNum+1, numRows, fillColor, colObj.isNullable, presetValues);
+
+            if (i < presetValues.length-1){
+                nextCol = incLastChar(nextCol, 2);
+            }
+        }
+        endCol = incLastChar(nextCol,1);
+    }
     return {sheet: dataSheet, spannedColumns: [startCol, endCol], nextColumn: incLastChar(endCol, 1)};
 }
 
+function createInputBox(dataSheet, format, startCol, endCol, rowNum, numRows, borderColor, isNullable, presetValues) {
+
+    for (let i = 0; i < numRows; i++){
+        dataSheet.mergeCells(formatSpannedCells(startCol, endCol, rowNum));
+        let inputBox = dataSheet.getCell(formatSpannedCells(startCol, null, rowNum));
+
+        const borderStyle = {style: 'thin', color: {argb: borderColor}};
+
+        inputBox.border = {
+            top: borderStyle,
+            left: borderStyle,
+            right: borderStyle,
+            bottom: borderStyle
+        };
+
+        switch (format) {
+
+            case 'date':
+
+                // template for date in cell
+                inputBox.value = {
+                    'richText': [
+                        {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
+                        'text': 'MM-DD-YYYY'},
+                    ]
+                };
+
+                inputBox.dataValidation = {
+                    type: 'text',
+                    allowBlank: isNullable,
+                    promptTile: 'Date',
+                    showErrorMessage: true,
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid Input.',
+                    error: 'The value must be a valid date.'
+                }
+                
+                break;
+
+            case 'decimal':
+                inputBox.dataValidation = {
+                    type: 'decimal',
+                    allowBlank: isNullable,
+                    promptTitle: 'Decimal',
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'The value must be a decimal.'
+                };
+                break;
+            
+            case 'wholeNumber':
+                inputBox.dataValidation = {
+                    type: 'whole',
+                    allowBlank: isNullable,
+                    promptTitle: 'Integer',
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'The value must be an integer / whole number.'
+                };
+                break;
+            
+            case 'checkbox':
+                inputBox.dataValidation = {
+                    type: 'list',
+                    allowBlank: isNullable,
+                    formulae: ['"True,False"'],
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'True or False must be selected.'
+                };
+                break;
+
+            case 'checkboxList':
+                inputBox.dataValidation = {
+                    type: 'list',
+                    allowBlank: isNullable,
+                    formulae: ['"True,False"'],
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'True or False must be selected.'
+                };
+                break;
+            
+            case 'dropdown':
+                // First need to remove all commas (",") because they can only be used as
+                // a separator, then join each value with a comma
+                let dropdownVals = presetValues.map(str => String(str).replaceAll(',', '')).join(",");
+                inputBox.dataValidation = {
+                    type: 'list',
+                    allowBlank: isNullable,
+                    formulae: [`"${dropdownVals}"`],
+                    errorStyle: 'error',
+                    errorTitle: 'Invalid input.',
+                    error: 'One of the values must be selected.'
+                };
+                
+                break;
+        }
+
+        inputBox.protection = {
+            locked: false,
+            lockText: false
+        };
+
+        rowNum += 1;
+    }
+    return dataSheet;
+}
+
 function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
-
-    // setup orange border
-    /*
-    dataSheet.mergeCells('A5:S5');
-    let orangeBorder = dataSheet.getCell('A5');
-
-    orangeBorder.border = {
-        top: {style: 'thick', color: {argb: 'e69138'}},
-        bottom: {style: 'thick', color: {argb: 'e69138'}}
-    };
-    */
 
     // track columns for columnObject placement
     let startCol = 'A';
@@ -724,259 +860,27 @@ function setupColumns(dataSheet, spreadsheetColumnObjectArray) {
     let nextCol = 'A';
 
     // track row for columnObject placement
-    let rowNum = 10;
-
-    // track largest number of rows used
-    let largestRow = 0;
+    let rowNum = 6;
 
     // sort column objects
-    
     for (let i = 0; i < spreadsheetColumnObjectArray.length; i++) {
 
         const colObj = spreadsheetColumnObjectArray[i];
-        console.log(colObj);
 
         let columnName = colObj.frontendName;
-        const format = colObj.xlsxFormattingType;
-        
+    
         if (!colObj.isNullable) {
             columnName += '*';
         }
 
-        if (format === 'text' || format === 'date' || format === 'decimal' || format === 'wholeNumber' || format === 'checkbox'){
-            const inputObj = inputBox(dataSheet, columnName, nextCol, rowNum, 2, '000000');
-            dataSheet = inputObj.sheet;
-            startCol = inputObj.spannedColumns[0];
-            endCol = inputObj.spannedColumns[1];
-            nextCol = inputObj.nextColumn;
-        }
+        const numRows = 500;
 
-        else if (format === 'dropdown' || format === 'checkboxList') {
-
-            let numCols = 2;
-            let colorStr = 'e69138';
-
-            if (format === 'checkboxList') {
-                numCols = colObj.presetValues.length - 1;
-                colorStr = '38761d';
-            }
-
-            let columns = spannedColumns(nextCol, numCols);
-            startCol = columns[0];
-            endCol = columns[1];
-            rowNum -= 1;
-            dataSheet.mergeCells(startCol + rowNum + ':' + endCol + rowNum);
-            let columnTitle = dataSheet.getCell(startCol + rowNum);
-            
-            columnTitle.value = {
-                'richText': [
-                    {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': colorStr}, 'family': 2, 'scheme': 'minor'}, 
-                    'text': colObj.frontendName},
-                ]
-            };
-
-            rowNum += 1;
-
-            if (format === 'dropdown') {
-
-                dataSheet.mergeCells(startCol + rowNum + ':' + endCol + rowNum);
-                let filled = dataSheet.getCell(startCol + rowNum);
-                filled.style.fill = {
-                    type: 'pattern',
-                    pattern: 'solid',
-                    fgColor: {argb: 'ffd268'} // ffb400 - most liked so far
-                };
-
-                nextCol = incLastChar(columns[1], 1);
-            }
-
-        }
-
-        const n = 10;
-        // add data validation
-        switch (format){
-            
-            case 'date':
-                rowNum+=1;
-                let dateInput = dataSheet.getCell(startCol + rowNum);
-
-                // template for date in cell
-                dateInput.value = {
-                    'richText': [
-                        {'font': {'bold': false, 'size': 12, 'name': 'Arial', 'color': {'argb': '000000'}, 'family': 2, 'scheme': 'minor'}, 
-                        'text': 'MM-DD-YYYY'},
-                    ]
-                };
-
-                dateInput.dataValidation = {
-                    type: 'text',
-                    allowBlank: colObj.isNullable,
-                    promptTile: 'Date',
-                    showErrorMessage: true,
-                    errorStyle: 'error',
-                    errorTitle: 'Invalid Input.',
-                    error: 'The value must be a valid date.'
-                }
-                rowNum -= 1;
-
-                break;
-
-            case 'decimal':
-                rowNum+=1;
-                let decimalInput = dataSheet.getCell(startCol + rowNum);
-                decimalInput.dataValidation = {
-                    type: 'decimal',
-                    allowBlank: colObj.isNullable,
-                    promptTitle: 'Decimal',
-                    errorStyle: 'error',
-                    errorTitle: 'Invalid input.',
-                    error: 'The value must be a decimal.'
-                };
-                rowNum-=1;
-                break;
-            
-            case 'wholeNumber':
-                rowNum+=1;
-                let wholeNumberInput = dataSheet.getCell(startCol + rowNum);
-                wholeNumberInput.dataValidation = {
-                    type: 'whole',
-                    allowBlank: colObj.isNullable,
-                    promptTitle: 'Integer',
-                    errorStyle: 'error',
-                    errorTitle: 'Invalid input.',
-                    error: 'The value must be an integer / whole number.'
-                };
-                rowNum-=1;
-                break;
-            
-            case 'checkbox':
-                rowNum+=1;
-                let checkboxInput = dataSheet.getCell(startCol + rowNum);
-                checkboxInput.dataValidation = {
-                    type: 'list',
-                    allowBlank: colObj.isNullable,
-                    formulae: ['"True,False"'],
-                    errorStyle: 'error',
-                    errorTitle: 'Invalid input.',
-                    error: 'True or False must be selected.'
-                };
-                rowNum-=1;
-                break;
-
-            case 'checkboxList':
-                for (let col of colObj.presetValues) {
-                    const inputObj = inputBox(dataSheet, col, nextCol, rowNum, 0, '38761d');
-                    dataSheet = inputObj.sheet;
-                    startCol = inputObj.spannedColumns[0];
-                    endCol = inputObj.spannedColumns[1];
-                    nextCol = inputObj.nextColumn;
-
-                    let checkboxInputCol = dataSheet.getCell(startCol + rowNum);
-                    checkboxInputCol.style.fill = {
-                        type: 'pattern',
-                        pattern: 'solid',
-                        fgColor: {argb: 'd9ead3'}
-                    };
-
-                    for (let i = 0; i <= n; i++){
-                        rowNum += 1;
-                        let checkboxListInput = dataSheet.getCell(startCol + rowNum);
-                        checkboxListInput.dataValidation = {
-                            type: 'list',
-                            allowBlank: colObj.isNullable,
-                            formulae: ['"True,False"'],
-                            errorStyle: 'error',
-                            errorTitle: 'Invalid input.',
-                            error: 'True or False must be selected.'
-                        };
-
-                        checkboxListInput.border = {
-                            top: {style: 'thin', color: {argb: '38761d'}},
-                            left: {style: 'thin', color: {argb: '38761d'}},
-                            right: {style: 'thin', color: {argb: '38761d'}},
-                            bottom: {style: 'thin', color: {argb: '38761d'}},
-                        };
-                    }
-                    rowNum = rowNum - n - 1;
-                }
-                break;
-            
-            case 'dropdown':
-                // First need to remove all commas (",") because they can only be used as
-                // a separator, then join each value with a comma
-                let dropdownVals = colObj.presetValues.map(str => String(str).replaceAll(',', '')).join(",");
-                for (let i = 0; i <= n; i++) {
-                    rowNum += 1;
-                    dataSheet.mergeCells(startCol + rowNum + ':' + endCol + rowNum);
-                    let dropdownInput = dataSheet.getCell(startCol + rowNum);
-
-                    dropdownInput.border = {
-                        top: {style: 'thin', color: {argb: 'e69138'}},
-                        left: {style: 'thin', color: {argb: 'e69138'}},
-                        right: {style: 'thin', color: {argb: 'e69138'}},
-                        bottom: {style: 'thin', color: {argb: 'e69138'}},
-                    };
-
-                    dropdownInput.dataValidation = {
-                        type: 'list',
-                        allowBlank: colObj.isNullable,
-                        formulae: [`"${dropdownVals}"`],
-                        errorStyle: 'error',
-                        errorTitle: 'Invalid input.',
-                        error: 'One of the values must be selected.'
-                    };
-                }
-                rowNum = rowNum - n - 1;
-                break;
-        }
+        let colHeader = createColumns(dataSheet, columnName, nextCol, rowNum, colObj, numRows);
+        dataSheet = colHeader.sheet;
+        startCol = colHeader.spannedColumns[0];
+        endCol = colHeader.spannedColumns[1];
+        nextCol = colHeader.nextColumn;
     }
-
-    /*
-    // IF WANT TO USE REQUIRED CELL -- RETOOL THIS
-
-    let requiredHeader = dataSheet.getCell('D5');
-
-    requiredHeader.style.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {argb: 'f4cccc'}
-    }
-
-    requiredHeader.value = {
-        'richText': [
-            {'font': {'bold': false, 'italic': true, 'size': 12, 'name': 'Arial', 'color': {'theme': 1}, 'family': 2, 'scheme': 'minor'}, 
-             'text': 'Required'},
-        ]
-    };
-
-    requiredHeader.border = {
-        top: {style: 'thick', color: {argb: 'e69138'}},
-        bottom: {style: 'thick', color: {argb: 'e69138'}}
-    };
-
-    requiredHeader.alignment = {
-        horizontal: 'center'
-    }
-
-    // required section borders
-
-    dataSheet.mergeCells('A5:C5');
-    let borderRequired1 = dataSheet.getCell('C5');
-    
-    borderRequired1.border = {
-        top: {style: 'thick', color: {argb: 'e69138'}},
-        bottom: {style: 'thick', color: {argb: 'e69138'}}
-    };
-
-    dataSheet.mergeCells('E5:G5');
-    let borderRequired2 = dataSheet.getCell('G5');
-    
-    borderRequired2.border = {
-        top: {style: 'thick', color: {argb: 'e69138'}},
-        bottom: {style: 'thick', color: {argb: 'e69138'}}
-    };
-    */
-
     return dataSheet;
 }
 
