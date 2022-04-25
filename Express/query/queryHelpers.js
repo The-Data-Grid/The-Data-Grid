@@ -150,6 +150,31 @@ function makeWhereClauseArray(whereLookup, filters) {
     let whereClauseArray = [];
     let initialWHERE = true;
 
+    /*
+    [0, {a}, {b}, [1, {c}, {d}]]
+    a AND b AND (c OR d)
+
+    formatFilter(filter: object) {
+
+    }
+
+    formatGroup(group: array) {
+        let SQLString = [];
+        let seperator = group[0] === 0 ? 'AND' : 'OR';
+        for(let element of group.slice(1)) {
+            // Another group
+            if(Array.isArray(element)) {
+                SQLString.push(` (${formatGroup(element)}) `);
+            } 
+            // A filter
+            else {
+                SQLString.push(formatFilter(element));
+            }
+        }
+        return 'WHERE ' + SQLString.join(` ${seperator} `);
+    }
+    */
+
     for(let orGroup of filters) {
 
         let out = {}

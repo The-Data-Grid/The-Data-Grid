@@ -91,12 +91,21 @@ async function setupSpreadsheet (req, res, next) {
     // 1. Check org permission to upload to this feature
     // ... wait until added feature based org permissions
 
+    // Parse number of spreadsheet rows
+    let nRows;
+    try {
+        nRows = parseInt(req.query.nRows);
+    } catch(err) {
+        return res.status(400).send('nRows must be an integer');
+    }
+
     // 2. spreadsheetMetaObject
     const spreadsheetMetaObject = {
         organizationID: res.locals.requestedOrganizationID,
         userID: res.locals.authorization.userID,
         featureID: parseInt(req.query.featureID)+1, // frontend giving featureID-1, so temp fix of adding 1.
         isItem: req.query.isItem === 'true',
+        nRows,
         action: 'upload',
     };
     const spreadsheetColumnObjectArray = [];

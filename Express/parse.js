@@ -130,6 +130,7 @@ function parseConstructor (init) {
 
     return (req, res, next) => {
         const url = req.originalUrl;
+        console.log(decodeURIComponent(url))
         let filter = separateQueries(decodeURIComponent(url));
         let {feature} = req.params; 
         let include;
@@ -155,7 +156,7 @@ function parseConstructor (init) {
 
         // console.log('feature = ', feature);
         // console.log('includes = ', include);
-        console.log('filters = ', filter);
+        console.log('filters == ', filter);
     
         // Construct object of parsed filters
         // console.log(filter);
@@ -178,6 +179,7 @@ function parseConstructor (init) {
                 isUniverisal = true;
                 continue;
             }
+
             
             // Validate filter keys are numeric
             if(isNaN(parseInt(keys[0]))) {
