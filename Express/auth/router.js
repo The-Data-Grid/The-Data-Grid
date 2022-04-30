@@ -16,7 +16,7 @@ const { apiDateToUTC, parseOrganizationID } = require('../parse.js');
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 const updating = require('../statement.js').updates;
-const { sendMail } = require('../email/mda.js');
+const { sendMail, sendEmailFake, sendReset } = require('../email/mda.js');
 const { authorizeAuditor } = require('./authorizer.js');
 
 // use correct mail depending on testing
@@ -219,7 +219,7 @@ router.post('/password/request-reset', async (req, res) => {
 
         console.log('Sending email to ' + req.body.email + ' with link: ' + emailLink);
         
-        await sendEmail({
+        await sendReset({
             address: req.body.email,
             title: 'The Data Grid - Password Reset',
             body: emailLink
@@ -227,7 +227,7 @@ router.post('/password/request-reset', async (req, res) => {
 
         console.log('Email sent.');
 
-        return res.status(201).end();
+        return res.status(201).send();
     } catch(error) {
         console.log('ERROR:', error);
         return res.status(400).send('Account with email does not exist or account with email isn\'t verified');
@@ -405,10 +405,5 @@ router.get('/role', parseOrganizationID, authorizeAuditor, async (req, res) => {
         return res.status(500).end();
     }
 })
-
-// Just for testing
-async function sendEmailFake(_) {
-    
-}
 
 module.exports = router;
