@@ -3,10 +3,11 @@ import { MatDialogRef } from "@angular/material/dialog";
 import { ApiService } from '../api.service';
 import { AuthService } from '../auth.service';
 import { HttpHeaders } from "@angular/common/http"
-import { first } from 'rxjs/operators';
+import { first, isEmpty } from 'rxjs/operators';
 import { stringify } from '@angular/compiler/src/util';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { isNullOrUndefined } from '@swimlane/ngx-datatable';
 
 interface Month {
   value: string;
@@ -51,6 +52,8 @@ export class DialogComponent implements OnInit {
   day;
   year;
 
+  showLoading = false;
+  
   handleInput() {
     console.log("help");
   }
@@ -103,17 +106,33 @@ export class DialogComponent implements OnInit {
     this.modal = "sign_in";
   }
 
+  // when REGISTER button is clicked
   checkSuccess() {
+    this.showLoading = true;
 
-    if(this.authService.isLocalStorageBlocked) {
+    if (this.authService.isLocalStorageBlocked) {
       this.toastr.error('Your browser is blocking access to local storage. Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
+      this.showLoading = false;
+      return;
+    }
+
+    // if any of the sign up fields are not filled out, display error
+    if (
+      isNullOrUndefined(this.firstname) ||
+      isNullOrUndefined(this.lastname) ||
+      isNullOrUndefined(this.email) ||
+      isNullOrUndefined(this.password)
+    ) {
+      console.log('Requires More Information')
+      this.toastr.error('Requires More Information', '');
+      this.showLoading = false;
       return;
     }
 
     if (this.day < 10) {
       this.day = "0" + stringify(this.day);
     }
-    //console.log(this.day);
+
     this.signUpObject = {
       firstName: this.firstname,
       lastName: this.lastname,
@@ -123,20 +142,26 @@ export class DialogComponent implements OnInit {
       isEmailPublic: true,
       isQuarterlyUpdates: true
     }
+
     this.apiService.attemptSignUp(this.signUpObject).subscribe((res: any) => {
       console.log("signing up...");
       console.log(res);
 
       if (res == '') {
         this.router.navigate(['./check-email']);
+        this.toastr.success('Sign up Successful', '');
         this.dialogRef.close();
       }
-
-    })
+      this.showLoading = false;
+    }, (err) => {
+      this.showLoading = false;
+      this.toastr.error('Invalid Information', '');
+    });
 
     //this.dialogRef.updateSize('300px','350px')
   }
 
+  // not implemented yet
   passwords_match() {
     var password = (<HTMLInputElement>document.getElementById("password_1")).value;
     var confirm_password = (<HTMLInputElement>document.getElementById("password_2")).value;

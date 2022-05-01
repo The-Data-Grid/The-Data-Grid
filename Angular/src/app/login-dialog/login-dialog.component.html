@@ -1,4 +1,3 @@
-
 <body>
   <div *ngIf="modal=='sign_in'" style="padding:15px;margin-top:10px;">
     <mat-dialog-actions>
@@ -50,7 +49,7 @@
         logoPositioning">
       <button class="closeButton" (click)="close()">✕</button>
     </mat-dialog-actions>
-    <h1 class="sign_up_label">Sign Up</h1>
+    <h1 class="sign_up_label" style="font-size: 40px">Sign Up</h1>
 
     <p>
       <mat-form-field appearance="outline" style="font-size: 14px; width:43%;
@@ -138,9 +137,10 @@
 </div>
 </div> -->
       <div style="margin-top: 110px; float: right;">
-        <button (click)="checkSuccess()" mat-button color="primary"
-          style="position: absolute; background-color: #5FA784; color:
-          white;margin-left: -115px">REGISTER</button>
+        <button (click)="checkSuccess()" [disabled]="showLoading" mat-button color="primary"
+          style="position: absolute; color: white; margin-left: -115px"
+          [ngStyle]="!showLoading ? {'background-color': '#5FA784'} : {'background-color': '#6b6b6b'}">
+          {{!showLoading ? "REGISTER" : "Loading..."}}</button>
       </div>
       <div style="margin-top: 110px; float: left;">
         <button (click)="sign_in_modal()" mat-button color="primary"
