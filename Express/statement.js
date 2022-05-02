@@ -196,7 +196,7 @@ const setup = {
         i.table_name as i__table_name, i.frontend_name as i__frontend_name \
         FROM metadata_feature AS f \
         LEFT JOIN metadata_feature as ff ON f.parent_id = ff.feature_id \
-        LEFT JOIN metadata_item as i ON f.observable_item_id = i.item_id'
+        LEFT JOIN metadata_item as i ON f.observable_item_id = i.item_id',
 
 };
 
@@ -223,7 +223,8 @@ const login = {
             ARRAY_REMOVE(ARRAY_AGG(o.data_organization_name_text), NULL) AS "organizationName",
             u.item_id as "userID",
             u.data_first_name as "firstName",
-            u.data_last_name as "lastName"
+            u.data_last_name as "lastName",
+            u.api_key is not null as "isApiKeySet"
             FROM item_user AS u
             LEFT JOIN tdg_role AS r ON u.item_id = r.item_user_id
             LEFT JOIN tdg_role_type AS rt ON r.role_type_id = rt.type_id
@@ -231,6 +232,25 @@ const login = {
             LEFT JOIN item_organization AS o ON r.item_organization_id = o.item_id
                 WHERE u.data_email = $(checkemail)
                 GROUP BY p.privilege_name, u.item_id
+    `,
+    apiKeyAuthorization:  `
+    SELECT 
+        p.privilege_name AS privilege,
+        ARRAY_REMOVE(ARRAY_AGG(rt.type_name), NULL) AS role,
+        ARRAY_REMOVE(ARRAY_AGG(r.item_organization_id), NULL) AS "organizationID",
+        ARRAY_REMOVE(ARRAY_AGG(o.data_organization_name_text), NULL) AS "organizationName",
+        u.item_id as "userID",
+        u.data_first_name as "firstName",
+        u.data_last_name as "lastName",
+        u.data_email as "email",
+        u.api_key is not null as "isApiKeySet"
+        FROM item_user AS u
+        LEFT JOIN tdg_role AS r ON u.item_id = r.item_user_id
+        LEFT JOIN tdg_role_type AS rt ON r.role_type_id = rt.type_id
+        LEFT JOIN tdg_privilege AS p ON u.privilege_id = p.privilege_id
+        LEFT JOIN item_organization AS o ON r.item_organization_id = o.item_id
+            WHERE u.api_key = $(apiKey)
+            GROUP BY p.privilege_name, u.item_id
     `,
     user: `
         SELECT
@@ -276,8 +296,11 @@ const updates  = {
     updatePassword: 'UPDATE item_user SET tdg_p_hash = $(password) WHERE data_email = $(email)'
 };
 
+// SQL for generate.js
 
-
+const generate = {
+    userName: 'SELECT u.data_first_name AS first_name, u.data_last_name AS last_name FROM item_user AS u WHERE u.item_id = $(user_id)'
+};
 
 module.exports = {
     query,
@@ -285,7 +308,8 @@ module.exports = {
     setup,
     login,
     addingUsers,
-    updates
+    updates,
+    generate
 };
 
 

@@ -130,6 +130,7 @@ function parseConstructor (init) {
 
     return (req, res, next) => {
         const url = req.originalUrl;
+        console.log(decodeURIComponent(url))
         let filter = separateQueries(decodeURIComponent(url));
         let {feature} = req.params; 
         let include;
@@ -155,7 +156,7 @@ function parseConstructor (init) {
 
         // console.log('feature = ', feature);
         // console.log('includes = ', include);
-        // console.log('filters = ', filter);
+        console.log('filters == ', filter);
     
         // Construct object of parsed filters
         // console.log(filter);
@@ -178,6 +179,7 @@ function parseConstructor (init) {
                 isUniverisal = true;
                 continue;
             }
+
             
             // Validate filter keys are numeric
             if(isNaN(parseInt(keys[0]))) {
@@ -192,6 +194,12 @@ function parseConstructor (init) {
             } 
             
             // setting up custom operator
+            /*
+                filters
+                
+                Group: ['and'|'or', Group|Filter]
+                Filter: { key: String, op: String, val: String }
+            */
             if (!isUniverisal) {
                 // first operation
                 if (filter[elem][0] === '')
@@ -212,7 +220,7 @@ function parseConstructor (init) {
             }
         }
 
-        // console.log('Filters: ', filters)
+        console.log('Filters: ', filters)
         // attaching parsed object
         res.locals.parsed.request = "audit";
         res.locals.parsed.features = feature;

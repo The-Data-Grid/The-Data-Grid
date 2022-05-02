@@ -124,3 +124,8 @@ button:focus { outline: none; }
    /* margin-left: -10%; */
    margin-top: -5px;
 }
+
+::ng-deep .mat-button-wrapper {
+   display: flex;
+   flex-direction: row;
+ }

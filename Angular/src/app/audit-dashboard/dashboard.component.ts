@@ -4,6 +4,8 @@ import { SetupObjectService } from '../setup-object.service';
 import {FormControl, Validators} from '@angular/forms';
 import { AuthService } from '../auth.service';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import { ToastrService } from 'ngx-toastr';
+import { Clipboard } from '@angular/cdk/clipboard'
 
 @Component({
   selector: 'audit-dashboard',
@@ -15,8 +17,15 @@ export class AuditDashboard implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private setupObjectService: SetupObjectService
+    private setupObjectService: SetupObjectService,
+    private toastr: ToastrService,
+    private clipboard: Clipboard
   ) { }
+
+  copyToClipboard(data: string) {
+    this.clipboard.copy(data);
+    this.toastr.success('Copied to clipboard')
+  }
 
   
   ngOnInit(): void {
@@ -28,6 +37,9 @@ export class AuditDashboard implements OnInit {
   managingOrganizationChange() {
     this.getAudits();
     this.getSOPs();
+    this.managingOrganizationName = this.sessionObject.organizationFrontendName[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+    this.role = this.sessionObject.role[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+    this.supplemental = [];
   }
   
   sessionObject = this.authService.sessionObject;
@@ -35,6 +47,10 @@ export class AuditDashboard implements OnInit {
   canViewPage = this.sessionObject.organizationID.length > 0;
   
   managingOrganization = this.canViewPage ? this.sessionObject.organizationID[0] : null;
+
+  managingOrganizationName = this.sessionObject.organizationFrontendName[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+
+  role = this.sessionObject.role[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
 
   setupObject;
   setupFilterObject;
@@ -77,10 +93,16 @@ export class AuditDashboard implements OnInit {
   }
 
   // Download spreadsheet template
+  nRowsForm = new FormControl('500', [Validators.required, Validators.maxLength(5), Validators.pattern(/^[0-9]*$/)]);
+
   runDownload() {
+    // if nRows is invalid then stop
+    if(this.nRowsForm.invalid) return;
+    const nRows = this.nRowsForm.value;
     const currentFeature = this.featuresOrItems[this.selectedFeature].frontendName;
     const currentUploadType = this.uploadType;
-    this.apiService.getSpreadsheet(this.selectedFeature, this.uploadType === 'Items', this.managingOrganization).subscribe((res) => {
+
+    this.apiService.getSpreadsheet(this.selectedFeature, this.uploadType === 'Items', nRows, this.managingOrganization).subscribe((res) => {
       this.blob = new Blob([res], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
 
       var downloadURL = window.URL.createObjectURL(res);
@@ -96,8 +118,17 @@ export class AuditDashboard implements OnInit {
   blob;
 
   // Upload spreadsheet template
-  runUpload() {
+  uploadSpreadsheet() {
+    this.apiService.uploadSpreadsheet(this.selectedSpreadsheet, [], this.managingOrganization).subscribe((res) => {
+      console.log(res);
+    }, (err) => {
+      console.log(err);
+    })
+  }
 
+  cancelUploadSpreadsheet() {
+    this.selectedSpreadsheet = null;
+    this.isSpreadsheetExpanded = [false, false, false];
   }
 
   // Audits
@@ -122,7 +153,7 @@ export class AuditDashboard implements OnInit {
   }
 
   initiateNewAudit(open) {
-    this.newAuditInitiated = open ? true : false;
+    this.newAuditInitiated = open;
   }
 
   uploadNewAudit() {
@@ -153,6 +184,7 @@ export class AuditDashboard implements OnInit {
   currentSOPPageIndex = 0;
   SOPSignedUrl;
   selectedFile = null;
+  selectedSpreadsheet = null;
   fittedSOPArray = this.SOPArray.slice((this.currentSOPPageSize * this.currentSOPPageIndex), (this.currentSOPPageSize * (this.currentSOPPageIndex + 1)));
   signedUrlObject = null;
   
@@ -179,6 +211,8 @@ export class AuditDashboard implements OnInit {
       this.SOPName = '';
     }
   }
+
+  isSpreadsheetExpanded = [false, false, false];
 
   uploadSOPToBucket() {
     this.newSOPInitiated = false;
@@ -228,9 +262,29 @@ export class AuditDashboard implements OnInit {
     console.log(this.selectedFile)
   }
 
-  getSignedUrl(fileObject) {
-    
+  async openInitially() {
+    await new Promise(r => setTimeout(r, 100));
+    this.isSpreadsheetExpanded = [true, true, true];
   }
+
+  spreadsheetUploadChange(fileInputEvent: any) {
+    this.selectedSpreadsheet = fileInputEvent.target.files[0];
+    console.log(this.selectedSpreadsheet);
+    this.openInitially();
+  }
+
+  supplemental = [];
+  selectingDocument = false
+
+  addSupplement(sop) {
+    this.supplemental.push(sop)
+    this.toastr.info('Document ' + sop.name + ' added')
+    console.log(this.supplemental)
+  }
+
+  formatBytes(a,b=2,k=1024) {let d=Math.floor(Math.log(a)/Math.log(k));return 0==a?"0 Bytes":parseFloat((a/Math.pow(k,d)).toFixed(Math.max(0,b)))+" "+["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}
+
+  formatEpoch(t) {return (new Date(t)).toLocaleString()}
 
   getSOPs() {
     this.apiService.getSOPTable(this.managingOrganization).subscribe((res) => {
@@ -241,5 +295,49 @@ export class AuditDashboard implements OnInit {
     }, (err) => {
       console.log(err)
     })
+  }
+
+  /* API KEY */
+  newKey = false;
+  newKeyValue = null;
+  deleteSuccess = null;
+  regenerating = false;
+  deleting = false;
+
+  initRegenerateAPIKey() {
+    this.regenerating = true;
+  }
+
+  initDeleteAPIKey() {
+    this.deleting = true
+  }
+
+  generateAPIKey() {
+    this.apiService.putApiKey().subscribe((res: any) => {
+      const newSessionObject = Object.assign({}, this.sessionObject);
+      newSessionObject.isApiKeySet = true;
+      this.authService.setSession(JSON.stringify(newSessionObject));
+      this.sessionObject = this.authService.sessionObject;
+      this.toastr.success('New API key successfully generated');
+      this.regenerating = false;
+      this.newKey = true;
+      this.newKeyValue = res.key;      
+    }, (err) => {
+      console.log(err);
+    })
+  }
+
+  deleteAPIKey() {
+    this.apiService.deleteApiKey().subscribe((res) => {
+      this.deleteSuccess = true;
+      const newSessionObject = Object.assign({}, this.sessionObject);
+      newSessionObject.isApiKeySet = false;
+      this.authService.setSession(JSON.stringify(newSessionObject));
+      this.sessionObject = this.authService.sessionObject;
+      this.deleting = false;
+      this.toastr.success('API key successfully deleted');
+    }), (err) => {
+      console.log(err);
+    }
   }
 }

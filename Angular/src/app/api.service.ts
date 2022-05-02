@@ -144,7 +144,7 @@ export class ApiService {
   }
 
   private formatFilterSelections(appliedFilterSelections): string {
-    return '';
+    return appliedFilterSelections.length > 0 ? 'queryObject=' + appliedFilterSelections : '';
   }
 
   public getAuditManagementTable(organizationID) {
@@ -219,6 +219,18 @@ export class ApiService {
     return this.http.post(`${API_URL}/audit/submission`, submissionObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
+  public putApiKey() {
+    const reqHeader = new HttpHeaders({ 'With-Credentials': 'True' });
+
+    return this.http.put(`${API_URL}/manage/key`, undefined, { headers: reqHeader, responseType: 'json', withCredentials: true })
+  }
+
+  public deleteApiKey() {
+    const reqHeader = new HttpHeaders({ 'With-Credentials': 'True' });
+
+    return this.http.delete(`${API_URL}/manage/key`, { headers: reqHeader, withCredentials: true });
+  }
+
   public getSOPTable(organizationID) {
     const url = API_URL + '/manage/sops?organizationID=' + organizationID;
     const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
@@ -286,8 +298,8 @@ export class ApiService {
       }));
   }
 
-  public getSpreadsheet(featureID, isItem, organizationID) {
-    const url = API_URL + `/manage/spreadsheet?organizationID=${organizationID}&isItem=${isItem}&featureID=${featureID}`;
+  public getSpreadsheet(featureID, isItem, nRows, organizationID) {
+    const url = API_URL + `/manage/spreadsheet?organizationID=${organizationID}&isItem=${isItem}&featureID=${featureID}&nRows=${nRows}`;
     const reqHeader = new HttpHeaders({
       'Content-Type': 'application/json',
       'No-Auth': 'True',
@@ -354,6 +366,16 @@ export class ApiService {
   }
 
   // POST REQUESTS
+
+  uploadSpreadsheet(file, sops, organizationID) {
+    const reqHeader = new HttpHeaders({ 'No-Auth': 'True', 'With-Credentials': 'True' })
+    const formData: FormData = new FormData();
+    formData.append('spreadsheet', file);
+    formData.append('sops', JSON.stringify(sops));
+
+    const url = API_URL + '/manage/spreadsheet?organizationID=' + organizationID;
+    return this.http.post<any>(url, formData, { headers: reqHeader, withCredentials: true});
+  }
 
   attemptLogin(loginObject, withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });

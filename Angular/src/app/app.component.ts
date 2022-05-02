@@ -152,6 +152,6 @@ export class AppComponent implements OnInit {
   }
 
   copyEmail() {
-    this.clipboard.copy("thedatagrid@gmail.com");
+    this.clipboard.copy("info@thedatagrid.org");
   }
 }

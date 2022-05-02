@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Development management at UCLA Bruin Home Solutions",
   "main": "app.js",
-  "engines": {
-    "node": "14.17.5"
-  },
   "scripts": {
     "dev": "node preprocess.js && nodemon app.js",
     "start": "node preprocess.js --deploy && node app.js --deploy",
@@ -52,6 +49,7 @@
     "lodash": "^4.17.20",
     "lru-cache": "^6.0.0",
     "memorystore": "^1.6.4",
+    "multer": "^1.4.4",
     "nanoid": "^3.2.0",
     "nodemon": "^2.0.4",
     "pg": "^8.3.3",

@@ -1,4 +1,4 @@
-<div *ngIf="sessionObject.organizationID.length == 0" class="w-full h-full flex items-center flex-col">
+<div *ngIf="sessionObject.organizationID.length == 0" class="w-full flex items-center flex-col" style="height: 90vh;">
     <p class="text-center text-lg mt-48 text-gray-400">You must be part of an organization to use the Audit Dashboard</p>
 </div>
 <div *ngIf="sessionObject.organizationID.length > 0" class="w-full h-full flex items-center flex-col">
@@ -17,27 +17,97 @@
           </mat-form-field>
     </div>
     <!-- Spreadsheet -->
-    <div class="flex flex-col w-2/3 mt-10">
-        <p class="border-b-2 border-gray-300 text-lg text-gray-500">Spreadsheet Upload <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/upload"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
+    <div class="flex flex-col w-2/3 mt-10"> 
+        <p class="border-b-2 border-gray-300 text-gray-500" style="font-size: 22px;">Upload Data<a style="display: inline-block; float: right; margin-left:auto;" target="_blank" href="/guide/upload"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
         <mat-tab-group dynamicHeight class="min-h-56">
-            <mat-tab class="" label="Upload Data">
+            <mat-tab class="" label="Upload Spreadsheet">
                 <div class="flex flex-col">
-                    <div class="w-full bg-blue-100 px-4 py-2 text-sm m-6">
-                        Upload a completed spreadsheet. Must be a filled in TDG spreadsheet template, not an arbitrary .xlsx file.
+                    <div *ngIf="selectedSpreadsheet == null">
+                      <div  class="blue-callout">
+                          Upload a completed spreadsheet. Must be a filled in TDG spreadsheet template, which is an .xlsx file.
+                      </div>
+  
+                      <div class="flex flex-row items-center">
+                        <input #spreadsheetInput hidden="true" type="file" onclick="this.value=null" (change)="spreadsheetUploadChange($event)" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+                        <button (click)="spreadsheetInput.click()" style="background-color: #569CD7;" class="ml-4 text-white text-semibold p-4"  mat-button >Upload Spreadsheet</button>
+                      </div>
                     </div>
+                    <div *ngIf="selectedSpreadsheet != null" class="flex flex-row  p-4 space-x-6 ">
+                      <!-- File Information -->
+                      <mat-expansion-panel  class="w-1/3 flex-none" style="height: max-content;" [(expanded)]="isSpreadsheetExpanded[0]">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title >
+                            <mat-icon style="color:#569CD7;"> cloud_upload</mat-icon>
+                            {{ '&nbsp;&nbsp;' + selectedSpreadsheet.name }}
+                          </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Last Modified:&nbsp;</span>{{ formatEpoch(selectedSpreadsheet.lastModified) }}
+                        </p>
+                        <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Size:&nbsp;</span>{{ formatBytes(selectedSpreadsheet.size) }}
+                        </p>
+                      </mat-expansion-panel>
+                      <!-- User Information -->
+                      <mat-expansion-panel class="w-1/3" style="height: max-content;" [(expanded)]="isSpreadsheetExpanded[1]">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>
+                            <mat-icon style="color:#569CD7;">people</mat-icon>
+                            {{ '&nbsp;&nbsp;' + sessionObject.firstName + ' ' + sessionObject.lastName }}
+                          </mat-panel-title>
 
-                    <div class="flex flex-row items-center">
-                        <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="runUpload()">Upload Spreadsheet Data</button>
+                        </mat-expansion-panel-header>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Organization:&nbsp;</span>{{ managingOrganizationName }}
+                        </p>
+                        <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                        <p>
+                          <span style="color:#569CD7; font-weight: bold;">Role:&nbsp;</span>{{ role[0].toUpperCase() + role.slice(1) }}
+                        </p>
+                      </mat-expansion-panel>
+                      <!-- SOP -->
+                      <mat-expansion-panel class="w-1/3" style="height: max-content;" [(expanded)]="isSpreadsheetExpanded[2]">
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>
+                            <mat-icon style="color:#569CD7;">insert_comment</mat-icon>
+                            &nbsp;&nbsp;Supplementary Documents
+                          </mat-panel-title>
+
+                        </mat-expansion-panel-header>
+                        <div >
+                          <p *ngIf="supplemental.length == 0">
+                            Associate one or more {{ managingOrganizationName }} documents with this upload. Useful for standard operating procedures or metadata about the data collection process. 
+                          </p>
+                          <div *ngFor="let sop of supplemental">
+                            <p>{{ sop.name }}</p>
+                            <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                          </div>
+                          <p *ngIf="supplemental.length == 0" style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                          <div *ngIf="!selectingDocument">
+                            <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="selectingDocument = true">Add Document</button>
+                            <button *ngIf="supplemental.length > 0" style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button  mat-button (click)="supplemental = [];">Clear</button>
+                          </div>
+                        </div>
+                        <div *ngIf="selectingDocument" style="box-shadow: 2px 2px 5px lightgray;" class="m-4 flex flex-col space-y-5 justify-center items-center blue-callout">
+                          <p>Click the <em>Add Document</em> button on files in the <em>Documents</em> section below to associate them with this upload</p>
+                          <button style="background-color: #569CD7;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="selectingDocument = false">Done</button>
+                        </div>
+
+                      </mat-expansion-panel>
+                    </div>
+                    <div *ngIf="selectedSpreadsheet != null"> 
+                      <button style="background-color: #5fa784;" class=" text-white text-semibold p-4"  mat-button (click)="uploadSpreadsheet()">Submit</button>
+                      <button style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="cancelUploadSpreadsheet()">Cancel</button>
                     </div>
                 </div>
             </mat-tab>
             <mat-tab class="" label="Download Spreadsheet Template">
                 <div class="flex flex-col">
-
-                    <div class="w-full bg-blue-100 px-4 py-2 text-sm m-6">
-                      Download a pre-formatted spreadsheet template for your database. Input your data into the spreadsheet and upload it on the 'Spreadsheet Upload' tab.
+                    <div class="blue-callout">
+                      Download a pre-formatted spreadsheet template for your database. Input your data into the spreadsheet and upload it on the 'Upload Data' tab.
                     </div>
-                    <div class="flex flex-row items-center">
+                    <div class="flex flex-row items-center pb-6">
                         <mat-form-field appearance="fill" class="mr-4" style="margin-bottom: -21px;">
                             <mat-label>Select Upload Type</mat-label>
                             <mat-select [(ngModel)]="uploadType" (ngModelChange)="onUploadTypeChange()">
@@ -50,10 +120,91 @@
                             <mat-select [(ngModel)]="selectedFeature" (ngModelChange)="onFeatureSelectChange()">
                                 <mat-option *ngFor="let obj of featuresOrItems; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
                             </mat-select>
-                        </mat-form-field>   
-                        <button style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="runDownload()">Download Template</button>
+                          </mat-form-field>
+                          <mat-form-field appearance="fill" class="mr-4" style="margin-bottom: -21px;">
+                            <mat-label>Number of Rows</mat-label>
+                            <input matInput [formControl]="nRowsForm" placeholder="Ex. My New Audit" >
+                            <mat-error *ngIf="nRowsForm.invalid">
+                              Must be an <strong>integer</strong>
+                            </mat-error>
+                          </mat-form-field>
+                        <button *ngIf="nRowsForm.valid" style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="runDownload()">Download Template</button>
+                        <button *ngIf="nRowsForm.invalid" disabled style="background-color: #b6b6b6;" class=" text-white text-semibold p-4"  mat-button >Download Template</button>
                     </div>
                 </div>
+            </mat-tab>
+            <!-- API Upload -->
+            <mat-tab class="" label="API Upload">
+              <div class="flex flex-row p-4 space-x-6 ">
+                <mat-expansion-panel class="w-1/2" style="height: max-content;" >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <mat-icon style="color:#569CD7;">library_books</mat-icon>
+                      &nbsp;&nbsp; Instructions
+                    </mat-panel-title>
+
+                  </mat-expansion-panel-header>
+                  <p>
+                    Read the <a class="linker-3" routerLink="/guide/upload">Data Upload Guide</a> for more information
+                  </p>
+                </mat-expansion-panel>
+                <mat-expansion-panel class="w-1/2" style="height: max-content;" >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <mat-icon style="color:#569CD7;">vpn_key</mat-icon>
+                      &nbsp;&nbsp;Credentials
+                    </mat-panel-title>
+
+                  </mat-expansion-panel-header>
+                  <p>
+                    <span style="color:#569CD7; font-weight: bold;">Name:&nbsp;</span>{{ sessionObject.firstName + ' ' + sessionObject.lastName }}
+                  </p>
+                  <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                  <p>
+                    <span style="color:#569CD7; font-weight: bold;">Organization:&nbsp;</span>{{ managingOrganizationName }}
+                  </p>
+                  <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                  <p>
+                    <span style="color:#569CD7; font-weight: bold;">Role:&nbsp;</span>{{ role[0].toUpperCase() + role.slice(1) }}
+                  </p>
+                  <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                  <p>
+                    <span style="color:#569CD7; font-weight: bold;">API Key Status:&nbsp;</span>{{ sessionObject.isApiKeySet ? 'API key exists for account' : 'No API key for account' }}
+                  </p>
+                  <p style="margin-top: 6px; margin-bottom: 15px; height: 1px " class=" bg-slate-200"></p>
+                  <div *ngIf="!regenerating && !deleting && !newKey">
+                    <button *ngIf="!sessionObject.isApiKeySet" style="background-color: #569CD7;" class="text-white text-semibold p-4"  mat-button (click)="generateAPIKey()">Generate API Key</button>
+                    <button *ngIf="sessionObject.isApiKeySet" style="background-color: #569CD7;" class="text-white text-semibold p-4 mr-4"  mat-button (click)="initRegenerateAPIKey()">Regenerate API Key</button>
+                    <button *ngIf="sessionObject.isApiKeySet" style="background-color: #ff9999;" class="text-white text-semibold p-4"  mat-button (click)="initDeleteAPIKey()">Disable API Key</button>
+                  </div>
+                  <!-- Confirm Regenerate -->
+                  <div style="box-shadow: 2px 2px 5px lightgray;" *ngIf="regenerating" class="m-4 flex flex-col space-y-5 justify-center items-center blue-callout">
+                    <p>Are you sure? As soon as you regenerate your API key, your current API key will be revoked and will no longer work.</p>
+                    <div class="flex flex-row">
+                      <button style="background-color: #569CD7;" class="mr-4 text-white text-semibold p-4"  mat-button (click)="generateAPIKey()">Confirm</button>
+                      <button *ngIf="sessionObject.isApiKeySet" style="background-color: #ff9999;" class="text-white text-semibold p-4"  mat-button (click)="regenerating = false;">Cancel</button>
+                    </div>
+                  </div>
+                  <!-- Confirm Delete -->
+                  <div style="box-shadow: 2px 2px 5px lightgray;" *ngIf="deleting" class="m-4 flex flex-col space-y-5 justify-center items-center blue-callout">
+                    <p>Are you sure? This will revoke your current API key so it will no longer work.</p>
+                    <div class="flex flex-row">
+                      <button style="background-color: #569CD7;" class="mr-4 text-white text-semibold p-4"  mat-button (click)="deleteAPIKey()">Confirm</button>
+                      <button *ngIf="sessionObject.isApiKeySet" style="background-color: #ff9999;" class="text-white text-semibold p-4"  mat-button (click)="deleting = false;">Cancel</button>
+                    </div>
+                  </div>
+                  <!-- New Key Panel -->
+                  <div style="box-shadow: 2px 2px 5px lightgray;" *ngIf="newKey" class="m-4 flex flex-col space-y-5 justify-center items-center blue-callout">
+                    <p style="color:#569CD7; font-weight: bold;">A new API Key has been successfully generated</p>
+                    <p style="margin-top: 6px; margin-bottom: 6px; height: 1px " class=" bg-slate-200"></p>
+                    <p>Keep this API key a secret, anyone who has access to it can upload to TDG with your credentials.
+                      For security purposes, this is the only time TDG will tell you your API key. Once you click <em>Done</em> 
+                      you will never see it in plaintext again.</p>
+                      <div class="code-block"><svg (click)="copyToClipboard(newKeyValue)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="code-block-copy"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path><path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"></path></svg>{{newKeyValue}}</div>
+                    <button style="background-color: #569CD7;" class="mt-4 text-white text-semibold p-4"  mat-button (click)="newKey = false; newKeyValue = null;">Done</button>
+                  </div>
+                </mat-expansion-panel>
+              </div>
             </mat-tab>
         </mat-tab-group>
     </div>
@@ -61,7 +212,7 @@
     <div class="flex flex-col w-2/3 mt-10">
         <p class="border-b-2 border-gray-300 text-lg text-gray-500">Audits <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/audits"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
         <mat-accordion *ngIf="auditArray.length > 0">
-            <mat-expansion-panel *ngFor="let audit of fittedAuditArray" hideToggle>
+            <mat-expansion-panel *ngFor="let audit of fittedAuditArray">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   {{ audit.name }}
@@ -116,7 +267,7 @@
                   <div class="py-2 px-4 border-l-2 border-gray-300 ml-6">
  
                 <button *ngIf="!(auditName.length == 0 || auditNameForm.hasError('required'))" style="background-color: #5fa784;" class=" text-white text-semibold p-4"  mat-button (click)="uploadNewAudit()">Create</button>
-                <button *ngIf="auditName.length == 0 || auditNameForm.hasError('required')" disabled style="background-color: #b6b6b6;" class=" text-white text-semibold p-4"  mat-button (click)="uploadNewAudit()">Create</button>
+                <button *ngIf="auditName.length == 0 || auditNameForm.hasError('required')" disabled style="background-color: #b6b6b6;" class=" text-white text-semibold p-4"  mat-button >Create</button>
                 <button style="background-color: #ff9999;" class="ml-4 text-white text-semibold p-4"  mat-button (click)="initiateNewAudit(false)">Cancel</button>
                     </div>
               </div>
@@ -124,11 +275,12 @@
     </div>
     <!-- SOP -->
     <div class="flex flex-col w-2/3 mt-10 mb-20">
-        <p class="border-b-2 border-gray-300 text-lg text-gray-500">Documents</p>
+        <p class="border-b-2 border-gray-300 text-lg ">Documents</p>
         <mat-accordion *ngIf="SOPArray.length > 0">
             <mat-expansion-panel *ngFor="let sop of fittedSOPArray" hideToggle>
               <mat-expansion-panel-header>
                 <mat-panel-title>
+                  <button *ngIf="selectingDocument" (click)="addSupplement(sop); $event.stopPropagation()" style="background-color: #569CD7; height: 30px; padding-right: 5px; padding-left: 5px; margin-right: 10px" class="text-white text-semibold"  mat-button >Add Document</button>
                   {{ sop.name }}
                 </mat-panel-title>
                 <mat-panel-description>

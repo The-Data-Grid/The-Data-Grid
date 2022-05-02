@@ -7,6 +7,8 @@ const {postgresClient} = require('../db/pg.js');
 const db = postgresClient.getConnection.db
 // get SQL formatter
 const formatSQL = postgresClient.format;
+// crypto id creator for API key
+const { nanoid } = require('nanoid');
 
 async function auditManagment(req, res) {
     try {
@@ -76,7 +78,8 @@ async function sopManagement(req, res) {
             SELECT
                 data_name as "name",
                 data_body as "link",
-                data_time_uploaded as "createdAt"
+                data_time_uploaded as "createdAt",
+                item_id as "id"
                 FROM item_sop
                 WHERE item_organization_id = $(organizationID)
         `, {
@@ -101,8 +104,38 @@ async function getPresetValues(columnName, tableName) {
     return data;
 }
 
+function generateApiKey(config) {
+    return async function(req, res) {
+        const { userID } = res.locals.authorization;
+
+        let key = null;
+        if(!config.remove) {
+            key = nanoid(50);
+        }
+
+        try {
+            await db.none(formatSQL(`
+                UPDATE item_user SET api_key = $(key) WHERE item_id = $(userID)
+            `, {
+                key,
+                userID
+            }));
+
+            if(config.remove) {
+                return res.status(200).end();
+            } else {
+                return res.status(201).json({ key });
+            }
+        } catch (err) {
+            return res.status(500).end();
+        }
+
+    }
+}
+
 module.exports = {
     auditManagment,
     sopManagement,
-    getPresetValues
+    getPresetValues,
+    generateApiKey,
 }

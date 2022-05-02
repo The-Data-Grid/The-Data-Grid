@@ -47,6 +47,7 @@ import { GuideManageComponent } from './guide-manage/guide.component';
 import { GuideUploadComponent } from './guide-upload/guide.component';
 import { GuideSchemaComponent } from './guide-schema/guide.component';
 import { GuideQueryComponent } from './guide-query/guide.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -95,6 +96,7 @@ import { GuideQueryComponent } from './guide-query/guide.component';
     NgMultiSelectDropDownModule.forRoot(),
     ClickOutsideModule,
     MaterialModule,
+    DragDropModule,
     ToastrModule.forRoot({timeOut: 2500, maxOpened: 5, autoDismiss: true}),
   ],
   providers: [ApiService, DatePipe, SetupObjectService, TableObjectService, AuthService],

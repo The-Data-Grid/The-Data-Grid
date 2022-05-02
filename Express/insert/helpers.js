@@ -645,7 +645,7 @@ function insertSOPGenerator(isUpdate, ErrorClass) {
     }
 }
 
-
+ 
 module.exports = {
     externalColumnInsertGenerator,
     insertItemManyToMany: insertManyToManyGenerator(false, false),

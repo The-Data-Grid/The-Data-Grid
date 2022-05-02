@@ -29,7 +29,8 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "./node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
               "src/client-scripts/three.js",
@@ -129,6 +130,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "BAP"
+    }
+  },
+  "defaultProject": "BAP",
+  "cli": {
+    "analytics": "c91d7016-c86b-46c2-9ed7-39a9fcea59ba"
+  }
 }
