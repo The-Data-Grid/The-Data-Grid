@@ -2,10 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiService } from '../api.service';
 import { AuthService } from '../auth.service';
-import { HttpHeaders } from "@angular/common/http"
-import { first } from 'rxjs/operators';
 import { stringify } from '@angular/compiler/src/util';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 interface Month {
@@ -16,6 +14,10 @@ interface Month {
 interface loginObject {
   email: string;
   pass: string;
+}
+
+interface RecoverObject {
+  email: string;
 }
 
 interface SignUpObject {
@@ -36,13 +38,14 @@ interface SignUpObject {
 export class DialogComponent implements OnInit {
 
   modal = "sign_in"
-  formsFilledOut = false; 
+  formsFilledOut = false;
   loginEmail;
   loginPassword;
   signUpPassword;
   matchPassword;
-  userLoginObject:loginObject;
+  userLoginObject: loginObject;
   signUpObject: SignUpObject;
+  recoverObject: RecoverObject;
   firstname;
   lastname;
   email;
@@ -50,24 +53,27 @@ export class DialogComponent implements OnInit {
   month;
   day;
   year;
+  resetPassEmail;
+
+  showLoading = false;
 
   handleInput() {
     console.log("help");
   }
 
   months: Month[] = [
-    {value: "01", viewValue: 'January'},
-    {value: '02', viewValue: 'February'},
-    {value: '03', viewValue: 'March'},
-    {value: '04', viewValue: 'April'},
-    {value: '05', viewValue: 'May'},
-    {value: '06', viewValue: 'June'},
-    {value: '07', viewValue: 'July'},
-    {value: '08', viewValue: 'August'},
-    {value: '09', viewValue: 'September'},
-    {value: '10', viewValue: 'October'},
-    {value: '11', viewValue: 'November'},
-    {value: '12', viewValue: 'December'},
+    { value: "01", viewValue: 'January' },
+    { value: '02', viewValue: 'February' },
+    { value: '03', viewValue: 'March' },
+    { value: '04', viewValue: 'April' },
+    { value: '05', viewValue: 'May' },
+    { value: '06', viewValue: 'June' },
+    { value: '07', viewValue: 'July' },
+    { value: '08', viewValue: 'August' },
+    { value: '09', viewValue: 'September' },
+    { value: '10', viewValue: 'October' },
+    { value: '11', viewValue: 'November' },
+    { value: '12', viewValue: 'December' },
 
   ];
 
@@ -76,7 +82,7 @@ export class DialogComponent implements OnInit {
     var user = (<HTMLInputElement>document.getElementById("username_attempt")).value;
     var pass = (<HTMLInputElement>document.getElementById("password_attempt")).value;
 
-    if (user.length != 0 && pass.length!=0) {
+    if (user.length != 0 && pass.length != 0) {
       this.formsFilledOut = true;
     }
     else {
@@ -84,9 +90,9 @@ export class DialogComponent implements OnInit {
     }
 
   }
-  
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService:ApiService, private router:Router, private toastr: ToastrService, private authService: AuthService) { 
+
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, private apiService: ApiService, private router: Router, private toastr: ToastrService, private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -103,17 +109,33 @@ export class DialogComponent implements OnInit {
     this.modal = "sign_in";
   }
 
+  // when REGISTER button is clicked
   checkSuccess() {
+    this.showLoading = true;
 
-    if(this.authService.isLocalStorageBlocked) {
+    if (this.authService.isLocalStorageBlocked) {
       this.toastr.error('Your browser is blocking access to local storage. Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
+      this.showLoading = false;
+      return;
+    }
+
+    // if any of the sign up fields are not filled out, display error
+    if (
+      this.isNullOrUndefined(this.firstname) ||
+      this.isNullOrUndefined(this.lastname) ||
+      this.isNullOrUndefined(this.email) ||
+      this.isNullOrUndefined(this.password)
+    ) {
+      console.log('Requires More Information')
+      this.toastr.error('Requires More Information', '');
+      this.showLoading = false;
       return;
     }
 
     if (this.day < 10) {
       this.day = "0" + stringify(this.day);
     }
-    //console.log(this.day);
+
     this.signUpObject = {
       firstName: this.firstname,
       lastName: this.lastname,
@@ -123,20 +145,26 @@ export class DialogComponent implements OnInit {
       isEmailPublic: true,
       isQuarterlyUpdates: true
     }
+
     this.apiService.attemptSignUp(this.signUpObject).subscribe((res: any) => {
       console.log("signing up...");
       console.log(res);
 
       if (res == '') {
         this.router.navigate(['./check-email']);
+        this.toastr.success('Sign up Successful', '');
         this.dialogRef.close();
       }
-
-    })
+      this.showLoading = false;
+    }, (err) => {
+      this.showLoading = false;
+      this.toastr.error('Invalid Information', '');
+    });
 
     //this.dialogRef.updateSize('300px','350px')
   }
 
+  // not implemented yet
   passwords_match() {
     var password = (<HTMLInputElement>document.getElementById("password_1")).value;
     var confirm_password = (<HTMLInputElement>document.getElementById("password_2")).value;
@@ -147,6 +175,7 @@ export class DialogComponent implements OnInit {
     return true;
   }
 
+  // not implemented yet
   isPasswordAttempted() {
     let password = (<HTMLInputElement>document.getElementById("password_1")).value;
     let confirm = (<HTMLInputElement>document.getElementById("password_2")).value;
@@ -187,7 +216,7 @@ export class DialogComponent implements OnInit {
       }
       else {
         return false;
-      }  
+      }
     }
     return true;
   }
@@ -202,29 +231,53 @@ export class DialogComponent implements OnInit {
     return false;
   }
 
+  forgotPassword() {
+    this.close();
+    console.log(this.resetPassEmail)
+    // this.recoverObject = {email:this.resetPassEmail};
+    // this.apiService.resetPassword(this.recoverObject)
+    //   .subscribe((res) => {
+    //     console.log(res);
+    //      this.authService.setSession(res)
+    //      this.toastr.success('Email Sent', '');
+    //     return;
+    //     }, (err) => {
+    //       this.toastr.error('Invalid Credentials', '');
+    //     });
+  }
+
+  forgot_password_modal() {
+    console.log("forgot password!");
+    this.modal = "forgot_password";
+  }
+
   signIn() {
     // Check for localStorage being blocked
-    if(this.authService.isLocalStorageBlocked) {
+    if (this.authService.isLocalStorageBlocked) {
       this.toastr.error('Your browser is blocking access to local storage. Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
     } else {
       // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);
-      this.userLoginObject = {email:this.loginEmail, pass:this.loginPassword};
+      this.userLoginObject = { email: this.loginEmail, pass: this.loginPassword };
       // console.log(this.userLoginObject);
       this.apiService.attemptLogin(this.userLoginObject)
         .subscribe((res) => {
           console.log(res);
-           this.authService.setSession(res)
-           this.close();
-           this.toastr.success('Log in Successful', '');
+          this.authService.setSession(res)
+          this.close();
+          this.toastr.success('Log in Successful', '');
           return;
-          }, (err) => {
-            this.toastr.error('Invalid Credentials', '');
-          });
+        }, (err) => {
+          this.toastr.error('Invalid Credentials', '');
+        });
     }
   }
 
   close() {
     this.dialogRef.close();
+  }
+
+  isNullOrUndefined(x) {
+    return x === null || x === undefined || x.length === 0
   }
 
 }
