@@ -18,6 +18,10 @@ interface loginObject {
   pass: string;
 }
 
+interface RecoverObject {
+  email: string;
+}
+
 interface SignUpObject {
   firstName: string;
   lastName: string;
@@ -43,6 +47,7 @@ export class DialogComponent implements OnInit {
   matchPassword;
   userLoginObject:loginObject;
   signUpObject: SignUpObject;
+  recoverObject: RecoverObject;
   firstname;
   lastname;
   email;
@@ -50,6 +55,7 @@ export class DialogComponent implements OnInit {
   month;
   day;
   year;
+  resetPassEmail;
 
   handleInput() {
     console.log("help");
@@ -200,6 +206,26 @@ export class DialogComponent implements OnInit {
       return false;
     }
     return false;
+  }
+
+  forgotPassword() {
+    this.close();
+    console.log(this.resetPassEmail)
+    // this.recoverObject = {email:this.resetPassEmail};
+    // this.apiService.resetPassword(this.recoverObject)
+    //   .subscribe((res) => {
+    //     console.log(res);
+    //      this.authService.setSession(res)
+    //      this.toastr.success('Email Sent', '');
+    //     return;
+    //     }, (err) => {
+    //       this.toastr.error('Invalid Credentials', '');
+    //     });
+  }
+
+  forgot_password_modal() {
+    console.log("forgot password!");
+    this.modal = "forgot_password";
   }
 
   signIn() {

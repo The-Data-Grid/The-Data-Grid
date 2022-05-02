@@ -161,7 +161,7 @@ mat-label {
   }
 
   .password {
-    font-size: 13px; position: relative; top: -20px; right: -18px; margin-left: 15px;
+    font-size: 13px; background-color: transparent; border:0px; color: #581f8d; text-decoration: underline; cursor: pointer; position: relative; top: -20px; right: -18px; margin-left: 15px;
   }
 
   .signUpModal {
@@ -178,6 +178,10 @@ mat-label {
 
   .signInButton .mat-form-field-custom {
     font-weight: 100;
+  }
+
+  .forgotPasswordButton {
+    position: absolute; background-color:#569CD7; color: white;
   }
   
 
