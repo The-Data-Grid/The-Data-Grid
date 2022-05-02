@@ -21,9 +21,6 @@ const {
 
 //connect to db
 const { postgresClient } = require('../../db/pg.js'); 
-const indexOf = require('lodash/indexOf');
-const e = require('express');
-const fill = require('lodash/fill');
 const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;
 

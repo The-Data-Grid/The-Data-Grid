@@ -68,9 +68,11 @@
                       </div>
                       
                 </div>
-                <button class="apply-button text-semibold py-2 w-2-3 mt-4"  mat-button (click)="runQuery(false)">Run Query</button>
+                <button class="apply-button text-semibold py-2 w-2-3 mt-4 flex flex-row justify-center" mat-button (click)="runQuery(false)">Run Query</button>
                 <div *ngIf="queryTime !== null && progressBarMode === 'determinate'" class="result-text">
-                    {{queryTime}}ms <abbr *ngIf="isCached" class="cache-text" title="Results stored in memory">Cached</abbr>
+                    <p *ngIf="invalidQuery && queryError === null" ><abbr style="color: #f99;" class="cache-text" title="Check Query Builder">Invalid Query</abbr></p>
+                    <p *ngIf="!invalidQuery && queryError === null">{{queryTime}}ms <abbr *ngIf="isCached" class="cache-text" title="Results stored in memory">Cached</abbr></p>
+                    <p *ngIf="queryError !== null"><abbr style="color: #f99;" *ngIf="isCached" class="cache-text" title="Try again later or change the query">Error: {{ queryError }}</abbr></p>
                 </div>
             </div>
         </div>

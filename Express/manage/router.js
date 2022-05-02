@@ -19,18 +19,47 @@ const { itemOrObservationQuery, setupSpreadsheet, formatObjectsSpreadsheet, gene
 const { parseSpreadsheet } = require('./spreadsheet/upload.js');
 
 
-router.get('/audits', parseOrganizationID, authorizeAuditor, auditManagment);
+router.get('/audits', 
+    parseOrganizationID,
+    authorizeAuditor,
+    auditManagment
+    );
 
-router.get('/signed-url', parseSignedUrl, authorizeAuditor, sendSignedUrl);
+router.get('/signed-url',
+    parseSignedUrl,
+    authorizeAuditor,
+    sendSignedUrl);
 
-router.get('/sops', parseOrganizationID, authorizeAuditor, sopManagement);
+router.get('/sops',
+    parseOrganizationID,
+    authorizeAuditor,
+    sopManagement);
 
-router.get('/spreadsheet', parseOrganizationID, authorizeAuditor, setupSpreadsheet, itemOrObservationQuery, formatDistinct, formatObjectsSpreadsheet, generateSpreadsheet);
+router.get('/spreadsheet',
+    (req, res, next) => {
+        res.locals.timer = Date.now();
+        next();
+    },  
+    parseOrganizationID,
+    authorizeAuditor,
+    setupSpreadsheet, 
+    itemOrObservationQuery, 
+    formatDistinct, 
+    formatObjectsSpreadsheet, 
+    generateSpreadsheet);
 
-router.post('/spreadsheet', parseOrganizationID, authorizeAuditor,  uploadFile.single('spreadsheet'), parseSpreadsheet);
+router.post('/spreadsheet', 
+    parseOrganizationID, 
+    authorizeAuditor,  
+    uploadFile.single('spreadsheet'), 
+    parseSpreadsheet);
 
-router.put('/key', authorizeAuditorAnyOrg, generateApiKey({ remove: false }));
+router.put('/key', 
+    authorizeAuditorAnyOrg, 
+    generateApiKey({ remove: false }));
 
-router.delete('/key', authorizeAuditorAnyOrg, generateApiKey({ remove: true }));
+router.delete('/key', 
+    authorizeAuditorAnyOrg, 
+    generateApiKey({ remove: true }));
 
 module.exports = router;

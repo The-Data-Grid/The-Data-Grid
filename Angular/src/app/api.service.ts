@@ -144,7 +144,7 @@ export class ApiService {
   }
 
   private formatFilterSelections(appliedFilterSelections): string {
-    return '';
+    return appliedFilterSelections.length > 0 ? 'queryObject=' + appliedFilterSelections : '';
   }
 
   public getAuditManagementTable(organizationID) {
@@ -298,8 +298,8 @@ export class ApiService {
       }));
   }
 
-  public getSpreadsheet(featureID, isItem, organizationID) {
-    const url = API_URL + `/manage/spreadsheet?organizationID=${organizationID}&isItem=${isItem}&featureID=${featureID}`;
+  public getSpreadsheet(featureID, isItem, nRows, organizationID) {
+    const url = API_URL + `/manage/spreadsheet?organizationID=${organizationID}&isItem=${isItem}&featureID=${featureID}&nRows=${nRows}`;
     const reqHeader = new HttpHeaders({
       'Content-Type': 'application/json',
       'No-Auth': 'True',

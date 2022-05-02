@@ -115,13 +115,39 @@ refreshQueryBuilder() {
 }
 
 getRulesQueryBuilder() {
-	console.log( (<any>$('#builder')).queryBuilder('getRules', { skip_empty: true }) )
+	return (<any>$('#builder')).queryBuilder('getRules', { skip_empty: true });
 }
 
+
+private operationMap = {
+	equal: '=',
+	contains: 'contains',
+	
+}
 formatQueryString(rules) {
-	if(rules === null) return '';
+	if(rules.rules.length == 0) return '';
+	let group = [];
 
 
+	return encodeURIComponent(JSON.stringify(rules));
+
+	function isGroup(obj) {
+		'condition' in obj;
+	}
+
+	function traverseGroup(group) {
+		let newGroup = [];
+		newGroup.push(group.condition === 'AND' ? 0 : 1);
+		for(let element of group.slice(1)) {
+			if(isGroup) {
+				newGroup.push(traverseGroup(element));
+			} else {
+				newGroup.push({
+
+				})
+			}
+		}
+	}
 }
 
 // Table Data
@@ -245,7 +271,21 @@ queryTimer(start) {
 	}
 }
 
+invalidQuery = false;
+queryError = null;
+
 runQuery(isPaginationQuery) {
+	this.invalidQuery = false;
+	this.queryError = null;
+	let queryString = '';
+	if(!this.isFirstQuery) {
+		const rules = this.getRulesQueryBuilder();
+		if(rules === null) {
+			this.invalidQuery = true;
+			return;
+		}
+		queryString = this.formatQueryString(rules)
+	} 
 	this.progressBarMode = 'indeterminate';
 	const isObservation = this.queryType === 'Observations';
 	const feature = isObservation ? 
@@ -262,11 +302,6 @@ runQuery(isPaginationQuery) {
 		limit: this.currentPageSize,
 		offset: this.currentPageIndex * this.currentPageSize
 	};
-	let queryString = '';
-	if(!this.isFirstQuery) {
-		const rules = this.getRulesQueryBuilder();
-		queryString = this.formatQueryString(rules)
-	} 
 	// 
 	this.queryTimer(true);
 	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject).subscribe((res) => {
@@ -283,6 +318,11 @@ runQuery(isPaginationQuery) {
 		this.progressBarMode = 'determinate';
 		this.isFirstQuery = false;
 		this.queryTimer(false)
+	  }, (err) => {
+		  this.progressBarMode = 'determinate'
+		  this.isFirstQuery = false;
+		  this.queryTimer(false);
+		  this.queryError = err.error;
 	  });
 }
 

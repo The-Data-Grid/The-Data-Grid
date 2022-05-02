@@ -320,3 +320,20 @@ html, body {
   z-index: 999999;
   opacity: .8;
 }
+
+.blue-callout {
+  background-color: rgb(239 246 255);
+  box-shadow: 2px 2px 5px lightgray;
+  border-width: 1px !important;
+  border-color: #569CD7 !important;
+  border-style: solid !important;
+  padding-left: 1rem/* 16px */;
+  padding-right: 1rem/* 16px */;
+  padding-top: 0.5rem/* 8px */;
+  padding-bottom: 0.5rem/* 8px */;
+  font-size: 0.875rem/* 14px */;
+  line-height: 1.25rem/* 20px */;
+  margin: 1.5rem/* 24px */;
+  border-radius: 0.25rem/* 4px */;
+  display: flex;
+}

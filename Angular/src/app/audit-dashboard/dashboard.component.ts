@@ -93,10 +93,16 @@ export class AuditDashboard implements OnInit {
   }
 
   // Download spreadsheet template
+  nRowsForm = new FormControl('500', [Validators.required, Validators.maxLength(5), Validators.pattern(/^[0-9]*$/)]);
+
   runDownload() {
+    // if nRows is invalid then stop
+    if(this.nRowsForm.invalid) return;
+    const nRows = this.nRowsForm.value;
     const currentFeature = this.featuresOrItems[this.selectedFeature].frontendName;
     const currentUploadType = this.uploadType;
-    this.apiService.getSpreadsheet(this.selectedFeature, this.uploadType === 'Items', this.managingOrganization).subscribe((res) => {
+
+    this.apiService.getSpreadsheet(this.selectedFeature, this.uploadType === 'Items', nRows, this.managingOrganization).subscribe((res) => {
       this.blob = new Blob([res], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
 
       var downloadURL = window.URL.createObjectURL(res);
@@ -272,6 +278,7 @@ export class AuditDashboard implements OnInit {
 
   addSupplement(sop) {
     this.supplemental.push(sop)
+    this.toastr.info('Document ' + sop.name + ' added')
     console.log(this.supplemental)
   }
 
