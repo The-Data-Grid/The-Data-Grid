@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiService } from '../api.service';
 import { AuthService } from '../auth.service';
-import { HttpHeaders } from "@angular/common/http"
-import { first } from 'rxjs/operators';
 import { stringify } from '@angular/compiler/src/util';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
