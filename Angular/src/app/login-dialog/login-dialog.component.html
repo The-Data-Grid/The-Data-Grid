@@ -1,4 +1,3 @@
-
 <body>
   <div *ngIf="modal=='sign_in'" style="padding:15px;margin-top:10px;">
     <mat-dialog-actions>
@@ -13,15 +12,14 @@
     <p>
       <mat-form-field appearance="outline" class="formField">
         <mat-label>Email</mat-label>
-        <input id="username_attempt" matInput (input)="checkForms()"
-          [(ngModel)]="loginEmail" placeholder="">
+        <input id="username_attempt" matInput (input)="checkForms()" [(ngModel)]="loginEmail" placeholder="">
       </mat-form-field>
     </p>
     <p>
       <mat-form-field appearance="outline" class="formField" style="top: -60px">
         <mat-label>Password</mat-label>
-        <input type="password" id="password_attempt" matInput
-          [(ngModel)]="loginPassword" (input)="checkForms()" placeholder="">
+        <input type="password" id="password_attempt" matInput [(ngModel)]="loginPassword" (input)="checkForms()"
+          placeholder="">
       </mat-form-field>
     </p>
     <button class="password" style="top: -70px;" (click)="forgotPassword()">Forgot Password?</button>
@@ -32,8 +30,8 @@
         -170px;">SIGN UP</button>
       <!-- <button (click)="sign_up_modal()" class="signUpModal">SIGN UP</button> -->
       <!-- <button (click)="sign_up_modal()" mat-button style="font-size:11px;position: absolute; background-color:white; color: #4d79ff; margin-left: 170px; text-decoration: underline;">SIGN UP</button> -->
-      <button mat-button color="primary" class="signInButton"
-        style="margin-left: 15px;" (click)="signIn()">SIGN IN</button>
+      <button mat-button color="primary" class="signInButton" style="margin-left: 15px;" (click)="signIn()">SIGN
+        IN</button>
     </div>
 
   </div>
@@ -83,7 +81,7 @@
         logoPositioning">
       <button class="closeButton" (click)="close()">✕</button>
     </mat-dialog-actions>
-    <h1 class="sign_up_label">Sign Up</h1>
+    <h1 class="sign_up_label" style="font-size: 40px">Sign Up</h1>
 
     <p>
       <mat-form-field appearance="outline" style="font-size: 14px; width:43%;
@@ -100,8 +98,7 @@
     </p>
 
     <p>
-      <mat-form-field class="sign_up_colors" appearance="outline"
-        style="font-size: 14px; width:90%; font-size:12px; margin-top:-12px;
+      <mat-form-field class="sign_up_colors" appearance="outline" style="font-size: 14px; width:90%; font-size:12px; margin-top:-12px;
         margin-left: 3%">
         <mat-label>Email</mat-label>
         <input [(ngModel)]="email" id="signup_email" matInput placeholder="">
@@ -113,16 +110,15 @@
       <mat-form-field appearance="outline" style="font-size: 14px; width:43%;
         font-size:12px; margin-top:-12px;margin-left: 3%">
         <mat-label>Password</mat-label>
-        <input [(ngModel)]="password" type="password" id="password_1" matInput
-          [(ngModel)]="signUpPassword" placeholder="">
+        <input [(ngModel)]="password" type="password" id="password_1" matInput [(ngModel)]="signUpPassword"
+          placeholder="">
       </mat-form-field>
 
       <mat-form-field appearance="outline" style="font-size: 14px; width:43%;
         margin-left:20px; font-size:12px; margin-top:-12px;">
         <mat-label>Confirm Password</mat-label>
-        <input type="password" id="password_2" matInput
-          [(ngModel)]="matchPassword" placeholder="" (input)="checkPasswords()"
-          [disabled]="!canConfirmPassword()">
+        <input type="password" id="password_2" matInput [(ngModel)]="matchPassword" placeholder=""
+          (input)="checkPasswords()" [disabled]="!canConfirmPassword()">
       </mat-form-field>
     </p>
     <div *ngIf="!shouldDisplayWarning()">
@@ -171,9 +167,10 @@
 </div>
 </div> -->
       <div style="margin-top: 110px; float: right;">
-        <button (click)="checkSuccess()" mat-button color="primary"
-          style="position: absolute; background-color: #5FA784; color:
-          white;margin-left: -115px">REGISTER</button>
+        <button (click)="checkSuccess()" [disabled]="showLoading" mat-button color="primary"
+          style="position: absolute; color: white; margin-left: -115px"
+          [ngStyle]="!showLoading ? {'background-color': '#5FA784'} : {'background-color': '#6b6b6b'}">
+          {{!showLoading ? "REGISTER" : "Loading..."}}</button>
       </div>
       <div style="margin-top: 110px; float: left;">
         <button (click)="sign_in_modal()" mat-button color="primary"
