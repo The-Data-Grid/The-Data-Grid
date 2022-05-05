@@ -215,7 +215,6 @@ export class DialogComponent implements OnInit {
   }
 
   forgotPassword() {
-    this.close();
     this.forgotPassObject = {email:this.resetPassEmail};
     console.log(this.forgotPassObject)
     this.apiService.resetPassword(this.forgotPassObject)

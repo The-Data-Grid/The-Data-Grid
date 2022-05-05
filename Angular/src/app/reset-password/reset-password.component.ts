@@ -31,6 +31,7 @@ export class ResetPassComponent implements OnInit {
   encodedEmail: string;
   URLtoken: string;
   passwordsMatch: boolean;
+  validInput: boolean;
   signUpPassword = '';
   matchPassword = '';
 
@@ -80,6 +81,16 @@ export class ResetPassComponent implements OnInit {
   canConfirmPassword() {
     if (this.signUpPassword || this.matchPassword) {
       if ((this.signUpPassword.length > 1 && this.shouldDisplayWarning()) || this.matchPassword) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
+  validInputs() {
+    if (this.signUpPassword && this.matchPassword) {
+      if(this.signUpPassword.length >= 10 && this.matchPassword.length >= 10 && this.signUpPassword == this.matchPassword) {
         return true;
       }
       return false;
