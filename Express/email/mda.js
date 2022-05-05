@@ -39,13 +39,9 @@ const axios = require('axios')
         'Content-Type': 'application/json'
     }
     
-    axios.post(url, data, {headers: headers})
-    .then((res) => {
-        console.log("Email sent!")
-    })
-    .catch((err) => {
-        console.log("Error!")
-    });
+    // attempt to send email
+    // error must be caught
+    await axios.post(url, data, {headers: headers})
 }
 
 async function sendMail(config) {
@@ -58,7 +54,57 @@ async function sendMail(config) {
     await send(address, body);
 }
 
+async function resetEmail(receiversList, link) {
+
+    console.log(link)
+
+    var data = {
+        'from' :{
+            "email":"info@thedatagrid.org",
+            "name": "🌎 The Data Grid 🌎"
+         },
+        'personalizations':[
+            {
+               "to":[
+                  {
+                     "email": receiversList
+                  }
+               ], 
+               "dynamic_template_data":{
+                "passwordResetLink": link
+              }
+            }
+        ],
+        'template_id':"d-8e95cc7ae141424ab203ec08cddd375a"
+    }
+
+    var headers = {
+        'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+        'Content-Type': 'application/json'
+    }
+    
+    // attempt to send email
+    // error must be caught
+    await axios.post(url, data, {headers: headers})
+}
+
+async function sendReset(config) {
+    const {
+        title,
+        address,
+        body
+    } = config;
+
+    await resetEmail(address, body);
+}
+
+// Just for testing
+async function sendEmailFake(_) {
+    
+}
+
 module.exports = {
-    send,
-    sendMail
+    sendMail, 
+    sendEmailFake,
+    sendReset,
 };

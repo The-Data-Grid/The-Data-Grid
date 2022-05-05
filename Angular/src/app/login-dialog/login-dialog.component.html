@@ -24,8 +24,7 @@
           [(ngModel)]="loginPassword" (input)="checkForms()" placeholder="">
       </mat-form-field>
     </p>
-    <a class="password" style="top: -70px;" href="">Forgot Password?</a>
-
+    <button class="password" style="top: -70px;" (click)="forgot_password_modal()">Forgot Password?</button>
 
     <div style="margin-top:60px; float: right; margin-left: -25px;">
       <button (click)="sign_up_modal()" class="signUpButton" style="margin-left:
@@ -36,6 +35,41 @@
         style="margin-left: 15px;" (click)="signIn()">SIGN IN</button>
     </div>
 
+  </div>
+
+  <div *ngIf="modal=='forgot_password'" style="padding:15px;margin-top:10px;">
+    <mat-dialog-actions>
+      <button class="closeButton" (click)="close()" style="margin-top:-10%;
+        right: -92%; position: relative;">✕</button>
+    </mat-dialog-actions>
+
+    <img src="assets/logo.png" alt="The Data Grid Logo" class="logo" style="top:
+      -40px; right: -2%;">
+    <h2 class="logIn" style="font-size: 40px; font-weight: 5; position:relative;
+      right: -5%; top: -50px; font-weight: 400;">Forgot Password?</h2>
+    <p style="position: relative; right: -5%; top: -55px; font-size: 14px; width: 85%;">
+      Please enter your email. We'll email instructions on how to reset your password.
+    </p>
+    <p>
+      <!-- <mat-form-field appearance="outline" class="formField">
+        <mat-label>Email</mat-label>
+        <input id="email_attempt" matinput (input)="checkEmail()" [(ngModel)]="resetPassEmail" placeholder="" />
+      </mat-form-field> -->
+      <mat-form-field appearance="outline" class="formField">
+        <mat-label>Email</mat-label>
+        <input id="email_attempt" matInput (input)="checkEmail()"
+          [(ngModel)]="resetPassEmail" placeholder="">
+      </mat-form-field>
+    </p>
+
+    <div style="margin-top: -5px;margin-left: 3%">
+      <div style="margin-top: 100px; float: right;">
+        <button mat-button="" color="primary" class="forgotPasswordButton" style="margin-left: -175px;" (click)="forgotPassword()">FORGOT PASSWORD</button>
+      </div>
+      <div style="margin-top: 100px; float: left;">
+        <button (click)="sign_in_modal()" mat-button="" color="primary" style="position: absolute; background-color:#BEBEBE; color: white;">BACK</button>
+      </div>
+    </div>
   </div>
 
 

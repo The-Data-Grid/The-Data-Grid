@@ -16,13 +16,15 @@ const { apiDateToUTC, parseOrganizationID } = require('../parse.js');
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 const updating = require('../statement.js').updates;
-const { sendMail } = require('../email/mda.js');
+const { sendMail, sendEmailFake, sendReset } = require('../email/mda.js');
 const { authorizeAuditor } = require('./authorizer.js');
 
 // use correct mail depending on testing
 let sendEmail = sendMail;
+let sendEmailReset = sendReset;
 if(isTesting) {
     sendEmail = sendEmailFake;
+    sendEmailReset = sendEmailFake;
 }
 
 // Login
@@ -100,8 +102,8 @@ router.post('/', async (req, res) => {
 
     //check if email is taken 
     try {   
-        await db.none(formatSQL(SQL.isEmailTaken, {
-            checkemail: req.body.email
+        await db.none(formatSQL(SQL.doesEmailExist, {
+            email: req.body.email
         }));
     } catch(error) {
         console.log('ERROR:', error);
@@ -136,20 +138,23 @@ router.post('/', async (req, res) => {
 
         console.log('User inserted. Sending email to ' + req.body.email + ' with link: ' + emailLink);
 
-        await sendEmail({
-            address: req.body.email,
-            title: 'The Data Grid - Email Verification',
-            body: emailLink
-        });
-
-        console.log('Email sent.')
+        try {
+            await sendEmail({
+                address: req.body.email,
+                title: 'The Data Grid - Email Verification',
+                body: emailLink
+            });
+            console.log('Email sent.')
+            return res.status(201).end();
+        } catch(err) {
+            console.log(err)
+            return res.status(500).end();
+        }
 
     } catch(err) {
         console.log(err);
         return res.status(500).end();
     }
-
-    return res.status(201).end();
 });
 
 router.get('/', async (req, res) => {
@@ -209,25 +214,35 @@ router.post('/email/verify', async (req, res) => {
 router.post('/password/request-reset', async (req, res) => {
     const rand = nanoid(50);
     try {
+        // make sure email exists
+        await db.one(formatSQL(SQL.doesEmailExist), {
+            email: req.body.email
+        })
+
+        // insert token
         await db.none(formatSQL(updating.updateToken, {
             token: rand,
             email: req.body.email,
         }));
 
         const encodedEmail = encodeURIComponent(req.body.email);
-        const emailLink = "https://thedatagrid.org/reset-password?email=" + encodedEmail + "?token=" + rand; 
+        const emailLink = "https://thedatagrid.org/reset-password?email=" + encodedEmail + "&token=" + rand; 
 
         console.log('Sending email to ' + req.body.email + ' with link: ' + emailLink);
         
-        await sendEmail({
-            address: req.body.email,
-            title: 'The Data Grid - Password Reset',
-            body: emailLink
-        });
+        try {
+            await sendEmailReset({
+                address: req.body.email,
+                title: 'The Data Grid - Password Reset',
+                body: emailLink
+            });
+            console.log('Email sent.');
+            return res.status(201).send();
+        } catch(error) {
+            console.log(error)
+            return res.status(500).end();
+        }
 
-        console.log('Email sent.');
-
-        return res.status(201).end();
     } catch(error) {
         console.log('ERROR:', error);
         return res.status(400).send('Account with email does not exist or account with email isn\'t verified');
@@ -244,27 +259,35 @@ router.post('/password/reset', async (req, res) => {
             pass,
         } = req.body;
         
-        const hashedPassword = await bcrypt.hash(pass, 13); 
-
-        const decodedEmail = decodeURIComponent(email);
-        
         // will throw unless both values match
+        const decodedEmail = decodeURIComponent(email);
         await db.one(formatSQL(SQL.secret, {
             checkemail: decodedEmail,
             token,
         }));
 
+        // make sure password is valid
+        if (!isValidPassword(pass)) {
+            console.log('ERROR:', 'Bad Request 2211: Invalid Password');
+            return res.status(400).send('Bad Request 2211: Invalid Password'); 
+        }
+        
+        // token is valid so hash the new password
+        const hashedPassword = await bcrypt.hash(pass, 13); 
+        
         try {
             await db.none(formatSQL(updating.updatePassword, {
                 email: decodedEmail,
                 password: hashedPassword,
             }));
         } catch(error) {
+            console.log(err);
             return res.status(500).send('Server error when resetting password');
         }
         return res.status(200).send('Password reset');
         
     } catch(error) {
+        console.log(error)
         return res.status(401).send('Password reset unauthorized');
     }
 });
@@ -405,10 +428,5 @@ router.get('/role', parseOrganizationID, authorizeAuditor, async (req, res) => {
         return res.status(500).end();
     }
 })
-
-// Just for testing
-async function sendEmailFake(_) {
-    
-}
 
 module.exports = router;

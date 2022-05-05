@@ -370,6 +370,17 @@ export class ApiService {
     return this.http.post(`${API_URL}/user/email/verify`, verifyEmailObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
+  resetPassword(resetPassObject, withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/user/password/request-reset`, resetPassObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+    // console.log(resetPassObject)
+  }
+
+  confirmReset(confirmResetObject, withCredentials = true) {
+    var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
+    return this.http.post(`${API_URL}/user/password/reset`, confirmResetObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+    // console.log(confirmResetObject)
+  }
 
   signOut(withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });

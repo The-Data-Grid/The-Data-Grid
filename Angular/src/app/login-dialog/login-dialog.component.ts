@@ -18,6 +18,10 @@ interface loginObject {
   pass: string;
 }
 
+interface ForgotPassObject {
+  email: string;
+}
+
 interface SignUpObject {
   firstName: string;
   lastName: string;
@@ -41,8 +45,10 @@ export class DialogComponent implements OnInit {
   loginPassword;
   signUpPassword;
   matchPassword;
+  resetPassEmail;
   userLoginObject:loginObject;
   signUpObject: SignUpObject;
+  forgotPassObject: ForgotPassObject;
   firstname;
   lastname;
   email;
@@ -207,6 +213,37 @@ export class DialogComponent implements OnInit {
     }
     return false;
   }
+
+  forgotPassword() {
+    this.forgotPassObject = {email:this.resetPassEmail};
+    console.log(this.forgotPassObject)
+    this.apiService.resetPassword(this.forgotPassObject)
+      .subscribe((res) => {
+        console.log(res);
+        //  this.authService.setSession(res)
+         this.toastr.success('Email Sent', '');
+        return;
+        }, (err) => {
+          this.toastr.error('Invalid Credentials', '');
+        });
+  }
+
+  forgot_password_modal() {
+    console.log("forgot password!");
+    this.modal = "forgot_password";
+  }
+
+  checkEmail() {
+    var email = (<HTMLInputElement>document.getElementById("email_attempt")).value;
+
+    if (email.length != 0) {
+      this.formsFilledOut = true;
+    }
+    else {
+      this.formsFilledOut = false;
+    }
+  }
+
 
   signIn() {
     // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);

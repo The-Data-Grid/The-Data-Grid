@@ -12,6 +12,7 @@ import { SettingsComponent } from './settings/settings.component'
 import { TeamComponent } from './team/team.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
+import { ResetPassComponent } from './reset-password/reset-password.component';
 import { NewFilterComponent } from './new-filter/filter.component';
 import { AuditDashboard } from './audit-dashboard/dashboard.component';
 import { ManagementComponent } from './manage/manage.component';
@@ -36,6 +37,7 @@ const routes: Routes = [
   { path: 'team', component: TeamComponent },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'check-email', component: CheckEmailComponent },
+  { path: 'reset-password', component: ResetPassComponent },
   { path: 'filter', component: NewFilterComponent},
   { path: 'manage', component: ManagementComponent, canActivate: [AuthGuard] },
   { path: 'guide', component: GuideComponent },

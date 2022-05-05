@@ -16,6 +16,7 @@ import { UploadDialogComponent } from './upload-dialog/upload-dialog.component';
 import { UploadAuditComponent } from './upload-audit/upload-audit.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { DialogComponent } from './login-dialog/login-dialog.component';
+import { ResetPassComponent } from './reset-password/reset-password.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // import { UploadComponent } from './upload/upload.component';
 import { AuditSummaryComponent } from './upload-audit/audit-summary/audit-summary.component';
@@ -54,6 +55,7 @@ import { GuideQueryComponent } from './guide-query/guide.component';
     IndexComponent,
     AuditsComponent,
     DialogComponent,
+    ResetPassComponent,
     // UploadComponent,
     AboutComponent,
     UploadFilesComponent,

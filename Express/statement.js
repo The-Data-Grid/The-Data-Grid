@@ -209,7 +209,7 @@ const login = {
             FROM item_user 
                 WHERE data_email = $(checkemail)
                 AND is_pending = FALSE`,
-    isEmailTaken: 'SELECT data_email AS email FROM item_user WHERE data_email = $(checkemail)',
+    doesEmailExist: 'SELECT data_email AS email FROM item_user WHERE data_email = $(email)',
     secret : `
         SELECT * 
         FROM item_user 
