@@ -14,10 +14,8 @@ import { param } from 'jquery';
 interface ResetPassObject {
   email: string
   token: string
-  password: string
+  pass: string
 }
-
-
 
 @Component({
   selector: 'app-reset-password',
@@ -33,9 +31,8 @@ export class ResetPassComponent implements OnInit {
   encodedEmail: string;
   URLtoken: string;
   passwordsMatch: boolean;
-  password;
-  signUpPassword;
-  matchPassword;
+  signUpPassword = '';
+  matchPassword = '';
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params => {
@@ -94,7 +91,7 @@ export class ResetPassComponent implements OnInit {
     this.reset = {
       email: this.encodedEmail,
       token: this.URLtoken,
-      password: this.matchPassword
+      pass: this.matchPassword
     }
 
     console.log(this.reset)

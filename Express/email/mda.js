@@ -39,13 +39,9 @@ const axios = require('axios')
         'Content-Type': 'application/json'
     }
     
-    axios.post(url, data, {headers: headers})
-    .then((res) => {
-        console.log("Email sent!")
-    })
-    .catch((err) => {
-        console.log("Error!")
-    });
+    // attempt to send email
+    // error must be caught
+    await axios.post(url, data, {headers: headers})
 }
 
 async function sendMail(config) {
@@ -87,13 +83,9 @@ async function resetEmail(receiversList, link) {
         'Content-Type': 'application/json'
     }
     
-    axios.post(url, data, {headers: headers})
-    .then((res) => {
-        console.log("Password reset email sent!")
-    })
-    .catch((err) => {
-        console.log("Error!")
-    });
+    // attempt to send email
+    // error must be caught
+    await axios.post(url, data, {headers: headers})
 }
 
 async function sendReset(config) {
@@ -112,9 +104,7 @@ async function sendEmailFake(_) {
 }
 
 module.exports = {
-    send,
     sendMail, 
     sendEmailFake,
     sendReset,
-    resetEmail
 };
