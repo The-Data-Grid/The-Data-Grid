@@ -37,10 +37,9 @@ export class ResetPassComponent implements OnInit {
   signUpPassword;
   matchPassword;
 
-  // TODO: how to post on page load if we havent entered new password
-
   ngOnInit(): void {
     this.route.queryParams.subscribe((params => {
+      console.log(params)
       this.encodedEmail = params.email;
       this.URLtoken = params.token;
     }))
@@ -103,11 +102,12 @@ export class ResetPassComponent implements OnInit {
     this.apiService.confirmReset(this.reset)
       .subscribe((res) => {
         console.log(res);
-         this.authService.setSession(res)
+        //  this.authService.setSession(res)
          this.toastr.success('Password Reset', '');
          this.router.navigate(['./'])
         return;
         }, (err) => {
+          this.router.navigate(['./'])
           this.toastr.error('Invalid password reset link\n Request another to continue', '');
         });  
 

@@ -215,7 +215,7 @@ router.post('/password/request-reset', async (req, res) => {
         }));
 
         const encodedEmail = encodeURIComponent(req.body.email);
-        const emailLink = "https://thedatagrid.org/reset-password?email=" + encodedEmail + "?token=" + rand; 
+        const emailLink = "https://thedatagrid.org/reset-password?email=" + encodedEmail + "&token=" + rand; 
 
         console.log('Sending email to ' + req.body.email + ' with link: ' + emailLink);
         

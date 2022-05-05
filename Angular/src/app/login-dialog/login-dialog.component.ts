@@ -220,10 +220,8 @@ export class DialogComponent implements OnInit {
     console.log(this.forgotPassObject)
     this.apiService.resetPassword(this.forgotPassObject)
       .subscribe((res) => {
-        // res is empty?
-        // after calling this we get the JSON error
         console.log(res);
-         this.authService.setSession(res)
+        //  this.authService.setSession(res)
          this.toastr.success('Email Sent', '');
         return;
         }, (err) => {
