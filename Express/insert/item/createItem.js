@@ -1,4 +1,4 @@
-const {postgresClient} = require('../../db/pg.js');
+const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
 const {
     returnableIDLookup,
@@ -7,7 +7,7 @@ const {
     requiredItemLookup,
     itemColumnObject,
     itemTableNames
-} = require('../../setup.js');
+} = require('../../preprocess/load.js');
 
 const {
     insertItemHistory,

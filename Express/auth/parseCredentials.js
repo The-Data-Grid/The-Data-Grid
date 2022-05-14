@@ -1,7 +1,7 @@
 const isTesting = ['-t', '--test'].includes(process.argv[2]);
 
 // Database connection and SQL formatter (for API Key)
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 // get connection object
 const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;
@@ -67,8 +67,9 @@ module.exports = async (req, res, next) => {
             catch(err) {
                 return res.status(401).end();
             }
-        } else {
-            // Otherwise session must exist in memory
+        } 
+        // Otherwise session must exist in memory
+        else {
             if(req.session.loggedIn) {
                 res.locals.authorization = req.session;
             } else {

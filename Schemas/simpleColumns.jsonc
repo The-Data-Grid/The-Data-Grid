@@ -29,8 +29,9 @@
 { 
     "tableName": "item_vs_bin", // -> generated and backend name is saved
     "columnName": "data_name", // should be generated. depends on reference type
-    "observationTableName": null, // -> can use generated name 
-    // "subobservationTableName": null, no subobservations
+    //"observationTableName": null, // -> can use generated name 
+    // TODO: get rid of subobservations
+    //"subobservationTableName": null, // no subobservations
     "itemName": "item_vs_bin", // -> can use generated name
 
     "sqlType": "TEXT", // required
@@ -42,17 +43,19 @@
 
     "accuracy": null, // optional, defaults to null
     "isDefault": true, // optional, defaults to yes
-    "filterSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
-    "inputSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
-    "frontendType": "string" //infer from sqlType
+    //"filterSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
+    //"inputSelectorName": "searchableDropdown", // optional, infer from sqlType and referenceType
+    //"frontendType": "string" //infer from sqlType
+
+    // New
+    "selectorType": "text"
 },
 
 { 
-    "itemOrObservation": "Item",
-    "itemOrObservationName": "Name",
-
+    "featureName": "Name",
     "name": "Name",
     "information": "Unique alphanumeric bin identifier", // optional, defaults to null
+    "accuracy": null,
     
     "sqlType": "TEXT", // required
     "referenceType": "item-id", // required

@@ -6,10 +6,10 @@ response object, and sends an HTTP response.
 ============================================================ */
 
 // Internal setup objects
-const {returnableIDLookup, featureParents, setupObject, setupMobileObject, filterSetupObject} = require('../setup.js')
+const {returnableIDLookup, featureParents, setupObject, setupMobileObject, filterSetupObject} = require('../preprocess/load.js')
 
 // Database connection and SQL formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 // get connection object
 const db = postgresClient.getConnection.db
 

@@ -1,11 +1,11 @@
-const {postgresClient} = require('../../db/pg.js');
+const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
 
 const {
     itemTableNames,
     itemColumnObject,
     itemObservationTableNameLookup
-} = require('../../setup.js');
+} = require('../../preprocess/load.js');
 
 const {
     UpdateObservationError,

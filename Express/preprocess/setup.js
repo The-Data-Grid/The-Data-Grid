@@ -6,7 +6,7 @@
 // ============================================================
 
 // Database connection and SQL formatter
-const {postgresClient, connectPostgreSQL} = require('./db/pg.js');
+const {postgresClient, connectPostgreSQL} = require('../pg.js');
 connectPostgreSQL('default');
 // get connection object
 const db = postgresClient.getConnection.db;
@@ -25,7 +25,7 @@ let {returnableQuery,  // defunct, now a view
        allItems, 
        itemM2M, 
        frontendTypes, 
-       allFeatures} = require('./statement.js').setup
+       allFeatures} = require('../statement.js').setup
 
 
 const referenceTypes = {
@@ -265,6 +265,7 @@ const setupQuery = (returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                     frontendName: row['c__frontend_name'],
                     filterSelector: fSelector,
                     inputSelector: iSelector,
+                    selectorType: row['sn__selector_name'],
                     datatypeKey: datatype,
                     nullable: row['c__is_nullable'],
                     information: row['c__information'],

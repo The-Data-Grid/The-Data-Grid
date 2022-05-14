@@ -1,0 +1,45 @@
+/*
+    DATA COLUMNS THAT ARE REPEATED FOR EVERY FEATURE
+*/
+[
+    { // DATE CONDUCTED 
+        "name": "Time Conducted",
+        "featureName": null,
+        "information": "Date the feature was audited",
+        "isNullable": false,
+        "presetValues": null,
+        "accuracy": null,
+        "sqlType": "TIMESTAMPTZ",
+        "referenceType": "obs-global"
+    },
+    { // COMMENTARY    
+        "sqlType": "TEXT",
+        "referenceType": "obs-global",
+        "name": "Commentary",
+        "featureName": null,
+        "information": "Additional commentary about the observation",
+        "isNullable": true,
+        "presetValues": null,
+        "accuracy": null
+    },
+    { // AUDITOR NAME
+        "sqlType": "TEXT",
+        "referenceType": "special",
+        "featureName": null,
+        "name": "Auditor",
+        "information": "Name of the auditor(s) who conducted this observation",
+        "isNullable": true,
+        "presetValues": null,
+        "accuracy": null
+    },
+    { // SOP NAME    
+        "sqlType": "TEXT",
+        "referenceType": "special",
+        "name": "Standard Operating Procedure",
+        "featureName": null,
+        "accuracy": null,
+        "information": "The standard operating procedure(s) used for the audit on this feature",
+        "presetValues": null
+    }
+]
+

@@ -11,7 +11,7 @@ const {
     observationItemTableNameLookup,
     columnObjects,
     itemColumnObject,
-} = require('../../setup.js');
+} = require('../../preprocess/load.js');
 const { x } = require('joi');
 const { itemQuery, featureQuery } = require('../../query/query.js');
 const { getPresetValues } = require('../../query/direct.js');
@@ -20,7 +20,7 @@ const {
 } = require('../../statement.js').generate;
 
 //connect to db
-const { postgresClient } = require('../../db/pg.js'); 
+const { postgresClient } = require('../../pg.js'); 
 const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;
 

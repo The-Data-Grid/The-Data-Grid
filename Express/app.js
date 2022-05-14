@@ -18,11 +18,11 @@ if (isDeployment) {
 }
 
 // start the main connection pool	
-const {connectPostgreSQL} = require('./db/pg.js');	
+const {connectPostgreSQL} = require('./pg.js');	
 connectPostgreSQL('default');
 
 // Middleware
-const { setupParse } = require('./parse.js');
+const { setupParse } = require('./parse/parse.js');
 const { sendSetup, sendMobileSetup, sendFilterSetup } = require('./query/query.js');
 const insertRouter = require('./insert/router.js');
 const auditRouter = require('./query/router.js');

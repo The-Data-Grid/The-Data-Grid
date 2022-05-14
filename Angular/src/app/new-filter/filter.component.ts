@@ -142,6 +142,7 @@ formatQueryString(rules) {
 		'condition' in obj;
 	}
 
+	// 0 = AND, 1 = OR
 	function traverseGroup(group) {
 		let newGroup = [];
 		newGroup.push(group.condition === 'AND' ? 0 : 1);
@@ -154,6 +155,7 @@ formatQueryString(rules) {
 				})
 			}
 		}
+		return newGroup;
 	}
 }
 

@@ -6,7 +6,7 @@
 const fs = require('fs')
 const Joi = require('joi');
 
-const {idValidationLookup} = require('./setup.js');
+const {idValidationLookup} = require('../preprocess/load.js');
 
 /*
 *************

@@ -25,15 +25,27 @@ CREATE TABLE location_point (
     data_point geometry(Point, 4326) NOT NULL
 );
 
+CREATE INDEX location_point_index
+    ON location_point
+    USING GIST (geom);
+
 CREATE TABLE location_region (
     location_id SERIAL PRIMARY KEY,
     data_region geometry(Polygon, 4326) NOT NULL
 );
 
+CREATE INDEX location_region_index
+    ON location_region
+    USING GIST (geom);
+
 CREATE TABLE location_path (
     location_id SERIAL PRIMARY KEY,
     data_path geometry(LineString, 4326) NOT NULL
 );
+
+CREATE INDEX location_path_index
+    ON location_path
+    USING GIST (geom);
 
 -- Submission and Globals
 
@@ -430,6 +442,24 @@ INSERT INTO metadata_selector
         (DEFAULT, 'text'),
         (DEFAULT, 'bool');
 
+CREATE TABLE metadata_selector_new (
+    selector_id SERIAL PRIMARY KEY,
+    selector_name TEXT NOT NULL
+);
+INSERT INTO metadata_selector_new
+    (selector_id, selector_name)
+    VALUES
+        (DEFAULT, 'text'),
+        (DEFAULT, 'decimal'),
+        (DEFAULT, 'wholeNumber'),
+        (DEFAULT, 'date'),
+        (DEFAULT, 'checkbox'),
+        (DEFAULT, 'checkboxList'),
+        (DEFAULT, 'dropdown'),
+        (DEFAULT, 'geoPoint'),
+        (DEFAULT, 'geoLine'),
+        (DEFAULT, 'geoRegion');
+
 CREATE TABLE metadata_sql_type (
     type_id SERIAL PRIMARY KEY,
     type_name TEXT NOT NULL
@@ -587,6 +617,8 @@ CREATE TABLE metadata_column (
     frontend_type INTEGER NOT NULL, --fk **
     information TEXT,
     accuracy TEXT,
+
+    selector_type INTEGER NOT NULL, --fk **
 
     /*
     For backend
@@ -861,6 +893,7 @@ ALTER TABLE metadata_column ADD FOREIGN KEY (input_selector) REFERENCES metadata
 ALTER TABLE metadata_column ADD FOREIGN KEY (frontend_type) REFERENCES metadata_frontend_type;
 ALTER TABLE metadata_column ADD FOREIGN KEY (sql_type) REFERENCES metadata_sql_type;
 ALTER TABLE metadata_column ADD FOREIGN KEY (reference_type) REFERENCES metadata_reference_type;
+ALTER TABLE metadata_column ADD FOREIGN KEY (selector_type) REFERENCES metadata_selector_new;
 
 ALTER TABLE m2m_metadata_item ADD FOREIGN KEY (item_id) REFERENCES metadata_item;
 ALTER TABLE m2m_metadata_item ADD FOREIGN KEY (referenced_item_id) REFERENCES metadata_item;
@@ -1051,7 +1084,8 @@ CREATE PROCEDURE insert_metadata_column(column_name TEXT,
                                        information TEXT,
                                        accuracy TEXT,
                                        sql_type_name TEXT,
-                                       reference_type_name TEXT)
+                                       reference_type_name TEXT,
+                                       selector_type TEXT)
     AS
     $$
         BEGIN
@@ -1088,7 +1122,8 @@ CREATE PROCEDURE insert_metadata_column(column_name TEXT,
                     information,
                     accuracy,
                     (SELECT type_id FROM metadata_sql_type WHERE type_name = sql_type_name),
-                    (SELECT type_id FROM metadata_reference_type WHERE type_name = reference_type_name)
+                    (SELECT type_id FROM metadata_reference_type WHERE type_name = reference_type_name),
+                    (SELECT selector_id FROM metadata_selector_new WHERE selector_name = selector_type)
                 );
 
             COMMIT;
@@ -1632,19 +1667,19 @@ CALL "add_history_table"('item_audit');
 -- Item columns 
 -- column_name,  table_name_,  observation_table_name,  subobservation_table_name, item_table_name, is_default, is_nullable, frontend_name, filter_selector_name, input_selector_name, frontend_type_name, information, accuracy, sql_type_name, reference_type_name
 -- CALL "insert_metadata_column"('data_time_created', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Time Audit Created', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-id');
-CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
 
-CALL "insert_metadata_column"('data_entity_name', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Name', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_entity_address', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Address', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_entity_name', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Name', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
+CALL "insert_metadata_column"('data_entity_address', 'item_entity', NULL, NULL, 'item_entity', TRUE, FALSE, 'Entity Address', 'searchableDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-non-id', 'text');
 
-CALL "insert_metadata_column"('data_fips_code', 'item_county', NULL, NULL, 'item_county', TRUE, TRUE, 'FIPS County Code', 'numericEqual', NULL, 'string', 'Five digit number which uniquely identify counties and county equivalents', NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_county_name', 'item_county', NULL, NULL, 'item_county', TRUE, FALSE, 'County Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_fips_code', 'item_county', NULL, NULL, 'item_county', TRUE, TRUE, 'FIPS County Code', 'numericEqual', NULL, 'string', 'Five digit number which uniquely identify counties and county equivalents', NULL, 'TEXT', 'item-non-id', 'wholeNumber');
+CALL "insert_metadata_column"('data_county_name', 'item_county', NULL, NULL, 'item_county', TRUE, FALSE, 'County Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
 
-CALL "insert_metadata_column"('data_country_name', 'item_country', NULL, NULL, 'item_country', TRUE, FALSE, 'Country Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_country_name', 'item_country', NULL, NULL, 'item_country', TRUE, FALSE, 'Country Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
 
 -- CALL "insert_metadata_column"('data_time_uploaded', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Time SOP Uploaded', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
-CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_body', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Body', 'text', NULL, 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
+CALL "insert_metadata_column"('data_body', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Body', 'text', NULL, 'string', NULL, NULL, 'TEXT', 'item-non-id', 'text');
 
 
 --CALL "insert_metadata_column"('data_template_json', 'item_template', NULL, NULL, 'item_template', FALSE, FALSE, 'Audit Template JSON', 'searchableDropdown', NULL, 'string', 'JSON representation of an audit input template', NULL, 'JSON', 'item-non-id');
@@ -1652,40 +1687,40 @@ CALL "insert_metadata_column"('data_body', 'item_sop', NULL, NULL, 'item_sop', T
 
 --CALL "insert_metadata_column"('data_time_submitted', 'item_submission', NULL, NULL, 'item_submission', TRUE, FALSE, 'Time Audit Submission Submitted', 'calendarRange', NULL, 'date', NULL, NULL, 'TIMESTAMPTZ', 'item-non-id');
 
-CALL "insert_metadata_column"('data_building_name', 'item_building', NULL, NULL, 'item_building', TRUE, FALSE, 'Building Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_building_name', 'item_building', NULL, NULL, 'item_building', TRUE, FALSE, 'Building Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
 
-CALL "insert_metadata_column"('data_population', 'item_city', NULL, NULL, 'item_city', TRUE, TRUE, 'City Population', 'numericEqual', NULL, 'string', NULL, NULL, 'NUMERIC', 'item-non-id');
-CALL "insert_metadata_column"('data_city_name', 'item_city', NULL, NULL, 'item_city', TRUE, FALSE, 'City Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_population', 'item_city', NULL, NULL, 'item_city', TRUE, TRUE, 'City Population', 'numericEqual', NULL, 'string', NULL, NULL, 'NUMERIC', 'item-non-id', 'wholeNumber');
+CALL "insert_metadata_column"('data_city_name', 'item_city', NULL, NULL, 'item_city', TRUE, FALSE, 'City Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
 
 --CALL "insert_metadata_column"('data_submission_name', 'item_submission', NULL, NULL, 'item_submission', TRUE, TRUE, 'Audit Submission Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_state_name', 'item_state', NULL, NULL, 'item_state', TRUE, FALSE, 'State Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_state_name', 'item_state', NULL, NULL, 'item_state', TRUE, FALSE, 'State Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
 
-CALL "insert_metadata_column"('data_organization_name_text', 'item_organization', NULL, NULL, 'item_organization', TRUE, FALSE, 'Organization Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id');
-CALL "insert_metadata_column"('data_organization_name_link', 'item_organization', NULL, NULL, 'item_organization', TRUE, TRUE, 'Organization Website', NULL, NULL, 'hyperlink', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_organization_name_text', 'item_organization', NULL, NULL, 'item_organization', TRUE, FALSE, 'Organization Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
+CALL "insert_metadata_column"('data_organization_name_link', 'item_organization', NULL, NULL, 'item_organization', TRUE, TRUE, 'Organization Website', NULL, NULL, 'hyperlink', NULL, NULL, 'TEXT', 'item-non-id', 'text');
 
 --CALL "insert_metadata_column"('data_description', 'item_catalog', NULL, NULL, 'item_catalog', FALSE, TRUE, 'Catalog Description', NULL, 'text', 'string', 'A description of the audit which will appear in the catalog', NULL, 'TEXT', 'item-non-id');
 --CALL "insert_metadata_column"('data_title', 'item_catalog', NULL, NULL, 'item_catalog', TRUE, FALSE, 'Catalog Title', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
 --     user
-CALL "insert_metadata_column"('data_is_email_public', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Email visible to Public', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');
-CALL "insert_metadata_column"('data_is_quarterly_updates', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Receive Quarterly Updates', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id');
-CALL "insert_metadata_column"('data_first_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User First Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_last_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Last Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id');
+CALL "insert_metadata_column"('data_is_email_public', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Email visible to Public', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id', 'checkbox');
+CALL "insert_metadata_column"('data_is_quarterly_updates', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Receive Quarterly Updates', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id', 'checkbox');
+CALL "insert_metadata_column"('data_first_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User First Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id', 'text');
+CALL "insert_metadata_column"('data_last_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Last Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id', 'text');
 -- CALL "insert_metadata_column"('data_date_of_birth', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Date of Birth', 'calendarRange', 'calendarEqual', 'string', NULL, NULL, 'TEXT', 'item-non-id');
-CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id');
+CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id', 'text');
 
 
 -- Locations
 -- Building
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_building', FALSE, FALSE, 'Building Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_building', FALSE, FALSE, 'Building Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location', 'geoRegion');
 -- City
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_city', FALSE, FALSE, 'City Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
-CALL "insert_metadata_column"('data_point', 'location_point', NULL, NULL, 'item_city', FALSE, FALSE, 'City Geographic Point', NULL, NULL, 'location', NULL, NULL, 'Point', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_city', FALSE, FALSE, 'City Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location', 'geoRegion');
+CALL "insert_metadata_column"('data_point', 'location_point', NULL, NULL, 'item_city', FALSE, FALSE, 'City Geographic Point', NULL, NULL, 'location', NULL, NULL, 'Point', 'item-location', 'geoPoint');
 -- County
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_county', FALSE, FALSE, 'County Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_county', FALSE, FALSE, 'County Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location', 'geoRegion');
 -- State
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_state', FALSE, FALSE, 'State Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_state', FALSE, FALSE, 'State Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location', 'geoRegion');
 -- Country
-CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_country', FALSE, FALSE, 'Country Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location');
+CALL "insert_metadata_column"('data_region', 'location_region', NULL, NULL, 'item_country', FALSE, FALSE, 'Country Geographic Region', NULL, NULL, 'location', NULL, NULL, 'Polygon', 'item-location', 'geoRegion');
 
 
 -- Column Returnable Lookup

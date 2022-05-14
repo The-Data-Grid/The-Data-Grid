@@ -7,13 +7,13 @@ const {
     requiredItemLookup,
     returnableIDLookup,
     itemColumnObject,
-} = require('../setup.js');
+} = require('../preprocess/load.js');
 const {
     isValidDate,
     dateToUTC,
-} = require('../validate.js');
+} = require('../parse/validate.js');
 const type = require('@melgrove/type');
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 const formatSQL = postgresClient.format;
 
 class CreateItemError extends Error {

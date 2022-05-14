@@ -1,7 +1,7 @@
 const express = require('express'); 
 const router = express.Router(); //use router instead of app
 // Database connection and SQL formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 const { authorizeSubmission } = require('../auth/authorizer.js');
 // get connection object
 const db = postgresClient.getConnection.db

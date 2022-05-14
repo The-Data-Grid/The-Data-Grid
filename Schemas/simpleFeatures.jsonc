@@ -1,9 +1,9 @@
 [
 {
     "tableName": "observation_vs_bin", //infer
-    "parentTableName": null, //infer
+    "parentTableName": null, // remove
     "frontendName": "Victor Stanley Waste Bin", // required
-    "numFeatureRange": null, // not sure yet
+    "numFeatureRange": null, // remove
     "information": "A Compost, Landfill, or Recycle Waste Bin", // optional, default null
     "observableItem" : {
         "requiredItem": [
@@ -11,7 +11,7 @@
                 "name": "item_entity", 
                 "isID": true, 
                 "isNullable": false, 
-                "frontendName": "Entity of Cluster", 
+                "frontendName": "Entity of Cluster", // infer
                 "information": null
             }
         ],
@@ -20,8 +20,8 @@
             "tableName": "location_point",
             "columnName": "data_point"
         },
-        "frontendName": "Victor Stanley Waste Bin",
-        "creationPrivilege": 2
+        "frontendName": "Victor Stanley Waste Bin", // infer
+        "creationPrivilege": 2 // same as uploadPrivilege, remove
     },
     "authorization": {
         "queryPrivilege": "guest",
@@ -30,8 +30,12 @@
         "uploadRole": "auditor"
     }
 },
+
+
+
+
 {
-    "frontendName": "Victor Stanley Waste Bin", // required
+    "name": "Victor Stanley Waste Bin", // required
     "information": "A Compost, Landfill, or Recycle Waste Bin", // optional, default null
     "observableItem" : {
         "requiredItem": [
@@ -39,17 +43,9 @@
                 "name": "item_entity", 
                 "isID": true, 
                 "isNullable": false, 
-                "frontendName": "Entity of Cluster", 
                 "information": null
             }
-        ],
-        "realGeo": {
-            "itemName": "item_vs_bin",
-            "tableName": "location_point",
-            "columnName": "data_point"
-        },
-        "frontendName": "Victor Stanley Waste Bin",
-        "creationPrivilege": 2
+        ]
     },
     "authorization": {
         "queryPrivilege": "guest",

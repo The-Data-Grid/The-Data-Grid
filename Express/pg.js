@@ -6,7 +6,7 @@ console.log(isDeployment ? 'DEPLOYMENT' : 'DEVELOPMENT');
 
 // PostgreSQL -> Javascript type parsing
 pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
-pgp.pg.types.setTypeParser(1184, require('../parse.js').timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
+pgp.pg.types.setTypeParser(1184, require('./parse/parse.js').timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
 
 var tdgdbname = isDeployment ? process.env.PGDATABASE : 'v5';
 var tdgdbuser = 'postgres';

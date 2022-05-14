@@ -1,6 +1,6 @@
 // ============================================================
 // Functionality has been moved to a preprocessing step (preprocess.js) which
-// writes a JSON file with all the internal objects right before the API starts
+// writes a JSON file with all the internal objects right before the server starts
 // ============================================================
 
 const fs = require('fs');

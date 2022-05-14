@@ -11,7 +11,7 @@ Functions:
 ============================================================ */
 
 // SQL Formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 const formatSQL = postgresClient.format;
 
 // SQL statements
@@ -29,7 +29,7 @@ const {
     pk
 } = require('../statement.js').query;
 
-const {returnableIDLookup, featureParents} = require('../setup.js')
+const {returnableIDLookup, featureParents} = require('../preprocess/load.js')
 
 
 module.exports = {

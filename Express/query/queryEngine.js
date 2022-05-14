@@ -7,7 +7,7 @@ in the select and where clauses for the necessary returnables.
 ============================================================ */
 
 // pg-promise sql formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 const formatSQL = postgresClient.format;
 
 // alias join and global SQL statements

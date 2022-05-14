@@ -2,7 +2,7 @@
 // used by parts of the API that need to make small specialized queries
 
 // Database connection and SQL formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 // get connection object
 const db = postgresClient.getConnection.db
 // get SQL formatter

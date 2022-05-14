@@ -1,6 +1,6 @@
-const {postgresClient} = require('../../db/pg.js');
+const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
-const { apiDateToUTC } = require('../../parse.js');
+const { apiDateToUTC } = require('../../parse/parse.js');
 
 const {
     returnableIDLookup,
@@ -10,7 +10,7 @@ const {
     itemColumnObject,
     itemTableNames,
     itemObservationTableNameLookup
-} = require('../../setup.js');
+} = require('../../preprocess/load.js');
 
 const {
     CreateObservationError,

@@ -58,7 +58,7 @@ const construct = {
     add_item_to_item_reference: 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn',
     
     insert_metadata_column: 'CALL \
-    "insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(accuracy), $(sqlType), $(referenceType))',
+    "insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(accuracy), $(sqlType), $(referenceType), $(selectorType))',
     
     insert_metadata_feature: 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))',
     
@@ -156,6 +156,7 @@ const setup = {
         \
         fs.selector_name as fs__selector_name, \
         ins.selector_name as ins__selector_name, \
+        sn.selector_name as sn__selector_name, \
         sql.type_name as sql__type_name, \
         rt.type_name as rt__type_name, \
         ft.type_name as ft__type_name, ft.type_description as ft__type_description, \
@@ -168,7 +169,8 @@ const setup = {
         LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id \
         LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id \
         LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id \
-        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id',
+        LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id \
+        LEFT JOIN metadata_selector_new AS sn ON c.selector_type = sn.selector_id',
 
     allItems: 'SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
         qr.type_name as qr__type_name, ur.type_name as ur__type_name, \
