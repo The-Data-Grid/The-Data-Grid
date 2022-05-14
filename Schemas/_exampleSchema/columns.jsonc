@@ -1,0 +1,14 @@
+[
+// Example
+    { 
+        "featureName": "Name",
+        "name": "Name",
+        "information": "Unique alphanumeric bin identifier", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "TEXT", // required
+        "referenceType": "item-id", // required
+        "presetValues": null,
+        "isNullable": false // required
+    }
+]

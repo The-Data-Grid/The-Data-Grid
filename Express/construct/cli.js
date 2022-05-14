@@ -30,7 +30,8 @@ if(process.argv[0] == 'make-schema') {
     // remove command
     process.argv.splice(0, 1);
     // get and remove audit type
-    commandLineArgs.schema = process.argv[0];
+    commandLineArgs.database = process.argv[0];
+    commandLineArgs.schema = process.argv[1].split(',');
     process.argv.splice(0, 1);
     // configure command line arguments
     (process.argv.includes('--show-computed') || process.argv.includes('-sc') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
@@ -101,12 +102,15 @@ async function makeSchema(commandLineArgs) {
         };
 
         // Read schema
-        // Columns
-        let columns = readSchema(parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.schema}/columns.jsonc`);
-        let globalColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/globalSchema/columns.jsonc');
-        // Features
-        let features = readSchema(parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.schema}/features.jsonc`);
-
+        // Columns and Features
+        let columns = [];
+        let features = [];
+        commandLineArgs.schema.forEach(schema => {
+            columns = [...columns, ...readSchema(parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.database}/${schema}/columns.jsonc`)];
+            features = [...features, ...readSchema(parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.database}/${schema}/features.jsonc`)];
+        })
+        let globalColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/columns.jsonc');
+        
         // Call Construction Function
         const featureOutput = await asyncConstructAuditingTables(features, [...columns, ...globalColumns], databaseObject);
 

@@ -1,0 +1,102 @@
+[
+    {
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        },
+        "information": "A fixed receptacle into which a person may urinate or defecate",
+        "name": "Toilet",
+        "observableItem": {
+            "requiredItem": [
+                {
+                    "isID": true,
+                    "isNullable": false,
+                    "information": null,
+                    "name": "Room"
+                }
+            ]
+        }
+    },
+    {
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        },
+        "information": "A bowl or other receptacle into which men may urinate",
+        "name": "Urinal",
+        "observableItem": {
+            "requiredItem": [
+                {
+                    "isID": true,
+                    "isNullable": false,
+                    "information": null,
+                    "name": "Room"
+                }
+            ]
+        }
+    },
+    {
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        },
+        "information": "A fixed basin with a water supply and a drain",
+        "name": "Sink",
+        "observableItem": {
+            "requiredItem": [
+                {
+                    "isID": true,
+                    "isNullable": false,
+                    "information": null,
+                    "name": "Room"
+                }
+            ]
+        }
+    },
+    {
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        },
+        "information": "A reflective surface that reflects a clear image",
+        "name": "Mirror",
+        "observableItem": {
+            "requiredItem": [
+                {
+                    "isID": true,
+                    "isNullable": false,
+                    "information": null,
+                    "name": "Room"
+                }
+            ]
+        }
+    },
+    {
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        },
+        "information": "A part or division of a building enclosed by walls, floor, and ceiling",
+        "name": "Room",
+        "observableItem": {
+            "requiredItem": [
+                {
+                    "isID": true,
+                    "isNullable": false,
+                    "information": null,
+                    "name": "Building"
+                }
+            ]
+        }
+    }
+]

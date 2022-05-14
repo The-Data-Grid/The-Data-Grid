@@ -1,0 +1,110 @@
+/*
+    UCLA WASTE AUDIT SCHEMA DATA COLUMNS
+*/
+[
+    /**
+     *  VICTOR STANLEY BIN (WIP)
+     *
+     * Name, Stream, Bin Number, Zone, Location
+     */
+
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Bin ID",
+        "information": "Unique alphanumeric bin identifier", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "TEXT", // required
+        "referenceType": "item-id", // required
+        "presetValues": null,
+        "isNullable": false // required
+    },
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Waste Stream",
+        "information": "Waste Stream Labelled on Bin", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "TEXT", // required
+        "referenceType": "item-factor", // required
+        "presetValues": ["Landfill", "Compost", "Recycle"],
+        "isNullable": false // required
+    },
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Location",
+        "information": "Geographic point of waste bin", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "Point", // required
+        "referenceType": "item-location", // required
+        "presetValues": null,
+        "isNullable": false // required
+    },
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Zone",
+        "information": "UCLA Facilities campus zone", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "INTEGER", // required
+        "referenceType": "item-factor", // required
+        "presetValues": [1, 2, 3],
+        "isNullable": false // required
+    },
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Bin Number",
+        "information": "Number of bin within zone ordered by latitude", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "INTEGER", // required
+        "referenceType": "item-non-id", // required
+        "presetValues": null,
+        "isNullable": false // required
+    },
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Mixed Stream Weight (kg)",
+        "information": "Weight in kilograms of all waste in bin, independent of stream", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "NUMERIC", // required
+        "referenceType": "obs", // required
+        "presetValues": null,
+        "isNullable": true // required
+    },
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Compost Stream Weight (kg)",
+        "information": "Weight in kilograms of compost waste in bin", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "NUMERIC", // required
+        "referenceType": "obs", // required
+        "presetValues": null,
+        "isNullable": true // required
+    },
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Recycle Stream Weight (kg)",
+        "information": "Weight in kilograms of recycle waste in bin", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "NUMERIC", // required
+        "referenceType": "obs", // required
+        "presetValues": null,
+        "isNullable": true // required
+    },
+    { 
+        "featureName": "Victor Stanley Waste Bin",
+        "name": "Landfill Stream Weight (kg)",
+        "information": "Weight in kilograms of landfill waste in bin", // optional, defaults to null
+        "accuracy": null,
+        
+        "sqlType": "NUMERIC", // required
+        "referenceType": "obs", // required
+        "presetValues": null,
+        "isNullable": true // required
+    }
+]

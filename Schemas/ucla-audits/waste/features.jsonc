@@ -1,0 +1,25 @@
+/*
+    UCLA WASTE AUDIT SCHEMA FEATURES
+*/
+[
+    {
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        },
+        "information": "A Compost, Landfill, or Recycle Waste Bin",
+        "name": "Victor Stanley Waste Bin",
+        "observableItem": {
+            "requiredItem": [
+                {
+                    "isID": true,
+                    "isNullable": false,
+                    "information": null,
+                    "name": "Entity"
+                }
+            ]
+        }
+    }
+]

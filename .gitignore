@@ -9,6 +9,7 @@ pg_upgrade_internal.log
 pg_upgrade_server.log
 pg_upgrade_utility.log
 Express/preprocess/internalObjects.json
+Schemas/verboseToSimple.js
 
 # exclude
 !node_modules/.gitkeep
