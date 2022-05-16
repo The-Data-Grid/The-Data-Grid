@@ -610,7 +610,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
         // Writing custom SQL for all of the reference types
 
         // Auditor Name coalesce
-        if(frontendName == 'Auditor Name' && referenceType == 'special') {
+        if(frontendName == 'Auditor' && referenceType == 'special') {
 
             appendSQL = 'LEFT JOIN m2m_auditor ON \
                             tdg_observation_count.observation_count_id = m2m_auditor.observation_count_id \
@@ -794,7 +794,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
             attributeAlias[1] += 1;
 
         } else {
-            throw Error('Returnable did not match to a valid return type')
+            throw Error('Returnable did not match to a valid reference type: ' + referenceType)
         }
 
         // Add returnableID to the lookup with key = id

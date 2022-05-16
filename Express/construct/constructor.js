@@ -386,16 +386,11 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
         // These data columns are defined for every feature
         for(let column of columns.filter(column => column.referenceType === 'obs-global' || column.referenceType === 'special')) {
             // for every root feature
-            for(let feature of features.filter(f => f.parentTableName === null)) {
+            for(let feature of features) {
 
                 //console.log(chalk.red.bgWhite(util.inspect(feature)))
-                let itemTableName;
-                // if subfeature
-                if(feature.parentTableName !== null) {
-                    itemTableName = featureItemLookup[feature.parentTableName];
-                } else { // then root feature
-                    itemTableName = featureItemLookup[feature.tableName];
-                }
+                let itemTableName = featureItemLookup[feature.tableName];
+                
                 // insert into metadata_column
                 try {
                     await db.none(formatSQL(insert_metadata_column, {
@@ -439,7 +434,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                 }
 
                 // Auditor Name Special Case
-                if(column.referenceType === 'special' && column.frontendName === 'Auditor Name') {
+                if(column.referenceType === 'special' && column.frontendName === 'Auditor') {
                     await db.none(formatSQL(add_data_col, {
                         tableName: feature.tableName,
                         columnName: column.columnName,
