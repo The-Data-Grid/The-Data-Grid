@@ -36,9 +36,8 @@ body {
    padding-left: 0;
 }
 
-.top-box
-{
-    box-shadow: inset 0 7px 20px -7px rgba(0,0,0,0.4);
+.top-box {
+   box-shadow: inset 0 7px 20px -7px rgba(0, 0, 0, 0.4);
 }
 
 .bottom-bar {
@@ -49,7 +48,7 @@ body {
 
 .bottom-card {
    background-color: inherit;
-   width: 40%;
+   width: 245px;
 }
 
 .bot-text {
@@ -75,10 +74,10 @@ body {
 
 .mat-button.mat-primary .mat-button-focus-overlay {
    background-color: transparent;
- }
- 
- ::ng-deep .link-btn .mat-button-focus-overlay {
-   background-color:transparent;
+}
+
+::ng-deep .link-btn .mat-button-focus-overlay {
+   background-color: transparent;
 }
 
 .upload {
@@ -89,7 +88,9 @@ body {
    cursor: pointer;
 }
 
-button:focus { outline: none; }
+button:focus {
+   outline: none;
+}
 
 .mat-menu-content {
    background-color: 'red' !important;
@@ -116,7 +117,7 @@ button:focus { outline: none; }
    box-sizing: border-box;
    border-top: 2px solid #569CD7;
 }
- 
+
 .dropdown-btn {
    font-size: 13px;
    color: #989898;
