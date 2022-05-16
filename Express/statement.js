@@ -32,9 +32,27 @@ const query = {
 
     observationCount: 'INNER JOIN tdg_observation_count on $(feature:name).observation_count_id = tdg_observation_count.observation_count_id',
 
-    where: '$(clause:value) ($(condition:raw))',
-
-    whereCondition: '$(select:value) $(operation:value) $(filterValue)',
+    whereConditionObject: { 
+        equals: '$(id) = $(val)',
+        textContainsCase: '$(id) LIKE $(val)',
+        textContainsNoCase: '$(id) ILIKE $(val)',
+        lessOrEqual: '$(id) <= $(val)',
+        less: '$(id) < $(val)',
+        greater: '$(id) > $(val)',
+        greaterOrEqual: '$(id) >= $(val)',
+        contains: '$(id) @> {$(val)}',
+        containedBy: '$(id) <@ {$(val)}',
+        overlaps: '$(id) && {$(val)}',
+        geoContains: 'ST_Contains($(id), ST_GeomFromGeoJSON($(val)))',
+        geoCrosses: 'ST_Crosses($(id), ST_GeomFromGeoJSON($(val)))',
+        geoDisjoint: 'ST_Disjoint($(id), ST_GeomFromGeoJSON($(val)))',
+        geoWithinDistance: 'ST_DWithin($(id), ST_GeomFromGeoJSON($(val)), $(additionalArg))',
+        geoEquals: 'ST_Equals($(id), ST_GeomFromGeoJSON($(val)))',
+        geoIntersects: 'ST_Intersects($(id), ST_GeomFromGeoJSON($(val)))',
+        geoOverlaps: 'ST_Overlaps($(id), ST_GeomFromGeoJSON($(val)))',
+        geoTouches: 'ST_Touches($(id), ST_GeomFromGeoJSON($(val)))',
+        geoWithin: 'ST_Within($(id), ST_GeomFromGeoJSON($(val)))',
+    },
 
     submission: 'LEFT JOIN item_submission ON $(feature:name).submission_id = item_submission.item_id',
 
@@ -58,7 +76,7 @@ const construct = {
     add_item_to_item_reference: 'SELECT "add_item_to_item_reference"($(observableItem), $(referenced), $(isID), $(isNullable)) AS idColumn',
     
     insert_metadata_column: 'CALL \
-    "insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(accuracy), $(sqlType), $(referenceType), $(selectorType))',
+    "insert_metadata_column"($(columnName), $(tableName), $(observationTableName), $(subobservationTableName), $(itemTableName), $(isDefault), $(isNullable), $(frontendName), $(filterSelectorName), $(inputSelectorName), $(frontendType), $(information), $(accuracy), $(sqlType), $(referenceType), $(selectorType), $(isFilterable))',
     
     insert_metadata_feature: 'CALL "insert_metadata_feature"($(tableName), $(itemTableName), $(information), $(frontendName))',
     
@@ -125,9 +143,11 @@ const setup = {
         c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, 
         c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, 
         c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, 
-        
+        c.is_filterable as c__is_filterable,
+
         fs.selector_name as fs__selector_name, 
         ins.selector_name as ins__selector_name, 
+        sn.selector_name as sn__selector_name,
         sql.type_name as sql__type_name, 
         rt.type_name as rt__type_name, 
         ft.type_name as ft__type_name, ft.type_description as ft__type_description, 
@@ -143,6 +163,7 @@ const setup = {
         LEFT JOIN metadata_feature AS rf ON r.rootfeature_id = rf.feature_id 
         LEFT JOIN metadata_selector AS fs ON c.filter_selector = fs.selector_id 
         LEFT JOIN metadata_selector AS ins ON c.input_selector = ins.selector_id 
+        LEFT JOIN metadata_selector_new AS sn ON c.selector_type = sn.selector_id
         LEFT JOIN metadata_sql_type AS sql ON c.sql_type = sql.type_id 
         LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id 
         LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id 
@@ -157,6 +178,7 @@ const setup = {
         fs.selector_name as fs__selector_name, \
         ins.selector_name as ins__selector_name, \
         sn.selector_name as sn__selector_name, \
+        c.is_filterable as c__is_filterable, \
         sql.type_name as sql__type_name, \
         rt.type_name as rt__type_name, \
         ft.type_name as ft__type_name, ft.type_description as ft__type_description, \

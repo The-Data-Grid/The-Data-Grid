@@ -10,7 +10,6 @@ const { postgresClient } = require('../pg.js');
 const db = postgresClient.getConnection.db;
 
 // Middleware
-const parse = require('../parse/parse.js');
 const { formatDistinct } = require('../query/query.js');
 const setDatabaseConnection = require('../query/direct.js');
 const { auditManagment, sopManagement, generateApiKey } = setDatabaseConnection(db)

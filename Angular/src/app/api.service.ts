@@ -144,7 +144,7 @@ export class ApiService {
   }
 
   private formatFilterSelections(appliedFilterSelections): string {
-    return appliedFilterSelections.length > 0 ? 'queryObject=' + appliedFilterSelections : '';
+    return appliedFilterSelections.length > 0 ? 'builder=' + appliedFilterSelections : '';
   }
 
   public getAuditManagementTable(organizationID) {

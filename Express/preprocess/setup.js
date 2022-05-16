@@ -278,7 +278,8 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
                     nullable: row['c__is_nullable'],
                     information: row['c__information'],
                     accuracy: row['c__accuracy'],
-                    presetValues
+                    presetValues,
+                    isFilterable: row['c__is_filterable'],
                 },
             }
         );
@@ -517,8 +518,6 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
 
         let id = row['r__returnable_id'].toString();
 
-        let isFilterable = (row['fs__selector_name'] === null ? false : true);
-
         let isGlobal = (row['non_obs_i__table_name'] === 'item_global' ? true : false);
 
         idValidationLookup[id] = {
@@ -529,7 +528,8 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
             //referenceTable: row['c__reference_table_name'],
             item: row['i__table_name'],
             referenceType: row['rt__type_name'],
-            isFilterable: isFilterable,
+            isFilterable: row['c__is_filterable'],
+            selectorType: row['sn__selector_name'],
             isGlobal,
 
             sqlType: row['sql__type_name'],

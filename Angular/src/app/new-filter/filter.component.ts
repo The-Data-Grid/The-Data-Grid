@@ -132,27 +132,28 @@ private operationMap = {
 
 }
 formatQueryString(rules) {
+	console.log(rules)
+	// Empty rule set case for no query string
 	if(rules.rules.length == 0) return '';
-	let group = [];
-
-
-	return encodeURIComponent(JSON.stringify(rules));
-
-	function isGroup(obj) {
-		'condition' in obj;
-	}
+	// Compress query logic into object
+	const isGroup = (obj) => 'condition' in obj;
+	let compressedRules = traverseGroup(rules)
+	console.log(compressedRules)
+	return encodeURIComponent(JSON.stringify(compressedRules));
 
 	// 0 = AND, 1 = OR
 	function traverseGroup(group) {
 		let newGroup = [];
 		newGroup.push(group.condition === 'AND' ? 0 : 1);
-		for(let element of group.slice(1)) {
-			if(isGroup) {
+		for(let element of group.rules) {
+			if(isGroup(element)) {
 				newGroup.push(traverseGroup(element));
 			} else {
 				newGroup.push({
-
-				})
+					id: element.id,
+					op: element.operator,
+					val: element.value
+				});
 			}
 		}
 		return newGroup;

@@ -10,7 +10,8 @@
         "presetValues": null,
         "accuracy": null,
         "sqlType": "TIMESTAMPTZ",
-        "referenceType": "obs-global"
+        "referenceType": "obs-global",
+        "isFilterable": true
     },
     { // COMMENTARY    
         "sqlType": "TEXT",
@@ -20,7 +21,8 @@
         "information": "Additional commentary about the observation",
         "isNullable": true,
         "presetValues": null,
-        "accuracy": null
+        "accuracy": null,
+        "isFilterable": false
     },
     { // AUDITOR NAME
         "sqlType": "TEXT",
@@ -30,7 +32,8 @@
         "information": "Name of the auditor(s) who conducted this observation",
         "isNullable": true,
         "presetValues": null,
-        "accuracy": null
+        "accuracy": null,
+        "isFilterable": false
     },
     { // SOP NAME    
         "sqlType": "TEXT",
@@ -40,7 +43,8 @@
         "featureName": null,
         "accuracy": null,
         "information": "The standard operating procedure(s) used for the audit on this feature",
-        "presetValues": null
+        "presetValues": null,
+        "isFilterable": false
     }
 ]
 

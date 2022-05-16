@@ -59,24 +59,23 @@ function dataQueryWrapper(queryType) {
 
             const featureClauseArray = queryHelpers.makeFeatureClauseArray(feature, featureTreeArray, queryType);
             
-            const whereClauseArray = queryHelpers.makeWhereClauseArray(whereLookup, res.locals.parsed.filters);
+            const whereClause = queryHelpers.makeWhereClause(whereLookup, res.locals.parsed.builder);
             
             const universalClauseArray = queryHelpers.makeUniversalFilters(whereLookup, res.locals.parsed.universalFilters, feature, queryType);
             
             const groupByClause = queryHelpers.makeGroupByClause(allReturnableIDs, feature, queryType);
             
-
             // EXECUTING QUERY
             // ==================================================
     
             // Adding clauses to query in order
-            let query = [selectClause, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, groupByClause, ...universalClauseArray]; 
+            let query = [selectClause, ...featureClauseArray, ...joinClauseArray, whereClause, groupByClause, ...universalClauseArray]; 
     
             // Concatenating clauses to make final SQL query
             let finalQuery = query.join(' '); 
             
             // Number of row query without limit, offset, or sorting
-            let finalQueryForCounting = [selectClause, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, groupByClause].join(' ');
+            let finalQueryForCounting = [selectClause, ...featureClauseArray, ...joinClauseArray, whereClause, groupByClause].join(' ');
             // SQLi safe because `finalQueryForCouting` is sanitized
             const nRowsFinalQuery = `WITH query_to_count AS (${finalQueryForCounting}) SELECT COUNT(*)::INTEGER AS "n" FROM query_to_count`;
             
@@ -98,7 +97,6 @@ function dataQueryWrapper(queryType) {
             console.log(err)
             // Error
             return res.status(500).send(`Internal Server Error 1702: Malformed Query`);
-            
         }
     }
 }

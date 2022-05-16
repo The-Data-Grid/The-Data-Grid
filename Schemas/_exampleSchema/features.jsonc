@@ -1,7 +1,8 @@
 [
+    // Example
     {
-        "name": "Feature Name", // required
-        "information": "Information about the feature ", // optional, default null
+        "name": "Feature Name",                          // required
+        "information": "Information about the feature",  // optional, default null
         "observableItem" : {
             "requiredItem": [
                 {

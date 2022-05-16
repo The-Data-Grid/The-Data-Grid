@@ -409,7 +409,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                         accuracy: column.accuracy,
                         sqlType: column.sqlType,
                         referenceType: column.referenceType,
-                        selectorType: column.selectorType
+                        selectorType: column.selectorType,
+                        isFilterable: column.isFilterable,
                     }));
 
                     console.log(chalk.green(`Column Metadata: Inserted global column ${column.columnName} into metadata_column for ${featureItemLookup[feature.tableName]}`));
@@ -479,7 +480,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                     accuracy: column.accuracy,
                     sqlType: column.sqlType,
                     referenceType: column.referenceType,
-                    selectorType: column.selectorType
+                    selectorType: column.selectorType,
+                    isFilterable: column.isFilterable,
                 }));
 
                 console.log(chalk.green(`Column Metadata: Inserted column ${column.columnName} into metadata_column for ${column.itemName}`));
@@ -1193,7 +1195,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             verbose.sqlType = columnSchema.sqlType;
             verbose.referenceType = columnSchema.referenceType;
             verbose.accuracy = columnSchema.accuracy;
-            verbose.isNullable = columnSchema.isNullable;
+            verbose.isNullable = 'isNullable' in columnSchema ? columnSchema.isNullable : false;
+            verbose.isFilterable = 'isFilterable' in columnSchema ? columnSchema.isFilterable : true;
             verbose.information = columnSchema.information;
             verbose.presetValues = columnSchema.presetValues;
             verbose.isDefault = true;
