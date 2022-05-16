@@ -254,14 +254,6 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
         // b. Insert observable items into metadata_item
         for(let feature of rootFeatures) {
             try {
-                console.log(formatSQL(insert_metadata_item_observable, {
-                    itemName: featureItemLookup[feature.tableName],
-                    frontendName: feature.observableItem.frontendName,
-                    queryRole: feature.authorization.queryRole,
-                    queryPrivilege: feature.authorization.queryPrivilege,
-                    uploadRole: feature.authorization.uploadRole,
-                    uploadPrivilege: feature.authorization.uploadPrivilege,
-                }))
                 await db.none(formatSQL(insert_metadata_item_observable, {
                     itemName: featureItemLookup[feature.tableName],
                     frontendName: feature.observableItem.frontendName,
@@ -1045,67 +1037,70 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
         return itemParentLookup;
     };
 
-    // Bubbles error to transaction and causes SQL ROLLBACK
+    // Bubbles error to parent function
     function constructjsError(error) {
         console.log(chalk.bgWhite.red('Schema construction halted!'));
         throw Error(error);
     }
 
     // TODO: check if name is taken
-    function convertFeatureSchemaToVerbose(featureSchema) {
-        const verbose = {};
+    function convertFeatureSchemaToVerbose(featureSchemaArray) {
+        let verboseSchema = [];
+        for(let featureSchema of featureSchemaArray) {
+            const verbose = {};
 
-        // Name
-        // check if name is valid
-        if(!isSchemaNameValid(featureSchema.name)) {
-            throw Error('Invalid `name`');
-        }
-        verbose.tableName = 'observation_' + featureSchema.name.toLowerCase().split(' ').join('_');
-        verbose.frontendName = featureSchema.name;
-
-        // check if information is valid
-        if(featureSchema.information.length > 1000) {
-            throw Error('Invalid `information`');
-        }
-        verbose.information = featureSchema.information;
-
-        // required items
-        verbose.observableItem = {
-            requiredItem: [],
-    // TODO: Handle realGeo
-            realGeo: { 
-                itemName: null,
-                tableName: null,
-                columnName: null
-            },
-            frontendName: featureSchema.name
-        }
-        featureSchema.observableItem.requiredItem.forEach((item, i) => {
-            if(!isSchemaNameValid(item.name)) {
-                throw Error('Invalid `name` for `requiredItem` ' + (i+1));
+            // Name
+            // check if name is valid
+            if(!isSchemaNameValid(featureSchema.name)) {
+                throw Error('Invalid `name`: ' + featureSchema.name);
             }
+            verbose.tableName = 'observation_' + featureSchema.name.toLowerCase().split(' ').join('_');
+            verbose.frontendName = featureSchema.name;
 
-            verbose.observableItem.requiredItem.push({
-                name: 'item_' + item.name.toLowerCase().split(' ').join('_'),
-                isID: item.isID,
-                isNullable: item.isNullable,
-                information: item.information,
-                frontendName: item.name + ' of ' + verbose.frontendName
+            // check if information is valid
+            if(featureSchema.information.length > 1000) {
+                throw Error('Invalid `information`');
+            }
+            verbose.information = featureSchema.information;
+
+            // required items
+            verbose.observableItem = {
+                requiredItem: [],
+        // TODO: Handle realGeo
+                realGeo: { 
+                    itemName: null,
+                    tableName: null,
+                    columnName: null
+                },
+                frontendName: featureSchema.name
+            }
+            featureSchema.observableItem.requiredItem.forEach((item, i) => {
+                if(!isSchemaNameValid(item.name)) {
+                    throw Error('Invalid `name` for `requiredItem` ' + (i+1) + ': ' + item.name);
+                }
+
+                verbose.observableItem.requiredItem.push({
+                    name: 'item_' + item.name.toLowerCase().split(' ').join('_'),
+                    isID: item.isID,
+                    isNullable: item.isNullable,
+                    information: item.information,
+                    frontendName: item.name + ' of ' + verbose.frontendName
+                });
             });
-        });
 
-        // authorization
-    // TODO: validation
-        verbose.authorization = featureSchema.authorization;
+            // authorization
+        // TODO: validation
+            verbose.authorization = featureSchema.authorization;
 
-        return verbose;
+            verboseSchema.push(verbose);
+        }
 
-
+        return verboseSchema;
         
     }
 
     // TODO: check if name is taken
-    function convertColumnSchemaToVerbose(columnSchema) {
+    function convertColumnSchemaToVerbose(columnSchemaArray) {
         // Type Mappings
         // ==================================
         const tableNameMap = {            
@@ -1117,7 +1112,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             'obs-list': ['list_obs_', true],
             'item-list': ['list_item_', true],
             'attribute': ['attribute_', true],
-            'factor': ['factor_', true],
+            'obs-factor': ['factor_', true],
+            'item-factor': ['factor_', true],
             'item-location': {
                 Point: ['location_point', false],
                 LineString: ['location_path', false],
@@ -1134,7 +1130,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             'obs-list': ['data_element', false],
             'item-list': ['data_element', false],
             'attribute': ['data_attribute', false],
-            'factor': ['data_level', false],
+            'obs-factor': ['factor_', true],
+            'item-factor': ['data_level', false],
             'item-location': {
                 Point: ['data_point', false],
                 LineString: ['data_path', false],
@@ -1151,7 +1148,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             'obs-list': 2,
             'item-list': 2,
             'attribute': 3,
-            'factor': 3,
+            'item-factor': 3,
+            'obs-factor': 3,
             'item-location': 4
         };
     
@@ -1191,84 +1189,95 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
 
         // Converter
         // ==================================
-        const verbose = {};
+        let verboseSchema = [];
+        for(let columnSchema of columnSchemaArray) {
 
-        // Direct transfers
-        verbose.sqlType = columnSchema.sqlType;
-        verbose.referenceType = columnsSchema.referenceType;
-        verbose.accuracy = columnSchema.accuracy;
-        verbose.isNullable = columnSchema.isNullable;
-        verbose.information = columnSchema.information;
-        verbose.presetValues = columnSchema.presetValues;
-        verbose.isDefault = true;
-
-        // TODO: remove these from the schema
-        verbose.filterSelector = null;
-        verbose.uploadSelector = null;
-        verbose.frontendType = null;
-
-        // TODO: remove subobservations from the schema
-        verbose.subobservationTableName = null;
-        verbose.observationTableName = null;
-
-        // Column name
-        if(!isSchemaNameValid(columnSchema.name)) {
-            throw Error('Invalid `name`');
-        }
-        verbose.frontendName = columnSchema.name;
-        // Special case SOP (Standard Operating Procedure)
-        if(columnSchema.name == 'Standard Operating Procedure') {
-            verbose.columnName = 'data_name';
-        } else {
-            let columnNameArray = getColumnName(columnSchema.referenceType, columnSchema.sqlType);
-            let columnName = columnNameArray[0];
-            if(columnNameArray[1]) {
-                // already checked validity
-                columnName += columnSchema.name.toLowerCase().split(' ').join('_');
+            const verbose = {};
+    
+            // Direct transfers
+            verbose.sqlType = columnSchema.sqlType;
+            verbose.referenceType = columnSchema.referenceType;
+            verbose.accuracy = columnSchema.accuracy;
+            verbose.isNullable = columnSchema.isNullable;
+            verbose.information = columnSchema.information;
+            verbose.presetValues = columnSchema.presetValues;
+            verbose.isDefault = true;
+    
+            // TODO: remove these from the schema
+            verbose.filterSelector = null;
+            verbose.uploadSelector = null;
+            verbose.frontendType = null;
+    
+            // TODO: remove subobservations from the schema
+            verbose.subobservationTableName = null;
+            verbose.observationTableName = null;
+    
+            // Column name
+            if(!isSchemaNameValid(columnSchema.name)) {
+                throw Error('Invalid `name`: ' + columnSchema.name);
             }
-            verbose.columnName = columnName;
-        }
-
-        // Item Table Name
-        if(!isSchemaNameValid(columnSchema.featureName)) {
-            throw Error('Invalid `featureName`');
-        }
-        // Special case no item name for `globalSchema` columns
-        if(columnSchema.referenceType == 'obs-global' || columnSchema.referenceType == 'special') {
-            verbose.itemName = null;
-        } 
-        // Proceed normally for all other columns
-        else {
-            verbose.itemName = 'item_' + columnSchema.featureName.toLowerCase().split(' ').join('_');
-        }
-
-        // Table Name
-        let tableNameArray = getTableName(columnSchema.referenceType, columnSchema.sqlType);
-        let tableName;
-        if(tableNameArray === null) {
-            tableName = tableNameArray
-        } else {
-            tableName = tableNameArray[0];
-            if(tableNameArray[1]) {
-                // already checked validity
-                tableName += columnSchema.featureName.toLowerCase().split(' ').join('_');
+            verbose.frontendName = columnSchema.name;
+            // Special case SOP (Standard Operating Procedure)
+            if(columnSchema.name == 'Standard Operating Procedure') {
+                verbose.columnName = 'data_name';
+            } else {
+                let columnNameArray = getColumnName(columnSchema.referenceType, columnSchema.sqlType);
+                let columnName = columnNameArray[0];
+                if(columnNameArray[1]) {
+                    // already checked validity
+                    columnName += columnSchema.name.toLowerCase().split(' ').join('_');
+                }
+                verbose.columnName = columnName;
             }
+    
+            // Item Table Name
+            // Special case no item name for `globalSchema` columns
+            if(columnSchema.referenceType == 'obs-global' || columnSchema.referenceType == 'special') {
+                verbose.itemName = null;
+            } 
+            // Proceed normally for all other columns
+            else {
+                if(!isSchemaNameValid(columnSchema.featureName)) {
+                    throw Error('Invalid `featureName`: ' + columnSchema.featureName);
+                }
+                verbose.itemName = 'item_' + columnSchema.featureName.toLowerCase().split(' ').join('_');
+            }
+    
+            // Table Name
+            let tableNameArray = getTableName(columnSchema.referenceType, columnSchema.sqlType);
+            let tableName;
+            if(tableNameArray === null) {
+                tableName = tableNameArray;
+            } else {
+                tableName = tableNameArray[0];
+                if(tableNameArray[1]) {
+                    // already checked validity
+                    // if column with its own external table then add the column name to the table to keep it unique
+                    if(['item-list', 'obs-list', 'item-factor', 'obs-factor', 'attribute'].includes(columnSchema.referenceType)) {
+                        tableName += columnSchema.featureName.toLowerCase().split(' ').join('_') + '_' + columnSchema.name.toLowerCase().split(' ').join('_');
+                    } else {
+                        tableName += columnSchema.featureName.toLowerCase().split(' ').join('_');
+                    }
+                }
+            }
+            verbose.tableName = tableName;
+    
+            // Selector Type
+            verbose.selectorType = getSelectorType(columnSchema.referenceType, columnSchema.sqlType);
+    
+            verboseSchema.push(verbose);
         }
-        verbose.tableName = tableName;
 
-        // Selector Type
-        verbose.selectorType = getSelectorType(columnSchema.referenceType, columnSchema.sqlType);
-
-        return verbose;
+        return verboseSchema;
 
         // Type Conversion Helpers
         // ==================================
         function getTableName(referenceType, SQLType) {
-            return Array.isArray(tableNameMap[referenceType]) ? tableNameMap[referenceType][SQLType] : tableNameMap[referenceType];
+            return (!Array.isArray(tableNameMap[referenceType]) && tableNameMap[referenceType] !== null) ? tableNameMap[referenceType][SQLType] : tableNameMap[referenceType];
         }
 
         function getColumnName(referenceType, SQLType) {
-            return Array.isArray(columnNameMap[referenceType][0]) ? columnNameMap[referenceType][SQLType] : columnNameMap[referenceType];
+            return (!Array.isArray(columnNameMap[referenceType]) && columnNameMap[referenceType] !== null) ? columnNameMap[referenceType][SQLType] : columnNameMap[referenceType];
         }
 
         function getSelectorType(referenceType, SQLType) {

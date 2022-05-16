@@ -32,7 +32,6 @@ if(process.argv[0] == 'make-schema') {
     // get and remove audit type
     commandLineArgs.database = process.argv[0];
     commandLineArgs.schema = process.argv[1].split(',');
-    process.argv.splice(0, 1);
     // configure command line arguments
     (process.argv.includes('--show-computed') || process.argv.includes('-sc') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
     // here we go

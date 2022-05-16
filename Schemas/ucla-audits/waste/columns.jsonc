@@ -65,7 +65,7 @@
     },
     { 
         "featureName": "Victor Stanley Waste Bin",
-        "name": "Mixed Stream Weight (kg)",
+        "name": "Mixed Stream Weight",
         "information": "Weight in kilograms of all waste in bin, independent of stream", // optional, defaults to null
         "accuracy": null,
         
@@ -76,7 +76,7 @@
     },
     { 
         "featureName": "Victor Stanley Waste Bin",
-        "name": "Compost Stream Weight (kg)",
+        "name": "Compost Stream Weight",
         "information": "Weight in kilograms of compost waste in bin", // optional, defaults to null
         "accuracy": null,
         
@@ -87,7 +87,7 @@
     },
     { 
         "featureName": "Victor Stanley Waste Bin",
-        "name": "Recycle Stream Weight (kg)",
+        "name": "Recycle Stream Weight",
         "information": "Weight in kilograms of recycle waste in bin", // optional, defaults to null
         "accuracy": null,
         
@@ -98,7 +98,7 @@
     },
     { 
         "featureName": "Victor Stanley Waste Bin",
-        "name": "Landfill Stream Weight (kg)",
+        "name": "Landfill Stream Weight",
         "information": "Weight in kilograms of landfill waste in bin", // optional, defaults to null
         "accuracy": null,
         

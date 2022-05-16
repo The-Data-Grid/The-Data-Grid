@@ -27,7 +27,7 @@ const { sendSetup, sendMobileSetup, sendFilterSetup } = require('./query/query.j
 const insertRouter = require('./insert/router.js');
 const auditRouter = require('./query/router.js');
 const authRouter = require('./auth/router.js');
-const managementRouter = require('./manage/router.js');
+//const managementRouter = require('./manage/router.js');
 const setSession = require('./auth/session.js');
 const parseCredentials = require('./auth/parseCredentials.js');
 
@@ -80,7 +80,7 @@ app.get('/setup/mobile', setupParse, sendMobileSetup);
 app.get('/setup/filter', setupParse, sendFilterSetup);
 
 // Audit and Organization management router
-app.use('/manage', managementRouter);
+//app.use('/manage', managementRouter);
 
 // Route not found
 app.use('*', (req, res) => res.status(404).end());

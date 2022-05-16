@@ -27,6 +27,8 @@ let {returnableQuery,  // defunct, now a view
        frontendTypes, 
        allFeatures} = require('../statement.js').setup
 
+const setDatabaseConnection = require('../query/direct.js');
+const { getPresetValues } = setDatabaseConnection(db);
 
 const referenceTypes = {
     item: ['item-id', 'item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'],
@@ -41,13 +43,13 @@ let itemTableNames
 let featureTableNames
 let observationHistory = {};
 let itemHistory = {};
-let metadataItemColums;
 let observationItemTableNameLookup = {};
 let itemObservationTableNameLookup = {};
 let requiredItemView;
 const itemColumnObject = {};
+
 async function prefetch() {
-    metadataItemColums = await db.any('select * from metadata_item_columns');
+    metadataItemColumns = await db.any('select * from metadata_item_columns');
 
     (await db.any('select * from observation_history_type')).forEach(el => observationHistory[el.type_name] = el.type_id);
     (await db.any('select * from item_history_type')).forEach(el => itemHistory[el.type_name] = el.type_id);
@@ -57,11 +59,11 @@ async function prefetch() {
         itemObservationTableNameLookup[el.item] = el.observation;
     });
     
-    metadataItemColums.forEach(item => {
+    for(let item of metadataItemColumns) {
         itemColumnObject[item.i__table_name] = {...item};
         itemColumnObject[item.i__table_name].isItem = item.r__type_name.map(type => referenceTypes.item.includes(type));
         itemColumnObject[item.i__table_name].isObservation = item.r__type_name.map(type => referenceTypes.observation.includes(type));
-    });
+    };
     returnableQuery = await db.any('select * from returnable_view');
     columnQuery = await db.any(columnQuery);
     allItems = await db.any(allItems);
@@ -178,7 +180,7 @@ class ReturnableID {
 // HOISTED FUNCTIONS //
 // ============================================================
 
-const setupQuery = (returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures) => {
+const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures) => {
 
     let returnableIDLookup = {};
     let idValidationLookup = {};
@@ -237,7 +239,7 @@ const setupQuery = (returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
     // ==================================================
     const columnOrder = columnQuery.map(row => row['c__column_id']);
 
-    let columnObjects = columnQuery.map((row, i) => {
+    let columnObjects = await Promise.all(columnQuery.map(async (row, i) => {
 
         // filterSelector
         let fSelector = (row['fs__selector_name'] === null ? null : {selectorKey: row['fs__selector_name'], selectorValue: null})
@@ -247,7 +249,13 @@ const setupQuery = (returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
 
         // datatype
         let datatype = datatypeArray.indexOf(row['ft__type_name'])
-        
+
+        // get preset values if correct type
+        let presetValues = null;
+        if(['item-list', 'obs-list', 'item-factor', 'obs-factor', 'attribute'].includes(row['rt__type_name'])) {
+            presetValues = await getPresetValues(row['c__column_name'], row['c__table_name']);
+        }
+                
         return(
             {
                 additionalInfo: {
@@ -269,11 +277,12 @@ const setupQuery = (returnableQuery, columnQuery, allItems, itemM2M, frontendTyp
                     datatypeKey: datatype,
                     nullable: row['c__is_nullable'],
                     information: row['c__information'],
-                    accuracy: row['c__accuracy']
+                    accuracy: row['c__accuracy'],
+                    presetValues
                 },
             }
         );
-    });
+    }));
     // Construct itemNodeObject
     // ==================================================
 
@@ -1040,7 +1049,7 @@ const {
     columnOrder,
     itemOrder,
     columnObjects,
-} = setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
+} = await setupQuery(returnableQuery, columnQuery, allItems, itemM2M, frontendTypes, allFeatures);
 
 
 // Get all of the columns needed to insert the item
@@ -1149,8 +1158,8 @@ async function writeToFile() {
         process.exit(1);
     }
 
-    fs.writeFileSync('./internalObjects.json', JSON.stringify(internalObjects));
-    console.log('Preprocessing finished. Wrote internalObjects.json to Express/')
+    fs.writeFileSync('./schemaAssets/internalObjects.json', JSON.stringify(internalObjects));
+    console.log('Preprocessing finished. Wrote internalObjects.json to Express/schemaAssets')
 
     process.exit(0);
 }

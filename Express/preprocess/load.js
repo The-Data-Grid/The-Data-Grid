@@ -5,7 +5,7 @@
 
 const fs = require('fs');
 
-const internalObjects = JSON.parse(fs.readFileSync('./internalObjects.json'));
+const internalObjects = JSON.parse(fs.readFileSync('./schemaAssets/internalObjects.json'));
 
 module.exports = internalObjects;
 

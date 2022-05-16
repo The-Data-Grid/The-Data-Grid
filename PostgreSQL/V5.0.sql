@@ -27,7 +27,7 @@ CREATE TABLE location_point (
 
 CREATE INDEX location_point_index
     ON location_point
-    USING GIST (geom);
+    USING GIST (data_point);
 
 CREATE TABLE location_region (
     location_id SERIAL PRIMARY KEY,
@@ -36,7 +36,7 @@ CREATE TABLE location_region (
 
 CREATE INDEX location_region_index
     ON location_region
-    USING GIST (geom);
+    USING GIST (data_region);
 
 CREATE TABLE location_path (
     location_id SERIAL PRIMARY KEY,
@@ -45,7 +45,7 @@ CREATE TABLE location_path (
 
 CREATE INDEX location_path_index
     ON location_path
-    USING GIST (geom);
+    USING GIST (data_path);
 
 -- Submission and Globals
 
@@ -614,7 +614,7 @@ CREATE TABLE metadata_column (
     frontend_name TEXT NOT NULL,
     filter_selector INTEGER, --fk **
     input_selector INTEGER, --fk **
-    frontend_type INTEGER NOT NULL, --fk **
+    frontend_type INTEGER, --fk **
     information TEXT,
     accuracy TEXT,
 
@@ -1105,7 +1105,8 @@ CREATE PROCEDURE insert_metadata_column(column_name TEXT,
                 information,
                 accuracy,
                 sql_type,
-                reference_type)
+                reference_type,
+                selector_type)
                 VALUES (
                     DEFAULT,
                     column_name,

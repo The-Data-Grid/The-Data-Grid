@@ -5,10 +5,15 @@ const router = express.Router(); //use router instead of app
 const multer  = require('multer');
 const uploadFile = multer()
 
+// Database
+const { postgresClient } = require('../pg.js');
+const db = postgresClient.getConnection.db;
+
 // Middleware
 const parse = require('../parse/parse.js');
 const { formatDistinct } = require('../query/query.js');
-const { auditManagment, sopManagement, generateApiKey } = require('../query/direct.js');
+const setDatabaseConnection = require('../query/direct.js');
+const { auditManagment, sopManagement, generateApiKey } = setDatabaseConnection(db)
 const { validateObservation, validateItem } = require('../parse/validate.js')
 const cacheLayer = require('../query/cacheLayer.js');
 const template = require('./spreadsheet/template.js');
