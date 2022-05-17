@@ -905,7 +905,16 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 .apply-button {
-  background-color: #5fa784;
+  background-color: white;
+  border-color: #5fa784;
+  color: #5fa784;
+  border-width: 1px;
+}
+
+.apply-button-text {
+  color: #5fa784;
+  font-size: .9rem;
+  font-weight: 600;
 }
 
 /*!
@@ -2374,4 +2383,43 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 
 .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.w-2-7 {
+  width: 28%;
+}
+
+.w-3-7 {
+  width: 44%;
+}
+
+.w-5-7 {
+  width: 72%;
+}
+
+.header-type {
+  font-weight: 600;
+  font-size: 1.3rem;
+  line-height: 1.6;
+  letter-spacing: 0.0095em;
+}
+
+.header-2-type {
+  font-weight: 500;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  letter-spacing: 0.0065em;
+}
+
+.header-3-type {
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  letter-spacing: 0.0065em;
+}
+
+.divider-type {
+  font-weight: 400;
+  font-size: 0.7rem;
+  letter-spacing: 0.0065em;
 }
