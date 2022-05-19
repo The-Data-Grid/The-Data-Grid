@@ -63,10 +63,8 @@ function makeInternalObjects(parsed, queryType) {
     // 2. returned filters
     // 3. column to sort by
     const filterColumnIDs = [];
-    parsed.filters.forEach( arr => {
-        arr.forEach( obj => {
-            filterColumnIDs.push(obj.key);
-        });
+    parsed.filters.forEach( obj => {
+        filterColumnIDs.push(obj.id);
     });
     let allIDs = [...new Set(parsed.columns.concat(filterColumnIDs, sortID))];
 
@@ -147,13 +145,16 @@ function makeFeatureClauseArray(feature, featureTree, queryType) {
 // ==================================================
 function makeWhereClause(whereLookup, builderObject) {
 
-    return formatGroup(builderObject);
+    if(builderObject === null) {
+        return '';
+    } else {
+        return 'WHERE ' + formatGroup(builderObject);
+    }
 
     /*
         [0, {a}, {b}, [1, {c}, {d}]]
         a AND b AND (c OR d)
     */
-    
     function formatGroup(group) {
         let SQLString = [];
         let seperator = group[0] === 0 ? 'AND' : 'OR';
@@ -167,21 +168,22 @@ function makeWhereClause(whereLookup, builderObject) {
                 SQLString.push(formatFilter(element));
             }
         }
-        return 'WHERE ' + SQLString.join(` ${seperator} `);
+        return SQLString.join(` ${seperator} `);
     }
     
     function formatFilter(filter) {
+        console.log(whereLookup)
         // special case geoWithinDistance needing an additional argument
         let filterIdAndValue;
         if(filter.op === 'geoWithinDistance') {
             filterIdAndValue = {
-                id: filter.id,
+                id: whereLookup[filter.id],
                 val: filter.val[0],
                 additionalArg: filter.val[1]
             }
         } else {
             filterIdAndValue = {
-                id: filter.id,
+                id: whereLookup[filter.id],
                 val: filter.val
             }
         }

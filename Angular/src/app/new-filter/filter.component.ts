@@ -28,6 +28,8 @@ export class NewFilterComponent implements OnInit, AfterViewInit {
 @ViewChild('paginator') paginator: MatPaginator;
 
 ngOnInit() {
+	// Layout Init
+	// ==========================================
     let {
     	isXs,
     	isSm,
@@ -39,12 +41,22 @@ ngOnInit() {
 	this.isSm = isSm;
 	this.isM = isM;
 	this.isL = isL;
-
-	this.getSetupObjects();
-	this.getQueryBuilder();
-
+	
 	document.addEventListener('scroll', this.setScrollPos);
 	this.setScrollPos();
+
+	// Data Formatting
+	// ==========================================
+	Object.entries(this.TDGOperatorToBuilderOperatorLookup).forEach(arr => {
+		this.builderOperatorToTDGOperatorLookup[arr[1]] = arr[0];
+	});
+
+	// Data Waterfall
+	// ==========================================
+
+	this.getSetupObjects();
+	this.expandFilter(1, true);
+
 }
 
 ngAfterViewInit(): void {
@@ -56,7 +68,7 @@ ngAfterViewInit(): void {
 // =================================================
 
 // 1 = Table, 2 = Map
-viewType = 2;
+viewType = 1;
 
 queryType = 'Observations';
 databases = [
@@ -74,7 +86,22 @@ onDatabaseChange() {
 
 }
 changeViewType(e) {
-	this.viewType = e.index + 1;
+	let newViewType = e.index + 1;
+
+	this.viewType = newViewType;
+	this.getQueryBuilder(newViewType)
+
+	// Table View
+	if(newViewType == 1) {
+		this.expandFilter(1, true)
+		this.expandFilter(2, false)
+	}
+
+	// Map view
+	else {
+		this.expandFilter(1, false)
+		this.expandFilter(2, true)
+	}
 }
 
 
@@ -83,13 +110,81 @@ changeViewType(e) {
 // =================================================
 
 isFirstQuery = true;
+validOperatorLookup = {
+    'text': [
+        'equals', 'textContainsCase', 'textContainsNoCase' 
+    ],
+    'decimal': [
+        'equals', 'lessOrEqual', 'less', 'greater', 'greaterOrEqual'
+    ],
+    'wholeNumber': [
+        'equals', 'lessOrEqual', 'less', 'greater', 'greaterOrEqual'
+    ],
+    'date': [
+        'equals', 'lessOrEqual', 'less', 'greater', 'greaterOrEqual'
+    ],
+    'checkbox': [
+        'equals'
+    ],
+    'checkboxList': [
+        'contains', 'containedBy', 'overlaps'
+    ],
+    'dropdown': [
+        'equals'
+    ],
+    'geoPoint': ['geoContains', 'geoCrosses', 'geoDisjoint', 'geoWithinDistance', 'geoEquals', 'geoIntersects', 'geoTouches', 'geoOverlaps', 'geoWithin'],
+    'geoLine': ['geoContains', 'geoCrosses', 'geoDisjoint', 'geoWithinDistance', 'geoEquals', 'geoIntersects', 'geoTouches', 'geoOverlaps', 'geoWithin'],
+    'geoRegion': ['geoContains', 'geoCrosses', 'geoDisjoint', 'geoWithinDistance', 'geoEquals', 'geoIntersects', 'geoTouches', 'geoOverlaps', 'geoWithin']
+};
+TDGOperatorToBuilderOperatorLookup = {
+	equals: 'equals',
+	textContainsCase: 'contains (case sensitive)',
+	textContainsNoCase: 'contains (case insensitive)',
+	less: 'less than',
+	lessOrEqual: 'less than or equal to',
+	greater: 'greater than',
+	greaterOrEqual: 'greater than or equal to',
+	contains: 'contains value(s)',
+	containedBy: 'contained by value(s)',
+	overlaps: 'overlaps with value(s)',
+	geoContains: 'contains',
+	geoCrosses: 'crosses',
+	geoDisjoint: 'disjoint',
+	geoWithinDistance: 'within distance',
+	geoEquals: 'identical to',
+	geoIntersects: 'intersects',
+	geoTouches: 'touches',
+	geoOverlaps: 'overlaps',
+	geoWithin: 'contained by'
+};
+builderOperatorToTDGOperatorLookup = {};
+
+// choose 'string' if type not in lookup
+TDGSelectorTypeToBuilderTypeLookup = {
+	decimal: 'double',
+	wholeNumber: 'integer',
+	date: 'date',
+	checkbox: 'boolean'
+}
+TDGSelectorTypeToBuilderInputLookup = {
+	text: 'text',
+	decimal: 'number',
+	wholeNumber: 'number',
+	date: 'text', // custom
+	checkbox: 'radio',
+	checkboxList: 'checkbox',
+	dropdown: 'select',
+	geoPoint: 'text', // custom
+	geoLine: 'text', // custom
+	geoRegion: 'text' // custom
+}
 filters = [{
 	id: "15",
 	label: "Factor",
 	type: 'string',
 	input: 'select',
 	values: ['YRL', 'Powell', 'Math Sciences'],
-	operators: ['equal']
+	operators: ['equals']
 },
 {
 	id: "16",
@@ -123,12 +218,66 @@ filters = [{
 	operators: ['equal']
 }];
 
-getQueryBuilder() {
+builderLookup = {
+	1: 'table-builder',
+	2: 'map-builder-global'
+}
+
+expandedPanelLookup = {
+	'table-builder': false,
+	'map-builder-global': false
+}
+
+async expandFilter(viewType: number, set: boolean) {
+	if(set) {
+		await new Promise(r => setTimeout(r, 100));
+	}
+	this.expandedPanelLookup[this.builderLookup[viewType]] = set;
+}
+
+getQueryBuilder(viewType) {
+	// fill the filters
+	let filters = this.filterableReturnableIDs.map((id, index) => {
+		let columnObject = this.filterableColumnObjects[index];
+		let out: any = {
+			id,
+			label: columnObject.frontendName,
+			operators: this.validOperatorLookup[columnObject.selectorType].map(op => this.TDGOperatorToBuilderOperatorLookup[op]),
+			type: columnObject.selectorType in this.TDGSelectorTypeToBuilderTypeLookup ? this.TDGSelectorTypeToBuilderTypeLookup[columnObject.selectorType] : 'string',
+			input: this.TDGSelectorTypeToBuilderInputLookup[columnObject.selectorType]
+		};
+		if(columnObject.presetValues != null) {
+			out.values = columnObject.presetValues;
+		} else if(columnObject.selectorType == 'checkbox') {
+			out.values = [true, false];
+		}
+		return out;
+	})
 	$(document).ready(() => {
-		(<any>$('#builder')).queryBuilder({
+		(<any>$('#' + this.builderLookup[viewType])).queryBuilder({
 			plugins: [],
-			// This is just toy data
-			filters: this.filters,
+			filters: filters,
+			operators: [
+				{type: 'equals', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['string', 'number', 'datetime', 'boolean']},
+				{type: 'contains (case sensitive)', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'contains (case insensitive)', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'less than', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
+				{type: 'less than or equal to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
+				{type: 'greater than', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
+				{type: 'greater than or equal to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
+				{type: 'contains value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
+				{type: 'contained by value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
+				{type: 'overlaps with value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
+				{type: 'contains', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'crosses', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'disjoint', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'within distance', optgroup: 'custom', nb_inputs: 2, multiple: false, apply_to: ['string']},
+				{type: 'identical to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'intersects', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'touches', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'overlaps', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+				{type: 'contained by', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']}
+			],
 			select_placeholder: '-',
 			rules: [{
 				/* empty rule */
@@ -154,10 +303,9 @@ refreshQueryBuilder() {
 	})
 }
 
-getRulesQueryBuilder() {
-	return (<any>$('#builder')).queryBuilder('getRules', { skip_empty: true });
+getRulesQueryBuilder(target) {
+	return (<any>$('#' + target)).queryBuilder('getRules', { skip_empty: true });
 }
-
 
 private operationMap = {
 	equal: '=',
@@ -166,6 +314,7 @@ private operationMap = {
 }
 formatQueryString(rules) {
 	console.log(rules)
+	const builderOperatorToTDGOperatorLookup = this.builderOperatorToTDGOperatorLookup
 	// Empty rule set case for no query string
 	if(rules.rules.length == 0) return '';
 	// Compress query logic into object
@@ -184,7 +333,7 @@ formatQueryString(rules) {
 			} else {
 				newGroup.push({
 					id: element.id,
-					op: element.operator,
+					op: builderOperatorToTDGOperatorLookup[element.operator],
 					val: element.value
 				});
 			}
@@ -204,6 +353,7 @@ setupFilterObject;
 allFeatures;
 allItems;
 filterableColumnObjects = [];
+filterableReturnableIDs = [];
 relevantColumnObjects = [];
 currentReturnableIDs = [];
 currentColumnObjectIndices = [];
@@ -234,7 +384,7 @@ onPageChange(event: PageEvent): PageEvent {
 	this.currentPageSize = event.pageSize;
 	this.currentPageIndex = event.pageIndex;
 	// refresh API
-	this.runQuery(true);
+	this.runQuery(true, 'table-builder');
 	return event;
 }
 
@@ -253,8 +403,11 @@ getSetupObjects() {
 	this.apiService.getSetupFilterObject().subscribe((res) => {
 		hasSetupFinished.then(() => {
 			this.setupFilterObject = res;
+			// format the column objects
 			this.getFilterableColumnIDs(2);
-			this.runQuery(false);
+			// init the query builder given the column objects
+			this.getQueryBuilder(1);
+			this.runQuery(false, 'table-builder');
 		});
 	})
   }
@@ -270,7 +423,6 @@ getFilterableColumnIDs(featureID): any {
 	if(this.queryType == 'Observations') {
 		this.currentColumnObjectIndices = this.setupFilterObject.observationColumnObjectIndices[featureID];
 		this.currentReturnableIDs = this.setupFilterObject.observationReturnableIDs[featureID];
-
 	} else {
 		this.currentColumnObjectIndices = this.setupFilterObject.itemColumnObjectIndices[featureID];
 		this.currentReturnableIDs = this.setupFilterObject.itemReturnableIDs[featureID];
@@ -278,13 +430,18 @@ getFilterableColumnIDs(featureID): any {
 
 	this.filterableColumnObjects = this.currentColumnObjectIndices
 			.map(index => this.setupObject.columns[index])
-			.filter(col => col.filterSelector !== null);
+			.filter(col => col.isFilterable);
+
+	this.filterableReturnableIDs = this.currentColumnObjectIndices
+			.map((columnObjectIndex, arrayIndex) => [this.setupObject.columns[columnObjectIndex], arrayIndex])
+			.filter(arr => arr[0].isFilterable)
+			.map(arr => this.currentReturnableIDs[arr[1]]);
 
 	this.relevantColumnObjects = this.currentColumnObjectIndices
 		.map(index => this.setupObject.columns[index]);
 
 	this.selectedFields = this.relevantColumnObjects.map((col, i) => i)
-	this.selectedSortField = undefined;
+	this.selectedSortField = null;
 }
 
 getReturnablesFromColumnIDs(indices, isObservation, featureID): Array<Number> {
@@ -314,12 +471,12 @@ queryTimer(start) {
 invalidQuery = false;
 queryError = null;
 
-runQuery(isPaginationQuery) {
+runQuery(isPaginationQuery, target) {
 	this.invalidQuery = false;
 	this.queryError = null;
 	let queryString = '';
 	if(!this.isFirstQuery) {
-		const rules = this.getRulesQueryBuilder();
+		const rules = this.getRulesQueryBuilder(target);
 		if(rules === null) {
 			this.invalidQuery = true;
 			return;

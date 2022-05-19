@@ -815,6 +815,7 @@ CREATE VIEW returnable_view AS (SELECT
         c.column_id as c__column_id, c.frontend_name as c__frontend_name, c.column_name as c__column_name, c.table_name as c__table_name, 
         c.observation_table_name as c__observation_table_name, c.subobservation_table_name as c__subobservation_column_name, 
         c.information as c__information, c.is_nullable as c__is_nullable, c.is_default as c__is_default, c.accuracy as c__accuracy, 
+        c.is_filterable as c__is_filterable, sn.selector_name as sn__selector_name,
         
         fs.selector_name as fs__selector_name, 
         ins.selector_name as ins__selector_name, 
@@ -840,6 +841,7 @@ CREATE VIEW returnable_view AS (SELECT
         LEFT JOIN metadata_reference_type AS rt ON c.reference_type = rt.type_id 
         LEFT JOIN metadata_item AS i ON c.metadata_item_id = i.item_id 
         LEFT JOIN metadata_frontend_type AS ft ON c.frontend_type = ft.type_id
+        LEFT JOIN metadata_selector_new as sn ON c.selector_type = sn.selector_id
             ORDER BY r__returnable_id ASC
         );
 

@@ -125,7 +125,7 @@ console.log('Closed PostgreSQL Connection: setup');
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, baseItem, ID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, sqlType) {
+    constructor(feature, baseItem, ID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, whereSQL, frontendName, sqlType) {
         this.ID = ID;
         this.columnID = columnID;
         this.feature = feature;
@@ -134,6 +134,7 @@ class ReturnableID {
         this.referenceType = referenceType;
         this.appendSQL = appendSQL;
         this.selectSQL = selectSQL;
+        this.whereSQL = whereSQL;
         this.sqlType = sqlType;
         this.baseItem = baseItem;
 
@@ -561,6 +562,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
         //  console.log(row)  //
         let selectSQL = null;
         let appendSQL = null;
+        let whereSQL = null;
 
         // See if an item or observation returnable
         const isItemReturnable = row['non_obs_i__table_name'] !== null
@@ -629,6 +631,12 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
                 columnName: columnName
             });
 
+            // Convert to array type for WHERE
+            whereSQL = formatSQL('array[$(listAlias:name).$(columnName:name)]', {
+                listAlias: listAlias.join(''),
+                columnName: columnName
+            });
+
         } else if(referenceType == 'obs-list') {
 
             appendSQL = formatSQL('LEFT JOIN m2m_$(tableName:raw) \
@@ -640,11 +648,17 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
                                         listAlias: listAlias.join('')
             });
             
-            // Add ARRAY_AGG() here? ... yes, Oliver!
+            // Aggregate on SELECT
             selectSQL = formatSQL('ARRAY_AGG($(listAlias:name).$(columnName:name)::TEXT)', {
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
+            });
+
+            // Convert to array type for WHERE
+            whereSQL = formatSQL('array[$(listAlias:name).$(columnName:name)]', {
+                listAlias: listAlias.join(''),
+                columnName: columnName
             });
             
             // add 1 to listAlias number to make a new unique alias
@@ -666,6 +680,12 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
                 listAlias: listAlias.join(''), 
                 columnName: columnName,
                 returnableID: returnableIDAlias
+            });
+
+            // Convert to array type for WHERE
+            whereSQL = formatSQL('array[$(listAlias:name).$(columnName:name)]', {
+                listAlias: listAlias.join(''),
+                columnName: columnName
             });
             
             // add 1 to listAlias number to make a new unique alias
@@ -798,7 +818,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup[returnableID] = new ReturnableID(feature, baseItem, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, frontendName, sqlType)
+        returnableIDLookup[returnableID] = new ReturnableID(feature, baseItem, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, whereSQL, frontendName, sqlType)
 
     }
 

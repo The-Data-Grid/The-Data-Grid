@@ -1,11 +1,30 @@
 
 <div style="min-height: 800px;" class="bg-white w-full">
     <!-- Controller Box -->
-    <div [class.flex-col]="!isL" [class.flex-row]="isL" style="background-color:  rgb(229 231 235);" class="flex">
+    <div style="background-color:  rgb(229 231 235);" class="flex flex-col">
+        <!-- Desktop Header -->
+        <div *ngIf="isL" class="flex flex-row h-[3.2rem] sticky top-[49px] w-full" style="z-index: 3; box-shadow: 0px 4px 8px -4px rgb(138, 138, 138);">
+            <!-- Data Selector -->
+            <div class="w-2-7 flex flex-row items-center bg-[#569CD7] px-4">
+                <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" fill="white" height="30px" viewBox="0 0 512 512"><path d="M409.43 389.87C362 410 305.4 421.05 256 421.05s-105.87-11.3-153.44-31.18S48 353.16 48 353.16v38.2c0 31.15 18 43.64 67.32 64.35C153.13 471.59 203.18 480 256 480s102.87-8.41 140.68-24.29C446 435 464 422.51 464 391.36v-38.2s-7.14 16.59-54.57 36.71zM63.69 173.22c11.23 9.84 27.82 19.49 48 27.92 42.48 17.76 96.45 28.37 144.36 28.37s101.88-10.61 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 6.06-5.31 10.85-10.12 13.47-12.85a8 8 0 002.22-5.54v-26.16c-.84-28.79-24.71-54.41-67.21-72.14C358.83 40.71 308.84 32 256 32s-102.83 8.71-140.74 24.53C72.85 74.22 49 99.78 48.05 128.5v26.33a8 8 0 002.21 5.54c2.58 2.73 7.36 7.54 13.43 12.85z"/><path d="M409.43 221.91C365 241 305.4 253.09 256 253.09s-108.87-12.27-153.43-31.18S48 185.2 48 185.2v47.36c.08 7.52 5.5 16.2 15.69 25.13 11.24 9.84 27.82 19.5 48 27.92C154.12 303.38 208.09 314 256 314s101.88-10.6 144.36-28.37c20.13-8.42 36.72-18.08 47.95-27.92 10.25-9 15.68-17.71 15.69-25.27V185.2s-10.13 17.62-54.57 36.71z"/><path d="M409.43 306.38C362 326 305.4 337.56 256 337.56s-109.87-12.8-153.43-31.18S48 269.67 48 269.67v46.25c0 7.55 5.44 16.28 15.69 25.26 11.23 9.84 27.81 19.5 48 27.92 42.48 17.77 96.44 28.37 144.36 28.37s101.88-10.6 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 10.19-8.93 15.61-17.61 15.69-25.13v-46.38s-7.18 17.09-54.62 36.71z"/></svg>
+                <span class="pl-2 header-type text-white">Data Selector</span>
+            </div>
+            <!-- Query Builder -->
+            <div class="w-3-7 flex flex-row items-center bg-white px-4 " style="border-right: 1px#e5e7eb solid">
+                <svg class="cursor-pointer" (click)="scrollToTop()" fill="#535353" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 512 512"><path d="M294.28 256.9l-54.42-54.41a12 12 0 00-17 0L12.45 401a12 12 0 00-.27 17.2l66.05 66.28a12 12 0 0017.22-.23l198.81-210.36a12 12 0 00.02-16.99zM499.33 199.33l-43.89-43.58a21.46 21.46 0 00-15.28-6.26 21.89 21.89 0 00-12.79 4.14c0-.43.06-.85.09-1.22.45-6.5 1.15-16.32-5.2-25.22a258 258 0 00-24.8-28.74.6.6 0 00-.08-.08c-13.32-13.12-42.31-37.83-86.72-55.94A139.55 139.55 0 00257.56 32C226 32 202 46.24 192.81 54.68A53.4 53.4 0 00176 86.17L192 96s8.06-2 13.86-3.39a62.73 62.73 0 0118.45-1.15c13.19 1.09 28.79 7.64 35.69 13.09 11.7 9.41 17.33 22.09 18.26 41.09.2 4.23-9.52 21.35-24.16 39.84a8 8 0 00.61 10.62l45.37 45.37a8 8 0 0011 .25c12.07-11 30.49-28 34.67-30.59 7.69-4.73 13.19-5.64 14.7-5.8a19.18 19.18 0 0111.29 2.38 1.24 1.24 0 01-.31.95l-1.82 1.73-.3.28a21.52 21.52 0 00.05 30.54l43.95 43.68a8 8 0 0011.28 0l74.68-74.2a8 8 0 00.06-11.36z"/></svg>
+                <span  class="pl-2 header-type text-[#535353]">Query Builder</span>
+            </div>
+            <!-- Run Control -->
+            <div class="w-2-7 flex flex-row items-center bg-white px-4">
+                <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" height="30px" fill="#569CD7" viewBox="0 0 512 512"><path d="M96 448l320-192L96 64v384z"/></svg>
+                <span class="pl-2 header-type text-[#569CD7]">Run Control</span>
+            </div>
+        </div>
+        <div [class.flex-row]="isL" [class.flex-col]="!isL" class="flex">
         <!-- Meta information -->
-        <div style="box-shadow: 4px 0 8px -2px rgb(138, 138, 138);" [class.w-2-7]="isL" [class.w-full]="!isL" class="flex flex-col">
+        <div style="box-shadow: 4px 0 8px -2px rgb(138, 138, 138);" [class.w-2-7]="isL" [class.w-full]="!isL" class="flex flex-col bg-white">
             <!-- Header -->
-            <div class="flex flex-row items-center bg-[#569CD7] px-4 h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 3;">
+            <div *ngIf="!isL" class="flex flex-row items-center bg-[#569CD7] px-4 h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 4;">
                 <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" fill="white" height="30px" viewBox="0 0 512 512"><path d="M409.43 389.87C362 410 305.4 421.05 256 421.05s-105.87-11.3-153.44-31.18S48 353.16 48 353.16v38.2c0 31.15 18 43.64 67.32 64.35C153.13 471.59 203.18 480 256 480s102.87-8.41 140.68-24.29C446 435 464 422.51 464 391.36v-38.2s-7.14 16.59-54.57 36.71zM63.69 173.22c11.23 9.84 27.82 19.49 48 27.92 42.48 17.76 96.45 28.37 144.36 28.37s101.88-10.61 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 6.06-5.31 10.85-10.12 13.47-12.85a8 8 0 002.22-5.54v-26.16c-.84-28.79-24.71-54.41-67.21-72.14C358.83 40.71 308.84 32 256 32s-102.83 8.71-140.74 24.53C72.85 74.22 49 99.78 48.05 128.5v26.33a8 8 0 002.21 5.54c2.58 2.73 7.36 7.54 13.43 12.85z"/><path d="M409.43 221.91C365 241 305.4 253.09 256 253.09s-108.87-12.27-153.43-31.18S48 185.2 48 185.2v47.36c.08 7.52 5.5 16.2 15.69 25.13 11.24 9.84 27.82 19.5 48 27.92C154.12 303.38 208.09 314 256 314s101.88-10.6 144.36-28.37c20.13-8.42 36.72-18.08 47.95-27.92 10.25-9 15.68-17.71 15.69-25.27V185.2s-10.13 17.62-54.57 36.71z"/><path d="M409.43 306.38C362 326 305.4 337.56 256 337.56s-109.87-12.8-153.43-31.18S48 269.67 48 269.67v46.25c0 7.55 5.44 16.28 15.69 25.26 11.23 9.84 27.81 19.5 48 27.92 42.48 17.77 96.44 28.37 144.36 28.37s101.88-10.6 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 10.19-8.93 15.61-17.61 15.69-25.13v-46.38s-7.18 17.09-54.62 36.71z"/></svg>
                 <span class="pl-2 header-type text-white">Data Selector</span>
             </div>
@@ -68,168 +87,157 @@
             </div>
               
         </div>
-        <!-- Query -->
 
-            <!-- Query Builder -->
-            <div [class.w-3-7]="!isSm && !isXs" [class.w-full]="isSm || isXs">
-                <!-- Header -->
-                <div class="flex flex-row items-center bg-white px-4 h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138);  z-index: 4">
-                    <svg class="cursor-pointer" (click)="scrollToTop()" fill="#535353" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 512 512"><path d="M294.28 256.9l-54.42-54.41a12 12 0 00-17 0L12.45 401a12 12 0 00-.27 17.2l66.05 66.28a12 12 0 0017.22-.23l198.81-210.36a12 12 0 00.02-16.99zM499.33 199.33l-43.89-43.58a21.46 21.46 0 00-15.28-6.26 21.89 21.89 0 00-12.79 4.14c0-.43.06-.85.09-1.22.45-6.5 1.15-16.32-5.2-25.22a258 258 0 00-24.8-28.74.6.6 0 00-.08-.08c-13.32-13.12-42.31-37.83-86.72-55.94A139.55 139.55 0 00257.56 32C226 32 202 46.24 192.81 54.68A53.4 53.4 0 00176 86.17L192 96s8.06-2 13.86-3.39a62.73 62.73 0 0118.45-1.15c13.19 1.09 28.79 7.64 35.69 13.09 11.7 9.41 17.33 22.09 18.26 41.09.2 4.23-9.52 21.35-24.16 39.84a8 8 0 00.61 10.62l45.37 45.37a8 8 0 0011 .25c12.07-11 30.49-28 34.67-30.59 7.69-4.73 13.19-5.64 14.7-5.8a19.18 19.18 0 0111.29 2.38 1.24 1.24 0 01-.31.95l-1.82 1.73-.3.28a21.52 21.52 0 00.05 30.54l43.95 43.68a8 8 0 0011.28 0l74.68-74.2a8 8 0 00.06-11.36z"/></svg>
-                    <span  class="pl-2 header-type text-[#535353]">Query Builder</span>
-                </div>
-                <!-- Query Builder + Sort / Layer Selection -->
-                <div class="flex flex-col m-3">
-                    <!-- Map View -->
-                    <mat-expansion-panel *ngIf="viewType == 2">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path d="M267 474l-.8-.13a.85.85 0 00.8.13zM448.9 187.78a5.51 5.51 0 00-10.67-.63A5.52 5.52 0 01433 191h-15.47a5.48 5.48 0 01-2.84-.79l-22.38-13.42a5.48 5.48 0 00-2.84-.79h-35.8a5.48 5.48 0 00-3.06.93l-44.15 29.43A5.52 5.52 0 00304 211v41.74a5.51 5.51 0 002.92 4.87l57.89 30.9a5.55 5.55 0 012.92 4.8l.27 23.49a5.53 5.53 0 002.85 4.75l23.26 12.87a5.54 5.54 0 012.85 4.83v48.6a5.52 5.52 0 009.17 4.14c9.38-8.26 22.83-20.32 24.62-23.08q4.44-6.87 8.33-14.07a207.39 207.39 0 0013.6-31c12.68-36.71 2.66-102.7-3.78-136.06zM286.4 302.8l-61.33-46a4 4 0 00-2.4-.8h-29.1a3.78 3.78 0 01-2.68-1.11l-13.72-13.72a4 4 0 00-2.83-1.17h-53.19a3.79 3.79 0 01-2.68-6.47l8.42-8.42a3.78 3.78 0 012.68-1.11h32.37a8 8 0 007.7-5.83l6.89-24.5a4 4 0 012-2.47L206 177.06a3.79 3.79 0 002.05-3.37v-12.5a3.82 3.82 0 01.68-2.17l14.6-21.02a3.75 3.75 0 011.78-1.38l20.43-7.67a3.79 3.79 0 002.46-3.55V114a3.8 3.8 0 00-1.69-3.16l-20.48-13.62A3.83 3.83 0 00222 97l-27.88 13.94a3.78 3.78 0 01-4-.41l-13.22-10.45a3.8 3.8 0 01.1-6l10.74-7.91a3.78 3.78 0 00-.09-6.16l-16.73-11.67a3.78 3.78 0 00-4-.22c-6.05 3.31-23.8 13.11-30.1 17.52a209.48 209.48 0 00-68.16 80c-1.82 3.76-4.07 7.59-4.29 11.72s-3.46 13.35-4.81 17.08a3.78 3.78 0 00.24 3.1l35.69 65.58a3.74 3.74 0 001.38 1.44l37.55 22.54a3.78 3.78 0 011.81 2.73l7.52 54.54a3.82 3.82 0 001.61 2.61l29.3 20.14a4 4 0 011.65 2.48l15.54 73.8a3.6 3.6 0 00.49 1.22c1.46 2.36 7.28 11 14.3 12.28-.65.18-1.23.59-1.88.78a47.63 47.63 0 015 1.16c2 .54 4 1 6 1.43 3.13.62 3.44 1.1 4.94-1.68 2-3.72 4.29-5 6-5.46a3.85 3.85 0 002.89-2.9l10.07-46.68a4 4 0 011.6-2.42l45-31.9a4 4 0 001.69-3.27V306a4 4 0 00-1.55-3.2z"/><path d="M262 48s-3.65.21-4.39.23q-8.13.24-16.22 1.12A207.45 207.45 0 00184.21 64c2.43 1.68-1.75 3.22-1.75 3.22L189 80h35l24 12 21-12zM354.23 120.06l16.11-14a4 4 0 00-.94-6.65l-18.81-8.73a4 4 0 00-5.3 1.9l-7.75 16.21a4 4 0 001.49 5.11l10.46 6.54a4 4 0 004.74-.38zM429.64 140.67l-5.83-9c-.09-.14-.17-.28-.25-.43-1.05-2.15-9.74-19.7-17-26.51-5.45-5.15-7-3.67-7.43-2.53a3.77 3.77 0 01-1.19 1.6l-28.84 23.31a4 4 0 01-2.51.89h-14.93a4 4 0 00-2.83 1.17l-12 12a4 4 0 000 5.66l12 12a4 4 0 002.83 1.17h75.17a4 4 0 004-4.17l-.55-13.15a4 4 0 00-.64-2.01z"/><path d="M256 72a184 184 0 11-130.1 53.9A182.77 182.77 0 01256 72m0-40C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32z"/></svg>
-                                <span class="header-3-type text-[#535353]">
-                                    &nbsp;&nbsp;Global Filters
-                                </span>
-                            </mat-panel-title>
-                            <mat-panel-description>
-                            Applied to every layer
-                            </mat-panel-description>
-                        </mat-expansion-panel-header>                 
-                        <div id="builder"></div>
-                    </mat-expansion-panel>
-                    <mat-expansion-panel *ngIf="viewType == 2"  class="mt-3" >
-                        <mat-expansion-panel-header>
-                            <mat-panel-title >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path d="M480 150L256 48 32 150l224 104 224-104zM255.71 392.95l-144.81-66.2L32 362l224 102 224-102-78.69-35.3-145.6 66.25z"/><path d="M480 256l-75.53-33.53L256.1 290.6l-148.77-68.17L32 256l224 102 224-102z"/></svg>
-                                <span class="header-3-type text-[#535353]">
-                                    &nbsp;&nbsp;Layer Inspector
-                                </span>
-                            </mat-panel-title>
-                            <mat-panel-description>
-                            Editing {{layers.length}} layers
-                            </mat-panel-description>
-                        </mat-expansion-panel-header>                 
-                        
-                    </mat-expansion-panel>
-
-                    <!-- Table View -->
-                    <mat-expansion-panel *ngIf="viewType == 1">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><title>Filter</title><path d="M16 120h480v48H16zM96 232h320v48H96zM192 344h128v48H192z"/></svg>
-                                <span class="header-3-type text-[#535353]">
-                                    &nbsp;&nbsp;Filter
-                                </span>
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>                 
-                    </mat-expansion-panel>
-                    <mat-expansion-panel *ngIf="viewType == 1"  class="mt-3">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg" height="27px" viewBox="0 0 200.000000 200.000000" preserveAspectRatio="xMidYMid meet">
-                                        <g transform="translate(0.000000,200.000000) scale(0.100000,-0.100000)" fill="#535353" stroke="none">
-                                        <path d="M232 1528 c-16 -16 -16 -80 0 -96 17 -17 979 -17 996 0 16 16 16 80 0 96 -17 17 -979 17 -996 0z"/>
-                                        <path d="M1427 1534 c-4 -4 -7 -174 -7 -378 l0 -370 -63 62 c-34 34 -69 62 -78 62 -19 0 -69 -51 -69 -71 0 -8 56 -70 123 -137 87 -86 131 -122 147 -122 17 0 60 37 149 125 l126 125 -15 27 c-9 15 -28 34 -43 43 -26 15 -27 14 -92 -50 l-65 -64 -2 374 -3 375 -50 3 c-28 2 -54 0 -58 -4z"/>
-                                        <path d="M232 1208 c-16 -16 -16 -80 0 -96 17 -17 799 -17 816 0 16 16 16 80 0 96 -17 17 -799 17 -816 0z"/>
-                                        <path d="M232 888 c-16 -16 -16 -80 0 -96 17 -17 559 -17 576 0 16 16 16 80 0 96 -17 17 -559 17 -576 0z"/>
-                                        <path d="M232 568 c-16 -16 -16 -80 0 -96 17 -17 379 -17 396 0 16 16 16 80 0 96 -17 17 -379 17 -396 0z"/>
-                                        </g>
-                                    </svg>
-                                <span class="header-3-type text-[#535353]">
-                                    &nbsp;&nbsp;Sort
-                                </span>
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                        <div class="flex flex-row items-center">
-                            <mat-form-field appearance="fill" style="margin-top: 10px; margin-bottom: -10px; font-size: 0.9rem">
-                                <mat-label>Select Field</mat-label>
-                                <mat-select [(ngModel)]="selectedSortField" (ngModelChange)="onSortSelection()">
-                                    <mat-option *ngFor="let obj of relevantColumnObjects; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>  
-
-                                <mat-radio-group aria-label="Select an option" [(ngModel)]="filterBy" class="flex flex-col ml-2">
-                                    <mat-radio-button style="margin-right: 5px" value="Ascending">Ascending</mat-radio-button>
-                                    <mat-radio-button value="Descending">Descending</mat-radio-button>
-                                </mat-radio-group>
-               
-                        </div>
-                    </mat-expansion-panel>
-                </div>
-                
+        <!-- Query Builder -->
+        <div [class.w-3-7]="!isSm && !isXs" [class.w-full]="isSm || isXs">
+            <!-- Header -->
+            <div *ngIf="!isL" class="flex flex-row items-center bg-white px-4 h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 3;">
+                <svg class="cursor-pointer" (click)="scrollToTop()" fill="#569CD7" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 512 512"><path d="M294.28 256.9l-54.42-54.41a12 12 0 00-17 0L12.45 401a12 12 0 00-.27 17.2l66.05 66.28a12 12 0 0017.22-.23l198.81-210.36a12 12 0 00.02-16.99zM499.33 199.33l-43.89-43.58a21.46 21.46 0 00-15.28-6.26 21.89 21.89 0 00-12.79 4.14c0-.43.06-.85.09-1.22.45-6.5 1.15-16.32-5.2-25.22a258 258 0 00-24.8-28.74.6.6 0 00-.08-.08c-13.32-13.12-42.31-37.83-86.72-55.94A139.55 139.55 0 00257.56 32C226 32 202 46.24 192.81 54.68A53.4 53.4 0 00176 86.17L192 96s8.06-2 13.86-3.39a62.73 62.73 0 0118.45-1.15c13.19 1.09 28.79 7.64 35.69 13.09 11.7 9.41 17.33 22.09 18.26 41.09.2 4.23-9.52 21.35-24.16 39.84a8 8 0 00.61 10.62l45.37 45.37a8 8 0 0011 .25c12.07-11 30.49-28 34.67-30.59 7.69-4.73 13.19-5.64 14.7-5.8a19.18 19.18 0 0111.29 2.38 1.24 1.24 0 01-.31.95l-1.82 1.73-.3.28a21.52 21.52 0 00.05 30.54l43.95 43.68a8 8 0 0011.28 0l74.68-74.2a8 8 0 00.06-11.36z"/></svg>
+                <span  class="pl-2 header-type text-[#569CD7]">Query Builder</span>
             </div>
-            <!-- Sort and Run -->
-            <div [class.w-2-7]="!isSm && !isXs" [class.w-full]="isSm || isXs">
-                <!-- Header -->
-                <div [class.border-l]="!isSm && !isXs" class="flex flex-row items-center bg-white px-4 h-14 min-h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 3;">
-                        <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" height="30px" fill="#535353" viewBox="0 0 512 512"><path d="M96 448l320-192L96 64v384z"/></svg>
-                        <span class="pl-2 header-type text-[#535353]">Run Control</span>
-                </div>
-                <div class="border-l border-[#a0a0a0] w-full h-full flex flex-col p-3">
-                <!-- Run Query Box -->
-                    <div class="bg-white flex flex-col items-center shadow-lg">                      
-                        <button class="apply-button text-semibold py-2 w-2-3 mt-4 flex flex-row justify-center" mat-button (click)="runQuery(false)">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="22px" fill="#5fa784" viewBox="0 0 512 512"><title>Search Circle</title><path d="M256 64C150.13 64 64 150.13 64 256s86.13 192 192 192 192-86.13 192-192S361.87 64 256 64zm80 294.63l-54.15-54.15a88.08 88.08 0 1122.63-22.63L358.63 336z"/><circle cx="232" cy="232" r="56"/></svg>
-                            <span class="apply-button-text">
-                                &nbsp;&nbsp;RUN QUERY
+            <!-- Query Builder + Sort / Layer Selection -->
+            <div class="flex flex-col m-3">
+                <!-- Map View -->
+                <mat-expansion-panel *ngIf="viewType == 2" [(expanded)]="expandedPanelLookup['map-builder-global']">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path d="M267 474l-.8-.13a.85.85 0 00.8.13zM448.9 187.78a5.51 5.51 0 00-10.67-.63A5.52 5.52 0 01433 191h-15.47a5.48 5.48 0 01-2.84-.79l-22.38-13.42a5.48 5.48 0 00-2.84-.79h-35.8a5.48 5.48 0 00-3.06.93l-44.15 29.43A5.52 5.52 0 00304 211v41.74a5.51 5.51 0 002.92 4.87l57.89 30.9a5.55 5.55 0 012.92 4.8l.27 23.49a5.53 5.53 0 002.85 4.75l23.26 12.87a5.54 5.54 0 012.85 4.83v48.6a5.52 5.52 0 009.17 4.14c9.38-8.26 22.83-20.32 24.62-23.08q4.44-6.87 8.33-14.07a207.39 207.39 0 0013.6-31c12.68-36.71 2.66-102.7-3.78-136.06zM286.4 302.8l-61.33-46a4 4 0 00-2.4-.8h-29.1a3.78 3.78 0 01-2.68-1.11l-13.72-13.72a4 4 0 00-2.83-1.17h-53.19a3.79 3.79 0 01-2.68-6.47l8.42-8.42a3.78 3.78 0 012.68-1.11h32.37a8 8 0 007.7-5.83l6.89-24.5a4 4 0 012-2.47L206 177.06a3.79 3.79 0 002.05-3.37v-12.5a3.82 3.82 0 01.68-2.17l14.6-21.02a3.75 3.75 0 011.78-1.38l20.43-7.67a3.79 3.79 0 002.46-3.55V114a3.8 3.8 0 00-1.69-3.16l-20.48-13.62A3.83 3.83 0 00222 97l-27.88 13.94a3.78 3.78 0 01-4-.41l-13.22-10.45a3.8 3.8 0 01.1-6l10.74-7.91a3.78 3.78 0 00-.09-6.16l-16.73-11.67a3.78 3.78 0 00-4-.22c-6.05 3.31-23.8 13.11-30.1 17.52a209.48 209.48 0 00-68.16 80c-1.82 3.76-4.07 7.59-4.29 11.72s-3.46 13.35-4.81 17.08a3.78 3.78 0 00.24 3.1l35.69 65.58a3.74 3.74 0 001.38 1.44l37.55 22.54a3.78 3.78 0 011.81 2.73l7.52 54.54a3.82 3.82 0 001.61 2.61l29.3 20.14a4 4 0 011.65 2.48l15.54 73.8a3.6 3.6 0 00.49 1.22c1.46 2.36 7.28 11 14.3 12.28-.65.18-1.23.59-1.88.78a47.63 47.63 0 015 1.16c2 .54 4 1 6 1.43 3.13.62 3.44 1.1 4.94-1.68 2-3.72 4.29-5 6-5.46a3.85 3.85 0 002.89-2.9l10.07-46.68a4 4 0 011.6-2.42l45-31.9a4 4 0 001.69-3.27V306a4 4 0 00-1.55-3.2z"/><path d="M262 48s-3.65.21-4.39.23q-8.13.24-16.22 1.12A207.45 207.45 0 00184.21 64c2.43 1.68-1.75 3.22-1.75 3.22L189 80h35l24 12 21-12zM354.23 120.06l16.11-14a4 4 0 00-.94-6.65l-18.81-8.73a4 4 0 00-5.3 1.9l-7.75 16.21a4 4 0 001.49 5.11l10.46 6.54a4 4 0 004.74-.38zM429.64 140.67l-5.83-9c-.09-.14-.17-.28-.25-.43-1.05-2.15-9.74-19.7-17-26.51-5.45-5.15-7-3.67-7.43-2.53a3.77 3.77 0 01-1.19 1.6l-28.84 23.31a4 4 0 01-2.51.89h-14.93a4 4 0 00-2.83 1.17l-12 12a4 4 0 000 5.66l12 12a4 4 0 002.83 1.17h75.17a4 4 0 004-4.17l-.55-13.15a4 4 0 00-.64-2.01z"/><path d="M256 72a184 184 0 11-130.1 53.9A182.77 182.77 0 01256 72m0-40C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32z"/></svg>
+                            <span class="header-3-type text-[#535353]">
+                                &nbsp;&nbsp;Global Filters
+                            </span>
+                        </mat-panel-title>
+                        <mat-panel-description>
+                        Applied to every layer
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>                 
+                    <div id="map-builder-global"></div>
+                </mat-expansion-panel>
+                <mat-expansion-panel *ngIf="viewType == 2"  class="mt-3" >
+                    <mat-expansion-panel-header>
+                        <mat-panel-title >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path d="M480 150L256 48 32 150l224 104 224-104zM255.71 392.95l-144.81-66.2L32 362l224 102 224-102-78.69-35.3-145.6 66.25z"/><path d="M480 256l-75.53-33.53L256.1 290.6l-148.77-68.17L32 256l224 102 224-102z"/></svg>
+                            <span class="header-3-type text-[#535353]">
+                                &nbsp;&nbsp;Layer Inspector
+                            </span>
+                        </mat-panel-title>
+                        <mat-panel-description>
+                        Editing {{layers.length}} layers
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>                 
+                    
+                </mat-expansion-panel>
+
+                <!-- Table View -->
+                <mat-expansion-panel *ngIf="viewType == 1" [(expanded)]="expandedPanelLookup['table-builder']">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><title>Filter</title><path d="M16 120h480v48H16zM96 232h320v48H96zM192 344h128v48H192z"/></svg>
+                            <span class="header-3-type text-[#535353]">
+                                &nbsp;&nbsp;Filter
+                            </span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>  
+                    <div id="table-builder"></div>               
+                </mat-expansion-panel>
+                <mat-expansion-panel *ngIf="viewType == 1"  class="mt-3">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="22px" height="22px" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
+
+                                    <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#535353" stroke="none">
+                                    <path d="M2295 5114 c-596 -29 -1047 -99 -1348 -208 -169 -61 -284 -134 -336 -213 l-31 -47 2 -250 3 -249 732 -461 732 -461 1 -800 c0 -829 0 -825 39 -825 25 0 995 300 1006 311 6 6 11 244 13 662 l2 653 722 454 c397 250 727 461 735 468 10 10 13 66 13 245 0 271 -3 281 -92 363 -180 164 -654 286 -1322 339 -174 14 -727 26 -871 19z m820 -219 c424 -29 759 -83 945 -154 178 -68 170 -117 -31 -177 -407 -123 -835 -174 -1464 -174 -616 0 -1154 59 -1460 160 -101 34 -149 59 -164 89 -40 73 286 174 729 227 378 44 1027 57 1445 29z"/>
+                                    <path d="M844 2186 c-18 -14 -19 -35 -24 -639 l-5 -624 -260 103 c-143 57 -270 104 -282 104 -37 0 -48 -35 -24 -73 12 -18 197 -261 414 -542 330 -429 396 -510 417 -510 21 0 87 82 417 510 217 281 403 524 414 542 24 38 13 73 -24 73 -12 -1 -139 -47 -282 -104 l-260 -103 -5 624 c-5 604 -6 625 -24 639 -29 21 -443 21 -472 0z"/>
+                                    <path d="M4012 2183 c-16 -14 -711 -916 -801 -1039 -19 -26 -21 -35 -12 -53 7 -12 21 -21 36 -21 13 0 137 45 276 100 140 55 257 100 261 100 5 0 8 -279 8 -619 0 -550 2 -621 16 -635 13 -14 49 -16 242 -16 126 0 234 5 242 10 13 8 15 92 18 636 2 588 4 626 20 621 9 -2 127 -48 260 -101 134 -53 254 -96 268 -96 26 0 49 33 38 53 -19 32 -799 1044 -816 1060 -11 9 -24 17 -28 17 -4 0 -17 -8 -28 -17z"/>
+                                    </g>
+                                    </svg>
+                            <span class="header-3-type text-[#535353]">
+                                &nbsp;&nbsp;Sort
+                            </span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="flex flex-row items-center">
+                        <mat-form-field appearance="fill" style="margin-top: 10px; margin-bottom: -10px; font-size: 0.9rem">
+                            <mat-label>Select Field</mat-label>
+                            <mat-select [(ngModel)]="selectedSortField" (ngModelChange)="onSortSelection()">
+                                <mat-option *ngFor="let obj of relevantColumnObjects; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>  
+
+                        <mat-radio-group aria-label="Select an option" [(ngModel)]="filterBy" class="flex flex-col ml-2">
+                            <mat-radio-button style="margin-right: 5px" value="Ascending">Ascending</mat-radio-button>
+                            <mat-radio-button value="Descending">Descending</mat-radio-button>
+                        </mat-radio-group>
+                        
+                        <button class="standard-button border p-2 ml-auto" mat-button (click)="selectedSortField=null">
+                            <span class="standard-button-text">
+                                Clear
                             </span>
                         </button>
-                        <div *ngIf="queryTime !== null && progressBarMode === 'determinate'" class="result-text">
-                            <p *ngIf="invalidQuery && queryError === null" ><abbr style="color: #f99;" class="cache-text" title="Check Query Builder">Invalid Query</abbr></p>
-                            <p *ngIf="!invalidQuery && queryError === null">{{queryTime}}ms <abbr *ngIf="isCached" class="cache-text" title="Results stored in memory">Cached</abbr></p>
-                            <p *ngIf="queryError !== null"><abbr style="color: #f99;" *ngIf="isCached" class="cache-text" title="Try again later or change the query">Error: {{ queryError }}</abbr></p>
-                        </div>
                     </div>
-                    <!-- Utils Divider -->
-                    <div class="-mx-3 header-2-type border-t border-[#a0a0a0] flex flex-row mt-3 items-center text-[#a0a0a0] pl-4 pt-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="#a0a0a0" height="24px" viewBox="0 0 512 512"><title>Build</title><path d="M230 209.2L32 405.58 106.65 480l197.59-198.17c46.47 17.46 105.52 12.54 143-24.78 40.44-40.32 40.35-108 16.81-156.79l-87.33 87.06-52.32-52.13 87.33-87.06C363 24.46 294.67 24.34 254.23 64.66c-38.03 37.91-42.78 97.6-24.23 144.54z"/></svg>
-                        &nbsp;&nbsp;Utilities
-                    </div>
-                    <mat-expansion-panel class="mt-3">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M472.7 189.5c-15.76-10-36.21-16.79-58.59-19.54-6.65-39.1-24.22-72.52-51.27-97.26C334.15 46.45 296.21 32 256 32c-35.35 0-68 11.08-94.37 32a149.7 149.7 0 00-45.29 60.42c-30.67 4.32-57 14.61-76.71 30C13.7 174.83 0 203.56 0 237.6 0 305 55.92 352 136 352h104V208h32v144h124c72.64 0 116-34.24 116-91.6 0-30.05-13.59-54.57-39.3-70.9zM240 419.42L191.98 371l-22.61 23L256 480l86.63-86-22.61-23L272 419.42V352h-32v67.42z"/></svg>
-                                <span class="header-3-type text-[#535353]">
-                                    &nbsp;&nbsp;Download {{viewType == 1 ? 'Table' : 'Map'}} Data
-                                </span>
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                    </mat-expansion-panel>
-                    <mat-expansion-panel class="mt-3">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M200.66 352H144a96 96 0 010-192h55.41M312.59 160H368a96 96 0 010 192h-56.66M169.07 256h175.86" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="round" stroke-width="48"/></svg>
-                                <span class="header-3-type text-[#535353]">
-                                    &nbsp;&nbsp;Save Link to {{viewType == 1 ? 'Query' : 'Map'}}
-                                </span>
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                    </mat-expansion-panel>
-                    <mat-expansion-panel *ngIf="viewType == 2"  class="mt-3">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M456 144h-83c-3 0-6.72-1.94-9.62-5L336.1 96.2C325 80 320 80 302 80h-92c-18 0-24 0-34.07 16.21L148.62 139c-2.22 2.42-5.34 5-8.62 5v-16a8 8 0 00-8-8H92a8 8 0 00-8 8v16H56a24 24 0 00-24 24v240a24 24 0 0024 24h400a24 24 0 0024-24V168a24 24 0 00-24-24zM260.51 367.9a96 96 0 1191.39-91.39 96.11 96.11 0 01-91.39 91.39z"/></svg>
-                                <span class="header-3-type text-[#535353]">
-                                    &nbsp;&nbsp;Save Image of Map
-                                </span>
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                    </mat-expansion-panel>
-                    <mat-expansion-panel  class="mt-3">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M256 48C141.13 48 48 141.13 48 256c0 114.69 93.32 208 208 208 114.86 0 208-93.14 208-208 0-114.69-93.31-208-208-208zm108 240H244a4 4 0 01-4-4V116a4 4 0 014-4h24a4 4 0 014 4v140h92a4 4 0 014 4v24a4 4 0 01-4 4z"/></svg>
-                                <span class="header-3-type text-[#535353]">
-                                    &nbsp;&nbsp;Query History
-                                </span>
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-                    </mat-expansion-panel>
+                </mat-expansion-panel>
+            </div>
+            
+        </div>
+        
+        <!-- Run Control -->
+        <div style="box-shadow: -4px 0 8px -2px rgb(138, 138, 138); z-index: 2;" [class.w-2-7]="!isSm && !isXs" [class.w-full]="isSm || isXs" class="bg-white">
+            <!-- Header -->
+            <div *ngIf="!isL" [class.border-l]="!isSm && !isXs" class="flex flex-row items-center bg-white px-4 h-14 min-h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 2;">
+                <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" height="30px" fill="#569CD7" viewBox="0 0 512 512"><path d="M96 448l320-192L96 64v384z"/></svg>
+                <span class="pl-2 header-type text-[#569CD7]">Run Control</span>
+            </div>
+            <div class=" w-full h-full flex flex-col p-3">
+            <!-- Run Query Box -->
+            <div class="w-full flex flex-col items-center">
+                <button id="run-query" style="width: 75%" class="apply-button text-semibold py-2 mt-4 flex flex-row justify-center" mat-button (click)="runQuery(false, 'table-builder')">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="22px" fill="#5fa784" viewBox="0 0 512 512"><title>Search Circle</title><path d="M256 64C150.13 64 64 150.13 64 256s86.13 192 192 192 192-86.13 192-192S361.87 64 256 64zm80 294.63l-54.15-54.15a88.08 88.08 0 1122.63-22.63L358.63 336z"/><circle cx="232" cy="232" r="56"/></svg>
+                    <span class="apply-button-text">
+                        &nbsp;&nbsp;RUN QUERY
+                    </span>
+                </button>
+                <div *ngIf="queryTime !== null && progressBarMode === 'determinate'" class="result-text">
+                    <p *ngIf="invalidQuery && queryError === null" ><abbr style="color: #f99;" class="cache-text" title="Check Query Builder">Invalid Query</abbr></p>
+                    <p *ngIf="!invalidQuery && queryError === null">{{queryTime}}ms <span *ngIf="isCached" class="cache-text" matTooltip="Results stored in memory">Cached</span></p>
+                    <p *ngIf="queryError !== null"><abbr style="color: #f99;" *ngIf="isCached" class="cache-text" title="Try again later or change the query">Error: {{ queryError }}</abbr></p>
                 </div>
             </div>
-        
+                <!-- Utils Divider -->
+                <div class="-mx-3 header-2-type flex flex-row my-3 items-center text-[#a0a0a0] pl-4 pt-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#a0a0a0" height="24px" viewBox="0 0 512 512"><title>Build</title><path d="M230 209.2L32 405.58 106.65 480l197.59-198.17c46.47 17.46 105.52 12.54 143-24.78 40.44-40.32 40.35-108 16.81-156.79l-87.33 87.06-52.32-52.13 87.33-87.06C363 24.46 294.67 24.34 254.23 64.66c-38.03 37.91-42.78 97.6-24.23 144.54z"/></svg>
+                    &nbsp;&nbsp;Utilities
+                </div>
+                <button id="utility" class="utility-button w-full border p-3 inline" mat-button >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M472.7 189.5c-15.76-10-36.21-16.79-58.59-19.54-6.65-39.1-24.22-72.52-51.27-97.26C334.15 46.45 296.21 32 256 32c-35.35 0-68 11.08-94.37 32a149.7 149.7 0 00-45.29 60.42c-30.67 4.32-57 14.61-76.71 30C13.7 174.83 0 203.56 0 237.6 0 305 55.92 352 136 352h104V208h32v144h124c72.64 0 116-34.24 116-91.6 0-30.05-13.59-54.57-39.3-70.9zM240 419.42L191.98 371l-22.61 23L256 480l86.63-86-22.61-23L272 419.42V352h-32v67.42z"/></svg>
+                    <span class="header-3-type text-[#569CD7] m-auto">
+                        &nbsp;&nbsp;Download {{viewType == 1 ? 'Table' : 'Map'}} Data
+                    </span>
+                </button>
+                <button id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M200.66 352H144a96 96 0 010-192h55.41M312.59 160H368a96 96 0 010 192h-56.66M169.07 256h175.86" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="round" stroke-width="48"/></svg>
+                    <span class="header-3-type text-[#569CD7] m-auto">
+                        &nbsp;&nbsp;Save Link to {{viewType == 1 ? 'Query' : 'Map'}}
+                    </span>
+                </button>
+                <button *ngIf="viewType == 2" id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M456 144h-83c-3 0-6.72-1.94-9.62-5L336.1 96.2C325 80 320 80 302 80h-92c-18 0-24 0-34.07 16.21L148.62 139c-2.22 2.42-5.34 5-8.62 5v-16a8 8 0 00-8-8H92a8 8 0 00-8 8v16H56a24 24 0 00-24 24v240a24 24 0 0024 24h400a24 24 0 0024-24V168a24 24 0 00-24-24zM260.51 367.9a96 96 0 1191.39-91.39 96.11 96.11 0 01-91.39 91.39z"/></svg>
+                    <span class="header-3-type text-[#569CD7] m-auto">
+                        &nbsp;&nbsp;Save Image of Map
+                    </span>
+                </button>
+                <button id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M256 48C141.13 48 48 141.13 48 256c0 114.69 93.32 208 208 208 114.86 0 208-93.14 208-208 0-114.69-93.31-208-208-208zm108 240H244a4 4 0 01-4-4V116a4 4 0 014-4h24a4 4 0 014 4v140h92a4 4 0 014 4v24a4 4 0 01-4 4z"/></svg>
+                    <span class="header-3-type text-[#569CD7] m-auto">
+                        &nbsp;&nbsp;Query History
+                    </span>
+                </button>
+            </div>
+        </div>
+        </div>
 
     </div>
     <!-- Table -->
-    <div [hidden]="viewType === 2" style="margin-bottom: 50px;" class="bg-white w-full">
-        <div style="box-shadow: 0 5px 5px -3px #0003,0 8px 10px 1px #00000024,0 3px 14px 2px #0000001f;"[class.mx-10]="!isXs" class="bg-white my-6">
+    <div [hidden]="viewType === 2" class="bg-white w-full py-6 border-t border-[#569CD7]" style="z-index:5; position: relative;" [class.px-6]="!isXs">
+        <div style="box-shadow: 0 5px 5px -3px #0003,0 8px 10px 1px #00000024,0 3px 14px 2px #0000001f;" class="bg-white ">
             <mat-progress-bar [mode]="progressBarMode" [value]="progressBarValue" class="mat-progress-bar-buffer"></mat-progress-bar>
             <div class="overflow-x-scroll">
                 <table class=" ">

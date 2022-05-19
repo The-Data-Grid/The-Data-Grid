@@ -80,7 +80,7 @@ function dataQueryWrapper(queryType) {
             const nRowsFinalQuery = `WITH query_to_count AS (${finalQueryForCounting}) SELECT COUNT(*)::INTEGER AS "n" FROM query_to_count`;
             
             // DEBUG: Show SQL Query //
-            // console.log(finalQuery); 
+            console.log(finalQuery); 
             // console.log(nRowsFinalQuery);
     
             // Finally querying the database and attaching the result

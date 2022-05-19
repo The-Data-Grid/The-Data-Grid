@@ -917,6 +917,34 @@ Ensure the default browser behavior of the `hidden` attribute.
   font-weight: 600;
 }
 
+.utility-button {
+  background-color: white;
+  border-color: #569CD7;
+  color: #569CD7;
+}
+
+.standard-button {
+  border-color: #a0a0a0;
+  color: #535353;
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.standard-button-text {
+  margin: auto;
+  color: #535353;
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+::ng-deep #utility .mat-button-focus-overlay {
+  background: #569CD7;
+}
+
+::ng-deep #run-query .mat-button-focus-overlay {
+  background: green;
+}
+
 /*!
  * jQuery QueryBuilder 2.6.2
  * Copyright 2014-2021 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
@@ -2398,14 +2426,14 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 
 .header-type {
-  font-weight: 600;
-  font-size: 1.3rem;
+  font-weight: 400;
+  font-size: 1.2rem;
   line-height: 1.6;
-  letter-spacing: 0.0095em;
+  letter-spacing: 0.001em;
 }
 
 .header-2-type {
-  font-weight: 500;
+  font-weight: 300;
   font-size: 1.05rem;
   line-height: 1.2;
   letter-spacing: 0.0065em;
@@ -2413,7 +2441,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 
 .header-3-type {
   font-weight: 400;
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.2;
   letter-spacing: 0.0065em;
 }

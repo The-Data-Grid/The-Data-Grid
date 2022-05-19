@@ -200,6 +200,7 @@ function validationConstructor(init) {
             // Validate filters for feature and operators for filters 
             for(let filter of res.locals.parsed.filters) {
                 // if not a valid filter for this feature and not a global filter and feature validation
+                console.log(validate[feature].filter)
                 if(!validate[feature].filter.includes(parseInt(filter.id)) && (init == 'item' || !globals.filter.includes(parseInt(filter.id)))) { 
                     return res.status(400).send(`Bad Request 2203: ${filter.id} is not a valid filter for the ${feature} feature`);
                 } else {
@@ -207,13 +208,15 @@ function validationConstructor(init) {
                     let field = filter.val;
                     let index = validate[feature].filter.indexOf(filter.id)
 
+                    const filterIndex = validate[feature].filter.indexOf(parseInt(filter.id));
+
                     // Operator validation
-                    if(!validate[feature].selectorType[index].includes(operator)) {
+                    if(!validOperatorLookup[validate[feature].selectorType[filterIndex]].includes(operator)) {
                         return res.status(400).send(`Bad Request 2222: ${operator} is not a valid operator for the ${filter.id} filter`);
                     }
 
                     // GeoJSON validation
-                    if(['geoPoint', 'geoLine', 'geoRegion'].includes(validate[feature].selectorType)) {
+                    if(['geoPoint', 'geoLine', 'geoRegion'].includes(validate[feature].selectorType[filterIndex])) {
                         try {
                             JSON.parse(field);
                         } catch(err) {
@@ -267,6 +270,7 @@ function validationConstructor(init) {
 
             // Validate universalFilters input fields
             for(let filter in universalFilters) {
+                console.log(filter, universalFilters[filter])
                 // Validate field
                 if (filter == 'limit' && !isPositiveInteger(universalFilters[filter])) {
                     return res.status(400).send(`Bad Request 2210: Field for ${filter} must be a positive integer`);
@@ -333,12 +337,12 @@ function dateToUTC(field) {
 
 function isPositiveIntegerOrZero(field) {
     var n = Math.floor(Number(field));
-    return n !== Infinity && String(n) === field && n >= 0;
+    return n !== Infinity && String(n) == field && n >= 0;
 }
 
 function isPositiveInteger(field) {
     var n = Math.floor(Number(field));
-    return n !== Infinity && String(n) === field && n > 0;
+    return n !== Infinity && String(n) == field && n > 0;
 }
 
 function isValidEmail(email) {

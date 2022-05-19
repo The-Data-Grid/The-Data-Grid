@@ -21,10 +21,12 @@ function parseConstructor (init) {
         res.locals.parsed = {};
     
         // Validate column IDs are numeric
-        for(let id of include) {
-            if(isNaN(parseInt(id))) {
-                return res.status(400).send(`Bad Request 1601: ${id} must be an integer`);
+        for(let n = 0; n < include.length; n++) {
+            if(isNaN(parseInt(include[n]))) {
+                return res.status(400).send(`Bad Request 1601: ${include[n]} must be an integer`);
             }
+            // convert to Number
+            include[n] = parseInt(include[n]);
         }
     
         // Initialize filters
@@ -45,7 +47,7 @@ function parseConstructor (init) {
                 if (universalFilters[query]){
                     return res.status(400).send(`Bad Request 2205: Cannot have duplicate filters`);
                 } else {
-                    universalFilters[key] = parseInt(queryString[query]);
+                    universalFilters[query] = parseInt(queryString[query]);
                 }
                 continue;
             }
@@ -57,9 +59,10 @@ function parseConstructor (init) {
                     builder = JSON.parse(queryString[query]);
 
                     // Unpack each filter and validate the shape of the builder object
-                    builderUnpacked = parseAndUnpackBuilder(queryString[builder]);
+                    builderUnpacked = parseAndUnpackBuilder(builder);
 
                 } catch(err) {
+                    console.log(err)
                     return res.status(400).send(`Bad Request 1606: builder object is invalid`);
                 }
                 continue
@@ -68,7 +71,7 @@ function parseConstructor (init) {
             return res.status(400).send(`Bad Request 1607: ${query} is not a valid query parameter`);
         }
 
-        console.log('Filters: ', filters)
+        console.log('Filters: ', builderUnpacked)
         // attaching parsed object
         res.locals.parsed.request = "audit";
         res.locals.parsed.features = feature;
@@ -79,9 +82,10 @@ function parseConstructor (init) {
         next(); // passing to validate.js 
 
         function parseAndUnpackBuilder(builderObject) {
+            console.log(builderObject)
             let filterArray = [];
             // make sure 1st element is 1 or 0 (AND or OR)
-            if(![1, 2].includes(builderObject[0])) {
+            if(![0, 1].includes(builderObject[0])) {
                 throw Error('First element of each group must be 1 or 0');
             }
             for(let element of builderObject.slice(1)) {
