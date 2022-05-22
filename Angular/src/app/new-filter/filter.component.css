@@ -909,6 +909,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   border-color: #5fa784;
   color: #5fa784;
   border-width: 1px;
+  border-width: 1px;
+  border-style: solid;
 }
 
 .apply-button-text {
@@ -920,6 +922,8 @@ Ensure the default browser behavior of the `hidden` attribute.
 .utility-button {
   background-color: white;
   border-color: #569CD7;
+  border-width: 1px;
+  border-style: solid;
   color: #569CD7;
 }
 
@@ -2450,4 +2454,14 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   font-weight: 400;
   font-size: 0.7rem;
   letter-spacing: 0.0065em;
+}
+
+.toggle-up {
+  transform: rotate(180deg);
+  transition-duration: 700ms;
+}
+
+.toggle-down {
+  transform: rotate(0);
+  transition-duration: 700ms;
 }

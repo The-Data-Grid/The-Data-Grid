@@ -34,7 +34,8 @@
             ],
             "scripts": [
               "src/client-scripts/three.js",
-              "src/client-scripts/vanta.net.js"
+              "src/client-scripts/vanta.net.js",
+              "src/client-scripts/stamen.js"
             ]
           },
           "configurations": {

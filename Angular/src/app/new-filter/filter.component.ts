@@ -11,6 +11,7 @@ import * as $ from 'jquery';
 import * as L from 'leaflet';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import 'jQuery-QueryBuilder/dist/js/query-builder.js';
+import * as stamen from '../../client-scripts/stamen.js';
 
 @Component({
  selector: 'app-filter-new',
@@ -30,6 +31,15 @@ export class NewFilterComponent implements OnInit, AfterViewInit {
 ngOnInit() {
 	// Layout Init
 	// ==========================================
+
+	// Set view type depending on if /map or /table
+	let path = window.location.href.split('/')[window.location.href.split('/').length - 1];
+	if(path == 'map') {
+		this.viewType = 2;
+	} else {
+		this.viewType = 1;
+	}
+
     let {
     	isXs,
     	isSm,
@@ -53,24 +63,72 @@ ngOnInit() {
 
 	// Data Waterfall
 	// ==========================================
+	
+	this.getSetupObjectsAndFormatBuilder(this.viewType);
+	this.expandFilter(this.viewType, true);
 
-	this.getSetupObjects();
-	this.expandFilter(1, true);
+	if(this.viewType == 1) {
+	} 
+	else {
+		this.mountMap();
+	}
 
 }
 
 ngAfterViewInit(): void {
-	this.initMap();
+	
 }
 
 // =================================================
 // GLOBAL STATE
 // =================================================
 
+// VIEW TYPE //
 // 1 = Table, 2 = Map
-viewType = 1;
+viewType;
+viewTypeStringLookup = {
+	1: 'tableView',
+	2: 'mapView'
+};
 
-queryType = 'Observations';
+changeViewType(e) {
+	// format new view type
+	let newViewType = e.index + 1;
+	this.viewType = newViewType;
+	const viewTypeString = this.viewTypeStringLookup[this.viewType];
+
+	// format columnObjects
+	this.getFilterableColumnIDs(this.queryState[viewTypeString], 2);
+	this.setSelectedValues(this.queryState[viewTypeString], this.viewType == 1);
+	// Init builder
+	this.getQueryBuilder(this.viewType)
+
+	// Table View
+	if(newViewType == 1) {
+		this.expandFilter(1, true)
+		this.expandFilter(2, false)
+
+		// /map to /table
+		this.changeURL(false);
+	}
+
+	// Map view
+	else {
+		this.expandFilter(1, false)
+		this.expandFilter(2, true)
+
+		// /table to /map
+		this.changeURL(true);
+
+		if(!this.hasMapMounted) {
+			this.mountMap();
+		}
+	}
+}
+
+// QUERY STATE
+
+// Will come from API
 databases = [
 	{
 		id: 'ucla-audits',
@@ -81,27 +139,199 @@ databases = [
 		name: 'US Census'
 	}
 ]
-selectedDatabase = 0;
-onDatabaseChange() {
+queryState = {
+	tableView: {
+		selectedDatabase: 0,
 
+		// queryTypes = ['Observations', 'Items'] // Don't need to store this, it's implied
+		queryType: 'Observations',
+		
+		selectedFeature: 2, //Sink
+		featuresOrItems: [],
+		
+		selectedFields: [],
+
+		selectedSortField: null,
+		filterBy: 'Ascending',
+		currentPageSize: 10,
+		currentPageIndex: 0,
+		
+		progressBarMode: 'determinate',
+		progressBarValue: 100,
+
+		// internal data
+		currentFilterableColumnObjects: [],
+		currentFilterableReturnableIDs: [],
+		currentColumnObjects: [],
+		currentReturnableIDs: [],
+		currentColumnObjectIndices: [],
+
+		// Query in-progress state
+		queryTime: null,
+		queryStart: null,
+		queryTimer(start) {
+			if(start) {
+				this.queryStart = Date.now();
+			} else {
+				this.queryTime = Date.now() - this.queryStart
+			}
+		},
+		invalidQuery: false,
+		queryError: null,
+		
+		data: {
+			tableData: [],
+			headerNames: [],
+			rowCount: null,
+			isCached: null,
+		}
+	},
+	mapView: {
+		selectedDatabase: 0,
+
+		queryType: 'Observations',
+
+		selectedFeature: 2, //Sink
+		featuresOrItems: [],
+
+		selectedFields: [],
+		previousSelectedFields: [],
+
+		// internal data
+		currentFilterableColumnObjects: [],
+		currentFilterableReturnableIDs: [],
+		currentColumnObjects: [],
+		currentReturnableIDs: [],
+		currentColumnObjectIndices: [],
+
+		// Array because there is an object *for each* field
+		layers: []
+	}
+};
+// Value change hooks
+onQueryTypeChange(viewType: number)  {
+	const viewTypeString = this.viewTypeStringLookup[viewType]
+	this.queryState[viewTypeString].featuresOrItems = this.queryState[viewTypeString].queryType == 'Observations' ? this.allFeatures : this.allItems;
+	this.queryState[viewTypeString].selectedFeature = this.queryState[viewTypeString].queryType == 'Observations' ? 2 : 15;
+	this.onFeatureSelectChange(viewType);	
 }
-changeViewType(e) {
-	let newViewType = e.index + 1;
+onFieldSelection(viewType: number) {
+	const viewTypeString = this.viewTypeStringLookup[viewType];
+	// when map view
+	if(viewType == 2) {
+		// add
+		if(this.queryState.mapView.selectedFields.length > this.queryState.mapView.previousSelectedFields.length) {
+			// get new ID
+			// The values in the array are indices, so this is getting the value itself, not the index of the value in selectedFields
+			let addedColumnIndex: any = this.queryState.mapView.selectedFields.filter(id => !this.queryState.mapView.previousSelectedFields.includes(id));
+			addedColumnIndex = addedColumnIndex[0];
+			// get columnObject
+			let columnObject = this.queryState.mapView.currentColumnObjects[addedColumnIndex];
+			this.queryState.mapView.layers.push({
+				// Layer UI
+				columnIndex: addedColumnIndex,
+				isVisible: true,
+				isExpanded: false,
+				type: columnObject.selectorType,
+				typeName: columnObject.selectorType.replace('geo', ''),
+				color: randomHex(),
+				name: columnObject.frontendName,
+				queryBuilderTarget: 'map-builder-global' + addedColumnIndex,
 
-	this.viewType = newViewType;
-	this.getQueryBuilder(newViewType)
+				// The queryState of the map view at the time that the layer was selected. These same props that are directly  
+				// in queryState.mapView are the state of the Data Selector dropdowns, these are the state of the dropdowns
+				// *when this layer was selected*. The state must be saved so a query can be made for every layer. 
+				// =========================================================================================================
+				selectedDatabase: this.queryState.mapView.selectedDatabase,
+				queryType: this.queryState.mapView.queryType,
+				selectedFeature: this.queryState.mapView.selectedFeature, //Sink
+				featuresOrItems: Array.from(this.queryState.mapView.featuresOrItems),
+				
+				selectedFields: [], // must set to all fields for the feature with setSelectedValues()
 
-	// Table View
-	if(newViewType == 1) {
-		this.expandFilter(1, true)
-		this.expandFilter(2, false)
+				selectedSortField: null, // const
+				filterBy: 'Ascending', // const
+
+				currentPageSize: 10000, // const
+				currentPageIndex: 0, // const 
+				
+				progressBarMode: 'determinate',
+				progressBarValue: 100,
+		
+				// internal data
+				currentFilterableColumnObjects: Array.from(this.queryState.mapView.currentFilterableColumnObjects),
+				currentFilterableReturnableIDs: Array.from(this.queryState.mapView.currentFilterableReturnableIDs),
+				currentColumnObjects: Array.from(this.queryState.mapView.currentColumnObjects),
+				currentReturnableIDs: Array.from(this.queryState.mapView.currentReturnableIDs),
+				currentColumnObjectIndices: Array.from(this.queryState.mapView.currentColumnObjectIndices),
+		
+				// Query in-progress state
+				queryTime: null,
+				queryStart: null,
+				queryTimer(start) {
+					if(start) {
+						this.queryStart = Date.now();
+					} else {
+						this.queryTime = Date.now() - this.queryStart
+					}
+				},
+				invalidQuery: false,
+				queryError: null,
+				// =========================================================================================================
+
+				// Map Data
+				data: {
+					tableData: [],
+					headerNames: [],
+					rowCount: null,
+					isCached: null,
+				}
+			});
+			// add all values for the feature
+			this.setSelectedValues(this.queryState.mapView.layers[this.queryState.mapView.layers.length - 1], true);
+			// init the query builder
+			this.getQueryBuilder(2, addedColumnIndex);
+			console.log(this.queryState.mapView.layers[this.queryState.mapView.layers.length - 1].selectedFields)
+		}
+		// remove
+		else {
+			// The values in the array are indices, so this is getting the value itself, not the index of the value in selectedFields
+			let removedColumnIndex: any = this.queryState.mapView.previousSelectedFields.filter(id => !this.queryState.mapView.selectedFields.includes(id));
+			for(let n = 0; n < this.queryState.mapView.layers.length; n++) {
+				let layer = this.queryState.mapView.layers[n];
+				// check if this layer is the removed layer
+				if(layer.columnIndex == removedColumnIndex) {
+					// remove the layer
+					this.queryState.mapView.layers.splice(n, 1);
+					break;
+				}
+			}
+		}
+		// update the previous state to match current
+		this.queryState.mapView.previousSelectedFields = Array.from(this.queryState.mapView.selectedFields);
 	}
 
-	// Map view
-	else {
-		this.expandFilter(1, false)
-		this.expandFilter(2, true)
+	// random color util
+	function randomHex() {
+		return '#' + Math.floor(Math.random()*16777215).toString(16);
 	}
+}
+onFeatureSelectChange (viewType: number) {
+	const viewTypeString = this.viewTypeStringLookup[viewType]
+	this.getFilterableColumnIDs(this.queryState[viewTypeString], this.queryState.tableView.selectedFeature);
+}
+onPageChange(event: PageEvent, viewType: number): PageEvent {
+	const viewTypeString = this.viewTypeStringLookup[viewType];
+	// update page data
+	this[viewTypeString].currentPageSize = event.pageSize;
+	this[viewTypeString].currentPageIndex = event.pageIndex;
+	// refresh API
+	this.runQuery(this[viewTypeString], this[viewTypeString].data, {isPaginationQuery: true, target: 'table-builder'});
+	return event;
+}
+onDatabaseChange(viewType) {
+	const viewTypeString = this.viewTypeStringLookup[viewType];
+	// do something
 }
 
 
@@ -225,20 +455,27 @@ builderLookup = {
 
 expandedPanelLookup = {
 	'table-builder': false,
-	'map-builder-global': false
+	'map-builder-global': false,
+	'map-builder-layers': false
 }
 
 async expandFilter(viewType: number, set: boolean) {
 	if(set) {
 		await new Promise(r => setTimeout(r, 100));
 	}
-	this.expandedPanelLookup[this.builderLookup[viewType]] = set;
+	if(viewType == 1) {
+		this.expandedPanelLookup['table-builder'] = set;
+	} else {
+		this.expandedPanelLookup['map-builder-global'] = set;
+	}
 }
 
-getQueryBuilder(viewType) {
+getQueryBuilder(viewType: number, columnIndex='') {
+	// get viewTypeString to access queryState
+	let viewTypeString = this.viewTypeStringLookup[viewType];
 	// fill the filters
-	let filters = this.filterableReturnableIDs.map((id, index) => {
-		let columnObject = this.filterableColumnObjects[index];
+	let filters = this.queryState[viewTypeString].currentFilterableReturnableIDs.map((id, index) => {
+		let columnObject = this.queryState[viewTypeString].currentFilterableColumnObjects[index];
 		let out: any = {
 			id,
 			label: columnObject.frontendName,
@@ -253,8 +490,11 @@ getQueryBuilder(viewType) {
 		}
 		return out;
 	})
+	// appends the columnIndex if the builder is for a specific layer
+	let builderID = '#' + this.builderLookup[viewType] + columnIndex;
+	console.log(builderID)
 	$(document).ready(() => {
-		(<any>$('#' + this.builderLookup[viewType])).queryBuilder({
+		(<any>$(builderID)).queryBuilder({
 			plugins: [],
 			filters: filters,
 			operators: [
@@ -307,11 +547,6 @@ getRulesQueryBuilder(target) {
 	return (<any>$('#' + target)).queryBuilder('getRules', { skip_empty: true });
 }
 
-private operationMap = {
-	equal: '=',
-	contains: 'contains',
-
-}
 formatQueryString(rules) {
 	console.log(rules)
 	const builderOperatorToTDGOperatorLookup = this.builderOperatorToTDGOperatorLookup
@@ -346,49 +581,14 @@ formatQueryString(rules) {
 // API REQUESTS
 // =================================================
 
-tableData = [];
-headerNames = [];
+// Global Objects from setup
 setupObject;
 setupFilterObject;
 allFeatures;
 allItems;
-filterableColumnObjects = [];
-filterableReturnableIDs = [];
-relevantColumnObjects = [];
-currentReturnableIDs = [];
-currentColumnObjectIndices = [];
-rowCount;
-currentPageSize = 10;
-currentPageIndex = 0;
 
-onQueryTypeChange() {
-	this.featuresOrItems = this.queryType == 'Observations' ? this.allFeatures : this.allItems;
-	this.selectedFeature = this.queryType == 'Observations' ? 2 : 15;
-	this.onFeatureSelectChange();
-}
-
-onFeatureSelectChange() {
-	this.getFilterableColumnIDs(this.selectedFeature);
-}
-
-onFieldSelection() {
-
-}
-
-onSortSelection() {
-
-}
-
-onPageChange(event: PageEvent): PageEvent {
-	// update page data
-	this.currentPageSize = event.pageSize;
-	this.currentPageIndex = event.pageIndex;
-	// refresh API
-	this.runQuery(true, 'table-builder');
-	return event;
-}
-
-getSetupObjects() {
+getSetupObjectsAndFormatBuilder(viewType: number) {
+	let viewTypeString = this.viewTypeStringLookup[viewType];
 	let finishSetup;
 	let hasSetupFinished = new Promise((resolve, reject) => {
 		finishSetup = resolve;
@@ -404,10 +604,16 @@ getSetupObjects() {
 		hasSetupFinished.then(() => {
 			this.setupFilterObject = res;
 			// format the column objects
-			this.getFilterableColumnIDs(2);
+			this.getFilterableColumnIDs(this.queryState[viewTypeString], 2);
+			// set the selected fields (all for table, none for map)
+			this.setSelectedValues(this.queryState[viewTypeString], viewType == 1); // set all as selected for table view
 			// init the query builder given the column objects
-			this.getQueryBuilder(1);
-			this.runQuery(false, 'table-builder');
+			this.getQueryBuilder(viewType); // using viewType (int) instead of viewTypeString (string)
+			
+			// if table view then auto run a query
+			if(viewType == 1) {
+				this.runQuery(this.queryState[viewTypeString], this.queryState[viewTypeString].data,{isPaginationQuery: false, target: 'table-builder'});
+			}
 		});
 	})
   }
@@ -416,32 +622,42 @@ parseSetupObject() {
 	// get root features
 	this.allFeatures = this.setupObject.features;
 	this.allItems = this.setupObject.items;
-	this.featuresOrItems = this.queryType == 'Observations' ? this.allFeatures : this.allItems;
 }
 
-getFilterableColumnIDs(featureID): any {
-	if(this.queryType == 'Observations') {
-		this.currentColumnObjectIndices = this.setupFilterObject.observationColumnObjectIndices[featureID];
-		this.currentReturnableIDs = this.setupFilterObject.observationReturnableIDs[featureID];
+/**
+ * Fills the internal objects with the correct columnObjects for a specific feature
+ * @param featureID 
+ */
+getFilterableColumnIDs(queryStateObject: any, featureID: number): any {
+	queryStateObject.featuresOrItems = queryStateObject.queryType == 'Observations' ? this.allFeatures : this.allItems;
+
+	if(queryStateObject.queryType == 'Observations') {
+		queryStateObject.currentColumnObjectIndices = this.setupFilterObject.observationColumnObjectIndices[featureID];
+		queryStateObject.currentReturnableIDs = this.setupFilterObject.observationReturnableIDs[featureID];
 	} else {
-		this.currentColumnObjectIndices = this.setupFilterObject.itemColumnObjectIndices[featureID];
-		this.currentReturnableIDs = this.setupFilterObject.itemReturnableIDs[featureID];
+		queryStateObject.currentColumnObjectIndices = this.setupFilterObject.itemColumnObjectIndices[featureID];
+		queryStateObject.currentReturnableIDs = this.setupFilterObject.itemReturnableIDs[featureID];
 	}
 
-	this.filterableColumnObjects = this.currentColumnObjectIndices
+	queryStateObject.currentFilterableColumnObjects = queryStateObject.currentColumnObjectIndices
 			.map(index => this.setupObject.columns[index])
 			.filter(col => col.isFilterable);
 
-	this.filterableReturnableIDs = this.currentColumnObjectIndices
+	queryStateObject.currentFilterableReturnableIDs = queryStateObject.currentColumnObjectIndices
 			.map((columnObjectIndex, arrayIndex) => [this.setupObject.columns[columnObjectIndex], arrayIndex])
 			.filter(arr => arr[0].isFilterable)
-			.map(arr => this.currentReturnableIDs[arr[1]]);
+			.map(arr => queryStateObject.currentReturnableIDs[arr[1]]);
 
-	this.relevantColumnObjects = this.currentColumnObjectIndices
+	queryStateObject.currentColumnObjects = queryStateObject.currentColumnObjectIndices
 		.map(index => this.setupObject.columns[index]);
+}
 
-	this.selectedFields = this.relevantColumnObjects.map((col, i) => i)
-	this.selectedSortField = null;
+setSelectedValues(queryStateObject: any, setAllAsSelected: boolean) {
+	queryStateObject.selectedSortField = null;
+	// set all as selected?
+	if(setAllAsSelected) {
+		queryStateObject.selectedFields = queryStateObject.currentColumnObjects.map((col, i) => i)
+	}
 }
 
 getReturnablesFromColumnIDs(indices, isObservation, featureID): Array<Number> {
@@ -454,99 +670,102 @@ getReturnablesFromColumnIDs(indices, isObservation, featureID): Array<Number> {
 	}
 }
 
-progressBarMode = 'determinate'
-progressBarValue = 100
-
-queryTime = null;
-queryStart = null;
-isCached = null;
-queryTimer(start) {
-	if(start) {
-		this.queryStart = Date.now();
-	} else {
-		this.queryTime = Date.now() - this.queryStart
+// Master database query function, calls runQuery n times with necessary params depending on queryState
+queryDatabase() {
+	// Table View: call once for the selected fields
+	if(this.viewType == 1) {
+		this.runQuery(this.queryState.tableView, this.queryState.tableView.data, {isPaginationQuery: true, target: 'table-builder'});
+	}
+	// Map View: call for every layer with all fields from that layer's feature
+	else {
+		for(let layer of this.queryState.mapView.layers) {
+			this.runQuery(layer, layer.data, {isPaginationQuery: true, target: layer.queryBuilderTarget});
+		}
 	}
 }
 
-invalidQuery = false;
-queryError = null;
-
-runQuery(isPaginationQuery, target) {
-	this.invalidQuery = false;
-	this.queryError = null;
+private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
+	const {
+		isPaginationQuery,
+		target
+	} = options;
+	queryStateObject.invalidQuery = false;
+	queryStateObject.queryError = null;
 	let queryString = '';
 	if(!this.isFirstQuery) {
 		const rules = this.getRulesQueryBuilder(target);
 		if(rules === null) {
-			this.invalidQuery = true;
+			queryStateObject.invalidQuery = true;
 			return;
 		}
 		queryString = this.formatQueryString(rules)
 	} 
-	this.progressBarMode = 'indeterminate';
-	const isObservation = this.queryType === 'Observations';
+	queryStateObject.progressBarMode = 'indeterminate';
+	const isObservation = queryStateObject.queryType === 'Observations';
 	const feature = isObservation ? 
-	this.allFeatures[this.selectedFeature].backendName :
-	this.allItems[this.selectedFeature].backendName;
-	const columnObjectIndices = this.currentColumnObjectIndices;
-	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
-	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);
-	const sortObject = this.selectedSortField ? {
-		isAscending: this.filterBy === 'Ascending',
-		returnableID: this.getReturnablesFromColumnIDs([this.selectedSortField], isObservation, this.selectedFeature)[0]
+		this.allFeatures[queryStateObject.selectedFeature].backendName :
+		this.allItems[queryStateObject.selectedFeature].backendName;
+	const columnObjectIndices = queryStateObject.currentColumnObjectIndices;
+	const columnObjectIndicesIndices = [...new Set([...queryStateObject.selectedFields, ...(queryStateObject.selectedSortField ? [queryStateObject.selectedSortField] : [])])];
+	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, queryStateObject.selectedFeature);
+	const sortObject = queryStateObject.selectedSortField ? {
+		isAscending: queryStateObject.filterBy === 'Ascending',
+		returnableID: this.getReturnablesFromColumnIDs([queryStateObject.selectedSortField], isObservation, queryStateObject.selectedFeature)[0]
 	} : null;
 	const pageObject = {
-		limit: this.currentPageSize,
-		offset: this.currentPageIndex * this.currentPageSize
+		limit: queryStateObject.currentPageSize,
+		offset: queryStateObject.currentPageIndex * queryStateObject.currentPageSize
 	};
 	// 
-	this.queryTimer(true);
+	queryStateObject.queryTimer(true);
 	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject).subscribe((res) => {
-		this.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[columnObjectIndices[returnableIDs.indexOf(id)]].frontendName)];
-		this.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
+		// Set data
+		queryDataObject.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[columnObjectIndices[returnableIDs.indexOf(id)]].frontendName)];
+		queryDataObject.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
+		queryDataObject.isCached = res.cached === true;
+		queryDataObject.rowCount = res.nRows.n;
 
-		this.rowCount = res.nRows.n;
-		if(!isPaginationQuery) {
+		if(!isPaginationQuery && this.viewType == 1) {
 			this.paginator.firstPage();
 		}
 
-		this.isCached = res.cached === true;
-
-		this.progressBarMode = 'determinate';
+		queryStateObject.progressBarMode = 'determinate';
 		this.isFirstQuery = false;
-		this.queryTimer(false)
+		queryStateObject.queryTimer(false);
 	  }, (err) => {
-		  this.progressBarMode = 'determinate'
+		queryStateObject.progressBarMode = 'determinate'
 		  this.isFirstQuery = false;
-		  this.queryTimer(false);
-		  this.queryError = err.error;
+		  queryStateObject.queryTimer(false);
+		  queryStateObject.queryError = err.error;
 	  });
 }
 
-// Forms
-
-fieldsOptions = [];
-selectedFeature = 2; //Sink
-featuresOrItems = [];
-selectedFields = [];
-selectedSortField;
-filterBy = 'Ascending';
-
 
 // Download
+// Master database query function, calls runQuery n times with necessary params depending on queryState
+downloadDatabase() {
+	// Table View: call once for the selected fields
+	if(this.viewType == 1) {
+		this.runDownload(this.queryState.tableView);
+	}
+	// Map View: call for every layer with all fields from that layer's feature
+	else {
 
-runDownload() {
+	}
+}
+
+runDownload(queryStateObject) {
 	this.isDownloading = true;
-	const isObservation = this.queryType === 'Observations';
+	const isObservation = queryStateObject.queryType === 'Observations';
 	const feature = isObservation ? 
-		this.allFeatures[this.selectedFeature].backendName :
-		this.allItems[this.selectedFeature].backendName;
-	const columnObjectIndices = this.currentColumnObjectIndices;
-	const columnObjectIndicesIndices = [...new Set([...this.selectedFields, ...(this.selectedSortField ? [this.selectedSortField] : [])])]
-	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, this.selectedFeature);
-	const sortObject = this.selectedSortField ? {
-		isAscending: this.filterBy === 'Ascending',
-		returnableID: this.getReturnablesFromColumnIDs([this.selectedSortField], isObservation, this.selectedFeature)[0]
+		this.allFeatures[queryStateObject.selectedFeature].backendName :
+		this.allItems[queryStateObject.selectedFeature].backendName;
+	const columnObjectIndices = queryStateObject.currentColumnObjectIndices;
+	const columnObjectIndicesIndices = [...new Set([...queryStateObject.selectedFields, ...(queryStateObject.selectedSortField ? [queryStateObject.selectedSortField] : [])])]
+	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, queryStateObject.selectedFeature);
+	const sortObject = queryStateObject.selectedSortField ? {
+		isAscending: queryStateObject.filterBy === 'Ascending',
+		returnableID: this.getReturnablesFromColumnIDs([queryStateObject.selectedSortField], isObservation, queryStateObject.selectedFeature)[0]
 	} : null;
 	const isCSV = this.downloadType === 'csv';
 	this.apiService.downloadTableObject(isObservation, feature, returnableIDs, '', sortObject, isCSV).subscribe((res) => {
@@ -569,33 +788,73 @@ isDownloading = false;
 // GEOSPATIAL
 // =================================================
 
-layerType = 1;
+isMapSettingsExpanded = false;
+private hasMapMounted = false;
+selectedBasemapKey = 'stamenTerrain';
+oldBasemapKey = 'stamenTerrain';
+// Set basemap layers
+basemapLayers = {
+	openStreetMap: {
+		name: 'Open Street Map',
+		data: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			minZoom: 3,
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		})
+	},
+	esriImagery: {
+		name: 'Esri Imagery',
+		data: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+	})},
+	stamenWatercolor: {
+		name: 'Stamen Watercolor',
+		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.watercolor.url), stamen.stamen.tile.providers.watercolor)
+	},
+	stamenTerrain: {
+		name: 'Stamen Terrain',
+		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.terrain.url), stamen.stamen.tile.providers.terrain)
+	},
+	stamenToner: {
+		name: 'Stamen Toner',
+		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.toner.url), stamen.stamen.tile.providers.toner)
+	}
+}
+basemapLayersArray = Object.keys(this.basemapLayers);
+
+private stamenURLFormatter(url) {
+	url = url.replace('{S}', '{s}');
+	url = url.replace('{X}', '{x}');
+	url = url.replace('{Y}', '{y}');
+	url = url.replace('{Z}', '{z}');
+	return url;
+}
 
 private map;
 
-changeView(view) {
-	if(view === 2) {
-		this.viewType = 2;
-		this.invalidate();
-	} else {
-		this.viewType = 1;
-	}
+onBasemapChange() {
+	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
+	this.map.removeLayer(this.basemapLayers[this.oldBasemapKey].data);
+	this.oldBasemapKey = this.selectedBasemapKey;
 }
 
 private initMap(): void {
 	this.map = L.map('map', {
 		center: [ 34.06551008335871, -118.4418661368747 ],
-		zoom: 15
+		zoom: 15,
+		zoomControl: false
 	});
 
-	const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      minZoom: 3,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
+	L.control.zoom({
+		position: 'bottomright'
+	}).addTo(this.map);
+
+	L.control.scale().addTo(this.map)
+
+	// default
+	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
 
 	L.marker([34.06551008335871, -118.4418661368747]).addTo(this.map)
-
 }
 
 // Must invalidate the size because a bug where the tiles do not render properly on first load
@@ -606,12 +865,15 @@ private invalidate() {
 }
 
 // Layer handling
-layers = ['Victor Stanley Waste Bins', 'Campus Zone'];
 layerDropped(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.layers, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.queryState.mapView.layers, event.previousIndex, event.currentIndex);
 }
  
-
+private mountMap() {
+	this.initMap();
+	this.invalidate();
+	this.hasMapMounted = true;
+}
 
 
 
@@ -679,5 +941,34 @@ setScrollPos() {
 	this.isAtTopOfPage = this.lastKnownScrollPosition == 0;
 }
 
+// 0 = top, 1 = bottom
+currentlySnappedTo = 0;
+snapTo(curr) {
+	window.scrollTo({top: curr == 0 ? document.body.scrollHeight : 0, behavior: 'smooth'});
+	this.currentlySnappedTo = curr == 0 ? 1 : 0;
+	if(curr == 1) {
+		this.isMapSettingsExpanded = false;
+	}
+}
+
+// Change URL between /map and /table
+private changeURL(isMap) {
+	let path = window.location.href.split('/')[window.location.href.split('/').length - 1];
+	if(isMap) {
+		path = path.replace('table', 'map');
+	} else {
+		path = path.replace('map', 'table');
+	}
+	window.history.replaceState({}, '', '/' + path)
+}
+
+updateColor(e, columnIndex) {
+	let layerToUpdate = this.queryState.mapView.layers.filter(layer => layer.columnIndex == columnIndex)[0];
+	layerToUpdate.color = e.target.value;
+}
+
+expandAllLayers(expand) {
+	this.queryState.mapView.layers.forEach(layer => layer.isExpanded = expand)
+}
 
 }

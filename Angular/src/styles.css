@@ -209,9 +209,11 @@ html, body {
   color: rgb(228, 228, 228) !important;
 }
 
+/*
 .mat-expansion-panel {
   border-radius: 0 !important;
 }
+*/
 
 /* the bar at the bottom of a tab on the nav bar */
 
@@ -338,4 +340,8 @@ html, body {
   margin: 1.5rem/* 24px */;
   border-radius: 0.25rem/* 4px */;
   display: flex;
+}
+
+.mat-tooltip {
+  font-size: 13px !important;
 }
