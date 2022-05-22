@@ -1,9 +1,9 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ApiService } from '../api.service';
 import { SetupObjectService } from '../setup-object.service';
-import {FormControl, Validators} from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -20,7 +20,7 @@ export class ManagementComponent implements OnInit {
     private toastr: ToastrService
   ) { }
 
-  
+
   ngOnInit(): void {
     this.getSetupObjects();
     this.getRoles();
@@ -29,14 +29,15 @@ export class ManagementComponent implements OnInit {
   sessionObject = this.authService.sessionObject;
 
   canViewPage = this.sessionObject.organizationID.length > 0;
-  
+
   managingOrganization = this.canViewPage ? this.sessionObject.organizationID[0] : null;
   managingOrganizationName = this.canViewPage ? this.sessionObject.organizationFrontendName[0] : null;
   managingOrganizationRole = this.canViewPage ? this.sessionObject.role[0] : null
 
   managingOrganizationChange() {
     this.managingOrganizationName = this.sessionObject.organizationFrontendName[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
-    this.managingOrganizationRole = this.sessionObject.managingOrganizationRole[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+    this.managingOrganizationRole = this.sessionObject.role[this.sessionObject.organizationID.indexOf(this.managingOrganization)];
+    this.getRoles();
   }
 
   setupObject;
@@ -49,7 +50,7 @@ export class ManagementComponent implements OnInit {
   setupLoading = [false, false];
 
   checkLoading() {
-    if(this.setupLoading.every(el => el)) {
+    if (this.setupLoading.every(el => el)) {
       this.isLoading = false;
     }
   }
@@ -71,7 +72,7 @@ export class ManagementComponent implements OnInit {
       this.setupObject = res;
       this.parseSetupObject();
     });
-  
+
     this.apiService.getSetupFilterObject().subscribe((res) => {
       this.setupFilterObject = res;
       console.log('SETUP FILTER')
@@ -80,7 +81,7 @@ export class ManagementComponent implements OnInit {
       this.checkLoading();
     })
   }
-  
+
   // Database meta information
   databaseMeta = {
     name: 'UCLA Audits',
@@ -137,7 +138,7 @@ export class ManagementComponent implements OnInit {
     };
     this.roleManagementInitiated = false;
     this.roleEmail = '';
-    
+
     this.apiService.setRole(setRoleObject).subscribe((res) => {
       this.getRoles();
       this.toastr.success('Role set successfully');
