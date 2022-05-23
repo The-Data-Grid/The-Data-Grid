@@ -1,89 +1,90 @@
-body, html {
-    overflow-x: hidden;
-    overflow-y: auto;
-    text-align: center;
+body,
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-align: center;
 }
 
 .linker {
-    font-family: IBM Plex Mono;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 15px;
+  font-family: IBM Plex Mono;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .linker-blue {
-    font-family: IBM Plex Mono;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 15px;
+  font-family: IBM Plex Mono;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .linker-blue:hover {
-    background-color: #569dd756;
+  background-color: #569dd756;
 }
 
 .linker-3:hover {
-    background-color: #569dd756;
+  background-color: #569dd756;
 }
 
 .linker:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .callout {
-    border: solid 1px #5fa784;
-    border-radius: 7px;
-    background-color: #e4f0ea;
+  border: solid 1px #5fa784;
+  border-radius: 7px;
+  background-color: #e4f0ea;
 }
 
 .tagline {
-    font-family: IBM Plex Mono;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 45px;
-    line-height: 60px;
-    background-color: #416a87;
-    cursor: default;
-    user-select: none;
+  font-family: IBM Plex Mono;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 45px;
+  line-height: 60px;
+  background-color: #416a87;
+  cursor: default;
+  user-select: none;
 }
 
 .tagline-inner1 {
-    font-family: IBM Plex Mono;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 45px;
-    line-height: 30px;
-    color:white;
-    padding-left: 30px;
-    border-bottom: solid 8px #416a87;
+  font-family: IBM Plex Mono;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 45px;
+  line-height: 30px;
+  color: white;
+  padding-left: 30px;
+  border-bottom: solid 8px #416a87;
 }
 
 .tagline-inner2 {
-    font-family: IBM Plex Mono;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 45px;
-    line-height: 30px;
-    color: white;
-    border-bottom: solid 8px #5fa784;
-    padding-right: 30px;
+  font-family: IBM Plex Mono;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 45px;
+  line-height: 30px;
+  color: white;
+  border-bottom: solid 8px #5fa784;
+  padding-right: 30px;
 }
 
 .tagline-inner3 {
-    font-family: IBM Plex Mono;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 45px;
-    line-height: 30px;
-    border-bottom: solid 8px #416a87;
+  font-family: IBM Plex Mono;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 45px;
+  line-height: 30px;
+  border-bottom: solid 8px #416a87;
 }
 
 .intro {
-    font-family: IBM Plex Mono;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 25px;
-    line-height: 35px;
+  font-family: IBM Plex Mono;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 35px;
 }
 
 /*
@@ -128,7 +129,7 @@ html {
   -moz-tab-size: 4;
   /* 3 */
   -o-tab-size: 4;
-     tab-size: 4;
+  tab-size: 4;
   /* 3 */
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   /* 4 */
@@ -167,7 +168,7 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 
 abbr[title] {
   -webkit-text-decoration: underline dotted;
-          text-decoration: underline dotted;
+  text-decoration: underline dotted;
 }
 
 /*
@@ -434,14 +435,16 @@ textarea {
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
 
-input::-moz-placeholder, textarea::-moz-placeholder {
+input::-moz-placeholder,
+textarea::-moz-placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
   /* 2 */
 }
 
-input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
@@ -511,22 +514,51 @@ Ensure the default browser behavior of the `hidden` attribute.
   display: none;
 }
 
-*, ::before, ::after {
+*,
+::before,
+::after {
   --tw-border-opacity: 1;
   border-color: rgb(229 231 235 / var(--tw-border-opacity));
   --tw-ring-offset-shadow: 0 0 #0000;
   --tw-ring-shadow: 0 0 #0000;
   --tw-shadow: 0 0 #0000;
   --tw-shadow-colored: 0 0 #0000;
-  --tw-blur: var(--tw-empty,/*!*/ /*!*/);
-  --tw-brightness: var(--tw-empty,/*!*/ /*!*/);
-  --tw-contrast: var(--tw-empty,/*!*/ /*!*/);
-  --tw-grayscale: var(--tw-empty,/*!*/ /*!*/);
-  --tw-hue-rotate: var(--tw-empty,/*!*/ /*!*/);
-  --tw-invert: var(--tw-empty,/*!*/ /*!*/);
-  --tw-saturate: var(--tw-empty,/*!*/ /*!*/);
-  --tw-sepia: var(--tw-empty,/*!*/ /*!*/);
-  --tw-drop-shadow: var(--tw-empty,/*!*/ /*!*/);
+  --tw-blur: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
+  --tw-brightness: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
+  --tw-contrast: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
+  --tw-grayscale: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
+  --tw-hue-rotate: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
+  --tw-invert: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
+  --tw-saturate: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
+  --tw-sepia: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
+  --tw-drop-shadow: var(--tw-empty,
+      /*!*/
+      /*!*/
+    );
   --tw-filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
@@ -711,9 +743,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .select-none {
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .flex-row {
@@ -722,6 +754,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .flex-col {
   flex-direction: column;
+}
+
+.flex-col-rev {
+  flex-direction: column-reverse;
 }
 
 .items-center {
@@ -930,7 +966,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .underline {
   -webkit-text-decoration-line: underline;
-          text-decoration-line: underline;
+  text-decoration-line: underline;
 }
 
 .opacity-90 {

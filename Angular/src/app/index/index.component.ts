@@ -17,6 +17,8 @@ export class IndexComponent implements OnInit, OnDestroy {
   stop = false;
   maxDistance = 16;
 
+  isLargeWindow = true;
+
   ngOnInit() {
     this.effect = VANTA.NET({
       el: "#vanta",
@@ -116,6 +118,14 @@ onResize() {
 	this.isSm = isSm;
 	this.isM = isM;
 	this.isL = isL;
+
+  if (window.innerWidth < 950) {
+    this.isLargeWindow = false;
+  }
+  else {
+    this.isLargeWindow = true;
+  }
+  console.log(this.isLargeWindow);
 }
 
 }

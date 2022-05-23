@@ -48,6 +48,7 @@ import { GuideUploadComponent } from './guide-upload/guide.component';
 import { GuideSchemaComponent } from './guide-schema/guide.component';
 import { GuideQueryComponent } from './guide-query/guide.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import {MatIconModule} from '@angular/material/icon'
 
 @NgModule({
   declarations: [
@@ -97,6 +98,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     ClickOutsideModule,
     MaterialModule,
     DragDropModule,
+    MatIconModule,
     ToastrModule.forRoot({timeOut: 2500, maxOpened: 5, autoDismiss: true}),
   ],
   providers: [ApiService, DatePipe, SetupObjectService, TableObjectService, AuthService],
