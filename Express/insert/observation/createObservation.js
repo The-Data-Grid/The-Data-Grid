@@ -173,7 +173,6 @@ async function createIndividualObservation(createObservationObject, insertedItem
                     i++
                     continue;
                 }
-                console.log(itemColumn.tableName, itemColumn.columnName, columnValue)
                 const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
                 columnNamesAndValues.push(primaryKeyAndColumnName);
                 // if list add to list array and handle after item insert
@@ -218,7 +217,6 @@ async function createIndividualObservation(createObservationObject, insertedItem
     
     // Make the SQL Statement
     const fullSQLStatement = makeObservationSQLStatement(observationTableName, columnNamesAndValues, globalReference, itemReference);
-    console.log(fullSQLStatement)
 
     // Attempt to insert the observation
     const returnedIDs = (await db.one(fullSQLStatement));

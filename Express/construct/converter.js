@@ -21,7 +21,8 @@ const features = [
     }
 ]
 
-let columns = Object.keys(parsed.data[0]).map(key => generateSchemaColumns(key));
+let colNames = Object.keys(parsed.data[0])
+let columns = [];
 columns.push({ 
     "featureName": "Crime Incident",
     "name": "Item ID",
@@ -32,6 +33,29 @@ columns.push({
     "presetValues": null,
     "isNullable": false // required
 });
+
+if(
+    colNames.some(name => /.*[\s _\-]?lo?ng[\s _\-]?.*/.test(name) || /.*longitude.*/.test(name)) &&
+    colNames.some(name => /.*[\s _\-]?lat[\s _\-]?.*/.test(name) || /.*latitude.*/.test(name))
+) {
+    let longIndex = colNames.map(name => /.*[\s _\-]?lo?ng[\s _\-]?.*/.test(name) || /.*longitude.*/.test(name)).indexOf(true);
+    let latIndex = colNames.map(name => /.*[\s _\-]?lat[\s _\-]?.*/.test(name) || /.*latitude.*/.test(name)).indexOf(true);
+
+    columns.push({ 
+        "featureName": "Crime Incident",
+        "name": "Crime Location",
+        "information": null, // optional, defaults to null
+        "accuracy": null,
+        "sqlType": "Point", // required
+        "referenceType": "obs-location", // required
+        "presetValues": null,
+        "isNullable": true // required
+    });
+
+    colNames.splice(longIndex, 1);
+    colNames.splice(latIndex, 1);
+}
+let columns = colNames.map(key => generateSchemaColumns(key));
 
 // Schema 
 fs.writeFileSync(__dirname + '/features.jsonc', JSON.stringify(features));

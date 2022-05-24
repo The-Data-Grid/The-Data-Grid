@@ -299,7 +299,7 @@
                             </mat-select>
                         </mat-form-field>  
 
-                        <mat-radio-group aria-label="Select an option" [(ngModel)]="filterBy" class="flex flex-col ml-2">
+                        <mat-radio-group aria-label="Select an option" [(ngModel)]="queryState.tableView.filterBy" class="flex flex-col ml-2">
                             <mat-radio-button style="margin-right: 5px" value="Ascending">Ascending</mat-radio-button>
                             <mat-radio-button value="Descending">Descending</mat-radio-button>
                         </mat-radio-group>

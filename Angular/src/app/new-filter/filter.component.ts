@@ -348,10 +348,10 @@ onFeatureSelectChange (viewType: number) {
 onPageChange(event: PageEvent, viewType: number): PageEvent {
 	const viewTypeString = this.viewTypeStringLookup[viewType];
 	// update page data
-	this[viewTypeString].currentPageSize = event.pageSize;
-	this[viewTypeString].currentPageIndex = event.pageIndex;
+	this.queryState[viewTypeString].currentPageSize = event.pageSize;
+	this.queryState[viewTypeString].currentPageIndex = event.pageIndex;
 	// refresh API
-	this.runQuery(this[viewTypeString], this[viewTypeString].data, {isPaginationQuery: true, target: 'table-builder'});
+	this.runQuery(this.queryState[viewTypeString], this.queryState[viewTypeString].data, {isPaginationQuery: true, target: 'table-builder'});
 	return event;
 }
 onDatabaseChange(viewType) {
@@ -738,7 +738,7 @@ queryDatabase() {
 }
 
 private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
-	const {
+	let {
 		isPaginationQuery,
 		target,
 		globalFilterRules,
@@ -755,7 +755,7 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 			return;
 		}
 		// combine rules if global rules exist
-		if(globalFilterRules !== null) {
+		if(globalFilterRules !== null && globalFilterRules !== undefined) {
 			rules = {
 				condition: 'AND',
 				valid: true,
@@ -792,6 +792,7 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 	let dataResponseHandler;
 	let errorResponseHandler;
 	// table handlers
+	if(viewType === undefined) viewType = this.viewType; // fall back on global viewType
 	if(viewType == 1) {
 		dataResponseHandler = this.tableViewDataResponseHandler(queryStateObject, queryDataObject, responseHandlerOptions);
 		errorResponseHandler = this.tableViewErrorResponseHandler(queryStateObject);
