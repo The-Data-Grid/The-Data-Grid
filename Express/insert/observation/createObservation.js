@@ -179,7 +179,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
                 // if list add to list array and handle after item insert
                 // handle auditor and sop special types
             } else if(itemColumn.referenceType == 'special') {
-                if(itemColumn.frontendName === 'Auditor Name') {
+                if(itemColumn.frontendName === 'Auditor') {
                     // always text, never user reference for now
                     columnNamesAndValues.push({
                         columnName: itemColumn.columnName,
@@ -205,19 +205,25 @@ async function createIndividualObservation(createObservationObject, insertedItem
     }
     
     // Insert and get observation count
+    /*
     const observationCountReference = (await db.one(`
-    insert into tdg_observation_count 
-    (observation_count_id) 
-    values 
-    (default) 
-    returning observation_count_id
+        insert into tdg_observation_count 
+        (observation_count_id) 
+        values 
+        (default) 
+        returning observation_count_id
     `)).observation_count_id;
+    console.log(observationCountReference)
+    */
     
     // Make the SQL Statement
-    const fullSQLStatement = makeObservationSQLStatement(observationTableName, columnNamesAndValues, globalReference, itemReference, observationCountReference);
+    const fullSQLStatement = makeObservationSQLStatement(observationTableName, columnNamesAndValues, globalReference, itemReference);
+    console.log(fullSQLStatement)
 
     // Attempt to insert the observation
-    const observationPrimaryKey = (await db.one(fullSQLStatement)).observation_id;
+    const returnedIDs = (await db.one(fullSQLStatement));
+    const observationPrimaryKey = returnedIDs.observation_id;
+    const observationCountReference = returnedIDs.observaiton_count_id;
 
     // Insert list values and list many to many values
     for(let columnsAndValues of listColumnsAndValues) {
@@ -242,7 +248,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
  * @param {Array.<{columnName: String, columnValue: String|Number|Date|Object|Boolean}>} columnNamesAndValues 
  * @param {Number|null} globalReference 
  */
-function makeObservationSQLStatement(tableName, columnNamesAndValues, globalReference, itemReference, observationCountReference) {
+function makeObservationSQLStatement(tableName, columnNamesAndValues, globalReference, itemReference) {
     // add global reference
     columnNamesAndValues.push({
         columnName: 'global_id',
@@ -254,12 +260,6 @@ function makeObservationSQLStatement(tableName, columnNamesAndValues, globalRefe
         columnName: 'observableitem_id',
         columnValue: itemReference
     });
-
-    // add the observation count
-    columnNamesAndValues.push({
-        columnName: 'observation_count_id',
-        columnValue: observationCountReference
-    });
     
     // make the column names SQL string
     let columnNamesSQL = [];
@@ -268,7 +268,7 @@ function makeObservationSQLStatement(tableName, columnNamesAndValues, globalRefe
             columnName
         }));
     });
-    columnNamesSQL = '( ' + columnNamesSQL.join(', ') + ' )';
+    columnNamesSQL = '( ' + columnNamesSQL.join(', ') + ', observation_count_id )';
 
     // make the column values SQL string
     let columnValuesSQL = [];
@@ -277,14 +277,14 @@ function makeObservationSQLStatement(tableName, columnNamesAndValues, globalRefe
             columnValue
         }));
     });
-    columnValuesSQL = '( ' + columnValuesSQL.join(', ') + ' )';
+    columnValuesSQL = '( ' + columnValuesSQL.join(', ') + `, nextval('tdg_observation_count_observation_count_id_seq') - 1 )`;
     
     // make the full statement and return it
     const fullInsertSQL = formatSQL(`
         INSERT INTO $(tableName:name) 
             $(columnNamesSQL:raw) 
             VALUES $(columnValuesSQL:raw)
-                RETURNING "observation_id"
+                RETURNING "observation_id", "observation_count_id"
     `, {
         tableName,
         columnNamesSQL,

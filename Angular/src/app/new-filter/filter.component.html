@@ -77,7 +77,7 @@
                 <mat-form-field appearance="fill" style="margin-bottom: -21px; font-size: 0.9rem">
                     <mat-label>Select Fields</mat-label>
                     <mat-select [(ngModel)]="queryState.tableView.selectedFields" (ngModelChange)="onFieldSelection(1)" multiple>
-                    <mat-option *ngFor="let obj of queryState.tableView.currentColumnObjects; index as i" [value]="i" [disabled]="viewType == 2 && !['geoPoint', 'geoLine', 'geoRegion'].includes(obj.selectorType)">{{ obj.frontendName }}</mat-option>
+                    <mat-option *ngFor="let id of queryState.tableView.currentReturnableIDs; index as i" [value]="i">{{ queryState.tableView.currentColumnObjects[i].frontendName }}</mat-option>
                     </mat-select>
                 </mat-form-field>              
             </div>
@@ -114,7 +114,7 @@
                 <mat-form-field appearance="fill" style="margin-bottom: -21px; font-size: 0.9rem">
                     <mat-label>Select Fields</mat-label>
                     <mat-select [(ngModel)]="queryState.mapView.selectedFields" (ngModelChange)="onFieldSelection(2)" multiple>
-                    <mat-option *ngFor="let obj of queryState.mapView.currentColumnObjects; index as i" [value]="i" [disabled]="viewType == 2 && !['geoPoint', 'geoLine', 'geoRegion'].includes(obj.selectorType)">{{ obj.frontendName }}</mat-option>
+                    <mat-option *ngFor="let obj of queryState.mapView.currentReturnableIDs index as i" [value]="i" [disabled]="!['geoPoint', 'geoLine', 'geoRegion'].includes(queryState.mapView.currentColumnObjects[i].selectorType)">{{ queryState.mapView.currentColumnObjects[i].frontendName }}</mat-option>
                     </mat-select>
                 </mat-form-field>              
             </div>  
@@ -295,7 +295,7 @@
                         <mat-form-field appearance="fill" style="margin-top: 10px; margin-bottom: -10px; font-size: 0.9rem">
                             <mat-label>Select Field</mat-label>
                             <mat-select [(ngModel)]="queryState.tableView.selectedSortField">
-                                <mat-option *ngFor="let obj of queryState.tableView.currentColumnObjects; index as i" [value]="i">{{ obj.frontendName }}</mat-option>
+                                <mat-option *ngFor="let obj of queryState.tableView.currentReturnableIDs; index as i" [value]="i">{{ queryState.tableView.currentColumnObjects[i].frontendName }}</mat-option>
                             </mat-select>
                         </mat-form-field>  
 
@@ -333,7 +333,7 @@
                 </button>
                 <!-- 
                     <div *ngIf="queryTime !== null && queryState.tableView.progressBarMode === 'determinate'" class="result-text">
-                        <p *ngIf="invalidQuery && queryError === null" ><span style="color: #f99;" class="cache-text" matTooltip="Check Query Builder">Invalid Query</span></p>
+                        <p *ngIf="invalidQuery && queryError === 'queryBuilder'" ><span style="color: #f99;" class="cache-text" matTooltip="Check Query Builder">Invalid Query</span></p>
                         <p *ngIf="!invalidQuery && queryError === null">{{queryTime}}ms <span *ngIf="isCached" class="cache-text" matTooltip="Results stored in memory">Cached</span></p>
                         <p *ngIf="queryError !== null"><span style="color: #f99;" *ngIf="isCached" class="cache-text" matTooltip="Try again later or change the query">Error: {{ queryError }}</span></p>
                     </div>

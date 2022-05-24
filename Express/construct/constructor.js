@@ -697,6 +697,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                     uniqueOver: uniqueOver
                 }));   
             } catch(sqlError) {
+                console.log('Are you forgetting to include an ID column?');
                 return constructjsError(sqlError);
             }
             
@@ -1288,7 +1289,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             name.length >= 3 &&
             /[a-zA-Z]/.test(name[0]) &&
             /[a-zA-Z0-9]/.test(name[name.length - 1]) &&
-            name.split('').every(char => /[a-zA-Z ]/.test(char))
+            name.split('').every(char => /[a-zA-Z0-9 ]/.test(char))
         );
     }
 

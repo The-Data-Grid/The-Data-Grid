@@ -2465,3 +2465,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   transform: rotate(0);
   transition-duration: 700ms;
 }
+
+.map-popup a {
+
+}

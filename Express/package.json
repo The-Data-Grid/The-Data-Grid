@@ -52,6 +52,7 @@
     "multer": "^1.4.4",
     "nanoid": "^3.2.0",
     "nodemon": "^2.0.4",
+    "papaparse": "^5.3.2",
     "pg": "^8.3.3",
     "pg-promise": "^10.5.6",
     "selectize": "^0.12.6",

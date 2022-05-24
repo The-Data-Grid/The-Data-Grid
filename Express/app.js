@@ -24,7 +24,7 @@ connectPostgreSQL('default');
 // Middleware
 const { setupParse } = require('./parse/parse.js');
 const { sendSetup, sendMobileSetup, sendFilterSetup } = require('./query/query.js');
-const insertRouter = require('./insert/router.js');
+const insertRouter = require('./insert/router.js').router;
 const auditRouter = require('./query/router.js');
 const authRouter = require('./auth/router.js');
 //const managementRouter = require('./manage/router.js');

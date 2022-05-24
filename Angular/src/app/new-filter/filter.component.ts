@@ -12,6 +12,10 @@ import * as L from 'leaflet';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import 'jQuery-QueryBuilder/dist/js/query-builder.js';
 import * as stamen from '../../client-scripts/stamen.js';
+import glify from 'leaflet.glify';
+import { ToastrService } from 'ngx-toastr';
+import { Clipboard } from '@angular/cdk/clipboard'
+
 
 @Component({
  selector: 'app-filter-new',
@@ -23,12 +27,15 @@ export class NewFilterComponent implements OnInit, AfterViewInit {
 
  constructor(private apiService: ApiService,
    public datepipe: DatePipe,
+   private toastr: ToastrService,
+   private clipboard: Clipboard,
    private setupObjectService: SetupObjectService,
    private tableObjectService: TableObjectService) { }
 
 @ViewChild('paginator') paginator: MatPaginator;
 
 ngOnInit() {
+	console.log(glify)
 	// Layout Init
 	// ==========================================
 
@@ -39,6 +46,7 @@ ngOnInit() {
 	} else {
 		this.viewType = 1;
 	}
+	console.log(this.viewType)
 
     let {
     	isXs,
@@ -78,6 +86,7 @@ ngOnInit() {
 ngAfterViewInit(): void {
 	
 }
+
 
 // =================================================
 // GLOBAL STATE
@@ -204,6 +213,19 @@ queryState = {
 		currentReturnableIDs: [],
 		currentColumnObjectIndices: [],
 
+		// Query in-progress state
+		queryTime: null,
+		queryStart: null,
+		queryTimer(start) {
+			if(start) {
+				this.queryStart = Date.now();
+			} else {
+				this.queryTime = Date.now() - this.queryStart
+			}
+		},
+		invalidQuery: false,
+		queryError: null,
+
 		// Array because there is an object *for each* field
 		layers: []
 	}
@@ -229,7 +251,7 @@ onFieldSelection(viewType: number) {
 			let columnObject = this.queryState.mapView.currentColumnObjects[addedColumnIndex];
 			this.queryState.mapView.layers.push({
 				// Layer UI
-				columnIndex: addedColumnIndex,
+				columnIndex: addedColumnIndex,				
 				isVisible: true,
 				isExpanded: false,
 				type: columnObject.selectorType,
@@ -237,6 +259,9 @@ onFieldSelection(viewType: number) {
 				color: randomHex(),
 				name: columnObject.frontendName,
 				queryBuilderTarget: 'map-builder-global' + addedColumnIndex,
+
+				geospatialReturnableID: this.queryState.mapView.currentReturnableIDs[addedColumnIndex],
+				layerID: Math.ceil(Math.random()*100000),
 
 				// The queryState of the map view at the time that the layer was selected. These same props that are directly  
 				// in queryState.mapView are the state of the Data Selector dropdowns, these are the state of the dropdowns
@@ -408,45 +433,6 @@ TDGSelectorTypeToBuilderInputLookup = {
 	geoLine: 'text', // custom
 	geoRegion: 'text' // custom
 }
-filters = [{
-	id: "15",
-	label: "Factor",
-	type: 'string',
-	input: 'select',
-	values: ['YRL', 'Powell', 'Math Sciences'],
-	operators: ['equals']
-},
-{
-	id: "16",
-	label: "List",
-	type: 'string',
-	input: 'select',
-	values: ['YRL', 'Powell', 'Math Sciences'],
-	operators: ['contains']
-},
-{
-	id: "17",
-	label: "Numeric",
-	type: 'string',
-	input: 'number',
-	values: ['YRL', 'Powell', 'Math Sciences'],
-	operators: ['equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal']
-},
-{
-	id: "18",
-	label: "Text",
-	type: 'string',
-	input: 'text',
-	operators: ['equal']
-},
-{
-	id: "19",
-	label: "Boolean",
-	type: 'string',
-	input: 'radio',
-	values: ['true', 'false'],
-	operators: ['equal']
-}];
 
 builderLookup = {
 	1: 'table-builder',
@@ -473,62 +459,107 @@ async expandFilter(viewType: number, set: boolean) {
 getQueryBuilder(viewType: number, columnIndex='') {
 	// get viewTypeString to access queryState
 	let viewTypeString = this.viewTypeStringLookup[viewType];
-	// fill the filters
-	let filters = this.queryState[viewTypeString].currentFilterableReturnableIDs.map((id, index) => {
-		let columnObject = this.queryState[viewTypeString].currentFilterableColumnObjects[index];
-		let out: any = {
-			id,
-			label: columnObject.frontendName,
-			operators: this.validOperatorLookup[columnObject.selectorType].map(op => this.TDGOperatorToBuilderOperatorLookup[op]),
-			type: columnObject.selectorType in this.TDGSelectorTypeToBuilderTypeLookup ? this.TDGSelectorTypeToBuilderTypeLookup[columnObject.selectorType] : 'string',
-			input: this.TDGSelectorTypeToBuilderInputLookup[columnObject.selectorType]
-		};
-		if(columnObject.presetValues != null) {
-			out.values = columnObject.presetValues;
-		} else if(columnObject.selectorType == 'checkbox') {
-			out.values = [true, false];
-		}
-		return out;
-	})
 	// appends the columnIndex if the builder is for a specific layer
-	let builderID = '#' + this.builderLookup[viewType] + columnIndex;
-	console.log(builderID)
-	$(document).ready(() => {
-		(<any>$(builderID)).queryBuilder({
-			plugins: [],
-			filters: filters,
-			operators: [
-				{type: 'equals', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['string', 'number', 'datetime', 'boolean']},
-				{type: 'contains (case sensitive)', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'contains (case insensitive)', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'less than', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
-				{type: 'less than or equal to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
-				{type: 'greater than', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
-				{type: 'greater than or equal to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
-				{type: 'contains value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
-				{type: 'contained by value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
-				{type: 'overlaps with value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
-				{type: 'contains', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'crosses', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'disjoint', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'within distance', optgroup: 'custom', nb_inputs: 2, multiple: false, apply_to: ['string']},
-				{type: 'identical to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'intersects', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'touches', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'overlaps', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
-				{type: 'contained by', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']}
-			],
-			select_placeholder: '-',
-			rules: [{
-				/* empty rule */
-				empty: true
-			}],
-			allow_empty: true
+	const builderName = this.builderLookup[viewType] + columnIndex;
+
+	// builder configuration
+	let builderID = '#' + builderName;
+	let queryBuilderConfig: any = {
+		operators: [
+			{type: 'equals', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['string', 'number', 'datetime', 'boolean']},
+			{type: 'contains (case sensitive)', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'contains (case insensitive)', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'less than', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
+			{type: 'less than or equal to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
+			{type: 'greater than', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
+			{type: 'greater than or equal to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
+			{type: 'contains value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
+			{type: 'contained by value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
+			{type: 'overlaps with value(s)', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime', 'string', 'boolean']},
+			{type: 'contains', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'crosses', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'disjoint', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'within distance', optgroup: 'custom', nb_inputs: 2, multiple: false, apply_to: ['string']},
+			{type: 'identical to', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'intersects', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'touches', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'overlaps', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']},
+			{type: 'contained by', optgroup: 'custom', nb_inputs: 1, multiple: false, apply_to: ['string']}
+		],
+		select_placeholder: '-',
+		rules: [{
+			/* empty rule */
+			empty: true
+		}],
+		allow_empty: true
+	}
+	if(builderName == 'map-builder-global') {
+		//queryBuilderConfig.default_filter = 1;
+	}
+
+	// fill the filters
+	let filters;
+	// global special case with one 'all' filter
+	console.log(this.validOperatorLookup['geoPoint'].map(op => this.TDGOperatorToBuilderOperatorLookup[op]));
+	if(builderName == 'map-builder-global') {
+		filters = [{
+			id: 1,
+			label: 'All Layers',
+			operators: this.validOperatorLookup['geoPoint'].map(op => this.TDGOperatorToBuilderOperatorLookup[op]),
+			type: 'string',
+			input: this.TDGSelectorTypeToBuilderInputLookup['geoPoint'],
+		}];
+		filters[0].default_operator = 'intersects';
+	}
+	// other cases
+	else {
+		filters = this.queryState[viewTypeString].currentFilterableReturnableIDs.map((id, index) => {
+			let columnObject = this.queryState[viewTypeString].currentFilterableColumnObjects[index];
+			let out: any = {
+				id,
+				label: columnObject.frontendName,
+				operators: this.validOperatorLookup[columnObject.selectorType].map(op => this.TDGOperatorToBuilderOperatorLookup[op]),
+				type: columnObject.selectorType in this.TDGSelectorTypeToBuilderTypeLookup ? this.TDGSelectorTypeToBuilderTypeLookup[columnObject.selectorType] : 'string',
+				input: this.TDGSelectorTypeToBuilderInputLookup[columnObject.selectorType]
+			};
+			if(columnObject.presetValues != null) {
+				out.values = columnObject.presetValues;
+			} else if(columnObject.selectorType == 'checkbox') {
+				out.values = [true, false];
+			}
+			return out;
 		})
-	})
+	}
 
+	queryBuilderConfig.filters = filters;
+	
+	// init
+	$(document).ready(() => {
+		(<any>$(builderID)).queryBuilder(queryBuilderConfig);
+	});
+
+	// This is really bad. I am waiting an arbitrary 300ms to update the rules because
+	// filters.set_default is throwing an error and there isn't a build int way to listen
+	// for when the query builder is ready to accept the .setRules() method. This should
+	// be fine for now except maybe on exceptionally slow machines which load the builder
+	// in longer than 300ms?
+	/*
+	setTimeout(() => (<any>$(builderID)).queryBuilder('setRules', {
+		"condition": "AND",
+		"rules": [
+		  {
+			"id": 1,
+			"field": 1,
+			"type": "string",
+			"input": "text",
+			"operator": "intersects"
+		  }
+		],
+		"valid": true
+	  }), 300);
+	  */
 }
-
+/*
 refreshQueryBuilder() {
 	(<any>$('#builder')).queryBuilder('reset');
 	(<any>$('#builder')).queryBuilder('setOptions', {
@@ -536,19 +567,19 @@ refreshQueryBuilder() {
 		filters: this.filters,
 		select_placeholder: '-',
 		rules: [{
-			/* empty rule */
+			
 			empty: true
 		}],
 		allow_empty: true
 	})
 }
-
+*/
 getRulesQueryBuilder(target) {
-	return (<any>$('#' + target)).queryBuilder('getRules', { skip_empty: true });
+	const rules = (<any>$('#' + target)).queryBuilder('getRules', { skip_empty: true });
+	return rules;
 }
 
 formatQueryString(rules) {
-	console.log(rules)
 	const builderOperatorToTDGOperatorLookup = this.builderOperatorToTDGOperatorLookup
 	// Empty rule set case for no query string
 	if(rules.rules.length == 0) return '';
@@ -612,7 +643,7 @@ getSetupObjectsAndFormatBuilder(viewType: number) {
 			
 			// if table view then auto run a query
 			if(viewType == 1) {
-				this.runQuery(this.queryState[viewTypeString], this.queryState[viewTypeString].data,{isPaginationQuery: false, target: 'table-builder'});
+				this.runQuery(this.queryState[viewTypeString], this.queryState[viewTypeString].data,{isPaginationQuery: false, target: 'table-builder', viewType: 1});
 			}
 		});
 	})
@@ -674,12 +705,34 @@ getReturnablesFromColumnIDs(indices, isObservation, featureID): Array<Number> {
 queryDatabase() {
 	// Table View: call once for the selected fields
 	if(this.viewType == 1) {
-		this.runQuery(this.queryState.tableView, this.queryState.tableView.data, {isPaginationQuery: true, target: 'table-builder'});
+		this.runQuery(this.queryState.tableView, this.queryState.tableView.data, {isPaginationQuery: true, target: 'table-builder', globalFilterRules: null, viewType: 1});
 	}
 	// Map View: call for every layer with all fields from that layer's feature
 	else {
+		// reset error state
+		this.queryState.mapView.invalidQuery = false;
+		this.queryState.mapView.queryError = null;
+		// check for layers
+		if(this.queryState.mapView.layers.length == 0) {
+			this.queryState.mapView.invalidQuery = true;
+			this.queryState.mapView.queryError = 'noLayers';
+			return;
+		}
+		// combine global rules with 
+		let globalRules: any = this.getRulesQueryBuilder('map-builder-global')
+		console.log(globalRules)
+		// if invalid
+		if(globalRules === null) {
+			this.queryState.mapView.invalidQuery = true;
+			this.queryState.mapView.queryError = 'queryBuilder';
+			return;
+		}
+		// if empty rule set then don't pass it
+		if(globalRules.rules.length == 0) {
+			globalRules = null;
+		}
 		for(let layer of this.queryState.mapView.layers) {
-			this.runQuery(layer, layer.data, {isPaginationQuery: true, target: layer.queryBuilderTarget});
+			this.runQuery(layer, layer.data, {isPaginationQuery: true, target: layer.queryBuilderTarget, globalFilterRules: globalRules, viewType: 2});
 		}
 	}
 }
@@ -687,59 +740,151 @@ queryDatabase() {
 private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 	const {
 		isPaginationQuery,
-		target
+		target,
+		globalFilterRules,
+		viewType,
 	} = options;
 	queryStateObject.invalidQuery = false;
 	queryStateObject.queryError = null;
 	let queryString = '';
 	if(!this.isFirstQuery) {
-		const rules = this.getRulesQueryBuilder(target);
+		let rules = this.getRulesQueryBuilder(target);
 		if(rules === null) {
 			queryStateObject.invalidQuery = true;
+			queryStateObject.queryError = 'queryBuilder';
 			return;
 		}
-		queryString = this.formatQueryString(rules)
+		// combine rules if global rules exist
+		if(globalFilterRules !== null) {
+			rules = {
+				condition: 'AND',
+				valid: true,
+				rules: [...globalFilterRules, ...rules]
+			};
+		}
+		queryString = this.formatQueryString(rules);
 	} 
 	queryStateObject.progressBarMode = 'indeterminate';
 	const isObservation = queryStateObject.queryType === 'Observations';
+	const selectedFeature = queryStateObject.selectedFeature;
 	const feature = isObservation ? 
-		this.allFeatures[queryStateObject.selectedFeature].backendName :
-		this.allItems[queryStateObject.selectedFeature].backendName;
+		this.allFeatures[selectedFeature].backendName :
+		this.allItems[selectedFeature].backendName;
 	const columnObjectIndices = queryStateObject.currentColumnObjectIndices;
 	const columnObjectIndicesIndices = [...new Set([...queryStateObject.selectedFields, ...(queryStateObject.selectedSortField ? [queryStateObject.selectedSortField] : [])])];
-	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, queryStateObject.selectedFeature);
+	const returnableIDs = this.getReturnablesFromColumnIDs(columnObjectIndicesIndices, isObservation, selectedFeature);
 	const sortObject = queryStateObject.selectedSortField ? {
 		isAscending: queryStateObject.filterBy === 'Ascending',
-		returnableID: this.getReturnablesFromColumnIDs([queryStateObject.selectedSortField], isObservation, queryStateObject.selectedFeature)[0]
+		returnableID: this.getReturnablesFromColumnIDs([queryStateObject.selectedSortField], isObservation, selectedFeature)[0]
 	} : null;
 	const pageObject = {
 		limit: queryStateObject.currentPageSize,
 		offset: queryStateObject.currentPageIndex * queryStateObject.currentPageSize
 	};
 	// 
+
+	const responseHandlerOptions: any = {
+		isObservation,
+		selectedFeature,
+		isPaginationQuery,
+	};
+	
+	let dataResponseHandler;
+	let errorResponseHandler;
+	// table handlers
+	if(viewType == 1) {
+		dataResponseHandler = this.tableViewDataResponseHandler(queryStateObject, queryDataObject, responseHandlerOptions);
+		errorResponseHandler = this.tableViewErrorResponseHandler(queryStateObject);
+	}
+	// map handlers
+	else {
+		responseHandlerOptions.geospatialReturnableID = queryStateObject.geospatialReturnableID;
+		responseHandlerOptions.layerID = queryStateObject.layerID;
+		responseHandlerOptions.geoType = queryStateObject.type;
+
+		dataResponseHandler = this.mapViewDataResponseHandler(queryStateObject, queryDataObject, responseHandlerOptions);
+		errorResponseHandler = this.mapViewErrorResponseHandler(queryStateObject);
+	}
+	console.log(dataResponseHandler);
+
 	queryStateObject.queryTimer(true);
-	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject).subscribe((res) => {
+	// Handle data or error response with applicable handler
+	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject)
+		.subscribe(
+			// Ignoring typescript here, observables aren't liking my beautiful closure :(
+			// @ts-ignore: No overload matches this call
+			dataResponseHandler,
+			errorResponseHandler
+		)
+}
+
+private tableViewDataResponseHandler(queryStateObject, queryDataObject, handlerOptions): Function {
+	const {
+		isObservation,
+		selectedFeature,
+		isPaginationQuery,
+	} = handlerOptions;
+	return (res) => {
 		// Set data
-		queryDataObject.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[columnObjectIndices[returnableIDs.indexOf(id)]].frontendName)];
+		let relevantSetupFilterObjectReturnableIDs = isObservation ? this.setupFilterObject.observationReturnableIDs[selectedFeature] : this.setupFilterObject.itemReturnableIDs[selectedFeature];
+		let relevantSetupFilterObjectColumnObjectIndices = isObservation ? this.setupFilterObject.observationColumnObjectIndices[selectedFeature] : this.setupFilterObject.itemColumnObjectIndices[selectedFeature];
+		queryDataObject.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[relevantSetupFilterObjectColumnObjectIndices[relevantSetupFilterObjectReturnableIDs.indexOf(id)]].frontendName)];
 		queryDataObject.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
 		queryDataObject.isCached = res.cached === true;
 		queryDataObject.rowCount = res.nRows.n;
 
-		if(!isPaginationQuery && this.viewType == 1) {
+		if(!isPaginationQuery) {
 			this.paginator.firstPage();
 		}
 
 		queryStateObject.progressBarMode = 'determinate';
 		this.isFirstQuery = false;
 		queryStateObject.queryTimer(false);
-	  }, (err) => {
-		queryStateObject.progressBarMode = 'determinate'
-		  this.isFirstQuery = false;
-		  queryStateObject.queryTimer(false);
-		  queryStateObject.queryError = err.error;
-	  });
+	};
 }
 
+private tableViewErrorResponseHandler(queryStateObject): Function {
+	return (err) => {
+		queryStateObject.progressBarMode = 'determinate'
+			this.isFirstQuery = false;
+			queryStateObject.queryTimer(false);
+			queryStateObject.queryError = err.error;
+	};
+}
+
+private mapViewDataResponseHandler(queryStateObject, queryDataObject, handlerOptions): Function {
+	const {
+		isObservation,
+		selectedFeature,
+		geospatialReturnableID,
+		layerID,
+		geoType,
+	} = handlerOptions;
+	return (res) => {
+		// Set data
+		let relevantSetupFilterObjectReturnableIDs = isObservation ? this.setupFilterObject.observationReturnableIDs[selectedFeature] : this.setupFilterObject.itemReturnableIDs[selectedFeature];
+		let relevantSetupFilterObjectColumnObjectIndices = isObservation ? this.setupFilterObject.observationColumnObjectIndices[selectedFeature] : this.setupFilterObject.itemColumnObjectIndices[selectedFeature];
+		queryDataObject.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[relevantSetupFilterObjectColumnObjectIndices[relevantSetupFilterObjectReturnableIDs.indexOf(id)]].frontendName)];
+		queryDataObject.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
+		queryDataObject.isCached = res.cached === true;
+		queryDataObject.rowCount = res.nRows.n;
+
+		// parse the geojson row and hand it to the rendering engine
+		const geospatialReturnableIDIndex = res.returnableIDs.indexOf(geospatialReturnableID);
+		let geojsonArray = JSON.parse(res.rowData.map(row => row[geospatialReturnableIDIndex]));
+		console.log(geojsonArray);
+		// combine geojson and add the _index
+		// ...
+
+		//this.renderGeography(geojson, geoType, layerID);
+	};
+}
+
+private mapViewErrorResponseHandler(queryStateObject): Function {
+	return (err) => {
+
+	};
+}
 
 // Download
 // Master database query function, calls runQuery n times with necessary params depending on queryState
@@ -853,8 +998,6 @@ private initMap(): void {
 
 	// default
 	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
-
-	L.marker([34.06551008335871, -118.4418661368747]).addTo(this.map)
 }
 
 // Must invalidate the size because a bug where the tiles do not render properly on first load
@@ -875,7 +1018,109 @@ private mountMap() {
 	this.hasMapMounted = true;
 }
 
+private renderGeography(geojson, geoType, layerID) {
+	/*
+	Example 100,000 points
+	let pointsx = Array(100_000).fill(0).map(n => n + Math.random());
+	let pointsy = Array(100_000).fill(0).map(n => n + Math.random());
+	let points = pointsx.map((n, i) => [34.06 + n, -118.44 + pointsy[i]])
+	*/
+	// get layer
+	const relevantLayer = this.queryState.mapView.layers.filter(layer => layer.layerID == layerID)[0];
 
+	let visualOptions: any = {
+		color: relevantLayer.color
+	}
+	if(geoType == 'geoPoint') {
+		visualOptions.size = 20;
+		visualOptions.sensitivity = 1;
+	} else if(geoType == 'geoLine') {
+		visualOptions.sensitivity = 0.06;
+		visualOptions.weight = 6;
+	} else if(geoType == 'geoRegion') {
+		visualOptions.sensitivity = 0.06;
+		visualOptions.border = true;
+	}
+
+	glify.latitudeFirst();
+	let gl = glify.points({
+		...{visualOptions},
+		map: this.map,
+		data: geojson,
+		//sensitivity: 0.01,
+		click: (e, feature) => {
+			// Get the value from its row
+			const {
+				_index
+			} = feature.properties;
+			
+			const valueArray = relevantLayer.data.tableData[_index];
+			const headerArray = relevantLayer.data.headerNames;
+			// Create an HTML template for every header and value in the row and geography
+			let popupHTML = '<div class="flex flex-col mt-2" style="width: 300px">';
+			// geographic value
+			popupHTML += `
+				<div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
+					Geometry
+				</div>
+			`;
+			popupHTML += formatPopupTemplate('Type', geoType.slice(3));
+			popupHTML += `
+				<button class="standard-button border p-2 my-1" (click)="copyToClipboard(JSON.stringify(feature))" mat-button>
+					<span class="standard-button-text">
+						Copy GeoJSON
+					</span>
+				</button>
+			`;
+			// row values
+			for(let i = 0; i < headerArray.length; i++) {
+				// add title
+				if(i == 0) {
+					popupHTML += `
+						<div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
+							Properties
+						</div>
+					`;
+				}
+				popupHTML += formatPopupTemplate(headerArray[i], valueArray[i]);
+			}
+			// close div
+			popupHTML += '</div>'
+
+			// Create a unique datetime, so the popup class can be referenced uniquely
+			let now = Date.now();
+			L.popup({
+				className: 'map-popup-' + now,
+			})
+			.setLatLng(e.latlng)
+			.setContent(popupHTML)
+			.openOn(this.map);
+
+			// Prevent the href="#close" to be fired on the popup becaues this causes a router redirection in Angular
+			// Must reference the unique time so the event listener is added to the right popup
+			document.querySelector(`.map-popup-${now} .leaflet-popup-close-button`).addEventListener('click', event => {
+				event.preventDefault();
+			});
+
+			function formatPopupTemplate(key, value) {
+				return `
+					<div class="flex flex-row justify-between border-t px-3 py-1">
+						<span style="font-size: 14px; font-weight: 600">${key}</span>
+						<span style="font-size: 14px; font-weight: 400">${value}</span>
+					</div>
+				`;
+			}
+		}
+	});
+
+	// add to the layer
+	relevantLayer.renderObject = gl;
+}
+
+copyToClipboard(data: string) {
+	this.clipboard.copy(data);
+	this.toastr.success('Copied to clipboard')
+}
 
 // =================================================
 // BREAKPOINTS AND LAYOUT

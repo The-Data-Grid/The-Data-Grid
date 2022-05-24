@@ -117,4 +117,7 @@ async function insertSubmissionHandler(req, res, next) {
 
 router.post('/', authorizeSubmission, insertSubmissionHandler);
 
-module.exports = router;
+module.exports = {
+    router,
+    insertSubmission,
+};

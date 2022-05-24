@@ -34,6 +34,7 @@
     "jquery-extendext": "^1.0.0",
     "jQuery-QueryBuilder": "^2.6.2",
     "leaflet": "^1.8.0",
+    "leaflet.glify": "^3.2.0",
     "ng-click-outside": "^7.0.0",
     "ng-multiselect-dropdown": "^0.2.10",
     "ngx-horizontal-timeline": "0.0.6",

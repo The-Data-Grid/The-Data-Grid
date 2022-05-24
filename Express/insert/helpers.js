@@ -502,6 +502,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
                 else {
                     // format date
                     if(correctType === 'date') {
+                        console.log(data[i])
                         if(isValidDate(data[i])) {
                             data[i] = dateToUTC(data[i]);
                         } else {
@@ -509,7 +510,8 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
                         }
                     } else {
                         // all other
-                        if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}`})
+                        console.log(data[i], returnableID)
+                        if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}. Currently: ${type(data[i])}`})
                     }
                 }
             } else {
