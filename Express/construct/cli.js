@@ -108,10 +108,21 @@ async function makeSchema(commandLineArgs) {
             columns = [...columns, ...readSchema(parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.database}/${schema}/columns.jsonc`)];
             features = [...features, ...readSchema(parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.database}/${schema}/features.jsonc`)];
         })
-        let globalColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/columns.jsonc');
+        let globalPresetColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/presetColumns.jsonc');
+        let globalSpecialColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/specialColumns.jsonc');
+
+        // Add global columns
+        columns = columns.filter(col => !('globalPresetName' in col));
+        columns.filter(col => 'globalPresetName' in col).forEach(preset => {
+            let globalColumn = globalPresetColumns.filter(global => global.name == preset.globalPresetName)[0];
+            globalColumn.featureName = preset.featureName;
+            columns.push(globalColumn);
+        })
+        // Add special columns
+        columns = [...columns, ...globalSpecialColumns];
         
         // Call Construction Function
-        const featureOutput = await asyncConstructAuditingTables(features, [...columns, ...globalColumns], databaseObject);
+        const featureOutput = await asyncConstructAuditingTables(features, columns, databaseObject);
 
         // Creating the computed file and returnables folder 
         await showComputed(commandLineArgs, databaseObject);

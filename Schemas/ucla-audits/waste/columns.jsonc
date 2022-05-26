@@ -7,7 +7,14 @@
      *
      * Name, Stream, Bin Number, Zone, Location
      */
-
+    {
+        "featureName": "Victor Stanley Waste Bin",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Victor Stanley Waste Bin",
+        "globalPresetName": "Commentary"
+    },
     { 
         "featureName": "Victor Stanley Waste Bin",
         "name": "Bin ID",
@@ -37,7 +44,7 @@
         "accuracy": null,
         
         "sqlType": "Point", // required
-        "referenceType": "item-location", // required
+        "referenceType": "item-non-id", // required
         "presetValues": null,
         "isNullable": false // required
     },

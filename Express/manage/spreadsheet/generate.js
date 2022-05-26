@@ -31,7 +31,6 @@ const {
 function getXlsxFormattingType(referenceType, SQLType) {
     const referenceTypeGroups = {
         'obs': 1,
-        'obs-global': 1,
         'special': 1,
         'item-non-id': 1,
         'item-id': 1,
@@ -39,8 +38,7 @@ function getXlsxFormattingType(referenceType, SQLType) {
         'item-list': 2,
         'attribute': 3,
         'item-factor': 3,
-        'obs-factor': 3,
-        'item-location': 4
+        'obs-factor': 3
     };
 
     const SQLTypeGroups = {

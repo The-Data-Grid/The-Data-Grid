@@ -174,6 +174,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
                     continue;
                 }
                 const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+                primaryKeyAndColumnName.isLocation = false; // ** change this if you want to add location types to external columns
                 columnNamesAndValues.push(primaryKeyAndColumnName);
                 // if list add to list array and handle after item insert
                 // handle auditor and sop special types
@@ -182,18 +183,20 @@ async function createIndividualObservation(createObservationObject, insertedItem
                     // always text, never user reference for now
                     columnNamesAndValues.push({
                         columnName: itemColumn.columnName,
-                        columnValue
+                        columnValue,
+                        isLocation: false
                     });
                 } else if(itemColumn.frontendName === 'Standard Operating Procedure') {
                     sopValue = columnValue;
                 } else {
                     throw new CreateObservationError({code: 500, msg: 'Data column with reference type `special` found with invalid column name: ' + itemColumn.columnName});
                 }
-                // then a local column (obs-global is included)
+                // then a local column
             } else {
                 columnNamesAndValues.push({
                     columnName: itemColumn.columnName,
-                    columnValue
+                    columnValue,
+                    isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
                 });
             }
             // then not valid
@@ -261,17 +264,23 @@ function makeObservationSQLStatement(tableName, columnNamesAndValues, globalRefe
     
     // make the column names SQL string
     let columnNamesSQL = [];
-    columnNamesAndValues.map(col => col.columnName).forEach(columnName => {
+    columnNamesAndValues.forEach(col => {
         columnNamesSQL.push(formatSQL('$(columnName:name)', {
-            columnName
+            columnName: col.columnName
         }));
     });
     columnNamesSQL = '( ' + columnNamesSQL.join(', ') + ', observation_count_id )';
 
     // make the column values SQL string
     let columnValuesSQL = [];
-    columnNamesAndValues.map(col => col.columnValue).forEach(columnValue => {
-        columnValuesSQL.push(formatSQL('$(columnValue)', {
+    columnNamesAndValues.forEach(col => {
+        let { columnValue, isLocation } = col;
+        let pgPromiseString = '$(columnValue)';
+        // Wrap GeoJSON in PostGIS type converter for location types
+        if(isLocation) {
+            pgPromiseString = `ST_GeomFromGeoJSON(${pgPromiseString})`;
+        }
+        columnValuesSQL.push(formatSQL(pgPromiseString, {
             columnValue
         }));
     });

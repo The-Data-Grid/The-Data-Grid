@@ -8,7 +8,7 @@ console.log(isDeployment ? 'DEPLOYMENT' : 'DEVELOPMENT');
 pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
 pgp.pg.types.setTypeParser(1184, require('./parse/parse.js').timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
 
-var tdgdbname = isDeployment ? process.env.PGDATABASE : 'v5';
+var tdgdbname = isDeployment ? process.env.PGDATABASE : 'v6';
 var tdgdbuser = 'postgres';
 var tdgpassword = isDeployment ? process.env.PGPASSWORD : null;
 var tdghost = isDeployment ? process.env.PGHOST : 'localhost';

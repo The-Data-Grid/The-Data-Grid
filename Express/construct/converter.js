@@ -47,7 +47,7 @@ if(
         "information": null, // optional, defaults to null
         "accuracy": null,
         "sqlType": "Point", // required
-        "referenceType": "obs-location", // required
+        "referenceType": "obs", // required
         "presetValues": null,
         "isNullable": true // required
     });

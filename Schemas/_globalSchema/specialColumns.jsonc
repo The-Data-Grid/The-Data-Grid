@@ -1,0 +1,27 @@
+/*
+    SPECIAL DATA COLUMNS WHICH ARE INCLUDED IN EVERY FEATURE AUTOMATICALLY
+*/
+[
+    { // AUDITOR NAME
+        "sqlType": "TEXT",
+        "referenceType": "special",
+        "featureName": null,
+        "name": "Auditor",
+        "information": "Name of the auditor(s) who conducted this observation",
+        "isNullable": true,
+        "presetValues": null,
+        "accuracy": null,
+        "isFilterable": false
+    },
+    { // SOP NAME    
+        "sqlType": "TEXT",
+        "referenceType": "special",
+        "name": "Standard Operating Procedure",
+        "isNullable": true,
+        "featureName": null,
+        "accuracy": null,
+        "information": "The standard operating procedure(s) used for the audit on this feature",
+        "presetValues": null,
+        "isFilterable": false
+    }
+]

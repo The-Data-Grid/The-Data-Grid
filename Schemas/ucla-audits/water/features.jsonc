@@ -98,5 +98,18 @@
                 }
             ]
         }
+    },
+    {
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        },
+        "information": "A large structure which can be entered",
+        "name": "Building",
+        "observableItem": {
+            "requiredItem": []
+        }
     }
 ]

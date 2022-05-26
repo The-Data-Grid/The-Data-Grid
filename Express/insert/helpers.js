@@ -172,7 +172,7 @@ function insertManyToManyGenerator(isObservation, isUpdate) {
 
 /**
  * Composes an external column insertion function for inserting
- * values into list, attribute, factor, or location tables
+ * values into list, attribute, or factor tables
  * @param {String} primaryKeyColumnName 
  * @param {Boolean} isMutable 
  * @param {String} referenceType
@@ -244,8 +244,9 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                     }
                 }
             }
-        // Location handling
         } 
+        // Location handling
+        /*
         else if(referenceType == 'item-location') {
             // Now insert
             try {
@@ -286,6 +287,7 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
             };
             
         } 
+        */
         // Factor, Attribute handling
         else {
             let dataValue = formatSQL('$(data)', {
@@ -305,7 +307,7 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                 // note db.many here, we are deciding not to throw
                 // if more than one record is returned with the
                 // value. This is to prevent upload from breaking
-                // if duplicates are found in list, attribute, location,
+                // if duplicates are found in list, attribute,
                 // or factor tables
                 primaryKey = (await db.many(formatSQL(`
                     SELECT $(primaryKeyColumnName:name)

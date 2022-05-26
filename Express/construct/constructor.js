@@ -6,7 +6,6 @@
 //
 //    constraints: - no item can reference another item more than once
 //                 - lists are always nullable
-//                 - item cannot reference the same location type more than once
 //                 - attributes are always non nullable
 //                 - lists and factors are specific to one item or observation table
 //
@@ -27,8 +26,7 @@ const {insert_m2m_metadata_item,
        create_observational_item_table, 
        add_unique_constraint, 
        add_data_col, 
-       add_list, 
-       add_location, 
+       add_list,
        add_factor, 
        add_attribute, 
        getReturnables, 
@@ -110,17 +108,12 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                     item-list
                         create list and m2m tables
                         add foreign keys
-                    item-location
-                        add location_<type> column
-                        add foreign key
                     item-factor
                         create factor table
                         add item reference column
                         add foreign key
                     obs
                         add observation data column
-                    obs-global
-                        add observation data column for every feature
                     obs-list
                         create list and m2m tables
                         add foreign keys
@@ -384,7 +377,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
 
         // Globals
         // These data columns are defined for every feature
-        for(let column of columns.filter(column => column.referenceType === 'obs-global' || column.referenceType === 'special')) {
+        for(let column of columns.filter(column => column.referenceType === 'special')) {
             // for every root feature
             for(let feature of features) {
 
@@ -413,44 +406,29 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                         isFilterable: column.isFilterable,
                     }));
 
-                    console.log(chalk.green(`Column Metadata: Inserted global column ${column.columnName} into metadata_column for ${featureItemLookup[feature.tableName]}`));
+                    console.log(chalk.green(`Column Metadata: Inserted special column ${column.columnName} into metadata_column for ${featureItemLookup[feature.tableName]}`));
                 } catch(sqlError) {
                     return constructjsError(sqlError);
                 }
 
-                // if observation-global add the data column for all features
-                if(column.referenceType === 'obs-global') {
-                    try {
-                        await db.none(formatSQL(add_data_col, {
-                            tableName: feature.tableName,
-                            columnName: column.columnName,
-                            sqlType: column.sqlType,
-                            isNullable: column.isNullable
-                        }))
-
-                        console.log(chalk.green(`Column Construction: Added global column ${column.columnName} to ${feature.tableName}`));
-                    } catch(sqlError) {
-                        return constructjsError(sqlError);
-                    }
-                }
-
-                // Auditor Name Special Case
+                // Auditor Special Case
                 if(column.referenceType === 'special' && column.frontendName === 'Auditor') {
                     await db.none(formatSQL(add_data_col, {
                         tableName: feature.tableName,
                         columnName: column.columnName,
                         sqlType: column.sqlType,
-                        isNullable: column.isNullable
+                        isNullable: column.isNullable,
+                        isLocation: false,
                     }))
 
                     console.log(chalk.green(`Column Construction: Added special column ${column.columnName} to ${feature.tableName}`));
 
-                    // Auditor Name trigger is added for every feature
+                    // Auditor trigger is added for every feature
                     await db.none(formatSQL(checkAuditorNameTrigger, {
                         tableName: feature.tableName
                     }))
 
-                    console.log(chalk.green(`Column Construction: Added 'Auditor Name' trigger function to ${feature.tableName}`));
+                    console.log(chalk.green(`Column Construction: Added 'Auditor' trigger function to ${feature.tableName}`));
                 }
                 
             }
@@ -458,7 +436,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
         };
 
         // Standard columns (Non global)
-        for(let column of columns.filter(column => column.referenceType !== 'obs-global' && column.referenceType !== 'special')) {
+        for(let column of columns.filter(column => column.referenceType !== 'special')) {
 
             //console.log(chalk.red.bgWhite(util.inspect(column)))
 
@@ -489,6 +467,13 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                 return constructjsError(sqlError);
             }
 
+            // Location Handling
+            let isLocation = false;
+            if(['Point', 'LineString', 'Polygon'].includes(column.sqlType)) {
+                column.sqlType = `geometry(${column.sqlType}, 4326)`;
+                isLocation = true;
+            }
+
             try {
                 switch (column.referenceType) {
                     case 'item-id':
@@ -505,7 +490,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                             tableName: column.tableName, // same as itemName
                             columnName: column.columnName,
                             sqlType: column.sqlType,
-                            isNullable: column.isNullable // must be false
+                            isNullable: column.isNullable, // must be false
+                            isLocation,
                         }));
 
                         console.log(chalk.green(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
@@ -521,7 +507,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                             tableName: column.tableName, // same as itemName
                             columnName: column.columnName,
                             sqlType: column.sqlType,
-                            isNullable: column.isNullable
+                            isNullable: column.isNullable,
+                            isLocation,
                         }));
 
                         console.log(chalk.green(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
@@ -547,21 +534,6 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
 
                         break;
 
-                    case 'item-location':
-                        // reference type test
-                        if(/^location_/.test(column.tableName) !== true) {
-                            throw 'item-location returnables must be within a location_... table';
-                        };
-
-                        await db.none(formatSQL(add_location, {
-                            itemTableName: column.itemName,
-                            locationTableName: column.tableName,
-                            isNullable: column.isNullable
-                        }));
-
-                        console.log(chalk.green(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
-                        break;
-                        
                     case 'item-factor':
                         // reference type test
                         if(/^factor_/.test(column.tableName) !== true) {
@@ -589,16 +561,13 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                             tableName: column.tableName,
                             columnName: column.columnName,
                             sqlType: column.sqlType,
-                            isNullable: column.isNullable
+                            isNullable: column.isNullable,
+                            isLocation,
                         }));
 
                         console.log(chalk.green(`Column Construction: Added ${column.referenceType} column ${column.columnName} to ${column.itemName}`));
-                        break;
-                        
-                    case 'obs-global':
 
-                        // This shouldn't happen!
-                        throw 'Global observation columns should have been handled earlier in the function';
+                        break;
 
                     case 'obs-list':
                         // reference type test
@@ -845,7 +814,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
 
         // if this is not the feature's observable item we ignore all non item-... columns
         if(featureItemLookup[itemObject.featureName] !== itemObject.itemName) {
-            columns = columns.filter(col => ['item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'].includes(col.referencetypename))
+            columns = columns.filter(col => ['item-id', 'item-non-id', 'item-list', 'item-factor', 'attribute'].includes(col.referencetypename))
         }
         
         // for each column related to the item
@@ -859,7 +828,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             // mutate the base joinObject. I'm sure there's a better way.
 
             // if item-... and not obs-... reference type
-            if(['item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'].includes(col.referencetypename)) {
+            if(['item-id', 'item-non-id', 'item-list', 'item-factor', 'attribute'].includes(col.referencetypename)) {
                 insertableJoinObject = {
                     columns: joinObject.columns,
                     tables: joinObject.tables,
@@ -1037,6 +1006,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
 
     // Bubbles error to parent function
     function constructjsError(error) {
+        console.log(error);
         console.log(chalk.bgWhite.red('Schema construction halted!'));
         throw Error(error);
     }
@@ -1103,7 +1073,6 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
         // ==================================
         const tableNameMap = {            
             'obs': ['observation_', true],
-            'obs-global': null,
             'special': null,
             'item-non-id': ['item_', true],
             'item-id': ['item_', true],
@@ -1111,17 +1080,11 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             'item-list': ['list_item_', true],
             'attribute': ['attribute_', true],
             'obs-factor': ['factor_', true],
-            'item-factor': ['factor_', true],
-            'item-location': {
-                Point: ['location_point', false],
-                LineString: ['location_path', false],
-                Polygon: ['location_region', false]
-            }
+            'item-factor': ['factor_', true]
         };
 
         const columnNameMap = {
             'obs': ['data_', true],
-            'obs-global': ['data_', true],
             'special': ['data_', true],
             'item-non-id': ['data_', true],
             'item-id': ['data_', true],
@@ -1129,17 +1092,11 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             'item-list': ['data_element', false],
             'attribute': ['data_attribute', false],
             'obs-factor': ['factor_', true],
-            'item-factor': ['data_level', false],
-            'item-location': {
-                Point: ['data_point', false],
-                LineString: ['data_path', false],
-                Polygon: ['data_region', false]
-            }
+            'item-factor': ['data_level', false]
         };
 
         const referenceTypeGroups = {
             'obs': 1,
-            'obs-global': 1,
             'special': 1,
             'item-non-id': 1,
             'item-id': 1,
@@ -1147,8 +1104,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             'item-list': 2,
             'attribute': 3,
             'item-factor': 3,
-            'obs-factor': 3,
-            'item-location': 4
+            'obs-factor': 3
         };
     
         const SQLTypeGroups = {
@@ -1180,9 +1136,9 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             c: ['wholeNumber', 'checkboxList', 'dropdown', null],
             d: ['date', 'checkboxList', 'dropdown', null],
             e: ['checkbox', 'checkboxList', null, null],
-            f: [null, null, null, 'geoPoint'],
-            g: [null, null, null, 'geoLine'],
-            h: [null, null, null, 'geoRegion']
+            f: ['geoPoint', null, null, null],
+            g: ['geoLine', null, null, null],
+            h: ['geoRegion', null, null, null]
         };
 
         // Converter
@@ -1230,8 +1186,8 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             }
     
             // Item Table Name
-            // Special case no item name for `globalSchema` columns
-            if(columnSchema.referenceType == 'obs-global' || columnSchema.referenceType == 'special') {
+            // Special case no item name for `SOP` and `Auditor` columns
+            if(columnSchema.referenceType == 'special') {
                 verbose.itemName = null;
             } 
             // Proceed normally for all other columns

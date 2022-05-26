@@ -92,11 +92,9 @@ const construct = {
     
     add_unique_constraint: 'CALL "add_unique_constraint"($(tableName), $(uniqueOver))',
     
-    add_data_col: 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable))',
+    add_data_col: 'CALL "add_data_col"($(tableName), $(columnName), $(sqlType), $(isNullable), $(isLocation))',
     
     add_list: 'CALL "add_list"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isObservational))',
-    
-    add_location: 'CALL "add_location"($(itemTableName), $(locationTableName), $(isNullable))',
     
     add_factor: 'CALL "add_factor"($(itemTableName), $(tableName), $(columnName), $(sqlType), $(isNullable), $(isObservational))',
     

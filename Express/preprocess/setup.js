@@ -31,8 +31,8 @@ const setDatabaseConnection = require('../query/direct.js');
 const { getPresetValues } = setDatabaseConnection(db);
 
 const referenceTypes = {
-    item: ['item-id', 'item-id', 'item-non-id', 'item-list', 'item-location', 'item-factor', 'attribute'],
-    observation: ['obs', 'obs-global', 'obs-list', 'obs-factor', 'special', 'attribute']
+    item: ['item-id', 'item-id', 'item-non-id', 'item-list', 'item-factor', 'attribute'],
+    observation: ['obs', 'obs-list', 'obs-factor', 'special', 'attribute']
 }
 
 let itemFISLookup
@@ -296,7 +296,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
     let itemNodeObjects = allItems.map((item, index) => {
 
         // getting non-id columns
-        const nonIDColumns = columnObjects.filter(col => col.additionalInfo.item === item['i__table_name'] && ['item-non-id', 'item-list', 'item-location', 'item-factor'].includes(col.additionalInfo.referenceType));
+        const nonIDColumns = columnObjects.filter(col => col.additionalInfo.item === item['i__table_name'] && ['item-non-id', 'item-list', 'item-factor'].includes(col.additionalInfo.referenceType));
 
         // non-id column indices
         const nonIDColumnIndices = nonIDColumns.map(col => columnOrder.indexOf(col.additionalInfo.columnID));
@@ -409,7 +409,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
 
         // observation columns
         // filter on observable reference type and column item matching feature item
-        let observationColumns = columnObjects.filter(col => ['obs', 'obs-list', 'obs-factor', 'obs-global', 'special'].includes(col.additionalInfo.referenceType) && el['i__table_name'] === col.additionalInfo.item);
+        let observationColumns = columnObjects.filter(col => ['obs', 'obs-list', 'obs-factor', 'special'].includes(col.additionalInfo.referenceType) && el['i__table_name'] === col.additionalInfo.item);
 
         // observation column indicies
         let observationColumnIndices = observationColumns.map(col => columnOrder.indexOf(col.additionalInfo.columnID));
@@ -552,7 +552,6 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
     
     // init custom aliases
     let listAlias = ['list_alias_', 0];
-    let locationAlias = ['location_alias_', 0];
     let factorAlias = ['factor_alias_', 0];
     let attributeAlias = ['attribute_alias_', 0];
 
@@ -611,7 +610,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
 
         // Writing custom SQL for all of the reference types
 
-        // Auditor Name coalesce
+        // Auditor coalesce
         if(frontendName == 'Auditor' && referenceType == 'special') {
 
             appendSQL = 'LEFT JOIN m2m_auditor ON \
@@ -691,7 +690,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
             // add 1 to listAlias number to make a new unique alias
             listAlias[1] += 1;
 
-        } else if(['obs', 'obs-global'].includes(referenceType)) {
+        } else if(['obs'].includes(referenceType)) {
 
             appendSQL = null;
 
@@ -711,27 +710,6 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
                 returnableID: returnableIDAlias
             });
             
-        } else if(referenceType == 'item-location') {
-
-            let locationForeignKey = `${tableName}_id`;
-
-            appendSQL = formatSQL('LEFT JOIN $(locationTable:name) AS $(locationAlias:name) \
-                                       ON $(locationAlias:name).location_id = $(pgpParam:raw).$(fk:name)', {
-                                            locationTable: tableName,
-                                            locationAlias: locationAlias.join(''),
-                                            pgpParam: isWithinBaseItem ? baseItem : '$(alias:name)',
-                                            fk: locationForeignKey
-                                       });
-
-            selectSQL = formatSQL('ST_AsGeoJSON($(locationAlias:name).$(columnName:name))', {
-                locationAlias: locationAlias.join(''),
-                columnName: columnName,
-                returnableID: returnableIDAlias
-            });
-
-            // add 1 to locationAlias number to make a new unique alias
-            locationAlias[1] += 1;
-
         } else if(referenceType == 'item-factor') {
 
             let factorForeignKey = `${tableName}_id`;
@@ -817,6 +795,11 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
             throw Error('Returnable did not match to a valid reference type: ' + referenceType)
         }
 
+        // Wrap PostGIS type in GeoJSON converter for location types
+        if(['Point', 'LineString', 'Polygon'].includes(sqlType)) {
+            selectSQL = `ST_AsGeoJSON(${selectSQL})`;
+        }
+
         // Add returnableID to the lookup with key = id
         returnableIDLookup[returnableID] = new ReturnableID(feature, baseItem, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, whereSQL, frontendName, sqlType)
 
@@ -849,7 +832,7 @@ const featureReturnableMapper = (returnable, currentPath, treeArray, statics) =>
         columnOrder
     } = statics;
     // if observation returnable
-    if(['obs', 'obs-list', 'obs-factor', 'obs-global', 'special', 'attribute'].includes(returnable['rt__type_name'])) {
+    if(['obs', 'obs-list', 'obs-factor', 'special', 'attribute'].includes(returnable['rt__type_name'])) {
         let isAttribute = false;
         let childrenIndex = 0;
         if(returnable['rt__type_name'] == 'attribute') {
@@ -932,7 +915,7 @@ const itemReturnableMapper = (returnable, currentPath, treeArray, statics, hasTr
             }
             childrenID = 4;
         // non id column
-        } else if(['item-non-id', 'item-list', 'item-location', 'item-factor'].includes(returnable['rt__type_name'])) {
+        } else if(['item-non-id', 'item-list', 'item-factor'].includes(returnable['rt__type_name'])) {
             if(isLocal) {
                 itemLocalReturnableLookup[returnable.non_obs_i__table_name].push(returnable);
             }

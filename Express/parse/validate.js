@@ -92,7 +92,7 @@ validateItem:
     Contains every item and some values for each:
         valid returnableIDs to query
             valid for _item_ if:
-                referenceType in item-id, item-non-id, item-list, item-factor, item-location, attribute (current)
+                referenceType in item-id, item-non-id, item-list, item-factor, attribute (current)
         valid returnableIDs to filter
         sql type of filterable returnableIDs
 

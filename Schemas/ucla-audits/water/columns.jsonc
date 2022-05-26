@@ -1,4 +1,13 @@
 [
+    // Toilet
+    {
+        "featureName": "Toilet",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Toilet",
+        "globalPresetName": "Commentary"
+    },
     {
         "referenceType": "item-id",
         "presetValues": null,
@@ -79,6 +88,15 @@
         "name": "Flushometer Condition",
         "featureName": "Toilet"
     },
+    // Room
+    {
+        "featureName": "Room",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Room",
+        "globalPresetName": "Commentary"
+    },
     {
         "referenceType": "item-id",
         "presetValues": null,
@@ -108,6 +126,15 @@
         "isNullable": true,
         "name": "Access Panel Existence",
         "featureName": "Room"
+    },
+    // Urinal
+    {
+        "featureName": "Urinal",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Urinal",
+        "globalPresetName": "Commentary"
     },
     {
         "referenceType": "item-id",
@@ -189,6 +216,15 @@
         "name": "Flushometer Condition",
         "featureName": "Urinal"
     },
+    // Sink
+    {
+        "featureName": "Sink",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Sink",
+        "globalPresetName": "Commentary"
+    },
     {
         "referenceType": "item-id",
         "presetValues": null,
@@ -265,6 +301,15 @@
         "name": "Sensor Condition",
         "featureName": "Sink"
     },
+    // Mirror
+    {
+        "featureName": "Mirror",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Mirror",
+        "globalPresetName": "Commentary"
+    },
     {
         "referenceType": "item-id",
         "presetValues": null,
@@ -284,5 +329,26 @@
         "isNullable": true,
         "name": "Condition",
         "featureName": "Mirror"
+    },
+    // Building
+    {
+        "referenceType": "item-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": false,
+        "name": "Name",
+        "featureName": "Building"
+    },
+    {
+        "referenceType": "item-non-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "Polygon",
+        "isNullable": true,
+        "name": "Region",
+        "featureName": "Building"
     }
 ]

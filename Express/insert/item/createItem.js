@@ -23,7 +23,7 @@ const insertExternalColumn = {
     'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', CreateItemError),
     'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor', CreateItemError),
     'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', CreateItemError),
-    'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', CreateItemError),
+    //'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', CreateItemError),
     'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', CreateItemError),
     'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list', CreateItemError)
 };
@@ -248,12 +248,14 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
                     continue;
                 }
                 const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+                primaryKeyAndColumnName.isLocation = false; // ** change this if you want to add location types to external columns
                 columnNamesAndValues.push(primaryKeyAndColumnName);
             // then a local column
             } else {
                 columnNamesAndValues.push({
                     columnName: itemColumn.columnName,
-                    columnValue
+                    columnValue,
+                    isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
                 });
             }
         // then not valid
@@ -336,8 +338,14 @@ function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, 
 
     // make the column values SQL string
     let columnValuesSQL = [];
-    columnNamesAndValues.map(col => col.columnValue).forEach(columnValue => {
-        columnValuesSQL.push(formatSQL('$(columnValue)', {
+    columnNamesAndValues.forEach(col => {
+        let { columnValue, isLocation } = col;
+        let pgPromiseString = '$(columnValue)';
+        // Wrap GeoJSON in PostGIS type converter for location types
+        if(isLocation) {
+            pgPromiseString = `ST_GeomFromGeoJSON(${pgPromiseString})`;
+        }
+        columnValuesSQL.push(formatSQL(pgPromiseString, {
             columnValue
         }));
     });
