@@ -79,13 +79,15 @@
         The <span class="b">submissionObject</span> is the JSON object which is used to upload data via the api. Its
         structure is specified below:
     </div>
-    <div class="code-block-container">
-        <div class="code-block"><svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24" class="code-block-copy">
-                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path>
-                <path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z">
-                </path>
-            </svg>{{submissionObject}}
+    <div class="code-container">
+        <svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24" class="code-block-copy">
+            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path>
+            <path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z">
+            </path>
+        </svg>
+        <div class="code-block">
+            {{submissionObject}}
         </div>
     </div>
     <div class="para-break"></div>
@@ -99,14 +101,14 @@
     <div class="body">
         The <span class="b">endpoint</span> to make the API request to is the following:
     </div>
-    <div class="code-block-container">
+    <div class="code-container">
+        <svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            class="code-block-copy" style="padding-top: 0px">
+            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path>
+            <path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z">
+            </path>
+        </svg>
         <div class="code-block">
-            <svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                class="code-block-copy" style="padding-top: 0px">
-                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path>
-                <path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z">
-                </path>
-            </svg>
             {{endpoint}}
         </div>
     </div>
@@ -115,14 +117,14 @@
     <div class="body">
         The <span class="b">API key</span> should go in the HTTP header as follows:
     </div>
-    <div class="code-block-container">
+    <div class="code-container">
+        <svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            class="code-block-copy">
+            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path>
+            <path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z">
+            </path>
+        </svg>
         <div class="code-block">
-            <svg (click)="copyToClipboard(submissionObject)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                class="code-block-copy">
-                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path>
-                <path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z">
-                </path>
-            </svg>
             {{authHeader}}
         </div>
     </div>
