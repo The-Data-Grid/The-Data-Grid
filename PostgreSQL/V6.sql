@@ -1121,7 +1121,7 @@ CREATE FUNCTION create_observational_item_table(feature_name TEXT)
             -- Create the table
             EXECUTE FORMAT('CREATE TABLE %I (
                             item_id SERIAL PRIMARY KEY,
-                            is_existing BOOLEAN NOT NULL,
+                            is_existing BOOLEAN NOT NULL DEFAULT TRUE,
                             global_id INTEGER NOT NULL)', observable_item);
 
             -- Global reference
@@ -1235,6 +1235,10 @@ CREATE PROCEDURE add_factor(item_table_name TEXT, table_name TEXT, column_name T
                 ELSE
                     EXECUTE FORMAT('ALTER TABLE %I ADD COLUMN %I INTEGER NOT NULL REFERENCES %I', observation_table_name, factor_column_name, table_name);
                 END IF;
+
+                -- Add index on factor fk
+                EXECUTE FORMAT('CREATE INDEX 
+                                ON %I (%I)', observation_table_name, factor_column_name);
             ELSE
                 -- Add referencing column to item table
                 IF is_nullable = TRUE THEN
@@ -1242,6 +1246,10 @@ CREATE PROCEDURE add_factor(item_table_name TEXT, table_name TEXT, column_name T
                 ELSE
                     EXECUTE FORMAT('ALTER TABLE %I ADD COLUMN %I INTEGER NOT NULL REFERENCES %I', item_table_name, factor_column_name, table_name);
                 END IF;
+
+                -- Add index on factor fk
+                EXECUTE FORMAT('CREATE INDEX 
+                                ON %I (%I)', item_table_name, factor_column_name);
             END IF;
 
             COMMIT;
@@ -1389,12 +1397,14 @@ create view metadata_item_columns as
         array_agg(c.column_id) c__column_id, 
         array_agg(c.column_name) c__column_name, 
         array_agg(c.table_name) c__table_name, 
+        array_agg(sn.selector_name) sn__selector_name,
         array_agg(c.is_nullable) c__is_nullable,
         array_agg(r.type_name) r__type_name,
         array_agg(c.frontend_name) c__frontend_name,
         i.table_name i__table_name 
             from metadata_item i 
             left join metadata_column c on c.metadata_item_id = i.item_id
+            left join metadata_selector_new sn on c.selector_type = sn.selector_id
             left join metadata_reference_type r on c.reference_type = r.type_id
             -- where c.observation_table_name is null
                 group by i__table_name;

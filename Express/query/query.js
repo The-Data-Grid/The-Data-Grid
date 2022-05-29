@@ -104,6 +104,7 @@ function dataQueryWrapper(queryType) {
 // SEND OBSERVATION DATA
 // ============================================================
 function formatDefault(req, res, next) {
+    console.log('Formatting...');
     // This is row-major data
 
     /* DEBUG */
@@ -152,6 +153,7 @@ function formatDefault(req, res, next) {
 };
 
 function sendDefault(req, res) {
+    console.log('Returning...');
     return res.json(res.locals.formattedResponse)
 }
 

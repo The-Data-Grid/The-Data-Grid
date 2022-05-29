@@ -62,7 +62,7 @@ const query = {
 
     rootFeatureJoin: 'FROM $(rootFeature:value)',
 
-    groupBy: 'GROUP BY $(nonListReturnables:raw), $(feature:name).observation_id, $(feature:name).data_time_conducted'
+    groupBy: 'GROUP BY $(nonListReturnables:raw)'
 
 };
 

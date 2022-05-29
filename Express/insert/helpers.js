@@ -30,6 +30,7 @@ class CreateItemError extends Error {
       // Custom debugging information
       this.code = errObject.code
       this.msg = errObject.msg
+      this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -47,6 +48,7 @@ class CreateObservationError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -64,6 +66,7 @@ class DeleteObservationError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -81,6 +84,7 @@ class DeleteItemError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -98,6 +102,7 @@ class UpdateItemError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -115,6 +120,7 @@ class UpdateObservationError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -209,7 +215,6 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                 }
 
             } catch(err) {
-                console.log(err)
                 throw new ErrorClass({code: 500, msg: `Error when getting current list values from ${tableName}`});
             }
             // if there are new values
@@ -293,16 +298,6 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
             let dataValue = formatSQL('$(data)', {
                 data
             });
-            console.log(formatSQL(`
-            SELECT $(primaryKeyColumnName:name)
-            FROM $(tableName:name)
-            WHERE $(columnName:name) = $(dataValue:raw)
-        `, {
-            tableName,
-            columnName,
-            dataValue,
-            primaryKeyColumnName
-        }))
             try {
                 // note db.many here, we are deciding not to throw
                 // if more than one record is returned with the
@@ -441,7 +436,7 @@ function externalColumnUpdateGenerator(primaryKeyColumnName, isMutable, referenc
 const sqlToJavascriptLookup = {
     numeric: 'number',
     integer: 'number',
-    timestamptz: 'date',
+    timestamptz: 'string',
     boolean: 'boolean',
     json: 'object',
     point: 'object',
@@ -474,9 +469,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
         } else {
             relevantColumnObjects = itemColumns.filter(col => col.isItem);
         }
-        console.log(itemColumnObject[tableName])
-        const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID);
-        
+        const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID);        
 
         // make sure all non nullable fields are included when creating a new item
         if(!isUpdate) {
@@ -502,20 +495,23 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
                 }
                 // check type for others
                 else {
-                    // format date
-                    if(correctType === 'date') {
-                        console.log(data[i])
-                        if(isValidDate(data[i])) {
-                            data[i] = dateToUTC(data[i]);
-                        } else {
-                            throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must be of type date in format: MM-DD-YYYY`})
-                        }
+                    if(type(data[i]) !== correctType) {
+                        throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}. Currently: ${type(data[i])}`})
+                    }     
+                }
+                // format GeoJSON
+                if(['geoPoint', 'geoLine', 'geoRegion'].includes(returnableIDLookup[returnableID].selectorType)) {
+                    data[i] = JSON.stringify(data[i]);
+                }
+                // format date
+                if(returnableIDLookup[returnableID].selectorType === 'date') {
+                    if(isValidDate(data[i])) {
+                        data[i] = dateToUTC(data[i]);
                     } else {
-                        // all other
-                        console.log(data[i], returnableID)
-                        if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}. Currently: ${type(data[i])}`})
+                        throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must be of type date in format: MM-DD-YYYY`})
                     }
                 }
+                
             } else {
                 throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} is not valid for ${tableName}`})
             }
@@ -617,7 +613,6 @@ function insertSOPGenerator(isUpdate, ErrorClass) {
                 globalPrimaryKey
             }))).id;
         } catch(err) {
-            console.log(err);
             throw new ErrorClass({code: 500, msg: `Error when getting organization ID from global with primary key ${globalPrimaryKey}`});
         }
         // SOP Value is validated to be an array
@@ -642,7 +637,6 @@ function insertSOPGenerator(isUpdate, ErrorClass) {
                     sopPrimaryKey
                 }));
             } catch (err) {
-                console.log(err)
                 throw new ErrorClass({code: 400, msg: `SOP "${sopName}" is not a valid SOP in your organization`});
             }
         }

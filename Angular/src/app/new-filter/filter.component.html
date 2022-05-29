@@ -1,9 +1,9 @@
 
-<div style="min-height: 800px;" class="bg-white w-full">
+<div class="bg-white w-full flex" [class.flex-col]="viewType == 1 || !isL" [class.flex-row]="viewType == 2 && isL" [class.fit-to-screen]="viewType == 2 && isL"> 
     <!-- Controller Box -->
-    <div style="background-color:  rgb(229 231 235);" class="flex flex-col">
+    <div style="background-color: rgb(229 231 235)" class="flex flex-col" [class.w-1-3]="viewType == 2 && isL" [class.overflow-y-scroll]="viewType == 2 && isL" [class.fit-to-screen]="viewType == 2 && isL">
         <!-- Desktop Header -->
-        <div *ngIf="isL" class="flex flex-row h-[3.2rem] sticky top-[49px] w-full" style="z-index: 3; box-shadow: 0px 4px 8px -4px rgb(138, 138, 138);">
+        <div *ngIf="isL && viewType == 1" class="flex flex-row h-[3.2rem] sticky top-[49px] w-full" style="z-index: 3; box-shadow: 0px 4px 8px -4px rgb(138, 138, 138);">
             <!-- Data Selector -->
             <div class="w-2-7 flex flex-row items-center bg-[#569CD7] px-4">
                 <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" fill="white" height="30px" viewBox="0 0 512 512"><path d="M409.43 389.87C362 410 305.4 421.05 256 421.05s-105.87-11.3-153.44-31.18S48 353.16 48 353.16v38.2c0 31.15 18 43.64 67.32 64.35C153.13 471.59 203.18 480 256 480s102.87-8.41 140.68-24.29C446 435 464 422.51 464 391.36v-38.2s-7.14 16.59-54.57 36.71zM63.69 173.22c11.23 9.84 27.82 19.49 48 27.92 42.48 17.76 96.45 28.37 144.36 28.37s101.88-10.61 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 6.06-5.31 10.85-10.12 13.47-12.85a8 8 0 002.22-5.54v-26.16c-.84-28.79-24.71-54.41-67.21-72.14C358.83 40.71 308.84 32 256 32s-102.83 8.71-140.74 24.53C72.85 74.22 49 99.78 48.05 128.5v26.33a8 8 0 002.21 5.54c2.58 2.73 7.36 7.54 13.43 12.85z"/><path d="M409.43 221.91C365 241 305.4 253.09 256 253.09s-108.87-12.27-153.43-31.18S48 185.2 48 185.2v47.36c.08 7.52 5.5 16.2 15.69 25.13 11.24 9.84 27.82 19.5 48 27.92C154.12 303.38 208.09 314 256 314s101.88-10.6 144.36-28.37c20.13-8.42 36.72-18.08 47.95-27.92 10.25-9 15.68-17.71 15.69-25.27V185.2s-10.13 17.62-54.57 36.71z"/><path d="M409.43 306.38C362 326 305.4 337.56 256 337.56s-109.87-12.8-153.43-31.18S48 269.67 48 269.67v46.25c0 7.55 5.44 16.28 15.69 25.26 11.23 9.84 27.81 19.5 48 27.92 42.48 17.77 96.44 28.37 144.36 28.37s101.88-10.6 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 10.19-8.93 15.61-17.61 15.69-25.13v-46.38s-7.18 17.09-54.62 36.71z"/></svg>
@@ -20,9 +20,9 @@
                 <span class="pl-2 header-type text-[#569CD7]">Run Control</span>
             </div>
         </div>
-        <div [class.flex-row]="isL" [class.flex-col]="!isL" class="flex">
+        <div [class.flex-row]="isL && viewType == 1" [class.flex-col]="!isL || viewType == 2" class="flex">
         <!-- Meta information -->
-        <div style="box-shadow: 4px 0 8px -2px rgb(138, 138, 138);" [class.w-2-7]="isL" [class.w-full]="!isL" class="flex flex-col bg-white">
+        <div style="box-shadow: 4px 0 8px -2px rgb(138, 138, 138);" [class.w-2-7]="isL && viewType == 1" [class.w-full]="!isL || viewType == 2" class="flex flex-col bg-white">
             <!-- Header -->
             <div *ngIf="!isL" class="flex flex-row items-center bg-[#569CD7] px-4 h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 4;">
                 <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" fill="white" height="30px" viewBox="0 0 512 512"><path d="M409.43 389.87C362 410 305.4 421.05 256 421.05s-105.87-11.3-153.44-31.18S48 353.16 48 353.16v38.2c0 31.15 18 43.64 67.32 64.35C153.13 471.59 203.18 480 256 480s102.87-8.41 140.68-24.29C446 435 464 422.51 464 391.36v-38.2s-7.14 16.59-54.57 36.71zM63.69 173.22c11.23 9.84 27.82 19.49 48 27.92 42.48 17.76 96.45 28.37 144.36 28.37s101.88-10.61 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 6.06-5.31 10.85-10.12 13.47-12.85a8 8 0 002.22-5.54v-26.16c-.84-28.79-24.71-54.41-67.21-72.14C358.83 40.71 308.84 32 256 32s-102.83 8.71-140.74 24.53C72.85 74.22 49 99.78 48.05 128.5v26.33a8 8 0 002.21 5.54c2.58 2.73 7.36 7.54 13.43 12.85z"/><path d="M409.43 221.91C365 241 305.4 253.09 256 253.09s-108.87-12.27-153.43-31.18S48 185.2 48 185.2v47.36c.08 7.52 5.5 16.2 15.69 25.13 11.24 9.84 27.82 19.5 48 27.92C154.12 303.38 208.09 314 256 314s101.88-10.6 144.36-28.37c20.13-8.42 36.72-18.08 47.95-27.92 10.25-9 15.68-17.71 15.69-25.27V185.2s-10.13 17.62-54.57 36.71z"/><path d="M409.43 306.38C362 326 305.4 337.56 256 337.56s-109.87-12.8-153.43-31.18S48 269.67 48 269.67v46.25c0 7.55 5.44 16.28 15.69 25.26 11.23 9.84 27.81 19.5 48 27.92 42.48 17.77 96.44 28.37 144.36 28.37s101.88-10.6 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 10.19-8.93 15.61-17.61 15.69-25.13v-46.38s-7.18 17.09-54.62 36.71z"/></svg>
@@ -121,7 +121,7 @@
         </div>
 
         <!-- Query Builder -->
-        <div [class.w-3-7]="isL" [class.w-full]="!isL">
+        <div [class.w-3-7]="isL && viewType == 1" [class.w-full]="!isL || viewType == 2">
             <!-- Header -->
             <div *ngIf="!isL" class="flex flex-row items-center bg-white px-4 h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 3;">
                 <svg class="cursor-pointer" (click)="scrollToTop()" fill="#569CD7" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 512 512"><path d="M294.28 256.9l-54.42-54.41a12 12 0 00-17 0L12.45 401a12 12 0 00-.27 17.2l66.05 66.28a12 12 0 0017.22-.23l198.81-210.36a12 12 0 00.02-16.99zM499.33 199.33l-43.89-43.58a21.46 21.46 0 00-15.28-6.26 21.89 21.89 0 00-12.79 4.14c0-.43.06-.85.09-1.22.45-6.5 1.15-16.32-5.2-25.22a258 258 0 00-24.8-28.74.6.6 0 00-.08-.08c-13.32-13.12-42.31-37.83-86.72-55.94A139.55 139.55 0 00257.56 32C226 32 202 46.24 192.81 54.68A53.4 53.4 0 00176 86.17L192 96s8.06-2 13.86-3.39a62.73 62.73 0 0118.45-1.15c13.19 1.09 28.79 7.64 35.69 13.09 11.7 9.41 17.33 22.09 18.26 41.09.2 4.23-9.52 21.35-24.16 39.84a8 8 0 00.61 10.62l45.37 45.37a8 8 0 0011 .25c12.07-11 30.49-28 34.67-30.59 7.69-4.73 13.19-5.64 14.7-5.8a19.18 19.18 0 0111.29 2.38 1.24 1.24 0 01-.31.95l-1.82 1.73-.3.28a21.52 21.52 0 00.05 30.54l43.95 43.68a8 8 0 0011.28 0l74.68-74.2a8 8 0 00.06-11.36z"/></svg>
@@ -159,8 +159,8 @@
                     <!-- Layer Menu -->            
                     <div *ngIf="queryState.mapView.layers.length > 0" cdkDropList (cdkDropListDropped)="layerDropped($event)" class="space-y-2">
                         <mat-expansion-panel [(expanded)]="layer.isExpanded" *ngFor="let layer of queryState.mapView.layers" cdkDrag style="border: #535353 solid 1px;">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title >
+                            <mat-expansion-panel-header class="relative">
+                                <mat-panel-title cdkDragHandle class="cursor-move">
                                     <svg *ngIf="layer.type == 'geoPoint'" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" fill="#535353" matTooltip="Point" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="22px" height="22px" viewBox="0 0 32.25 32.25" style="enable-background:new 0 0 32.25 32.25;" xml:space="preserve">
                                         <g>
                                             <path d="M16.125,0C7.233,0,0,7.232,0,16.125C0,25.018,7.233,32.25,16.125,32.25c8.893,0,16.125-7.232,16.125-16.125   C32.25,7.232,25.016,0,16.125,0z M16.125,28.25C9.439,28.25,4,22.811,4,16.125C4,9.439,9.439,4,16.125,4   C22.811,4,28.25,9.439,28.25,16.125C28.25,22.811,22.811,28.25,16.125,28.25z M21.25,16.125c0,2.83-2.295,5.125-5.125,5.125   S11,18.955,11,16.125S13.295,11,16.125,11S21.25,13.295,21.25,16.125z"/>
@@ -196,7 +196,7 @@
                                 <div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
                                     Visual Settings
                                 </div>
-                                <div (click)="layer.isVisible = !layer.isVisible" class="flex flex-row justify-between border-t px-3 py-1 cursor-pointer hover:bg-gray-200" matTooltip="Click to change visibility">
+                                <div (click)="updateVisibility(layer)" class="flex flex-row justify-between border-t px-3 py-1 cursor-pointer hover:bg-gray-200" matTooltip="Click to change visibility">
                                     <span style="font-size: 14px; font-weight: 600">Visibility</span>
                                     <span style="font-size: 14px; font-weight: 400;">{{ layer.isVisible ? 'Visible' : 'Invisible'}}</span>
                                 </div>
@@ -205,7 +205,38 @@
                                         <span style="font-size: 14px; font-weight: 600">Color</span>
                                         <span class=" w-10 border" [style]="'height: 18px; background-color: ' + layer.color"></span>
                                     </div>
-                                    <input (input)="updateColor($event, layer.columnIndex)" type="color" class="w-full h-full absoulte cursor-pointer" style="opacity: 0; height: 29px;">
+                                    <input (change)="updateColor($event, layer.columnIndex)" type="color" class="w-full h-full absoulte cursor-pointer" style="opacity: 0; height: 29px;">
+                                </div>
+                                <div class="flex flex-row justify-between border-t px-3 py-1" style="height: 29px;">
+                                    <span style="font-size: 14px; font-weight: 600">Color by Property</span>
+                                    <mat-slide-toggle [(ngModel)]="layer.colorByProperty">{{layer.colorByProperty ? 'ON' : 'OFF'}}</mat-slide-toggle>                            
+                                </div>
+                                <div class="flex flex-row justify-between border-t px-3 py-1" style="height: 29px;">
+                                    <span style="font-size: 14px; font-weight: 600">Point Size</span>
+                                    <div class="flex">
+                                        <mat-slider min="1"
+                                        max="50"
+                                        step="1"
+                                        (change)="sliderChanged( layer )"
+                                        [(ngModel)]="layer.size"></mat-slider>
+                                        <div style="width:25px">
+                                            {{layer.size}}px                              
+                                        </div>
+                                    </div>
+                                 </div>
+                                 <div class="flex flex-row justify-between border-t px-3 py-1" style="height: 29px;">
+                                    <span style="font-size: 14px; font-weight: 600">Opacity</span>
+                                    <div class="flex">
+                                        <mat-slider min="0"
+                                        max="1"
+                                        step="0.01"
+                                        (change)="sliderChanged( layer )"
+                                        [(ngModel)]="layer.opacity"
+                                        ></mat-slider>
+                                        <div style="width:25px">
+                                            {{formatPercent(layer.opacity)}}                  
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex flex-col mt-2">
@@ -316,9 +347,9 @@
         </div>
         
         <!-- Run Control -->
-        <div style="box-shadow: -4px 0 8px -2px rgb(138, 138, 138); z-index: 2;" [class.w-2-7]="isL" [class.w-full]="!isL" class="bg-white">
+        <div style="box-shadow: -4px 0 8px -2px rgb(138, 138, 138); z-index: 2;" [class.w-2-7]="isL && viewType == 1" [class.w-full]="!isL || viewType == 2" class="bg-white">
             <!-- Header -->
-            <div *ngIf="!isL" [class.border-l]="!isSm && !isXs" class="flex flex-row items-center bg-white px-4 h-14 min-h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 2;">
+            <div *ngIf="viewType == 2" [class.border-l]="!isSm && !isXs" class="flex flex-row items-center bg-white px-4 h-14 min-h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 2;">
                 <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" height="30px" fill="#569CD7" viewBox="0 0 512 512"><path d="M96 448l320-192L96 64v384z"/></svg>
                 <span class="pl-2 header-type text-[#569CD7]">Run Control</span>
             </div>
@@ -412,7 +443,7 @@
 
     </div>
     <!-- Map -->
-    <div [hidden]="viewType === 1" style="width: 100%" class="border-t border-[#569CD7] relative">
+    <div [hidden]="viewType === 1" [class.w-full]="!isL" [class.w-5-7]="isL" class="relative" style="height: calc(100vh - 48px)">
         <!-- Snap to ... Button-->
         <div class="absolute top-3 w-full flex flex-row justify-center">
             <button (click)="snapTo(currentlySnappedTo)" class="rounded-full shadow-lg px-3 py-2 bg-white text-[#569CD7] w-[200px] flex flex-row" style="z-index: 402;">

@@ -112,12 +112,14 @@ async function makeSchema(commandLineArgs) {
         let globalSpecialColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/specialColumns.jsonc');
 
         // Add global columns
-        columns = columns.filter(col => !('globalPresetName' in col));
         columns.filter(col => 'globalPresetName' in col).forEach(preset => {
-            let globalColumn = globalPresetColumns.filter(global => global.name == preset.globalPresetName)[0];
+            let globalColumn = Object.assign({}, globalPresetColumns.filter(global => global.name == preset.globalPresetName)[0]);
             globalColumn.featureName = preset.featureName;
             columns.push(globalColumn);
         })
+        // remove indicators
+        columns = columns.filter(col => !('globalPresetName' in col));
+
         // Add special columns
         columns = [...columns, ...globalSpecialColumns];
         

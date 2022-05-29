@@ -43,6 +43,7 @@ ngOnInit() {
 	let path = window.location.href.split('/')[window.location.href.split('/').length - 1];
 	if(path == 'map') {
 		this.viewType = 2;
+		this.mapViewType = 1
 	} else {
 		this.viewType = 1;
 	}
@@ -99,6 +100,8 @@ viewTypeStringLookup = {
 	1: 'tableView',
 	2: 'mapView'
 };
+// 1 = Vertical, 2 = Horizontal
+mapViewType;
 
 changeViewType(e) {
 	// format new view type
@@ -257,11 +260,16 @@ onFieldSelection(viewType: number) {
 				type: columnObject.selectorType,
 				typeName: columnObject.selectorType.replace('geo', ''),
 				color: randomHex(),
+				colorByProperty: false,
+				size: 10,
+				opacity: 0.8,
 				name: columnObject.frontendName,
 				queryBuilderTarget: 'map-builder-global' + addedColumnIndex,
 
 				geospatialReturnableID: this.queryState.mapView.currentReturnableIDs[addedColumnIndex],
+				geospatialReturnableIDIndex: null,
 				layerID: Math.ceil(Math.random()*100000),
+				renderObject: null,
 
 				// The queryState of the map view at the time that the layer was selected. These same props that are directly  
 				// in queryState.mapView are the state of the Data Selector dropdowns, these are the state of the dropdowns
@@ -302,6 +310,7 @@ onFieldSelection(viewType: number) {
 				},
 				invalidQuery: false,
 				queryError: null,
+				hasQueried: false,
 				// =========================================================================================================
 
 				// Map Data
@@ -343,7 +352,7 @@ onFieldSelection(viewType: number) {
 }
 onFeatureSelectChange (viewType: number) {
 	const viewTypeString = this.viewTypeStringLookup[viewType]
-	this.getFilterableColumnIDs(this.queryState[viewTypeString], this.queryState.tableView.selectedFeature);
+	this.getFilterableColumnIDs(this.queryState[viewTypeString], this.queryState[viewTypeString].selectedFeature);
 }
 onPageChange(event: PageEvent, viewType: number): PageEvent {
 	const viewTypeString = this.viewTypeStringLookup[viewType];
@@ -747,7 +756,7 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 	queryStateObject.invalidQuery = false;
 	queryStateObject.queryError = null;
 	let queryString = '';
-	if(!this.isFirstQuery) {
+	if(!this.isFirstQuery || viewType == 2) {
 		let rules = this.getRulesQueryBuilder(target);
 		if(rules === null) {
 			queryStateObject.invalidQuery = true;
@@ -869,15 +878,15 @@ private mapViewDataResponseHandler(queryStateObject, queryDataObject, handlerOpt
 		queryDataObject.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
 		queryDataObject.isCached = res.cached === true;
 		queryDataObject.rowCount = res.nRows.n;
+		queryStateObject.hasQueried = true;
 
 		// parse the geojson row and hand it to the rendering engine
 		const geospatialReturnableIDIndex = res.returnableIDs.indexOf(geospatialReturnableID);
-		let geojsonArray = JSON.parse(res.rowData.map(row => row[geospatialReturnableIDIndex]));
-		console.log(geojsonArray);
-		// combine geojson and add the _index
-		// ...
+		queryStateObject.geospatialReturnableIDIndex = geospatialReturnableIDIndex
 
-		//this.renderGeography(geojson, geoType, layerID);
+		let featureCollection = this.rowDataToFeatureCollection(res.rowData, geospatialReturnableIDIndex)
+
+		this.renderGeography(featureCollection, geoType, layerID);
 	};
 }
 
@@ -1029,12 +1038,19 @@ private renderGeography(geojson, geoType, layerID) {
 	// get layer
 	const relevantLayer = this.queryState.mapView.layers.filter(layer => layer.layerID == layerID)[0];
 
+	// clear layer if extant
+	if(relevantLayer.renderObject !== null) {
+		this.clearGeography(relevantLayer);
+	}	
+
 	let visualOptions: any = {
-		color: relevantLayer.color
+		color: hexToRgb(relevantLayer.color)
 	}
 	if(geoType == 'geoPoint') {
-		visualOptions.size = 20;
+		visualOptions.size = relevantLayer.size;
 		visualOptions.sensitivity = 1;
+		visualOptions.opacity = relevantLayer.opacity;
+		visualOptions.fragmentShaderSource = "precision mediump float;\nvarying vec4 _color;\n\nvoid main() {\n   float radius = 0.5;\n    vec2 center = vec2(0.5);\n\n    vec4 color1 = vec4(_color[0], _color[1], _color[2], _color[3]);\n\n  vec4 color0 = vec4(0.0);\n  vec2 m = gl_PointCoord.xy - center;\n    float dist = radius - sqrt(m.x * m.x + m.y * m.y);\n\n    gl_FragColor = color0;\n    if (dist > 0.0) {\n        gl_FragColor = _color;\n    }   \n}\n";
 	} else if(geoType == 'geoLine') {
 		visualOptions.sensitivity = 0.06;
 		visualOptions.weight = 6;
@@ -1043,9 +1059,11 @@ private renderGeography(geojson, geoType, layerID) {
 		visualOptions.border = true;
 	}
 
+	console.log(visualOptions)
+
 	glify.latitudeFirst();
 	let gl = glify.points({
-		...{visualOptions},
+		...visualOptions,
 		map: this.map,
 		data: geojson,
 		//sensitivity: 0.01,
@@ -1054,11 +1072,11 @@ private renderGeography(geojson, geoType, layerID) {
 			const {
 				_index
 			} = feature.properties;
-			
+			//console.log(relevantLayer, _index)
 			const valueArray = relevantLayer.data.tableData[_index];
 			const headerArray = relevantLayer.data.headerNames;
 			// Create an HTML template for every header and value in the row and geography
-			let popupHTML = '<div class="flex flex-col mt-2" style="width: 300px">';
+			let popupHTML = '<div class="flex flex-col mt-2" style="width: 300px; max-height: 300px; overflow: scroll">';
 			// geographic value
 			popupHTML += `
 				<div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
@@ -1067,7 +1085,7 @@ private renderGeography(geojson, geoType, layerID) {
 			`;
 			popupHTML += formatPopupTemplate('Type', geoType.slice(3));
 			popupHTML += `
-				<button class="standard-button border p-2 my-1" (click)="copyToClipboard(JSON.stringify(feature))" mat-button>
+				<button class="standard-button border p-2 my-1 rounded hover:bg-" (click)="copyToClipboard(JSON.stringify(feature))">
 					<span class="standard-button-text">
 						Copy GeoJSON
 					</span>
@@ -1116,6 +1134,44 @@ private renderGeography(geojson, geoType, layerID) {
 
 	// add to the layer
 	relevantLayer.renderObject = gl;
+
+	function hexToRgb(hex) {
+		if (hex.length < 6) return null;
+		hex = hex.toLowerCase();
+	
+		if (hex[0] === '#') {
+			hex = hex.substring(1, hex.length);
+		}
+	
+		var r = parseInt(hex[0] + hex[1], 16),
+		g = parseInt(hex[2] + hex[3], 16),
+		b = parseInt(hex[4] + hex[5], 16);
+		return {
+			r: r / 255,
+			g: g / 255,
+			b: b / 255
+		};
+	}
+}
+
+private clearGeography(layer) {
+	layer.renderObject.remove();
+	layer.renderObject = null;
+}
+
+private rowDataToFeatureCollection(rowData, geospatialReturnableIDIndex) {
+	return {
+		type: 'FeatureCollection',
+		features: rowData
+			.map(row => JSON.parse(row[geospatialReturnableIDIndex]))
+			.map((geojson, i) => ({
+				type: 'Feature',
+				geometry: geojson,
+				properties: {
+					_index: i
+				}
+			}))
+		};
 }
 
 copyToClipboard(data: string) {
@@ -1211,6 +1267,59 @@ private changeURL(isMap) {
 updateColor(e, columnIndex) {
 	let layerToUpdate = this.queryState.mapView.layers.filter(layer => layer.columnIndex == columnIndex)[0];
 	layerToUpdate.color = e.target.value;
+	// update current layer if extant
+	if(layerToUpdate.hasQueried) {
+		const { type, layerID, geospatialReturnableIDIndex } = layerToUpdate;
+		let { tableData } = layerToUpdate.data;
+		// convert to rowData
+		let featureCollection = this.rowDataToFeatureCollection(tableData.map(row => row.slice(1)), geospatialReturnableIDIndex)
+		// rerender
+		this.debounceRenderChange(featureCollection, type, layerID);
+	}
+}
+
+updateVisibility(layer) {
+	layer.isVisible = !layer.isVisible;
+	// rerender
+	if(layer.isVisible) {
+		const { type, layerID, geospatialReturnableIDIndex } = layer;
+		let { tableData } = layer.data;
+		// convert to rowData
+		let featureCollection = this.rowDataToFeatureCollection(tableData.map(row => row.slice(1)), geospatialReturnableIDIndex)
+		// rerender
+		this.debounceRenderChange(featureCollection, type, layerID);
+	}
+	// clear
+	else {
+		this.clearGeography(layer);
+	}
+}
+
+sliderChanged(layer) {
+	const { type, layerID, geospatialReturnableIDIndex } = layer;
+	let { tableData } = layer.data;
+	// convert to rowData
+	let featureCollection = this.rowDataToFeatureCollection(tableData.map(row => row.slice(1)), geospatialReturnableIDIndex);
+	// rerender
+	this.debounceRenderChange(featureCollection, type, layerID);
+}
+
+formatPercent(float) {
+	return Math.floor(float * 100) + '%';
+}
+
+renderChangeStack = 0;
+private async debounceRenderChange(featureCollection, type, layerID) {
+	// push to stack
+	this.renderChangeStack++;
+	// wait 
+	await new Promise(r => setTimeout(r, 300));
+	// pop from stack
+	this.renderChangeStack--;
+	// if stack is empty then run()
+	if(this.renderChangeStack == 0) {
+		this.renderGeography(featureCollection, type, layerID);
+	}
 }
 
 expandAllLayers(expand) {

@@ -81,7 +81,9 @@ async function createObservation(options) {
 
         console.log('Validated');
 
-        for(let createObservationObject of createObservationObjectArray) {
+        for(let i = 0; i < createObservationObjectArray.length; i++) {
+            if(i % 1000 == 0) console.log(`Inserted ${i}/${createObservationObjectArray.length}`);
+            let createObservationObject = createObservationObjectArray[i];
             const itemTableName = itemTableNames[createObservationObject.itemTypeID];
             const observationTableName = itemObservationTableNameLookup[itemTableName];
             await createIndividualObservation(createObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, transaction);
@@ -131,6 +133,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
         isNullable: itemColumns['c__is_nullable'][i],
         referenceType: itemColumns['r__type_name'][i],
         frontendName: itemColumns['c__frontend_name'][i],
+        selectorType: itemColumns['sn__selector_name'][i],
         isItem: itemColumns.isItem[i],
         isObservation: itemColumns.isObservation[i]
     }));
@@ -196,7 +199,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
                 columnNamesAndValues.push({
                     columnName: itemColumn.columnName,
                     columnValue,
-                    isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
+                    isLocation: ['geoPoint', 'geoLine', 'geoRegion'].includes(itemColumn.selectorType)
                 });
             }
             // then not valid

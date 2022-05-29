@@ -2466,6 +2466,11 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   transition-duration: 700ms;
 }
 
-.map-popup a {
+.fit-to-screen {
+  height: calc(100vh - 48px);
+}
 
+::ng-deep .mat-slider-wrapper {
+  top: 0px !important;
+  margin-top: 6px !important;
 }

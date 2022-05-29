@@ -213,7 +213,7 @@ function makeUniversalFilters(whereLookup, universalFilters, feature, queryType)
     let universalSort;
     if(queryType == 'observation') {
         // default column to sort observations by
-        let columnName = formatSQL('$(table:name).data_time_conducted', {
+        let columnName = formatSQL('$(table:name).observation_id', {
             table: feature
         })
 

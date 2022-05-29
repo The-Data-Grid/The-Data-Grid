@@ -7,14 +7,6 @@
      *
      * Name, Stream, Bin Number, Zone, Location
      */
-    {
-        "featureName": "Victor Stanley Waste Bin",
-        "globalPresetName": "Time Conducted"
-    },
-    {
-        "featureName": "Victor Stanley Waste Bin",
-        "globalPresetName": "Commentary"
-    },
     { 
         "featureName": "Victor Stanley Waste Bin",
         "name": "Bin ID",
@@ -113,5 +105,13 @@
         "referenceType": "obs", // required
         "presetValues": null,
         "isNullable": true // required
+    },
+    {
+        "featureName": "Victor Stanley Waste Bin",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Victor Stanley Waste Bin",
+        "globalPresetName": "Commentary"
     }
 ]

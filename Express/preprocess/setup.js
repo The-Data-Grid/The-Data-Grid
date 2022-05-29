@@ -20,7 +20,7 @@ const fs = require('fs');
 
 async function asyncWrapper() {
 
-let {returnableQuery,  // defunct, now a view
+let {
        columnQuery, 
        allItems, 
        itemM2M, 
@@ -125,7 +125,7 @@ console.log('Closed PostgreSQL Connection: setup');
 // RETURNABLE ID CLASS
 // ============================================================
 class ReturnableID {
-    constructor(feature, baseItem, ID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, whereSQL, frontendName, sqlType) {
+    constructor(feature, baseItem, ID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, whereSQL, frontendName, sqlType, selectorType) {
         this.ID = ID;
         this.columnID = columnID;
         this.feature = feature;
@@ -137,6 +137,7 @@ class ReturnableID {
         this.whereSQL = whereSQL;
         this.sqlType = sqlType;
         this.baseItem = baseItem;
+        this.selectorType = selectorType;
 
         this.joinObject = this.makeJoinObject(Array.from(columnTree), Array.from(tableTree), ID);
 
@@ -601,6 +602,9 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
         // Get SQL type
         const sqlType = row['sql__type_name'];
 
+        // Get Selector Type
+        const selectorType = row['sn__selector_name'];
+
         // Get column name and table name
         const columnName = row['c__column_name'];
         const tableName = row['c__table_name'];
@@ -801,7 +805,7 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
         }
 
         // Add returnableID to the lookup with key = id
-        returnableIDLookup[returnableID] = new ReturnableID(feature, baseItem, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, whereSQL, frontendName, sqlType)
+        returnableIDLookup[returnableID] = new ReturnableID(feature, baseItem, returnableID, columnID, columnName, columnTree, tableTree, referenceType, appendSQL, selectSQL, whereSQL, frontendName, sqlType, selectorType)
 
     }
 

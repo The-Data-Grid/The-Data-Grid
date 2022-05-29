@@ -1,41 +1,11 @@
-
--- Insert location
-INSERT INTO location_point
-    (location_id, data_point)
-    VALUES
-        (default, ST_GeomFromText('POINT(0 10)', 4326)),
-        (default, ST_GeomFromText('POINT(5 5)', 4326)),
-        (default, ST_GeomFromText('POINT(10 0)', 4326));
-
-
-INSERT INTO location_region 
-    (location_id, data_region)
-        VALUES
-            (default, ST_GeomFromText('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0),(1 1, 1 2, 2 2, 2 1, 1 1))', 4326)),
-            (default, ST_GeomFromText('POLYGON((0 5, 1 8, 1 10, 3 10, 0 5),(5 1, 5 2, 5 2, 2 5, 5 1))', 4326)),
-            (default, ST_GeomFromText('POLYGON((0 10, 5 2, 4 3, 20 20, 0 10),(5 5, 2 2, 3 3, 4 4, 5 5))', 4326));
-
-
--- Insert item entity
-INSERT INTO item_entity 
-("item_id",
-"data_entity_name",
-"data_entity_address",
-"item_city_id")
-VALUES 
-    (default, 'University of California, Los Angeles', 'Los Angeles, CA 90024', NULL),
-    (default, 'University of Southern California', 'Los Angeles, CA 90007', NULL),
-    (default, 'University of California, Berkeley', 'Berkeley, CA 94720', NULL);
-
 -- org / user / role tree
 INSERT INTO item_organization 
 ("item_id",
 "data_organization_name_text",
-"data_organization_name_link",
-"item_entity_id")
+"data_organization_name_link")
 VALUES
-    (default, 'Bruin Home Solutions', 'bruinhomesolutions.com', 1),
-    (default, 'Renewable Energy Association at UCLA', 'www.rea.seas.ucla.edu', 1);
+    (default, 'Bruin Home Solutions', 'bruinhomesolutions.com'),
+    (default, 'Renewable Energy Association at UCLA', 'www.rea.seas.ucla.edu');
 
 
 INSERT INTO item_user 
@@ -90,39 +60,36 @@ VALUES
 -- actual features
 INSERT INTO item_building 
 ("item_id",
-"data_building_name",
-"item_entity_id",
+"data_name",
 "global_id",
-"is_existing",
-"location_region_id")
+"data_region")
 VALUES
-    (default, 'Powell Library', 1, 1, true, 1),
-    (default, 'Young Research Library', 1, 1, true, 2),
-    (default, 'Boelter Hall', 1, 2, true, 3);
+    (default, 'Powell Library', 1, ST_GeomFromText('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0),(1 1, 1 2, 2 2, 2 1, 1 1))', 4326)),
+    (default, 'Young Research Library', 1, ST_GeomFromText('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0),(1 1, 1 2, 2 2, 2 1, 1 1))', 4326)),
+    (default, 'Boelter Hall', 2, ST_GeomFromText('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0),(1 1, 1 2, 2 2, 2 1, 1 1))', 4326));
 
 INSERT INTO item_room 
 ("item_id",
-"is_existing",
 "item_building_id",
 "data_room_number",
 "data_exhaust_vent_existence",
 "global_id",
 "data_access_panel_existence")
 VALUES
-    (default, true, 1, '1234A', true, 2, false),
-    (default, true, 1, '1235B', false, 2, false),
-    (default, true, 1, '1236C', true, 2, true),
-    (default, true, 1, '1237D', false, 2, true),
+    (default, 1, '1234A', true, 2, false),
+    (default, 1, '1235B', false, 2, false),
+    (default, 1, '1236C', true, 2, true),
+    (default, 1, '1237D', false, 2, true),
 
-    (default, true, 2, '1234A', true, 2, false),
-    (default, true, 2, '1235B', false, 2, false),
-    (default, true, 2, '1236C', true, 2, true),
-    (default, true, 2, '1237D', false, 2, true),
+    (default, 2, '1234A', true, 2, false),
+    (default, 2, '1235B', false, 2, false),
+    (default, 2, '1236C', true, 2, true),
+    (default, 2, '1237D', false, 2, true),
 
-    (default, true, 3, '1234A', true, 2, false),
-    (default, true, 3, '1235B', false, 2, false),
-    (default, true, 3, '1236C', true, 2, true),
-    (default, true, 3, '1237D', false, 2, true);
+    (default, 3, '1234A', true, 2, false),
+    (default, 3, '1235B', false, 2, false),
+    (default, 3, '1236C', true, 2, true),
+    (default, 3, '1237D', false, 2, true);
 
 INSERT INTO factor_sink_basin_brand
 ("factor_id",
@@ -169,39 +136,38 @@ VALUES
 --  id, exist, room_id, clockwise int, attr_basin_id, attr_fauc_id
 INSERT INTO item_sink 
 ("item_id",
-"is_existing",
 "item_room_id",
 "data_clockwise_integer",
 "factor_sink_basin_brand_id",
 "global_id",
 "factor_sink_faucet_brand_id")
 VALUES
-    (default, true, 1, 1, 1, 3, 1),
-    (default, true, 1, 2, 2, 3, 1),
-    (default, true, 2, 1, 3, 3, 3),
-    (default, true, 2, 2, 2, 3, 3),
-    (default, true, 3, 1, 1, 3, 1),
-    (default, true, 3, 2, 2, 3, 2),
-    (default, true, 4, 1, 1, 3, 2),
-    (default, true, 4, 2, 2, 3, 1),
+    (default, 1, 1, 1, 3, 1),
+    (default, 1, 2, 2, 3, 1),
+    (default, 2, 1, 3, 3, 3),
+    (default, 2, 2, 2, 3, 3),
+    (default, 3, 1, 1, 3, 1),
+    (default, 3, 2, 2, 3, 2),
+    (default, 4, 1, 1, 3, 2),
+    (default, 4, 2, 2, 3, 1),
 
-    (default, true, 5, 1, 1, 3, 1),
-    (default, true, 5, 2, 2, 3, 1),
-    (default, true, 6, 1, 3, 3, 3),
-    (default, true, 6, 2, 2, 3, 3),
-    (default, true, 7, 1, 1, 3, 1),
-    (default, true, 7, 2, 2, 3, 2),
-    (default, true, 8, 1, 1, 3, 2),
-    (default, true, 8, 2, 2, 3, 1),
+    (default, 5, 1, 1, 3, 1),
+    (default, 5, 2, 2, 3, 1),
+    (default, 6, 1, 3, 3, 3),
+    (default, 6, 2, 2, 3, 3),
+    (default, 7, 1, 1, 3, 1),
+    (default, 7, 2, 2, 3, 2),
+    (default, 8, 1, 1, 3, 2),
+    (default, 8, 2, 2, 3, 1),
 
-    (default, true, 9, 1, 1, 3, 1),
-    (default, true, 9, 2, 2, 3, 1),
-    (default, true, 10, 1, 3, 4, 3),
-    (default, true, 10, 2, 2, 4, 3),
-    (default, true, 11, 1, 1, 4, 1),
-    (default, true, 11, 2, 2, 4, 2),
-    (default, true, 12, 1, 1, 4, 2),
-    (default, true, 12, 2, 2, 4, 1);
+    (default, 9, 1, 1, 3, 1),
+    (default, 9, 2, 2, 3, 1),
+    (default, 10, 1, 3, 4, 3),
+    (default, 10, 2, 2, 4, 3),
+    (default, 11, 1, 1, 4, 1),
+    (default, 11, 2, 2, 4, 2),
+    (default, 12, 1, 1, 4, 2),
+    (default, 12, 2, 2, 4, 1);
 
 
 

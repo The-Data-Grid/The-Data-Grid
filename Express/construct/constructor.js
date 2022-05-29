@@ -635,22 +635,6 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
                         throw `column ${column.columnName} has an invalid reference type of ${column.referenceType}`
                 }
 
-                // preset value inserter
-                async function insertPresets(column, type) {
-                    // insert all the preset values
-                    if(!Array.isArray(column.presetValues)) {
-                        throw `${type} data columns must have an array of presetValues. This array can be empty`
-                    }
-                    for(let value of column.presetValues) {
-                        await db.none(formatSQL(insertPresetValues, {
-                            tableName: column.tableName,
-                            columnName: column.columnName,
-                            value
-                        }))
-                        console.log(chalk.green(`Column Construction: Inserted '${value}' into ${column.columnName} for ${column.itemName}`));
-                    }
-                }
-
             } catch(sqlError) {
                 return constructjsError(sqlError);
             };
@@ -675,6 +659,22 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
 
         // No construction errors
         return;
+
+        // preset value inserter
+        async function insertPresets(column, type) {
+            // insert all the preset values
+            if(!Array.isArray(column.presetValues)) {
+                throw `${type} data columns must have an array of presetValues. This array can be empty`
+            }
+            for(let value of column.presetValues) {
+                await db.none(formatSQL(insertPresetValues, {
+                    tableName: column.tableName,
+                    columnName: column.columnName,
+                    value
+                }))
+                console.log(chalk.green(`Column Construction: Inserted '${value}' into ${column.columnName} for ${column.itemName}`));
+            }
+        }
     }
 
 
