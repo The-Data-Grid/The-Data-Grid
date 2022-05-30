@@ -12,18 +12,18 @@
                             <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px; float: left;">
                         -->
                         <img src="/assets/logo.png" alt="tdg logo" class="no-drag"
-                            style="padding: 4px; height: 27px; float: left; margin-top: 3px;">
+                            style="padding: 4px; height: 27px; float: left;">
                     </div>
                 </div>
                 <div *ngIf="authService.isLoggedIn" routerLink="" routerLinkActive="activeButton" mat-tab-link
                     id="logo-button" [routerLinkActiveOptions]="{exact: true}" #rla1="routerLinkActive"
                     [active]="rla1.isActive">
-                    <div>
+                    <div style="width: 100px;">
                         <!--
                             <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px; float: left;">
                         -->
                         <img src="/assets/logo.png" alt="tdg logo"
-                            style="padding: 4px; height: 27px; float: left; margin-top: 3px">
+                            style="padding: 4px; height: 27px; float: left; margin-top: 3px;">
                     </div>
                     <div
                         style="float: right; margin-left: 20px; font-size:small; border-radius: 5px; padding-right: 8px; padding-left: 8px; padding-top: 9px; padding-bottom:5px; margin-bottom: 6px; margin-top:6px; border: 1px solid rgb(86 156 215); color: rgb(86 156 215)">
@@ -38,7 +38,7 @@
                [routerLinkActiveOptions]="{exact: true}" #rla8="routerLinkActive" [active]="rla8.isActive"></app-dropdown> -->
                 <div *ngIf="authService.isLoggedIn">
                     <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
-                        #rla7="routerLinkActive" [active]="rla7.isActive" routerLink="/audit" style="min-width: 0px">
+                        #rla7="routerLinkActive" [active]="rla7.isActive" routerLink="/audit" style="min-width: 100px">
                         <span *ngIf="currentWindowWidth >= 700">Audit Dashboard</span>
                         <mat-icon *ngIf="currentWindowWidth < 700">dashboard</mat-icon>
                         <!--
@@ -78,14 +78,14 @@
                 </div>
                 <div *ngIf="authService.isLoggedIn">
                     <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
-                        #rla6="routerLinkActive" [active]="rla6.isActive" routerLink="/manage" style="min-width: 0px">
+                        #rla6="routerLinkActive" [active]="rla6.isActive" routerLink="/manage" style="min-width: 100px">
                         <span *ngIf="currentWindowWidth >= 700">Organization Management</span>
                         <mat-icon *ngIf="currentWindowWidth < 700">people</mat-icon>
                     </a>
                 </div>
                 <a mat-tab-link routerLink="/filter" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive"
-                    style="min-width: 0px">
+                    style="min-width: 100px">
                     <span *ngIf="currentWindowWidth >= 700"> Data </span>
                     <mat-icon *ngIf="currentWindowWidth < 700">pageview</mat-icon>
                 </a>
@@ -97,7 +97,7 @@
                 </a> -->
                 <a mat-tab-link routerLink="/about" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla3="routerLinkActive" [active]="rla3.isActive"
-                    style="min-width: 0px">
+                    style="min-width: 100px">
                     <span *ngIf="currentWindowWidth >= 700"> About </span>
                     <mat-icon *ngIf="currentWindowWidth < 700">info</mat-icon>
                 </a>
@@ -105,7 +105,7 @@
                 <div>
                     <a mat-tab-link routerLinkActive="activeB utton" [routerLinkActiveOptions]="{exact: true}"
                         #rla9="routerLinkActive" [active]="rla9.isActive" routerLink="/guide"
-                        style="overflow: hidden; min-width: 0px;">
+                        style="overflow: hidden; min-width: 100px">
                         <button [matMenuTriggerFor]="menu__" #menuTrigger="matMenuTrigger"
                             (mouseenter)="openResourceMenu(0); recheckIfInMenu = true"
                             (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false" class="upload">
@@ -220,26 +220,26 @@
         <footer id="footer">
             <nav>
                 <div fxLayout="row" fxLayoutAlign="space-around start" class="bottom-bar top-box">
-                    <div style="width: 200px; margin-right: auto; margin-left: 22px; background-color: #9EACB8">
-                        <a target="_blank" href="https://www.facebook.com/thedatagrid">
-                            <img src="assets/_facebook.png" alt="Facebook" class="social-button">
-                        </a>
-                        <a target="_blank" href="https://www.instagram.com/thedatagrid/">
-                            <img src="assets/instalogo.png" alt="Instagram" class="social-button">
-                        </a>
-                        <a target="_blank" href="https://www.linkedin.com/company/the-data-grid/">
-                            <img src="assets/LinkedIn.png" alt="LinkedIn" style="margin-bottom: 3px; margin-left: 9px"
-                                class="social-button">
-                        </a>
-                        <a target="_blank" href="https://github.com/The-Data-Grid/The-Data-Grid">
-                            <img height="36px" width="36px" src="assets/github-logo.png" alt="GitHub"
-                                style="margin-bottom: 6px; margin-left: 7px;">
-                        </a>
+                    <div class="flex flex-col" style="margin-right: auto; margin-left: 22px; background-color: #9EACB8">
+                        <div class="flex flex-row">
+                            <a target="_blank" href="https://www.facebook.com/thedatagrid">
+                                <img src="assets/_facebook.png" alt="Facebook" class="social-button">
+                            </a>
+                            <a target="_blank" href="https://www.instagram.com/thedatagrid/">
+                                <img src="assets/instalogo.png" alt="Instagram" class="social-button">
+                            </a>
+                            <a target="_blank" href="https://www.linkedin.com/company/the-data-grid/">
+                                <img src="assets/LinkedIn.png" alt="LinkedIn" class="social-button">
+                            </a>
+                            <a target="_blank" href="https://github.com/The-Data-Grid/The-Data-Grid">
+                                <img src="assets/github-logo.png" alt="GitHub" class="social-button"
+                                    style="height: 36px;">
+                            </a>
+                        </div>
                         <img src="./assets/textLogoWhite.png" alt="tdg logo" style="height: 35px;  padding:5px;">
-
-
-
                     </div>
+
+
                     <div class="bottom-card" *ngIf="currentWindowWidth > 585">
                         <p class="bot-text" style="font-weight: 500;">Contact us</p>
                         <button mat-button matTooltip="Copy Email" (click)="copyEmail()"
@@ -247,14 +247,9 @@
                             <div style="margin-top: -8px;">
                                 <a class="bot-text"
                                     style="vertical-align: middle; margin-left: -14px;">info@thedatagrid.org</a>
-                                <a style="margin-left: 15%">
-                                    <img src="assets/copy_icon.png" alt="Copy"
-                                        style="height: 18px; vertical-align: middle;">
-                                </a>
                             </div>
                             <mat-icon>copy</mat-icon>
-                            <img src="assets/copy_icon.png" class="pl-3" alt="Copy"
-                                style="height: 18px;">
+                            <img src="assets/copy_icon.png" class="pl-3" alt="Copy" style="height: 18px;">
                         </button>
                     </div>
 

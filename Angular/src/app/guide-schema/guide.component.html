@@ -75,22 +75,28 @@
     </div>
     <h3 id="object-format">Object Format</h3>
     <h4>Column</h4>
-    <div class="code-block">
+    <div class="code-container">
         <svg (click)="copyToClipboard(schemaFormat)" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24" class="code-block-copy">
             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path>
             <path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z">
             </path>
-        </svg>{{schemaFormat}}
+        </svg>
+        <div class="code-block">
+            {{schemaFormat}}
+        </div>
     </div>
     <h4>Feature</h4>
-    <div class="code-block">
+    <div class="code-container">
         <svg (click)="copyToClipboard(exampleFormat)" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24" class="code-block-copy">
             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1z"></path>
             <path d="M19 21H8V7h11v14zm0-16H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z">
             </path>
-        </svg>{{exampleFormat}}
+        </svg>
+        <div class="code-block">
+            {{exampleFormat}}
+        </div>
     </div>
     <h3 id="field-definitions">Field Definitions</h3>
     <div class="body">

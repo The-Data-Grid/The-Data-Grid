@@ -6,6 +6,7 @@ h1 {
     font-size: 45px;
     color: #5fa784;
     margin-top: 50px;
+    margin-bottom: 50px;
     border-bottom: #5fa784 dotted 1.5px;
     border-top: #5fa784 dotted 1.5px;
 }
@@ -139,7 +140,7 @@ h4 {
     background-color: #5fa7841a;
     border-radius: 5px;
     border: 1px solid #5fa784;
-    width: 50%;
+    width: 101%;
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -151,7 +152,11 @@ h4 {
     overflow: auto;
 }
 
-.code-block:hover>.code-block-copy {
+.code-container {
+    width: 50%;
+}
+
+.code-container:hover>.code-block-copy {
     opacity: 1.0;
     transition: opacity .55s ease-in-out;
     -moz-transition: opacity .55s ease-in-out;
@@ -162,14 +167,17 @@ h4 {
     fill: #5fa784;
     width: 1.4rem;
     height: 1.4rem;
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    min-width: 1.4rem;
+    position: relative;
+    align-self: right;
+    margin-left: auto;
+    top: 30px;
     cursor: pointer;
     opacity: 0.2;
     transition: opacity .5s ease-in-out;
     -moz-transition: opacity .5s ease-in-out;
     -webkit-transition: opacity .5s ease-in-out;
+    z-index: 100;
 }
 
 .guide-buttons-container {
@@ -302,7 +310,7 @@ img {
         width: 90%
     }
 
-    .code-block {
+    .code-container {
         width: 80%;
     }
 
@@ -314,7 +322,8 @@ img {
         align-items: left;
     }
 
-    ol, ul {
+    ol,
+    ul {
         width: 75%;
     }
 
