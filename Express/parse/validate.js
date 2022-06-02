@@ -218,8 +218,13 @@ function validationConstructor(init) {
                     // GeoJSON validation
                     if(['geoPoint', 'geoLine', 'geoRegion'].includes(validate[feature].selectorType[filterIndex])) {
                         try {
-                            JSON.parse(field);
+                            let parsedGeoJSON = JSON.parse(field);
+                            // If in {type: Feature, geometry: {...}} format then just take the geometry
+                            if('geometry' in parsedGeoJSON) {
+                                filter.val = JSON.stringify(parsedGeoJSON.geometry);
+                            }
                         } catch(err) {
+                            console.log(err)
                             return res.status(400).end(`Bad Request 2223: Invalid GeoJSON passed for the ${filter.id} filter`);
                         }
                     }
