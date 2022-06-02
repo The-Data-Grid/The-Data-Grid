@@ -224,7 +224,7 @@
                                     <span style="font-size: 14px; font-weight: 600">Point Size</span>
                                     <div class="flex">
                                         <mat-slider min="1"
-                                        max="50"
+                                        max="40"
                                         step="1"
                                         (change)="sliderChanged( layer )"
                                         [(ngModel)]="layer.size"></mat-slider>
@@ -422,24 +422,28 @@
                         &nbsp;&nbsp;Download {{viewType == 1 ? 'Table' : 'Map'}} Data
                     </span>
                 </button>
+                <!--
                 <button id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M200.66 352H144a96 96 0 010-192h55.41M312.59 160H368a96 96 0 010 192h-56.66M169.07 256h175.86" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="round" stroke-width="48"/></svg>
                     <span class="header-3-type text-[#569CD7] m-auto">
                         &nbsp;&nbsp;Save Link to {{viewType == 1 ? 'Query' : 'Map'}}
                     </span>
                 </button>
+                -->
                 <button (click)="saveMapImage()" [disabled]="savingImage" *ngIf="viewType == 2" id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M456 144h-83c-3 0-6.72-1.94-9.62-5L336.1 96.2C325 80 320 80 302 80h-92c-18 0-24 0-34.07 16.21L148.62 139c-2.22 2.42-5.34 5-8.62 5v-16a8 8 0 00-8-8H92a8 8 0 00-8 8v16H56a24 24 0 00-24 24v240a24 24 0 0024 24h400a24 24 0 0024-24V168a24 24 0 00-24-24zM260.51 367.9a96 96 0 1191.39-91.39 96.11 96.11 0 01-91.39 91.39z"/></svg>
                     <span class="header-3-type text-[#569CD7] m-auto">
                         &nbsp;&nbsp;{{ savingImage ? 'Loading...' : 'Save Image of Map' }}
                     </span>
                 </button>
+                <!-- 
                 <button id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M256 48C141.13 48 48 141.13 48 256c0 114.69 93.32 208 208 208 114.86 0 208-93.14 208-208 0-114.69-93.31-208-208-208zm108 240H244a4 4 0 01-4-4V116a4 4 0 014-4h24a4 4 0 014 4v140h92a4 4 0 014 4v24a4 4 0 01-4 4z"/></svg>
                     <span class="header-3-type text-[#569CD7] m-auto">
                         &nbsp;&nbsp;Query History
                     </span>
                 </button>
+                -->
             </div>
         </div>
         </div>

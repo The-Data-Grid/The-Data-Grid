@@ -41,13 +41,16 @@ ngOnInit() {
 
 	// Set view type depending on if /map or /table
 	let path = window.location.href.split('/')[window.location.href.split('/').length - 1];
-	if(path == 'map') {
+	if(/map.*?/.test(path)) {
 		this.viewType = 2;
-		this.mapViewType = 1
+		// parse query string
+		if(/q=.*?/.test(path.split('?')[1])) {
+			// TODO: save link feature
+			this.mapLink = path.split('?')[1]// .slice(2); // cut out "q="
+		}
 	} else {
 		this.viewType = 1;
 	}
-	console.log(this.viewType)
 
 	// For some reason I have to specify it here for L.Control.Draw() to work
 	// ??
@@ -78,6 +81,7 @@ ngOnInit() {
 	// ==========================================
 	
 	this.getSetupObjectsAndFormatBuilder(this.viewType);
+	
 	this.expandFilter(this.viewType == 1 ? 'table-builder' : 'map-builder-global', true);
 
 	if(this.viewType == 1) {
@@ -104,8 +108,10 @@ viewTypeStringLookup = {
 	1: 'tableView',
 	2: 'mapView'
 };
-// 1 = Vertical, 2 = Horizontal
-mapViewType;
+
+// Link to the map
+// If null then no link, otherwise request server for queryState objects to load page state
+mapLink = null;
 
 changeViewType(e) {
 	// format new view type
