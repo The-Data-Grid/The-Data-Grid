@@ -160,7 +160,7 @@
                     <div *ngIf="queryState.mapView.layers.length > 0" cdkDropList (cdkDropListDropped)="layerDropped($event)" class="space-y-2">
                         <mat-expansion-panel [(expanded)]="layer.isExpanded" *ngFor="let layer of queryState.mapView.layers" cdkDrag style="border: #535353 solid 1px">                            
                           <mat-expansion-panel-header class="relative">
-                                <div *ngIf="layer.isRendering" style="position: absolute !important; top: 0 !important; left: 0 !important; height: 3px !important; width: 100% !important; overflow-x: hidden !important;">
+                                <div *ngIf="layer.isRendering || layer.isQuerying" style="position: absolute !important; top: 0 !important; left: 0 !important; height: 3px !important; width: 100% !important; overflow-x: hidden !important;">
                                     <div class="line"></div>
                                     <div class="subline inc"></div>
                                     <div class="subline dec"></div>
@@ -275,7 +275,7 @@
                                 </div>
                                 <div class="flex flex-row justify-between border-t px-3 py-1">
                                     <span style="font-size: 14px; font-weight: 600">Status</span>
-                                    <span style="font-size: 14px; font-weight: 400;">{{ !layer.hasQueried ? 'Not queried yet' : layer.isQuerying ? 'Waiting for database' : layer.isRendering ? 'Rendering map' : 'Rendered' }}</span>
+                                    <span style="font-size: 14px; font-weight: 400;">{{ !layer.hasQueried ? 'Not queried yet' : layer.isQuerying ? 'Waiting for database' : layer.queryError !== null ? 'Query Error, see Run Control' : layer.isRendering ? 'Rendering map' : 'Rendered' }}</span>
                                 </div>
                             </div>
                             <!-- Query Builder -->
@@ -383,20 +383,40 @@
                         &nbsp;&nbsp;RUN QUERY
                     </span>
                 </button>
-                <!-- 
-                    <div *ngIf="queryTime !== null && queryState.tableView.progressBarMode === 'determinate'" class="result-text">
-                        <p *ngIf="invalidQuery && queryError === 'queryBuilder'" ><span style="color: #f99;" class="cache-text" matTooltip="Check Query Builder">Invalid Query</span></p>
-                        <p *ngIf="!invalidQuery && queryError === null">{{queryTime}}ms <span *ngIf="isCached" class="cache-text" matTooltip="Results stored in memory">Cached</span></p>
-                        <p *ngIf="queryError !== null"><span style="color: #f99;" *ngIf="isCached" class="cache-text" matTooltip="Try again later or change the query">Error: {{ queryError }}</span></p>
+                <!-- Query Status Box -->
+                <!-- Table View -->
+                <div *ngIf="viewType == 1">
+                    <div *ngIf="queryState.tableView.queryTime !== null && queryState.tableView.progressBarMode === 'determinate'" class="result-text">
+                        <p *ngIf="queryState.tableView.invalidQuery && queryState.tableView.queryError === 'queryBuilder'" ><span style="color: #f99;" class="cache-text" matTooltip="Check Query Builder">Invalid Query</span></p>
+                        <p *ngIf="!queryState.tableView.invalidQuery && queryState.tableView.queryError === null">{{queryTime}}ms <span *ngIf="queryState.tableView.data.isCached" class="cache-text" matTooltip="Results stored in memory">Cached</span></p>
+                        <p *ngIf="queryState.tableView.queryError !== null"><span style="color: #f99;" class="cache-text" matTooltip="Try again later or change the query">Error: {{ queryState.tableView.queryError }}</span></p>
                     </div>
-                -->
+                </div>
+                <!-- Map View -->
+                <div *ngIf="viewType == 2" class="result-text">
+                    <p *ngIf="getAllLayersStatus(0)" style="color:rgb(138, 138, 138)">
+                        {{getAllLayersStatus(0)}}
+                    </p>
+                    <p *ngFor="let obj of getAllLayersStatus(1)" style="color:rgb(138, 138, 138)">
+                        <span style="font-weight: bold;">{{obj.name}}:</span> Querying Database...
+                    </p>
+                    <p *ngFor="let obj of getAllLayersStatus(2)" >
+                        <span style="color: #f99;" class="cache-text" matTooltip="Check Query Builder"><span style="font-weight: bold;">{{obj.name}}:</span> Invalid Query</span>
+                    </p>
+                    <p *ngFor="let obj of getAllLayersStatus(3)">
+                        <span style="font-weight: bold;">{{obj.name}}:</span> {{obj.queryTime}}ms <span *ngIf="obj.data.isCached" class="cache-text" matTooltip="Results served from memory">from Cache</span><span *ngIf="obj.data.isCached === false" class="cache-text" matTooltip="Results computed in PostgreSQL">from Database</span>
+                    </p>
+                    <p *ngFor="let obj of getAllLayersStatus(4)">
+                        <span style="color: #f99"><span style="font-weight: bold;">{{obj.name}}:</span> Error: </span><span style="color: #f99; text-decoration-color: #f99;" class="cache-text" matTooltip="Try again later or change the query">{{ obj.queryError }}</span>
+                    </p>
+                </div>
             </div>
                 <!-- Utils Divider -->
                 <div class="-mx-3 header-2-type flex flex-row my-3 items-center text-[#a0a0a0] pl-4 pt-3">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#a0a0a0" height="22px" viewBox="0 0 512 512"><title>Build</title><path d="M230 209.2L32 405.58 106.65 480l197.59-198.17c46.47 17.46 105.52 12.54 143-24.78 40.44-40.32 40.35-108 16.81-156.79l-87.33 87.06-52.32-52.13 87.33-87.06C363 24.46 294.67 24.34 254.23 64.66c-38.03 37.91-42.78 97.6-24.23 144.54z"/></svg>
                     &nbsp;&nbsp;Utilities
                 </div>
-                <button id="utility" class="utility-button w-full border p-3 inline" mat-button >
+                <button (click)="queryDatabase(true)" id="utility" class="utility-button w-full border p-3 inline" mat-button >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M472.7 189.5c-15.76-10-36.21-16.79-58.59-19.54-6.65-39.1-24.22-72.52-51.27-97.26C334.15 46.45 296.21 32 256 32c-35.35 0-68 11.08-94.37 32a149.7 149.7 0 00-45.29 60.42c-30.67 4.32-57 14.61-76.71 30C13.7 174.83 0 203.56 0 237.6 0 305 55.92 352 136 352h104V208h32v144h124c72.64 0 116-34.24 116-91.6 0-30.05-13.59-54.57-39.3-70.9zM240 419.42L191.98 371l-22.61 23L256 480l86.63-86-22.61-23L272 419.42V352h-32v67.42z"/></svg>
                     <span class="header-3-type text-[#569CD7] m-auto">
                         &nbsp;&nbsp;Download {{viewType == 1 ? 'Table' : 'Map'}} Data
@@ -444,7 +464,7 @@
             <div class="flex justify-between">
                 
                 <div [class.mt-4]="isXs" [class.flex-col]="isXs" [class.flex-row]="!isXs" class="flex items-center">
-                    <button [class.mb-2]="isXs" class="text-semibold bg-[#569CD7] px-2 mx-2 text-sm" style="height: 25px;" mat-button (click)="runDownload()">{{ isDownloading ? 'Downloading...' : 'Download all pages' }}</button>
+                    <button [class.mb-2]="isXs" class="text-semibold bg-[#569CD7] px-2 mx-2 text-sm" style="height: 25px;" mat-button (click)="queryDatabase(true)">{{ isDownloading ? 'Downloading...' : 'Download all pages' }}</button>
                     <div>
                         <mat-radio-group class="flex flex-row text-sm" aria-label="Select an option" [(ngModel)]="downloadType">
                           <mat-radio-button style="margin-right: 5px" value="csv">CSV</mat-radio-button>

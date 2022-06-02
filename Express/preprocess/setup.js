@@ -801,7 +801,9 @@ const setupQuery = async (returnableQuery, columnQuery, allItems, itemM2M, front
 
         // Wrap PostGIS type in GeoJSON converter for location types
         if(['Point', 'LineString', 'Polygon'].includes(sqlType)) {
-            //whereSQL = selectSQL;
+            // Don't convert to GeoJSON in the WHERE clause
+            whereSQL = selectSQL;
+            // Convert to GeoJSON for returning data
             selectSQL = `ST_AsGeoJSON(${selectSQL})`;
         }
 

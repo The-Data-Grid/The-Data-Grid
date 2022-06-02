@@ -36,7 +36,6 @@ export class NewFilterComponent implements OnInit, AfterViewInit {
 @ViewChild('paginator') paginator: MatPaginator;
 
 ngOnInit() {
-	console.log(glify)
 	// Layout Init
 	// ==========================================
 
@@ -50,7 +49,9 @@ ngOnInit() {
 	}
 	console.log(this.viewType)
 
-	console.log(leafletDraw);
+	// For some reason I have to specify it here for L.Control.Draw() to work
+	// ??
+	leafletDraw;
 
     let {
     	isXs,
@@ -721,10 +722,14 @@ getReturnablesFromColumnIDs(indices, isObservation, featureID): Array<Number> {
 }
 
 // Master database query function, calls runQuery n times with necessary params depending on queryState
-queryDatabase() {
+queryDatabase(isDownload = false) {
 	// Table View: call once for the selected fields
 	if(this.viewType == 1) {
-		this.runQuery(this.queryState.tableView, this.queryState.tableView.data, {isPaginationQuery: true, target: 'table-builder', globalFilterRules: null, viewType: 1});
+		if(isDownload) {
+			this.runDownload(this.queryState.tableView);
+		} else {
+			this.runQuery(this.queryState.tableView, this.queryState.tableView.data, {isPaginationQuery: true, target: 'table-builder', globalFilterRules: null, viewType: 1});
+		}
 	}
 	// Map View: call for every layer with all fields from that layer's feature
 	else {
@@ -734,7 +739,7 @@ queryDatabase() {
 		// check for layers
 		if(this.queryState.mapView.layers.length == 0) {
 			this.queryState.mapView.invalidQuery = true;
-			this.queryState.mapView.queryError = 'noLayers';
+			this.queryState.mapView.queryError = 'No Layers Added. Use the Data Selector to add layers.';
 			return;
 		}
 		// combine global rules with 
@@ -743,7 +748,7 @@ queryDatabase() {
 		// if invalid
 		if(globalRules === null) {
 			this.queryState.mapView.invalidQuery = true;
-			this.queryState.mapView.queryError = 'queryBuilder';
+			this.queryState.mapView.queryError = 'Invalid Query: Global Filters not specified correctly';
 			return;
 		}
 		// if empty rule set then don't pass it
@@ -751,7 +756,11 @@ queryDatabase() {
 			globalRules = null;
 		}
 		for(let layer of this.queryState.mapView.layers) {
-			this.runQuery(layer, layer.data, {isPaginationQuery: true, target: layer.queryBuilderTarget, globalFilterRules: globalRules, viewType: 2});
+			if(isDownload) {
+				this.runDownload(layer);
+			} else {
+				this.runQuery(layer, layer.data, {isPaginationQuery: true, target: layer.queryBuilderTarget, globalFilterRules: globalRules, viewType: 2});
+			}
 		}
 	}
 }
@@ -765,21 +774,36 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 	} = options;
 	queryStateObject.invalidQuery = false;
 	queryStateObject.queryError = null;
+	queryStateObject.queryTimer(true);
 	let queryString = '';
 	if(queryStateObject.hasQueried || viewType == 2) {
 		let rules = this.getRulesQueryBuilder(target);
 		if(rules === null) {
 			queryStateObject.invalidQuery = true;
 			queryStateObject.queryError = 'queryBuilder';
+			queryStateObject.queryTimer(false);
 			return;
 		}
 		// combine rules if global rules exist
+		console.log(globalFilterRules)
+		console.log(rules)
 		if(globalFilterRules !== null && globalFilterRules !== undefined) {
-			rules = {
-				condition: 'AND',
-				valid: true,
-				rules: [...globalFilterRules, ...rules]
-			};
+			// pass the correct returnableID for the global filter
+			for(let n = 0; n < globalFilterRules.rules.length; n++) {
+				globalFilterRules.rules[n].id = queryStateObject.geospatialReturnableID;
+			}
+			// Don't include the layer ruleset if it's empty
+			if(rules.rules.length == 0) {
+				rules = globalFilterRules;
+			} 
+			// Otherwise combine the global and layer rulesets
+			else {
+				rules = {
+					condition: 'AND',
+					valid: true,
+					rules: [globalFilterRules, rules],
+				};
+			}
 		}
 		queryString = this.formatQueryString(rules);
 	} 
@@ -825,10 +849,7 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 		dataResponseHandler = this.mapViewDataResponseHandler(queryStateObject, queryDataObject, responseHandlerOptions);
 		errorResponseHandler = this.mapViewErrorResponseHandler(queryStateObject);
 	}
-	console.log(dataResponseHandler);
 
-	queryStateObject.hasQueried = true;
-	queryStateObject.queryTimer(true);
 	// Handle data or error response with applicable handler
 	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject)
 		.subscribe(
@@ -868,9 +889,9 @@ private tableViewDataResponseHandler(queryStateObject, queryDataObject, handlerO
 private tableViewErrorResponseHandler(queryStateObject): Function {
 	return (err) => {
 		queryStateObject.progressBarMode = 'determinate'
-			queryStateObject.hasQueried = true;
-			queryStateObject.queryTimer(false);
-			queryStateObject.queryError = err.error;
+		queryStateObject.hasQueried = true;
+		queryStateObject.queryTimer(false);
+		queryStateObject.queryError = err.error;
 	};
 }
 
@@ -898,6 +919,8 @@ private mapViewDataResponseHandler(queryStateObject, queryDataObject, handlerOpt
 
 		let featureCollection = this.rowDataToFeatureCollection(res.rowData, geospatialReturnableIDIndex)
 
+		queryStateObject.progressBarMode = 'determinate'
+		queryStateObject.hasQueried = true;
 		queryStateObject.queryTimer(false);
 		this.renderGeography(featureCollection, geoType, layerID);
 	};
@@ -905,20 +928,36 @@ private mapViewDataResponseHandler(queryStateObject, queryDataObject, handlerOpt
 
 private mapViewErrorResponseHandler(queryStateObject): Function {
 	return (err) => {
-
+		queryStateObject.progressBarMode = 'determinate'
+		queryStateObject.hasQueried = true;
+		queryStateObject.queryTimer(false);
+		queryStateObject.queryError = err.error;
 	};
 }
 
-// Download
-// Master database query function, calls runQuery n times with necessary params depending on queryState
-downloadDatabase() {
-	// Table View: call once for the selected fields
-	if(this.viewType == 1) {
-		this.runDownload(this.queryState.tableView);
+getAllLayersStatus(type: number) {
+	if(type == 0) {
+		if(this.queryState.mapView.invalidQuery === true) {
+			return this.queryState.mapView.queryError;
+		} else {
+			return false;
+		}
 	}
-	// Map View: call for every layer with all fields from that layer's feature
-	else {
-
+	if(type == 1) {
+		return this.queryState.mapView.layers
+					.filter(l => l.isQuerying);
+	}
+	if(type == 2) {
+		return this.queryState.mapView.layers
+					.filter(l => l.invalidQuery && l.queryError === 'queryBuilder');
+	}
+	if(type == 3) {
+		return this.queryState.mapView.layers
+					.filter(l => !l.invalidQuery && l.queryError === null && l.hasQueried === true && l.isQuerying === false);
+	}
+	if(type == 4) {
+		return this.queryState.mapView.layers
+					.filter(l => l.queryError !== null && l.invalidQuery === false);
 	}
 }
 
@@ -1006,6 +1045,11 @@ private stamenOptionsFormatter(obj, zoom) {
 private map;
 drawnItems = new L.FeatureGroup();
 
+private leafletDrawState = {
+	isEditing: false,
+	isDeleting: false,
+};
+
 onBasemapChange(key) {
 	this.selectedBasemapKey = key;
 	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
@@ -1057,6 +1101,7 @@ private initMap(): void {
 
 	this.map.on('draw:created', createEvent => {
 		const { layer } = createEvent;
+		layer.leafletDrawState = this.leafletDrawState;
 		this.addDrawLayerPopup(layer);
 		this.drawnItems.addLayer(layer);
 	});
@@ -1064,8 +1109,26 @@ private initMap(): void {
 	this.map.on('draw:edited', editEvent => {
 		const { layers } = editEvent;
 		layers.eachLayer(layer => {
+			layer.leafletDrawState = this.leafletDrawState;
 			this.addDrawLayerPopup(layer);
 		})
+	});
+
+	// Handle edit and delete state to conditionally fire popup
+	this.map.on('draw:editstart', e => {
+		this.leafletDrawState.isEditing = true;
+	});
+
+	this.map.on('draw:editstop', e => {
+		this.leafletDrawState.isEditing = false;
+	});
+
+	this.map.on('draw:deletestart', e => {
+		this.leafletDrawState.isDeleting = true;
+	});
+
+	this.map.on('draw:deletestop', e => {
+		this.leafletDrawState.isDeleting = false;
 	});
 	  
 	this.map.addControl(drawControl); 
@@ -1077,35 +1140,37 @@ private initMap(): void {
 private addDrawLayerPopup(layer) {
 	const layerGeoJSON = layer.toGeoJSON();
 	layer.on('click', clickEvent => {
-		// popup
-		let copyButtonID = Date.now();
-		L.popup({
-			closeButton: false
-		})
-		.setLatLng(clickEvent.latlng)
-		.setContent(`
-			<div class="flex flex-col" style="width: 300px; max-height: 300px;">
-				<button id="${copyButtonID}" class=" border p-3 inline border-[#569CD7] rounded hover:bg-[#a3c5e0] shadow" style="font-weight: 400;
-				font-size: 1rem;
-				line-height: 1.2;
-				letter-spacing: 0.0065em;">
-					<span class="standard-button-text text-[#569CD7]">
-						Copy GeoJSON
-					</span>
-				</button>
-			</div>
-		`)
-		.openOn(this.map);
-
-		// copy geojson
-		// add copygeojson click listener
-		let copyButtonElement = document.getElementById(String(copyButtonID));
-		copyButtonElement.addEventListener('click',() => {
-			// switch coord order!
-			layerGeoJSON.geometry.coordinates.reverse();
-			this.clipboard.copy(JSON.stringify(layerGeoJSON));
-			this.toastr.success('Copied to clipboard')
-		});
+		// Only fire popup if not currently editing or deleting
+		if(Object.values(clickEvent.target.leafletDrawState).every(state => state === false)) {
+			let copyButtonID = Date.now();
+			L.popup({
+				closeButton: false
+			})
+			.setLatLng(clickEvent.latlng)
+			.setContent(`
+				<div class="flex flex-col" style="width: 300px; max-height: 300px;">
+					<button id="${copyButtonID}" class=" border p-3 inline border-[#569CD7] rounded hover:bg-[#a3c5e0] shadow" style="font-weight: 400;
+					font-size: 1rem;
+					line-height: 1.2;
+					letter-spacing: 0.0065em;">
+						<span class="standard-button-text text-[#569CD7]">
+							Copy GeoJSON
+						</span>
+					</button>
+				</div>
+			`)
+			.openOn(this.map);
+	
+			// copy geojson
+			// add copygeojson click listener
+			let copyButtonElement = document.getElementById(String(copyButtonID));
+			copyButtonElement.addEventListener('click',() => {
+				// switch coord order!
+				layerGeoJSON.geometry.coordinates.reverse();
+				this.clipboard.copy(JSON.stringify(layerGeoJSON));
+				this.toastr.success('Copied to clipboard')
+			});
+		}
 	})
 }
 
@@ -1244,9 +1309,11 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 
 			// Prevent the href="#close" to be fired on the popup becaues this causes a router redirection in Angular
 			// Must reference the unique time so the event listener is added to the right popup
+			/*
 			document.querySelector(`.map-popup-${now} .leaflet-popup-close-button`).addEventListener('click', event => {
 				event.preventDefault();
 			});
+			*/
 
 			function formatPopupTemplate(key, value) {
 				return `
@@ -1511,6 +1578,12 @@ expandAllLayers(expand) {
 }
 
 resetQueryState() {
+	// first clear geography
+	this.queryState.mapView.layers.forEach(layer => {
+		if(layer.renderObject !== null) {
+			this.clearGeography(layer);
+		}
+	})
 	// Yes, this is somewhat bad code. This is easier than making a model
 	this.queryState = {
 		tableView: {
