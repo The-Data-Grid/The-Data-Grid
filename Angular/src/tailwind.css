@@ -520,12 +520,20 @@ Ensure the default browser behavior of the `hidden` attribute.
   top: 49px;
 }
 
+.top-\[0px\] {
+  top: 0px;
+}
+
 .top-3 {
   top: 0.75rem;
 }
 
 .top-14 {
   top: 3.5rem;
+}
+
+.top-0 {
+  top: 0px;
 }
 
 .z-10 {
@@ -803,6 +811,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   align-items: center;
 }
 
+.justify-start {
+  justify-content: flex-start;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -932,6 +944,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .p-3 {
   padding: 0.75rem;
+}
+
+.p-1 {
+  padding: 0.25rem;
 }
 
 .px-4 {

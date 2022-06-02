@@ -15,7 +15,7 @@ import * as stamen from '../../client-scripts/stamen.js';
 import glify from 'leaflet.glify';
 import { ToastrService } from 'ngx-toastr';
 import { Clipboard } from '@angular/cdk/clipboard'
-
+import leafleatImage from 'leaflet-image'
 
 @Component({
  selector: 'app-filter-new',
@@ -74,7 +74,7 @@ ngOnInit() {
 	// ==========================================
 	
 	this.getSetupObjectsAndFormatBuilder(this.viewType);
-	this.expandFilter(this.viewType, true);
+	this.expandFilter(this.viewType == 1 ? 'table-builder' : 'map-builder-global', true);
 
 	if(this.viewType == 1) {
 	} 
@@ -109,6 +109,9 @@ changeViewType(e) {
 	this.viewType = newViewType;
 	const viewTypeString = this.viewTypeStringLookup[this.viewType];
 
+	// reset queryState
+	this.resetQueryState();
+
 	// format columnObjects
 	this.getFilterableColumnIDs(this.queryState[viewTypeString], 2);
 	this.setSelectedValues(this.queryState[viewTypeString], this.viewType == 1);
@@ -117,17 +120,20 @@ changeViewType(e) {
 
 	// Table View
 	if(newViewType == 1) {
-		this.expandFilter(1, true)
-		this.expandFilter(2, false)
+		this.expandFilter('table-builder', true)
+		this.expandFilter('map-builder-global', false)
 
 		// /map to /table
 		this.changeURL(false);
+
+		// Fill table
+		this.runQuery(this.queryState.tableView, this.queryState.tableView.data,{isPaginationQuery: false, target: 'table-builder', viewType: 1});
 	}
 
 	// Map view
 	else {
-		this.expandFilter(1, false)
-		this.expandFilter(2, true)
+		this.expandFilter('table-builder', false)
+		this.expandFilter('map-builder-global', true)
 
 		// /table to /map
 		this.changeURL(true);
@@ -151,7 +157,7 @@ databases = [
 		name: 'US Census'
 	}
 ]
-queryState = {
+queryState: any = {
 	tableView: {
 		selectedDatabase: 0,
 
@@ -177,6 +183,7 @@ queryState = {
 		currentColumnObjects: [],
 		currentReturnableIDs: [],
 		currentColumnObjectIndices: [],
+		currentGeospatialFieldObjects: [],
 
 		// Query in-progress state
 		queryTime: null,
@@ -190,12 +197,14 @@ queryState = {
 		},
 		invalidQuery: false,
 		queryError: null,
+		hasQueried: false,
 		
 		data: {
 			tableData: [],
 			headerNames: [],
 			rowCount: null,
 			isCached: null,
+			primaryKeys: [],
 		}
 	},
 	mapView: {
@@ -207,7 +216,6 @@ queryState = {
 		featuresOrItems: [],
 
 		selectedFields: [],
-		previousSelectedFields: [],
 
 		// internal data
 		currentFilterableColumnObjects: [],
@@ -215,6 +223,7 @@ queryState = {
 		currentColumnObjects: [],
 		currentReturnableIDs: [],
 		currentColumnObjectIndices: [],
+		currentGeospatialFieldObjects: [],
 
 		// Query in-progress state
 		queryTime: null,
@@ -240,109 +249,106 @@ onQueryTypeChange(viewType: number)  {
 	this.queryState[viewTypeString].selectedFeature = this.queryState[viewTypeString].queryType == 'Observations' ? 2 : 15;
 	this.onFeatureSelectChange(viewType);	
 }
-onFieldSelection(viewType: number) {
-	const viewTypeString = this.viewTypeStringLookup[viewType];
+onFieldSelection(viewType: number, event?: any) {
 	// when map view
 	if(viewType == 2) {
-		// add
-		if(this.queryState.mapView.selectedFields.length > this.queryState.mapView.previousSelectedFields.length) {
-			// get new ID
-			// The values in the array are indices, so this is getting the value itself, not the index of the value in selectedFields
-			let addedColumnIndex: any = this.queryState.mapView.selectedFields.filter(id => !this.queryState.mapView.previousSelectedFields.includes(id));
-			addedColumnIndex = addedColumnIndex[0];
-			// get columnObject
-			let columnObject = this.queryState.mapView.currentColumnObjects[addedColumnIndex];
-			this.queryState.mapView.layers.push({
-				// Layer UI
-				columnIndex: addedColumnIndex,				
-				isVisible: true,
-				isExpanded: false,
-				type: columnObject.selectorType,
-				typeName: columnObject.selectorType.replace('geo', ''),
-				color: randomHex(),
-				colorByProperty: false,
-				size: 10,
-				opacity: 0.8,
-				name: columnObject.frontendName,
-				queryBuilderTarget: 'map-builder-global' + addedColumnIndex,
+		// get new ID
+		let addedColumnIndex = event.value;
+		event.source.value = null;
 
-				geospatialReturnableID: this.queryState.mapView.currentReturnableIDs[addedColumnIndex],
-				geospatialReturnableIDIndex: null,
-				layerID: Math.ceil(Math.random()*100000),
-				renderObject: null,
+		// get columnObject
+		let columnObject = this.queryState.mapView.currentColumnObjects[addedColumnIndex];
+		this.toastr.success('Added new layer: ' + columnObject.frontendName, null, {positionClass: 'toast-top-left'});
+		this.queryState.mapView.layers.push({
+			// Layer UI
+			columnIndex: addedColumnIndex,				
+			isVisible: true,
+			isExpanded: false,
+			type: columnObject.selectorType,
+			typeName: columnObject.selectorType.replace('geo', ''),
+			color: randomHex(),
+			colorByProperty: false,
+			size: 10,
+			opacity: 0.8,
+			// 1 = Circle, 2 = Square
+			pointType: 1,
+			name: columnObject.frontendName,
 
+			geospatialReturnableID: this.queryState.mapView.currentReturnableIDs[addedColumnIndex],
+			geospatialReturnableIDIndex: null,
+			layerID: Math.ceil(Math.random()*10000000),
+			renderObject: null,
+			isRendering: false,
+
+			// The queryState of the map view at the time that the layer was selected. These same props that are directly  
 				// The queryState of the map view at the time that the layer was selected. These same props that are directly  
-				// in queryState.mapView are the state of the Data Selector dropdowns, these are the state of the dropdowns
+			// The queryState of the map view at the time that the layer was selected. These same props that are directly  
+			// in queryState.mapView are the state of the Data Selector dropdowns, these are the state of the dropdowns
+			// *when this layer was selected*. The state must be saved so a query can be made for every layer. 
 				// *when this layer was selected*. The state must be saved so a query can be made for every layer. 
-				// =========================================================================================================
-				selectedDatabase: this.queryState.mapView.selectedDatabase,
-				queryType: this.queryState.mapView.queryType,
-				selectedFeature: this.queryState.mapView.selectedFeature, //Sink
-				featuresOrItems: Array.from(this.queryState.mapView.featuresOrItems),
-				
-				selectedFields: [], // must set to all fields for the feature with setSelectedValues()
+			// *when this layer was selected*. The state must be saved so a query can be made for every layer. 
+			// =========================================================================================================
+			selectedDatabase: this.queryState.mapView.selectedDatabase,
+			queryType: this.queryState.mapView.queryType,
+			selectedFeature: this.queryState.mapView.selectedFeature, //Sink
+			featuresOrItems: Array.from(this.queryState.mapView.featuresOrItems),
+			
+			selectedFields: [], // must set to all fields for the feature with setSelectedValues()
 
-				selectedSortField: null, // const
-				filterBy: 'Ascending', // const
+			selectedSortField: null, // const
+			filterBy: 'Ascending', // const
 
-				currentPageSize: 10000, // const
-				currentPageIndex: 0, // const 
-				
-				progressBarMode: 'determinate',
-				progressBarValue: 100,
-		
-				// internal data
-				currentFilterableColumnObjects: Array.from(this.queryState.mapView.currentFilterableColumnObjects),
-				currentFilterableReturnableIDs: Array.from(this.queryState.mapView.currentFilterableReturnableIDs),
-				currentColumnObjects: Array.from(this.queryState.mapView.currentColumnObjects),
-				currentReturnableIDs: Array.from(this.queryState.mapView.currentReturnableIDs),
-				currentColumnObjectIndices: Array.from(this.queryState.mapView.currentColumnObjectIndices),
-		
-				// Query in-progress state
-				queryTime: null,
-				queryStart: null,
-				queryTimer(start) {
-					if(start) {
-						this.queryStart = Date.now();
-					} else {
-						this.queryTime = Date.now() - this.queryStart
-					}
-				},
-				invalidQuery: false,
-				queryError: null,
-				hasQueried: false,
-				// =========================================================================================================
-
-				// Map Data
-				data: {
-					tableData: [],
-					headerNames: [],
-					rowCount: null,
-					isCached: null,
+			currentPageSize: 1000000, // const
+			currentPageIndex: 0, // const 
+			
+			progressBarMode: 'determinate',
+			progressBarValue: 100,
+	
+			// internal data
+			currentFilterableColumnObjects: Array.from(this.queryState.mapView.currentFilterableColumnObjects),
+			currentFilterableReturnableIDs: Array.from(this.queryState.mapView.currentFilterableReturnableIDs),
+			currentColumnObjects: Array.from(this.queryState.mapView.currentColumnObjects),
+			currentReturnableIDs: Array.from(this.queryState.mapView.currentReturnableIDs),
+			currentColumnObjectIndices: Array.from(this.queryState.mapView.currentColumnObjectIndices),
+	
+			// Query in-progress state
+			queryTime: null,
+			queryStart: null,
+			isQuerying: false,
+			queryTimer(start) {
+				if(start) {
+					this.isQuerying = true;
+					this.queryStart = Date.now();
+				} else {
+					this.isQuerying = false;
+					this.queryTime = Date.now() - this.queryStart
 				}
-			});
-			// add all values for the feature
-			this.setSelectedValues(this.queryState.mapView.layers[this.queryState.mapView.layers.length - 1], true);
-			// init the query builder
-			this.getQueryBuilder(2, addedColumnIndex);
-			console.log(this.queryState.mapView.layers[this.queryState.mapView.layers.length - 1].selectedFields)
-		}
-		// remove
-		else {
-			// The values in the array are indices, so this is getting the value itself, not the index of the value in selectedFields
-			let removedColumnIndex: any = this.queryState.mapView.previousSelectedFields.filter(id => !this.queryState.mapView.selectedFields.includes(id));
-			for(let n = 0; n < this.queryState.mapView.layers.length; n++) {
-				let layer = this.queryState.mapView.layers[n];
-				// check if this layer is the removed layer
-				if(layer.columnIndex == removedColumnIndex) {
-					// remove the layer
-					this.queryState.mapView.layers.splice(n, 1);
-					break;
-				}
+			},
+			invalidQuery: false,
+			queryError: null,
+			hasQueried: false,
+			// =========================================================================================================
+
+			// Map Data
+			data: {
+				tableData: [],
+				headerNames: [],
+				rowCount: null,
+				isCached: null,
+				primaryKeys: [],
 			}
-		}
-		// update the previous state to match current
-		this.queryState.mapView.previousSelectedFields = Array.from(this.queryState.mapView.selectedFields);
+		});
+		const relevantLayer = this.queryState.mapView.layers[this.queryState.mapView.layers.length - 1];
+		// add all values for the feature
+		this.setSelectedValues(relevantLayer, true);
+		// set the builder target
+		relevantLayer.queryBuilderTarget = 'map-builder-global' + relevantLayer.layerID;
+		// init the query builder
+		this.getQueryBuilder(2, relevantLayer.layerID);
+		// open the dropdown and close the global dropdown
+		this.expandFilter('map-builder-layers', true);
+		this.expandFilter('map-builder-global', false);
+		relevantLayer.isExpanded = true;
 	}
 
 	// random color util
@@ -373,7 +379,6 @@ onDatabaseChange(viewType) {
 // QUERY BUILDER
 // =================================================
 
-isFirstQuery = true;
 validOperatorLookup = {
     'text': [
         'equals', 'textContainsCase', 'textContainsNoCase' 
@@ -454,22 +459,18 @@ expandedPanelLookup = {
 	'map-builder-layers': false
 }
 
-async expandFilter(viewType: number, set: boolean) {
+async expandFilter(builderName: string, set: boolean) {
 	if(set) {
 		await new Promise(r => setTimeout(r, 100));
 	}
-	if(viewType == 1) {
-		this.expandedPanelLookup['table-builder'] = set;
-	} else {
-		this.expandedPanelLookup['map-builder-global'] = set;
-	}
+	this.expandedPanelLookup[builderName] = set;
 }
 
-getQueryBuilder(viewType: number, columnIndex='') {
+getQueryBuilder(viewType: number, layerID='') {
 	// get viewTypeString to access queryState
 	let viewTypeString = this.viewTypeStringLookup[viewType];
 	// appends the columnIndex if the builder is for a specific layer
-	const builderName = this.builderLookup[viewType] + columnIndex;
+	const builderName = this.builderLookup[viewType] + layerID;
 
 	// builder configuration
 	let builderID = '#' + builderName;
@@ -509,7 +510,6 @@ getQueryBuilder(viewType: number, columnIndex='') {
 	// fill the filters
 	let filters;
 	// global special case with one 'all' filter
-	console.log(this.validOperatorLookup['geoPoint'].map(op => this.TDGOperatorToBuilderOperatorLookup[op]));
 	if(builderName == 'map-builder-global') {
 		filters = [{
 			id: 1,
@@ -541,6 +541,8 @@ getQueryBuilder(viewType: number, columnIndex='') {
 	}
 
 	queryBuilderConfig.filters = filters;
+
+	console.log(filters)
 	
 	// init
 	$(document).ready(() => {
@@ -688,6 +690,11 @@ getFilterableColumnIDs(queryStateObject: any, featureID: number): any {
 			.filter(arr => arr[0].isFilterable)
 			.map(arr => queryStateObject.currentReturnableIDs[arr[1]]);
 
+	queryStateObject.currentGeospatialFieldObjects = queryStateObject.currentColumnObjectIndices
+			.map((columnObjectIndex, arrayIndex) => [this.setupObject.columns[columnObjectIndex], arrayIndex])
+			.filter(arr => ['geoPoint', 'geoLine', 'geoRegion'].includes(arr[0].selectorType))
+			.map(arr => ({returnableID: queryStateObject.currentReturnableIDs[arr[1]], columnObject: arr[0], arrayIndex: arr[1]}));
+
 	queryStateObject.currentColumnObjects = queryStateObject.currentColumnObjectIndices
 		.map(index => this.setupObject.columns[index]);
 }
@@ -756,7 +763,7 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 	queryStateObject.invalidQuery = false;
 	queryStateObject.queryError = null;
 	let queryString = '';
-	if(!this.isFirstQuery || viewType == 2) {
+	if(queryStateObject.hasQueried || viewType == 2) {
 		let rules = this.getRulesQueryBuilder(target);
 		if(rules === null) {
 			queryStateObject.invalidQuery = true;
@@ -817,6 +824,7 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 	}
 	console.log(dataResponseHandler);
 
+	queryStateObject.hasQueried = true;
 	queryStateObject.queryTimer(true);
 	// Handle data or error response with applicable handler
 	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject)
@@ -839,16 +847,17 @@ private tableViewDataResponseHandler(queryStateObject, queryDataObject, handlerO
 		let relevantSetupFilterObjectReturnableIDs = isObservation ? this.setupFilterObject.observationReturnableIDs[selectedFeature] : this.setupFilterObject.itemReturnableIDs[selectedFeature];
 		let relevantSetupFilterObjectColumnObjectIndices = isObservation ? this.setupFilterObject.observationColumnObjectIndices[selectedFeature] : this.setupFilterObject.itemColumnObjectIndices[selectedFeature];
 		queryDataObject.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[relevantSetupFilterObjectColumnObjectIndices[relevantSetupFilterObjectReturnableIDs.indexOf(id)]].frontendName)];
-		queryDataObject.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
+		queryDataObject.tableData = res.rowData;
 		queryDataObject.isCached = res.cached === true;
 		queryDataObject.rowCount = res.nRows.n;
+		queryDataObject.primaryKeys = res.primaryKey;
 
 		if(!isPaginationQuery) {
 			this.paginator.firstPage();
 		}
 
 		queryStateObject.progressBarMode = 'determinate';
-		this.isFirstQuery = false;
+		queryStateObject.hasQueried = true;
 		queryStateObject.queryTimer(false);
 	};
 }
@@ -856,7 +865,7 @@ private tableViewDataResponseHandler(queryStateObject, queryDataObject, handlerO
 private tableViewErrorResponseHandler(queryStateObject): Function {
 	return (err) => {
 		queryStateObject.progressBarMode = 'determinate'
-			this.isFirstQuery = false;
+			queryStateObject.hasQueried = true;
 			queryStateObject.queryTimer(false);
 			queryStateObject.queryError = err.error;
 	};
@@ -875,10 +884,10 @@ private mapViewDataResponseHandler(queryStateObject, queryDataObject, handlerOpt
 		let relevantSetupFilterObjectReturnableIDs = isObservation ? this.setupFilterObject.observationReturnableIDs[selectedFeature] : this.setupFilterObject.itemReturnableIDs[selectedFeature];
 		let relevantSetupFilterObjectColumnObjectIndices = isObservation ? this.setupFilterObject.observationColumnObjectIndices[selectedFeature] : this.setupFilterObject.itemColumnObjectIndices[selectedFeature];
 		queryDataObject.headerNames = ['ID', ...res.returnableIDs.map(id => this.setupObject.columns[relevantSetupFilterObjectColumnObjectIndices[relevantSetupFilterObjectReturnableIDs.indexOf(id)]].frontendName)];
-		queryDataObject.tableData = res.rowData.map((row, i) => [res.primaryKey[i], ...row]);
+		queryDataObject.tableData = res.rowData;
 		queryDataObject.isCached = res.cached === true;
 		queryDataObject.rowCount = res.nRows.n;
-		queryStateObject.hasQueried = true;
+		queryDataObject.primaryKeys = res.primaryKey;
 
 		// parse the geojson row and hand it to the rendering engine
 		const geospatialReturnableIDIndex = res.returnableIDs.indexOf(geospatialReturnableID);
@@ -886,6 +895,7 @@ private mapViewDataResponseHandler(queryStateObject, queryDataObject, handlerOpt
 
 		let featureCollection = this.rowDataToFeatureCollection(res.rowData, geospatialReturnableIDIndex)
 
+		queryStateObject.queryTimer(false);
 		this.renderGeography(featureCollection, geoType, layerID);
 	};
 }
@@ -996,7 +1006,7 @@ onBasemapChange() {
 private initMap(): void {
 	this.map = L.map('map', {
 		center: [ 34.06551008335871, -118.4418661368747 ],
-		zoom: 15,
+		zoom: 10,
 		zoomControl: false
 	});
 
@@ -1028,15 +1038,20 @@ private mountMap() {
 	this.hasMapMounted = true;
 }
 
-private renderGeography(geojson, geoType, layerID) {
-	/*
-	Example 100,000 points
-	let pointsx = Array(100_000).fill(0).map(n => n + Math.random());
-	let pointsy = Array(100_000).fill(0).map(n => n + Math.random());
-	let points = pointsx.map((n, i) => [34.06 + n, -118.44 + pointsy[i]])
-	*/
+// WebGL .glsl shaders
+shaderLookup = {
+	1: "precision mediump float;varying vec4 _color;void main(){float radius = 0.5;vec2 center = vec2(0.5);vec4 color0 = vec4(0.0);vec2 m = gl_PointCoord.xy - center;float dist = radius - sqrt(m.x * m.x + m.y * m.y);gl_FragColor = color0;if (dist > 0.0) {gl_FragColor = _color;}}",
+	2: "precision mediump float;varying vec4 _color;void main(){gl_FragColor = _color;}",
+	3: "precision mediump float;varying vec4 _color;void main(){vec2 m = gl_PointCoord.xy; if(m.x < (0.5*m.y + 0.5) && m.x > (-0.5*m.y + 0.5)) {gl_FragColor = _color;} else {gl_FragColor = vec4(0.0);}}"
+}
+
+private async renderGeography(geojson, geoType, layerID, isForImageSave = false) {
 	// get layer
 	const relevantLayer = this.queryState.mapView.layers.filter(layer => layer.layerID == layerID)[0];
+
+	// set layer to loading
+	relevantLayer.isRendering = true;
+	await new Promise(r => setTimeout(r));
 
 	// clear layer if extant
 	if(relevantLayer.renderObject !== null) {
@@ -1044,27 +1059,27 @@ private renderGeography(geojson, geoType, layerID) {
 	}	
 
 	let visualOptions: any = {
-		color: hexToRgb(relevantLayer.color)
+		color: hexToRgb(relevantLayer.color),
+		opacity: relevantLayer.opacity,
 	}
+	console.log(geoType)
 	if(geoType == 'geoPoint') {
 		visualOptions.size = relevantLayer.size;
 		visualOptions.sensitivity = 1;
-		visualOptions.opacity = relevantLayer.opacity;
-		visualOptions.fragmentShaderSource = "precision mediump float;\nvarying vec4 _color;\n\nvoid main() {\n   float radius = 0.5;\n    vec2 center = vec2(0.5);\n\n    vec4 color1 = vec4(_color[0], _color[1], _color[2], _color[3]);\n\n  vec4 color0 = vec4(0.0);\n  vec2 m = gl_PointCoord.xy - center;\n    float dist = radius - sqrt(m.x * m.x + m.y * m.y);\n\n    gl_FragColor = color0;\n    if (dist > 0.0) {\n        gl_FragColor = _color;\n    }   \n}\n";
+		visualOptions.fragmentShaderSource = this.shaderLookup[relevantLayer.pointType];
 	} else if(geoType == 'geoLine') {
 		visualOptions.sensitivity = 0.06;
 		visualOptions.weight = 6;
 	} else if(geoType == 'geoRegion') {
 		visualOptions.sensitivity = 0.06;
 		visualOptions.border = true;
+		visualOptions.borderOpacity = 1;
 	}
 
-	console.log(visualOptions)
-
-	glify.latitudeFirst();
-	let gl = glify.points({
+	const glifyObject = {
 		...visualOptions,
 		map: this.map,
+		preserveDrawingBuffer: isForImageSave,
 		data: geojson,
 		//sensitivity: 0.01,
 		click: (e, feature) => {
@@ -1075,45 +1090,68 @@ private renderGeography(geojson, geoType, layerID) {
 			//console.log(relevantLayer, _index)
 			const valueArray = relevantLayer.data.tableData[_index];
 			const headerArray = relevantLayer.data.headerNames;
+			const primaryKey = relevantLayer.data.primaryKeys[_index]
+			const popupID: any = Math.ceil(Math.random()*100000);
 			// Create an HTML template for every header and value in the row and geography
-			let popupHTML = '<div class="flex flex-col mt-2" style="width: 300px; max-height: 300px; overflow: scroll">';
-			// geographic value
+			let popupHTML = '<div class="flex flex-col mt-2" style="width: 300px; max-height: 300px;">';
+			// copy GeoJSON
 			popupHTML += `
-				<div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
-					Geometry
-				</div>
-			`;
-			popupHTML += formatPopupTemplate('Type', geoType.slice(3));
-			popupHTML += `
-				<button class="standard-button border p-2 my-1 rounded hover:bg-" (click)="copyToClipboard(JSON.stringify(feature))">
-					<span class="standard-button-text">
+				<button id="${popupID}" class=" border p-3 m-2 inline border-[#569CD7] rounded hover:bg-[#a3c5e0] shadow" style="margin: 10px 20px 20px 10px; font-weight: 400;
+				font-size: 1rem;
+				line-height: 1.2;
+				letter-spacing: 0.0065em;">
+					<span class="standard-button-text text-[#569CD7]">
 						Copy GeoJSON
 					</span>
 				</button>
 			`;
+			// geographic value
+			popupHTML += `
+				<div style="overflow-y: scroll">
+					<div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
+						Geometry
+					</div>
+			`;
+			popupHTML += formatPopupTemplate('Type', geoType.slice(3));
 			// row values
 			for(let i = 0; i < headerArray.length; i++) {
 				// add title
 				if(i == 0) {
 					popupHTML += `
-						<div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
-							Properties
-						</div>
+							<div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
+								Properties
+							</div>
 					`;
 				}
-				popupHTML += formatPopupTemplate(headerArray[i], valueArray[i]);
+				popupHTML += formatPopupTemplate(headerArray[i], [primaryKey, ...valueArray][i]);
 			}
 			// close div
-			popupHTML += '</div>'
+			popupHTML += '</div></div>'
 
 			// Create a unique datetime, so the popup class can be referenced uniquely
 			let now = Date.now();
 			L.popup({
 				className: 'map-popup-' + now,
+				closeButton: false
 			})
 			.setLatLng(e.latlng)
 			.setContent(popupHTML)
 			.openOn(this.map);
+
+			// add copygeojson click listener
+			let popupIDElement = document.getElementById(popupID);
+			popupIDElement.addEventListener('click',() => {
+				feature = Object.assign({}, feature);
+				feature.properties = {};
+				feature.properties[headerArray[0]] = primaryKey;
+				for(let i = 1; i < headerArray.length; i++) {
+					feature.properties[headerArray[i]] = valueArray[i - 1];
+				}
+				// switch coord order!
+				feature.geometry.coordinates.reverse();
+				this.clipboard.copy(JSON.stringify(feature));
+				this.toastr.success('Copied to clipboard')
+			});
 
 			// Prevent the href="#close" to be fired on the popup becaues this causes a router redirection in Angular
 			// Must reference the unique time so the event listener is added to the right popup
@@ -1130,10 +1168,22 @@ private renderGeography(geojson, geoType, layerID) {
 				`;
 			}
 		}
-	});
+	};
+
+	glify.latitudeFirst();
+	let gl;
+	if(geoType == 'geoPoint') {
+		gl = glify.points(glifyObject);
+	} else if(geoType == 'geoLine') {
+		gl = glify.lines(glifyObject);
+	} else if(geoType == 'geoRegion') {
+		gl = glify.shapes(glifyObject);
+	}
 
 	// add to the layer
 	relevantLayer.renderObject = gl;
+
+	relevantLayer.isRendering = false;
 
 	function hexToRgb(hex) {
 		if (hex.length < 6) return null;
@@ -1155,8 +1205,10 @@ private renderGeography(geojson, geoType, layerID) {
 }
 
 private clearGeography(layer) {
-	layer.renderObject.remove();
-	layer.renderObject = null;
+	if(layer.renderObject) {
+		layer.renderObject.remove();
+		layer.renderObject = null;
+	}
 }
 
 private rowDataToFeatureCollection(rowData, geospatialReturnableIDIndex) {
@@ -1174,9 +1226,28 @@ private rowDataToFeatureCollection(rowData, geospatialReturnableIDIndex) {
 		};
 }
 
-copyToClipboard(data: string) {
-	this.clipboard.copy(data);
-	this.toastr.success('Copied to clipboard')
+savingImage = false;
+async saveMapImage() {
+	this.savingImage = true;
+	// rerender all layers with preserveDrawingBuffer = true
+	for(let layer of this.queryState.mapView.layers) {
+		const { type, layerID, geospatialReturnableIDIndex } = layer;
+		let { tableData } = layer.data;
+		// convert to rowData
+		let featureCollection = this.rowDataToFeatureCollection(tableData, geospatialReturnableIDIndex);
+		// rerender
+		await this.renderGeography(featureCollection, type, layerID, true);
+	}
+	// Save to a file
+	leafleatImage(this.map, (err, canvas) => {
+		let mapLink = document.createElement('a');
+		mapLink.download = 'TheDataGridMap.png';
+		mapLink.href = canvas.toDataURL()
+		mapLink.click();
+		mapLink.remove();
+		this.savingImage = false;
+		this.toastr.success('Downloaded current map')
+	})
 }
 
 // =================================================
@@ -1264,15 +1335,15 @@ private changeURL(isMap) {
 	window.history.replaceState({}, '', '/' + path)
 }
 
-updateColor(e, columnIndex) {
-	let layerToUpdate = this.queryState.mapView.layers.filter(layer => layer.columnIndex == columnIndex)[0];
+updateColor(e, layerID) {
+	let layerToUpdate = this.queryState.mapView.layers.filter(layer => layer.layerID == layerID)[0];
 	layerToUpdate.color = e.target.value;
 	// update current layer if extant
 	if(layerToUpdate.hasQueried) {
 		const { type, layerID, geospatialReturnableIDIndex } = layerToUpdate;
 		let { tableData } = layerToUpdate.data;
 		// convert to rowData
-		let featureCollection = this.rowDataToFeatureCollection(tableData.map(row => row.slice(1)), geospatialReturnableIDIndex)
+		let featureCollection = this.rowDataToFeatureCollection(tableData, geospatialReturnableIDIndex)
 		// rerender
 		this.debounceRenderChange(featureCollection, type, layerID);
 	}
@@ -1285,7 +1356,7 @@ updateVisibility(layer) {
 		const { type, layerID, geospatialReturnableIDIndex } = layer;
 		let { tableData } = layer.data;
 		// convert to rowData
-		let featureCollection = this.rowDataToFeatureCollection(tableData.map(row => row.slice(1)), geospatialReturnableIDIndex)
+		let featureCollection = this.rowDataToFeatureCollection(tableData, geospatialReturnableIDIndex)
 		// rerender
 		this.debounceRenderChange(featureCollection, type, layerID);
 	}
@@ -1299,7 +1370,20 @@ sliderChanged(layer) {
 	const { type, layerID, geospatialReturnableIDIndex } = layer;
 	let { tableData } = layer.data;
 	// convert to rowData
-	let featureCollection = this.rowDataToFeatureCollection(tableData.map(row => row.slice(1)), geospatialReturnableIDIndex);
+	let featureCollection = this.rowDataToFeatureCollection(tableData, geospatialReturnableIDIndex);
+	// rerender
+	layer.isRendering = true;
+	this.debounceRenderChange(featureCollection, type, layerID);
+}
+
+updatePointType(layer) {
+	// update type
+	layer.pointType = layer.pointType == 3 ? 1 : layer.pointType + 1;
+	
+	const { type, layerID, geospatialReturnableIDIndex } = layer;
+	let { tableData } = layer.data;
+	// convert to rowData
+	let featureCollection = this.rowDataToFeatureCollection(tableData, geospatialReturnableIDIndex);
 	// rerender
 	this.debounceRenderChange(featureCollection, type, layerID);
 }
@@ -1312,18 +1396,117 @@ renderChangeStack = 0;
 private async debounceRenderChange(featureCollection, type, layerID) {
 	// push to stack
 	this.renderChangeStack++;
+	console.log('Added to Stack')
 	// wait 
-	await new Promise(r => setTimeout(r, 300));
+	await new Promise(r => setTimeout(r, 500));
 	// pop from stack
 	this.renderChangeStack--;
 	// if stack is empty then run()
 	if(this.renderChangeStack == 0) {
+		console.log('Running')
 		this.renderGeography(featureCollection, type, layerID);
 	}
 }
 
+removeLayer(layer) {
+	const { layerID } = layer;
+	const layerIndex = this.queryState.mapView.layers.map(layer => layer.layerID).indexOf(layerID);
+	const layerName = this.queryState.mapView.layers[layerIndex].name;
+	this.clearGeography(layer);
+	this.queryState.mapView.layers.splice(layerIndex, 1);
+	this.toastr.info('Removed Layer: ' + layerName, null, {positionClass: 'toast-top-left'});
+}
+
 expandAllLayers(expand) {
 	this.queryState.mapView.layers.forEach(layer => layer.isExpanded = expand)
+}
+
+resetQueryState() {
+	// Yes, this is somewhat bad code. This is easier than making a model
+	this.queryState = {
+		tableView: {
+			selectedDatabase: 0,
+	
+			// queryTypes = ['Observations', 'Items'] // Don't need to store this, it's implied
+			queryType: 'Observations',
+			
+			selectedFeature: 2, //Sink
+			featuresOrItems: [],
+			
+			selectedFields: [],
+	
+			selectedSortField: null,
+			filterBy: 'Ascending',
+			currentPageSize: 10,
+			currentPageIndex: 0,
+			
+			progressBarMode: 'determinate',
+			progressBarValue: 100,
+	
+			// internal data
+			currentFilterableColumnObjects: [],
+			currentFilterableReturnableIDs: [],
+			currentColumnObjects: [],
+			currentReturnableIDs: [],
+			currentColumnObjectIndices: [],
+			currentGeospatialFieldObjects: [],
+	
+			// Query in-progress state
+			queryTime: null,
+			queryStart: null,
+			queryTimer(start) {
+				if(start) {
+					this.queryStart = Date.now();
+				} else {
+					this.queryTime = Date.now() - this.queryStart
+				}
+			},
+			invalidQuery: false,
+			queryError: null,
+			
+			data: {
+				tableData: [],
+				headerNames: [],
+				rowCount: null,
+				isCached: null,
+				primaryKeys: [],
+			}
+		},
+		mapView: {
+			selectedDatabase: 0,
+	
+			queryType: 'Observations',
+	
+			selectedFeature: 2, //Sink
+			featuresOrItems: [],
+
+			selectedFields: [],
+	
+			// internal data
+			currentFilterableColumnObjects: [],
+			currentFilterableReturnableIDs: [],
+			currentColumnObjects: [],
+			currentReturnableIDs: [],
+			currentColumnObjectIndices: [],
+			currentGeospatialFieldObjects: [],
+	
+			// Query in-progress state
+			queryTime: null,
+			queryStart: null,
+			queryTimer(start) {
+				if(start) {
+					this.queryStart = Date.now();
+				} else {
+					this.queryTime = Date.now() - this.queryStart
+				}
+			},
+			invalidQuery: false,
+			queryError: null,
+	
+			// Array because there is an object *for each* field
+			layers: []
+		}
+	};
 }
 
 }

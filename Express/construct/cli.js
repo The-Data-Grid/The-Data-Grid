@@ -14,8 +14,13 @@ const {
 const { allItems } = require('../statement.js').setup
 
 // Database connection and SQL formatter
+let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
+if(postgresdb.length == 0) {
+    throw Error('--postgresdb=... not set');
+}
+postgresdb = postgresdb[0];
 const { postgresClient, connectPostgreSQL } = require('../pg.js');
-connectPostgreSQL('construct') // Establish an new connection pool
+connectPostgreSQL('custom', { customDatabase: postgresdb }) // Establish an new connection pool
 const db = postgresClient.getConnection.cdb; // get connection object
 const formatSQL = postgresClient.format; // get SQL formatter
 

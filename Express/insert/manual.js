@@ -6,7 +6,7 @@ connectPostgreSQL('default'); // Establish an new connection pool
 const { insertSubmission } = require('./router.js');
 const fs = require('fs');
 
-let submissionObject = fs.readFileSync(__dirname + '/submissionObject1.json', 'utf-8');
+let submissionObject = fs.readFileSync(__dirname + '/submissionObject.json', 'utf-8');
 submissionObject = JSON.parse(submissionObject);
 
 const sessionObject = {

@@ -318,11 +318,16 @@ html, body {
   right: 12px;
 }
 
+.toast-top-left {
+  top: 120px;
+  left: 12px;
+}
+
 .toast-container {
   pointer-events: none;
   position: fixed;
   z-index: 999999;
-  opacity: .8;
+  opacity: .9;
 }
 
 .blue-callout {

@@ -104,7 +104,7 @@ async function createItem(options) {
             validateItemDataColumns(createItemObject.data, tableName);
         }
 
-        console.log('Validated');
+        console.log('Validated every Item');
 
         // 3. Insert every item
         let currentInsertedItemPrimaryKeyLookup = createItemObjectArray.map(el => null)
@@ -287,7 +287,8 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     }
 
     // 7. Insert insertion record into history tables
-    await insertItemHistory(tableName, 'create', itemPrimaryKey, db);
+    // complete hack, don't want to deal with optimizing item creation yet
+    await insertItemHistory(tableName, 'create', [itemPrimaryKey], db);
 
     // Update the primary key lookup and return it
     insertedItemPrimaryKeyLookup[currentIndex] = itemPrimaryKey;

@@ -941,6 +941,20 @@ Ensure the default browser behavior of the `hidden` attribute.
   font-weight: 500;
 }
 
+.red-button {
+  border-color: #ce9191;
+  color: #9e6c6c;
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.red-button-text {
+  margin: auto;
+  color: #9e6c6c;
+  font-size: .9rem;
+  font-weight: 500;
+}
+
 ::ng-deep #utility .mat-button-focus-overlay {
   background: #569CD7;
 }
@@ -2473,4 +2487,45 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 ::ng-deep .mat-slider-wrapper {
   top: 0px !important;
   margin-top: 6px !important;
+}
+
+::ng-deep .mat-slider-horizontal {
+  height: 20px !important;
+}
+
+.line{
+  position:absolute;
+  opacity: 0.4;
+  background:#4a8df8;
+  width:150%;
+  height:5px;
+}
+
+.subline{
+  position:absolute;
+  background:#4a8df8;
+  height:5px; 
+}
+.inc{
+animation: increase 2s infinite;
+}
+.dec{
+animation: decrease 2s 0.5s infinite;
+}
+
+@keyframes increase {
+ from { left: -5%; width: 5%; }
+ to { left: 130%; width: 100%;}
+}
+@keyframes decrease {
+ from { left: -80%; width: 80%; }
+ to { left: 110%; width: 10%;}
+}
+
+.top-49 {
+  top: 49px;
+}
+
+.top-0 {
+  top: 0px;
 }

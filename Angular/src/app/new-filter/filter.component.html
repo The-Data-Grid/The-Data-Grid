@@ -24,7 +24,7 @@
         <!-- Meta information -->
         <div style="box-shadow: 4px 0 8px -2px rgb(138, 138, 138);" [class.w-2-7]="isL && viewType == 1" [class.w-full]="!isL || viewType == 2" class="flex flex-col bg-white">
             <!-- Header -->
-            <div *ngIf="!isL" class="flex flex-row items-center bg-[#569CD7] px-4 h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 4;">
+            <div *ngIf="!isL || viewType == 2"  [class.top-0]="viewType == 2 && isL" [class.top-49]="!isL" class="flex flex-row items-center bg-[#569CD7] px-4 h-14 sticky" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 4;">
                 <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" fill="white" height="30px" viewBox="0 0 512 512"><path d="M409.43 389.87C362 410 305.4 421.05 256 421.05s-105.87-11.3-153.44-31.18S48 353.16 48 353.16v38.2c0 31.15 18 43.64 67.32 64.35C153.13 471.59 203.18 480 256 480s102.87-8.41 140.68-24.29C446 435 464 422.51 464 391.36v-38.2s-7.14 16.59-54.57 36.71zM63.69 173.22c11.23 9.84 27.82 19.49 48 27.92 42.48 17.76 96.45 28.37 144.36 28.37s101.88-10.61 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 6.06-5.31 10.85-10.12 13.47-12.85a8 8 0 002.22-5.54v-26.16c-.84-28.79-24.71-54.41-67.21-72.14C358.83 40.71 308.84 32 256 32s-102.83 8.71-140.74 24.53C72.85 74.22 49 99.78 48.05 128.5v26.33a8 8 0 002.21 5.54c2.58 2.73 7.36 7.54 13.43 12.85z"/><path d="M409.43 221.91C365 241 305.4 253.09 256 253.09s-108.87-12.27-153.43-31.18S48 185.2 48 185.2v47.36c.08 7.52 5.5 16.2 15.69 25.13 11.24 9.84 27.82 19.5 48 27.92C154.12 303.38 208.09 314 256 314s101.88-10.6 144.36-28.37c20.13-8.42 36.72-18.08 47.95-27.92 10.25-9 15.68-17.71 15.69-25.27V185.2s-10.13 17.62-54.57 36.71z"/><path d="M409.43 306.38C362 326 305.4 337.56 256 337.56s-109.87-12.8-153.43-31.18S48 269.67 48 269.67v46.25c0 7.55 5.44 16.28 15.69 25.26 11.23 9.84 27.81 19.5 48 27.92 42.48 17.77 96.44 28.37 144.36 28.37s101.88-10.6 144.36-28.37c20.13-8.43 36.72-18.08 47.95-27.92 10.19-8.93 15.61-17.61 15.69-25.13v-46.38s-7.18 17.09-54.62 36.71z"/></svg>
                 <span class="pl-2 header-type text-white">Data Selector</span>
             </div>
@@ -112,9 +112,9 @@
             <div *ngIf="viewType == 2" class="flex flex-row justify-between items-center bg-white pl-4 pr-2 py-3 border-b" matTooltip="Only geospatial fields allowed" [matTooltipDisabled]="viewType == 1">
                 <span class="header-3-type text-[#535353]">Fields</span>
                 <mat-form-field appearance="fill" style="margin-bottom: -21px; font-size: 0.9rem">
-                    <mat-label>Select Fields</mat-label>
-                    <mat-select [(ngModel)]="queryState.mapView.selectedFields" (ngModelChange)="onFieldSelection(2)" multiple>
-                    <mat-option *ngFor="let obj of queryState.mapView.currentReturnableIDs index as i" [value]="i" [disabled]="!['geoPoint', 'geoLine', 'geoRegion'].includes(queryState.mapView.currentColumnObjects[i].selectorType)">{{ queryState.mapView.currentColumnObjects[i].frontendName }}</mat-option>
+                    <mat-label>Add Fields</mat-label>
+                    <mat-select (selectionChange)="onFieldSelection(2, $event)">
+                    <mat-option *ngFor="let obj of queryState.mapView.currentGeospatialFieldObjects" [value]="obj.arrayIndex" >{{ obj.columnObject.frontendName }}</mat-option>
                     </mat-select>
                 </mat-form-field>              
             </div>  
@@ -123,7 +123,7 @@
         <!-- Query Builder -->
         <div [class.w-3-7]="isL && viewType == 1" [class.w-full]="!isL || viewType == 2">
             <!-- Header -->
-            <div *ngIf="!isL" class="flex flex-row items-center bg-white px-4 h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 3;">
+            <div *ngIf="!isL || viewType == 2" [class.top-0]="viewType == 2 && isL" [class.top-49]="!isL" class="flex flex-row items-center bg-white px-4 h-14 sticky" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 3;">
                 <svg class="cursor-pointer" (click)="scrollToTop()" fill="#569CD7" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 512 512"><path d="M294.28 256.9l-54.42-54.41a12 12 0 00-17 0L12.45 401a12 12 0 00-.27 17.2l66.05 66.28a12 12 0 0017.22-.23l198.81-210.36a12 12 0 00.02-16.99zM499.33 199.33l-43.89-43.58a21.46 21.46 0 00-15.28-6.26 21.89 21.89 0 00-12.79 4.14c0-.43.06-.85.09-1.22.45-6.5 1.15-16.32-5.2-25.22a258 258 0 00-24.8-28.74.6.6 0 00-.08-.08c-13.32-13.12-42.31-37.83-86.72-55.94A139.55 139.55 0 00257.56 32C226 32 202 46.24 192.81 54.68A53.4 53.4 0 00176 86.17L192 96s8.06-2 13.86-3.39a62.73 62.73 0 0118.45-1.15c13.19 1.09 28.79 7.64 35.69 13.09 11.7 9.41 17.33 22.09 18.26 41.09.2 4.23-9.52 21.35-24.16 39.84a8 8 0 00.61 10.62l45.37 45.37a8 8 0 0011 .25c12.07-11 30.49-28 34.67-30.59 7.69-4.73 13.19-5.64 14.7-5.8a19.18 19.18 0 0111.29 2.38 1.24 1.24 0 01-.31.95l-1.82 1.73-.3.28a21.52 21.52 0 00.05 30.54l43.95 43.68a8 8 0 0011.28 0l74.68-74.2a8 8 0 00.06-11.36z"/></svg>
                 <span  class="pl-2 header-type text-[#569CD7]">Query Builder</span>
             </div>
@@ -158,8 +158,13 @@
                     </mat-expansion-panel-header>                 
                     <!-- Layer Menu -->            
                     <div *ngIf="queryState.mapView.layers.length > 0" cdkDropList (cdkDropListDropped)="layerDropped($event)" class="space-y-2">
-                        <mat-expansion-panel [(expanded)]="layer.isExpanded" *ngFor="let layer of queryState.mapView.layers" cdkDrag style="border: #535353 solid 1px;">
-                            <mat-expansion-panel-header class="relative">
+                        <mat-expansion-panel [(expanded)]="layer.isExpanded" *ngFor="let layer of queryState.mapView.layers" cdkDrag style="border: #535353 solid 1px">                            
+                          <mat-expansion-panel-header class="relative">
+                                <div *ngIf="layer.isRendering" style="position: absolute !important; top: 0 !important; left: 0 !important; height: 3px !important; width: 100% !important; overflow-x: hidden !important;">
+                                    <div class="line"></div>
+                                    <div class="subline inc"></div>
+                                    <div class="subline dec"></div>
+                                </div>
                                 <mat-panel-title cdkDragHandle class="cursor-move">
                                     <svg *ngIf="layer.type == 'geoPoint'" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" fill="#535353" matTooltip="Point" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="22px" height="22px" viewBox="0 0 32.25 32.25" style="enable-background:new 0 0 32.25 32.25;" xml:space="preserve">
                                         <g>
@@ -205,13 +210,17 @@
                                         <span style="font-size: 14px; font-weight: 600">Color</span>
                                         <span class=" w-10 border" [style]="'height: 18px; background-color: ' + layer.color"></span>
                                     </div>
-                                    <input (change)="updateColor($event, layer.columnIndex)" type="color" class="w-full h-full absoulte cursor-pointer" style="opacity: 0; height: 29px;">
+                                    <input (change)="updateColor($event, layer.layerID)" type="color" class="w-full h-full absoulte cursor-pointer" style="opacity: 0; height: 29px;">
                                 </div>
-                                <div class="flex flex-row justify-between border-t px-3 py-1" style="height: 29px;">
-                                    <span style="font-size: 14px; font-weight: 600">Color by Property</span>
-                                    <mat-slide-toggle [(ngModel)]="layer.colorByProperty">{{layer.colorByProperty ? 'ON' : 'OFF'}}</mat-slide-toggle>                            
-                                </div>
-                                <div class="flex flex-row justify-between border-t px-3 py-1" style="height: 29px;">
+                                <!--
+                                    Not Implemented Yet
+
+                                    <div class="flex flex-row justify-between border-t px-3 py-1" style="height: 29px;">
+                                        <span style="font-size: 14px; font-weight: 600">Color by Property</span>
+                                        <mat-slide-toggle [(ngModel)]="layer.colorByProperty">{{layer.colorByProperty ? 'ON' : 'OFF'}}</mat-slide-toggle>                            
+                                    </div>
+                                -->
+                                <div *ngIf="layer.type == 'geoPoint'" class="flex flex-row justify-between border-t px-3 py-1" style="height: 29px;">
                                     <span style="font-size: 14px; font-weight: 600">Point Size</span>
                                     <div class="flex">
                                         <mat-slider min="1"
@@ -238,6 +247,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div *ngIf="layer.type == 'geoPoint'" (click)="updatePointType(layer)" class="flex flex-row justify-between border-t px-3 py-1 cursor-pointer hover:bg-gray-200" matTooltip="Click to change point type">
+                                    <span style="font-size: 14px; font-weight: 600">Point Type</span>
+                                    <span style="font-size: 14px; font-weight: 400;">{{ layer.pointType == 1 ? 'Circle' : layer.pointType == 2 ? 'Square' : 'Triangle'}}</span>
+                                </div>
                             </div>
                             <div class="flex flex-col mt-2">
                                 <div style="font-size: 14px; font-weight: 300; color: #a0a0a0">
@@ -260,33 +273,41 @@
                                     <svg *ngIf="layer.data.rowCount === null" matTooltip="Available after the query is run" xmlns="http://www.w3.org/2000/svg" height="20px" fill="#535353" viewBox="0 0 512 512"><path d="M288.55 150.84c-8.09-3.86-20-6-32.72-5.82-18 .22-33.13 5.2-45 14.78-23 18.48-24.55 40.37-24.77 42.8a61.69 61.69 0 00-.09 12 3 3 0 003 2.69h21.23a3 3 0 003-3A65.7 65.7 0 01214 204c0-.11 1.14-11.7 14.36-22.34 7-5.64 16.11-8.44 27.83-8.59 9.32-.11 16.93 1.47 20.34 3.09C291 183 298 192.31 298 204.57c0 18-10.9 26.23-30.18 39.18C247.08 257.68 237 275.1 237 297v11a3 3 0 003 3h22a3 3 0 003-3v-11c0-9.16 2.23-19.13 18.44-30 19.95-13.41 42.56-28.6 42.56-62.43 0-23.14-13.3-42.23-37.45-53.73z" fill="none"/><path d="M256 64C150 64 64 150 64 256s86 192 192 192 192-86 192-192S362 64 256 64zm10.44 302h-30.21a2.57 2.57 0 01-2.56-2.57v-30.2a2.57 2.57 0 012.56-2.57h30.21a2.57 2.57 0 012.56 2.57v30.2a2.57 2.57 0 01-2.56 2.57zm17-99C267.23 277.88 265 287.85 265 297v11a3 3 0 01-3 3h-22a3 3 0 01-3-3v-11c0-21.91 10.08-39.33 30.82-53.26C287.1 230.8 298 222.6 298 204.57c0-12.26-7-21.57-21.49-28.46-3.41-1.62-11-3.2-20.34-3.09-11.72.15-20.82 2.95-27.83 8.59C215.12 192.25 214 203.84 214 204a65.7 65.7 0 00-.84 10.28 3 3 0 01-3 3h-21.25a3 3 0 01-3-2.69 61.69 61.69 0 01.09-12c.22-2.43 1.8-24.32 24.77-42.8 11.91-9.58 27.06-14.56 45-14.78 12.7-.15 24.63 2 32.72 5.82 24.21 11.51 37.51 30.6 37.51 53.74 0 33.83-22.61 49.02-42.56 62.43z"/></svg>
                                     <span *ngIf="layer.data.rowCount !== null" style="font-size: 14px; font-weight: 400;">{{ layer.data.rowCount }}</span>
                                 </div>
+                                <div class="flex flex-row justify-between border-t px-3 py-1">
+                                    <span style="font-size: 14px; font-weight: 600">Status</span>
+                                    <span style="font-size: 14px; font-weight: 400;">{{ !layer.hasQueried ? 'Not queried yet' : layer.isQuerying ? 'Waiting for database' : layer.isRendering ? 'Rendering map' : 'Rendered' }}</span>
+                                </div>
                             </div>
                             <!-- Query Builder -->
-                            <div style="font-size: 14px; font-weight: 300; color: #a0a0a0" class="-mb-1 mt-2">
+                            <div style="font-size: 14px; font-weight: 300; color: #a0a0a0" class=" mt-2">
                                 Query Builder
                             </div>
-                            <div [id]="'map-builder-global' + layer.columnIndex"></div>
+                            <div [id]="'map-builder-global' + layer.layerID"></div>
+                            <!-- Remove -->
+                            <div class="flex flex-row justify-between mt-2 -mb-1">
+                                <button (click)="layer.isExpanded = false" class="standard-button border py-1 px-2" mat-button>
+                                    <span class="standard-button-text">
+                                        Minimize Layer
+                                    </span>
+                                </button>
+                                <button (click)="removeLayer(layer)" class="red-button border py-1 px-2" mat-button>
+                                    <span class="red-button-text">
+                                        Remove Layer
+                                    </span>
+                                </button>
+                            </div>
                         </mat-expansion-panel>
-                        <div class="flex flex-row justify-between " style="margin-top: 16px">
-                            <div>
-                                <button (click)="expandAllLayers(true)" class="standard-button border p-2 mr-3" mat-button>
-                                    <span class="standard-button-text">
-                                        Expand All
-                                    </span>
-                                </button>
-                                <button (click)="expandAllLayers(false)" class="standard-button border p-2" mat-button>
-                                    <span class="standard-button-text">
-                                        Collapse All
-                                    </span>
-                                </button>
-                            </div>
-                            <div>
-                                <button class="standard-button border p-2" mat-button>
-                                    <span class="standard-button-text">
-                                        Clear All
-                                    </span>
-                                </button>
-                            </div>
+                        <div class="flex flex-row justify-start" style="margin-top: 16px">
+                            <button (click)="expandAllLayers(true)" class="standard-button border p-2 mr-3" mat-button>
+                                <span class="standard-button-text">
+                                    Expand All
+                                </span>
+                            </button>
+                            <button (click)="expandAllLayers(false)" class="standard-button border p-2" mat-button>
+                                <span class="standard-button-text">
+                                    Collapse All
+                                </span>
+                            </button>
                         </div>
                     </div>
                     <div *ngIf="queryState.mapView.layers.length == 0" class="flex flex-row justify-center" matTooltip="Use the Data Selector to add a layer">
@@ -349,7 +370,7 @@
         <!-- Run Control -->
         <div style="box-shadow: -4px 0 8px -2px rgb(138, 138, 138); z-index: 2;" [class.w-2-7]="isL && viewType == 1" [class.w-full]="!isL || viewType == 2" class="bg-white">
             <!-- Header -->
-            <div *ngIf="viewType == 2" [class.border-l]="!isSm && !isXs" class="flex flex-row items-center bg-white px-4 h-14 min-h-14 sticky top-[49px]" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 2;">
+            <div *ngIf="viewType == 2 || !isL" [class.top-0]="viewType == 2 && isL" [class.top-49]="!isL" [class.border-l]="!isSm && !isXs" class="flex flex-row items-center bg-white px-4 h-14 min-h-14 sticky" style="box-shadow: 0px 4px 8px -4px rgb(138, 138, 138); z-index: 2;">
                 <svg class="cursor-pointer" (click)="scrollToTop()" xmlns="http://www.w3.org/2000/svg" height="30px" fill="#569CD7" viewBox="0 0 512 512"><path d="M96 448l320-192L96 64v384z"/></svg>
                 <span class="pl-2 header-type text-[#569CD7]">Run Control</span>
             </div>
@@ -387,10 +408,10 @@
                         &nbsp;&nbsp;Save Link to {{viewType == 1 ? 'Query' : 'Map'}}
                     </span>
                 </button>
-                <button *ngIf="viewType == 2" id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
+                <button (click)="saveMapImage()" [disabled]="savingImage" *ngIf="viewType == 2" id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M456 144h-83c-3 0-6.72-1.94-9.62-5L336.1 96.2C325 80 320 80 302 80h-92c-18 0-24 0-34.07 16.21L148.62 139c-2.22 2.42-5.34 5-8.62 5v-16a8 8 0 00-8-8H92a8 8 0 00-8 8v16H56a24 24 0 00-24 24v240a24 24 0 0024 24h400a24 24 0 0024-24V168a24 24 0 00-24-24zM260.51 367.9a96 96 0 1191.39-91.39 96.11 96.11 0 01-91.39 91.39z"/></svg>
                     <span class="header-3-type text-[#569CD7] m-auto">
-                        &nbsp;&nbsp;Save Image of Map
+                        &nbsp;&nbsp;{{ savingImage ? 'Loading...' : 'Save Image of Map' }}
                     </span>
                 </button>
                 <button id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
@@ -415,8 +436,8 @@
                         <th *ngFor="let header of queryState.tableView.data.headerNames" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
                     </tr>
                     <!-- Data -->
-                    <tr *ngFor="let row of queryState.tableView.data.tableData" class="h-50px text-sm hover-bg-gray-100">
-                        <td *ngFor="let cell of row" class="border-t border-gray-200   w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+                    <tr *ngFor="let row of queryState.tableView.data.tableData; index as i" class="h-50px text-sm hover-bg-gray-100">
+                        <td *ngFor="let cell of [queryState.tableView.data.primaryKeys[i]].concat(row)" class="border-t border-gray-200   w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
                     </tr>
                 </table>
             </div>
@@ -433,7 +454,7 @@
                 </div>
                 <mat-paginator *ngIf="viewType == 1" #paginator [length]="queryState.tableView.data.rowCount"
                     [pageSize]="queryState.tableView.currentPageSize"
-                    [pageSizeOptions]="[10, 25, 100]"
+                    [pageSizeOptions]="[10, 25, 100, 1000]"
                     (page)="onPageChange($event, 1)"
                     aria-label="Select page">
                 </mat-paginator>
@@ -445,7 +466,7 @@
     <!-- Map -->
     <div [hidden]="viewType === 1" [class.w-full]="!isL" [class.w-5-7]="isL" class="relative" style="height: calc(100vh - 48px)">
         <!-- Snap to ... Button-->
-        <div class="absolute top-3 w-full flex flex-row justify-center">
+        <div *ngIf="!isL" class="absolute top-3 w-full flex flex-row justify-center">
             <button (click)="snapTo(currentlySnappedTo)" class="rounded-full shadow-lg px-3 py-2 bg-white text-[#569CD7] w-[200px] flex flex-row" style="z-index: 402;">
                 <svg xmlns="http://www.w3.org/2000/svg" [class.toggle-down]="currentlySnappedTo == 0" [class.toggle-up]="currentlySnappedTo == 1" style="width: 25%;" height="22px" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="48" d="M112 268l144 144 144-144M256 392V100"/></svg>
                 <span style="width: 75%; font-weight: 600; font-size: 14px;">Snap to {{currentlySnappedTo == 0 ? 'Map' : 'Controls'}}</span>

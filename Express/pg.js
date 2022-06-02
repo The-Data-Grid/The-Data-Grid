@@ -18,7 +18,10 @@ const postgresClient = {
     format: pgp.as.format
 };
 
-function connectPostgreSQL(config) {
+function connectPostgreSQL(config, options={}) {
+    if('customDatabase' in options) {
+        tdgdbname = options.customDatabase;
+    }
     if(config == 'default') {
 
         console.log(`Establishing PostgreSQL connections...`)

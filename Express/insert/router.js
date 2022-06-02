@@ -52,8 +52,6 @@ async function insertSubmission(submissionObject, sessionObject) {
     const updateObservationObjectArray = submissionObject.observations.update
     const deleteObservationObjectArray = submissionObject.observations.delete
 
-    console.log(createItemObjectArray)
-
     // PostgreSQL transaction
     // must pass transaction database object to each helper
     await db.tx(async transaction => {

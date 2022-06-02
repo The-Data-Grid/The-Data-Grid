@@ -3,6 +3,27 @@ const csv = require('csv-parser');
 const parsed = [];
 
 /*
+{
+    featureName,
+    auditorName,
+    geoType,
+    featureInformation
+}
+*/
+const options = JSON.parse(fs.readFileSync('csvOptions.json', 'utf-8'))
+
+/*
+const resetOptions = {
+    itemTypeID: 1,
+    itemID returnableID
+    location col index
+    returnableIDs for observation
+}
+*/
+const TO_BE_FILLED = null;
+const TO_BE_FILLED_ARRAY = [];
+
+/*
  *  IMPORT DATA
  *  ==========================================================
 */
@@ -12,8 +33,33 @@ fs.createReadStream(__dirname + '/data.csv', 'utf-8')
     .on('end', () => {
         console.log('done')
         console.log(Object.keys(parsed[0]))
-        let cols = generateSchema();
-        writeSubmissionObject(cols, 1);
+        let cols = generateSchema()
+        const obj = {
+            "items": {
+                "create": [
+                    {
+                        "itemTypeID": TO_BE_FILLED,
+                        "requiredItems": [],
+                        "newRequiredItemIndices": [],
+                        "globalPrimaryKey": 1,
+                        "newGlobalItemIndex": null,
+                        "data": {
+                            "returnableIDs": TO_BE_FILLED_ARRAY,
+                            "data": 1
+                        }
+                    }
+                ],
+                "update": [],
+                "delete": [],
+                "requestPermanentDeletion": []
+            },
+            "observations": {
+                "create": [],
+                "update": [],
+                "delete": []
+            }
+        };
+        writeSubmissionObject(cols, 1, obj);
     })
 
 /*
@@ -31,8 +77,8 @@ function generateSchema() {
                 "uploadPrivilege": "user",
                 "uploadRole": "auditor"
             },
-            "information": "This dataset reflects incidents of crime in the City of Los Angeles dating back to 2020. This data is transcribed from original crime reports that are typed on paper and therefore there may be some inaccuracies within the data. Some location fields with missing data are noted as (0°, 0°). Address fields are only provided to the nearest hundred block in order to maintain privacy. This data is as accurate as the data in the database. Please note questions or concerns in the comments.",
-            "name": "Crime Incident",
+            "information": options.featureInformation,
+            "name": options.featureName,
             "observableItem": {
                 "requiredItem": [
                 ]
@@ -43,7 +89,7 @@ function generateSchema() {
     let colNames = Object.keys(parsed[0])
     let columns = [];
     columns.push({ 
-        "featureName": "Crime Incident",
+        "featureName": options.featureName,
         "name": "Item ID",
         "information": "Observational data, so only one item exists", // optional, defaults to null
         "accuracy": null,
@@ -62,11 +108,11 @@ function generateSchema() {
         latIndex = colNames.map(name => name => /(?:.*[\s _\-])?[Ll][Aa][Tt](?:[\s _\-].*)?/.test(name) || /.*latitude.*/.test(name)).indexOf(true);
     
         columns.push({ 
-            "featureName": "Crime Incident",
-            "name": "Crime Location",
+            "featureName": options.featureName,
+            "name": options.featureName + ' Location',
             "information": null, // optional, defaults to null
             "accuracy": null,
-            "sqlType": "Point", // required
+            "sqlType": options.geoType, // required
             "referenceType": "obs", // required
             "presetValues": null,
             "isNullable": true // required
@@ -85,7 +131,7 @@ function generateSchema() {
         let information = null;
         let isNullable = true;
         let accuracy = null;
-        let featureName = 'Crime Incident';
+        let featureName = options.featureName;
     
         const lookup = {};
         let intError = false;
@@ -167,53 +213,35 @@ function generateSchema() {
  *  ==========================================================
 */
 
-function writeSubmissionObject(cols, wroteObjectIndex) {
-    // submissionObject
-const submissionObject = {
-    "items": {
-        "create": [
-            {
-                "itemTypeID": 12,
-                "requiredItems": [],
-                "newRequiredItemIndices": [],
-                "globalPrimaryKey": 1,
-                "newGlobalItemIndex": null,
-                "data": {
-                    "returnableIDs": [
-                        194
-                    ],
-                    "data": [
-                        1
-                    ]
-                }
-            }
-        ],
-        "update": [],
-        "delete": [],
-        "requestPermanentDeletion": []
-    },
-    "observations": {
-        "create": [],
-        "update": [],
-        "delete": []
-    }
+const geojsonTypeLookup = {
+    'Point': 'Point',
+    'Line': 'LineString',
+    'Region': 'Polygon'
 }
 
+function writeSubmissionObject(cols, wroteObjectIndex, obj) {
+    // submissionObject
+    obj.observations.create.push({
+        "itemTypeID": 12,
+        "itemPrimaryKey": null,
+        "newItemIndex": 0,
+        "globalPrimaryKey": 1,
+        "newGlobalIndex": null,
+        "data": {multiple: true, returnableIDs: [
+            'Auditor',
+            'Standard Operating Procedure',
+            ...cols.map(col => col.name)
+        ], data: []}});
     console.log('computing file #' + wroteObjectIndex);
-    // local copy of submissionObject
-    submissionObject.items.create[0].data.data[0] = wroteObjectIndex;
     // 50k at a time
     let startIndex = (wroteObjectIndex - 1) * 50000;
     let stopIndex = Math.min(wroteObjectIndex * 50000, parsed.length);
     for(let i = startIndex; i < stopIndex; i++) {
-        let r = [
-            88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117
-        ]
         let json = null;
         if(parsed[i].LAT != null && parsed[i].LAT.length > 0 && parsed[i].LON != null && parsed[i].LON.length > 0) {
            json = 
                 {
-                    type: 'Point',
+                    type: geojsonTypeLookup[options.geoType],
                     coordinates: [parseFloat(parsed[i].LAT), parseFloat(parsed[i].LON)]
                 }
         }
@@ -221,30 +249,19 @@ const submissionObject = {
             "City of LA",
             [],
             json,
-            ...cols.map(key => parsed[i][key])
-        ].map((e, i) => ({id: r[i], v: e})).filter(obj => obj.v !== null);
-        submissionObject.observations.create.push({
-            "itemTypeID": 12,
-            "itemPrimaryKey": null,
-            "newItemIndex": 0,
-            "globalPrimaryKey": 1,
-            "newGlobalIndex": null,
-            "data": {
-                "returnableIDs": combined.map(e => e.id),
-                "data": combined.map(e => e.v)
-            }
-        })
+            ...cols.map(key => parsed[i][key]).map(val => val == '' || val == ' ' ? null : val)
+        ];
+        obj.observations.create[obj.observations.create.length - 1].data.data.push(combined);
     }
     
     // async write file
-    console.log('writing file #' + wroteObjectIndex);
-    fs.writeFileSync(__dirname + `/submissionObject${wroteObjectIndex}.json`, JSON.stringify(submissionObject));
-    console.log('wrote file file #' + wroteObjectIndex);
-
     if(stopIndex == parsed.length) {
-        console.log('done')
+        console.log('writing file #' + wroteObjectIndex);
+        fs.writeFileSync(__dirname + `/submissionObject${wroteObjectIndex}.json`, JSON.stringify(obj));
+        console.log('wrote file file #' + wroteObjectIndex);
     } else {
-        writeSubmissionObject(cols, wroteObjectIndex + 1);
-        
+        writeSubmissionObject(cols, wroteObjectIndex + 1, obj);
+
     }
+
 }

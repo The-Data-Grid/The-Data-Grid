@@ -201,7 +201,8 @@ const setup = {
         LEFT JOIN tdg_role_type as qr on qr.type_id = i.query_role \
         LEFT JOIN tdg_privilege as qp on qp.privilege_id = i.query_privilege \
         LEFT JOIN tdg_role_type as ur on ur.type_id = i.upload_role \
-        LEFT JOIN tdg_privilege as up on up.privilege_id = i.upload_privilege',
+        LEFT JOIN tdg_privilege as up on up.privilege_id = i.upload_privilege \
+        ORDER BY i.item_id ASC',
 
     itemM2M: 'SELECT i.table_name as i__table_name, i.frontend_name as i__frontend_name, t.type_name as t__type_name, \
         m2m.is_id as m2m__is_id, m2m.is_nullable as m2m__is_nullable, m2m.frontend_name as m2m__frontend_name, \
