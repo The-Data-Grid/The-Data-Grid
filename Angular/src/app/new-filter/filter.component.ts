@@ -14,8 +14,9 @@ import 'jQuery-QueryBuilder/dist/js/query-builder.js';
 import * as stamen from '../../client-scripts/stamen.js';
 import glify from 'leaflet.glify';
 import { ToastrService } from 'ngx-toastr';
-import { Clipboard } from '@angular/cdk/clipboard'
-import leafleatImage from 'leaflet-image'
+import { Clipboard } from '@angular/cdk/clipboard';
+import leafleatImage from 'leaflet-image';
+import leafletDraw from 'leaflet-draw';
 
 @Component({
  selector: 'app-filter-new',
@@ -48,6 +49,8 @@ ngOnInit() {
 		this.viewType = 1;
 	}
 	console.log(this.viewType)
+
+	console.log(leafletDraw);
 
     let {
     	isXs,
@@ -974,15 +977,15 @@ basemapLayers = {
 	})},
 	stamenWatercolor: {
 		name: 'Stamen Watercolor',
-		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.watercolor.url), stamen.stamen.tile.providers.watercolor)
+		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.watercolor.url), this.stamenOptionsFormatter(stamen.stamen.tile.providers.watercolor, 17))
 	},
 	stamenTerrain: {
 		name: 'Stamen Terrain',
-		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.terrain.url), stamen.stamen.tile.providers.terrain)
+		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.terrain.url), this.stamenOptionsFormatter(stamen.stamen.tile.providers.terrain, 16))
 	},
 	stamenToner: {
 		name: 'Stamen Toner',
-		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.toner.url), stamen.stamen.tile.providers.toner)
+		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.toner.url), this.stamenOptionsFormatter(stamen.stamen.tile.providers.toner, 17))
 	}
 }
 basemapLayersArray = Object.keys(this.basemapLayers);
@@ -995,9 +998,16 @@ private stamenURLFormatter(url) {
 	return url;
 }
 
-private map;
+private stamenOptionsFormatter(obj, zoom) {
+	obj.maxZoom = zoom;
+	return obj;
+}
 
-onBasemapChange() {
+private map;
+drawnItems = new L.FeatureGroup();
+
+onBasemapChange(key) {
+	this.selectedBasemapKey = key;
 	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
 	this.map.removeLayer(this.basemapLayers[this.oldBasemapKey].data);
 	this.oldBasemapKey = this.selectedBasemapKey;
@@ -1016,8 +1026,87 @@ private initMap(): void {
 
 	L.control.scale().addTo(this.map)
 
-	// default
+	this.map.addLayer(this.drawnItems);
+
+	let drawControl = new L.Control.Draw({
+		draw : {
+			circlemarker: false,
+			circle: false,
+			rectangle: <any>{ showArea: false },
+			marker: {
+				icon: L.icon({
+                    iconSize: [25, 41],
+                    iconAnchor: [13, 41],
+                    iconUrl: 'assets/marker-icon-2x.png',
+                    shadowUrl: 'assets/marker-shadow.png'
+                })
+			},
+			polygon: {
+				allowIntersection: false, // Restricts shapes to simple polygons
+				drawError: {
+				  color: '#e1e100', // Color the shape will turn when intersects
+				  message: '<strong>Polygon draw does not allow intersections!<strong>' // Message that will show when intersect
+				}
+			}
+		},
+		edit: {
+			featureGroup: this.drawnItems
+		},
+		position: 'topright'
+	});
+
+	this.map.on('draw:created', createEvent => {
+		const { layer } = createEvent;
+		this.addDrawLayerPopup(layer);
+		this.drawnItems.addLayer(layer);
+	});
+
+	this.map.on('draw:edited', editEvent => {
+		const { layers } = editEvent;
+		layers.eachLayer(layer => {
+			this.addDrawLayerPopup(layer);
+		})
+	});
+	  
+	this.map.addControl(drawControl); 
+
+	// default basemap
 	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
+}
+
+private addDrawLayerPopup(layer) {
+	const layerGeoJSON = layer.toGeoJSON();
+	layer.on('click', clickEvent => {
+		// popup
+		let copyButtonID = Date.now();
+		L.popup({
+			closeButton: false
+		})
+		.setLatLng(clickEvent.latlng)
+		.setContent(`
+			<div class="flex flex-col" style="width: 300px; max-height: 300px;">
+				<button id="${copyButtonID}" class=" border p-3 inline border-[#569CD7] rounded hover:bg-[#a3c5e0] shadow" style="font-weight: 400;
+				font-size: 1rem;
+				line-height: 1.2;
+				letter-spacing: 0.0065em;">
+					<span class="standard-button-text text-[#569CD7]">
+						Copy GeoJSON
+					</span>
+				</button>
+			</div>
+		`)
+		.openOn(this.map);
+
+		// copy geojson
+		// add copygeojson click listener
+		let copyButtonElement = document.getElementById(String(copyButtonID));
+		copyButtonElement.addEventListener('click',() => {
+			// switch coord order!
+			layerGeoJSON.geometry.coordinates.reverse();
+			this.clipboard.copy(JSON.stringify(layerGeoJSON));
+			this.toastr.success('Copied to clipboard')
+		});
+	})
 }
 
 // Must invalidate the size because a bug where the tiles do not render properly on first load
