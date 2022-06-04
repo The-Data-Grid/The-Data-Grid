@@ -943,14 +943,26 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .red-button {
   border-color: #ce9191;
-  color: #9e6c6c;
   font-size: .9rem;
   font-weight: 500;
 }
 
 .red-button-text {
   margin: auto;
-  color: #9e6c6c;
+  color: #a55353;
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.blue-button {
+  border-color: #569CD7;
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.blue-button-text {
+  margin: auto;
+  color: #569CD7;
   font-size: .9rem;
   font-weight: 500;
 }

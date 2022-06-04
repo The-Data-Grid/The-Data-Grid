@@ -540,6 +540,46 @@ Ensure the default browser behavior of the `hidden` attribute.
   right: 3.5rem;
 }
 
+.right-24 {
+  right: 6rem;
+}
+
+.bottom-14 {
+  bottom: 3.5rem;
+}
+
+.bottom-3 {
+  bottom: 0.75rem;
+}
+
+.bottom-5 {
+  bottom: 1.25rem;
+}
+
+.bottom-10 {
+  bottom: 2.5rem;
+}
+
+.bottom-7 {
+  bottom: 1.75rem;
+}
+
+.bottom-0 {
+  bottom: 0px;
+}
+
+.bottom-24 {
+  bottom: 6rem;
+}
+
+.top-36 {
+  top: 9rem;
+}
+
+.right-3 {
+  right: 0.75rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -699,6 +739,18 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .ml-auto {
   margin-left: auto;
+}
+
+.mb-24 {
+  margin-bottom: 6rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
 }
 
 .inline {

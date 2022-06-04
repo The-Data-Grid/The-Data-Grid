@@ -77,6 +77,17 @@ ngOnInit() {
 		this.builderOperatorToTDGOperatorLookup[arr[1]] = arr[0];
 	});
 
+	document.onkeydown = (evt: any) => {
+		evt = evt || window.event;
+		if (evt.keyCode == 27) {
+			if(this.leafletDrawState.isEditing) {
+				this.customToolbar.editCancel();
+			} else if(this.leafletDrawState.isDeleting) {
+				this.customToolbar.deleteCancel();
+			}
+		}
+	};
+
 	// Data Waterfall
 	// ==========================================
 	
@@ -551,8 +562,6 @@ getQueryBuilder(viewType: number, layerID='') {
 	}
 
 	queryBuilderConfig.filters = filters;
-
-	console.log(filters)
 	
 	// init
 	$(document).ready(() => {
@@ -607,7 +616,6 @@ formatQueryString(rules) {
 	// Compress query logic into object
 	const isGroup = (obj) => 'condition' in obj;
 	let compressedRules = traverseGroup(rules)
-	console.log(compressedRules)
 	return encodeURIComponent(JSON.stringify(compressedRules));
 
 	// 0 = AND, 1 = OR
@@ -750,7 +758,6 @@ queryDatabase(isDownload = false) {
 		}
 		// combine global rules with 
 		let globalRules: any = this.getRulesQueryBuilder('map-builder-global')
-		console.log(globalRules)
 		// if invalid
 		if(globalRules === null) {
 			this.queryState.mapView.invalidQuery = true;
@@ -791,8 +798,6 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 			return;
 		}
 		// combine rules if global rules exist
-		console.log(globalFilterRules)
-		console.log(rules)
 		if(globalFilterRules !== null && globalFilterRules !== undefined) {
 			// pass the correct returnableID for the global filter
 			for(let n = 0; n < globalFilterRules.rules.length; n++) {
@@ -1050,6 +1055,8 @@ private stamenOptionsFormatter(obj, zoom) {
 
 private map;
 drawnItems = new L.FeatureGroup();
+editHandler;
+deleteHandler;
 
 private leafletDrawState = {
 	isEditing: false,
@@ -1057,6 +1064,9 @@ private leafletDrawState = {
 };
 
 onBasemapChange(key) {
+	// if same layer then do nothing
+	if(key == this.selectedBasemapKey) return;
+	// add new and remove old
 	this.selectedBasemapKey = key;
 	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
 	this.map.removeLayer(this.basemapLayers[this.oldBasemapKey].data);
@@ -1099,16 +1109,26 @@ private initMap(): void {
 				}
 			}
 		},
-		edit: {
-			featureGroup: this.drawnItems
-		},
+		edit: false,
 		position: 'topright'
 	});
+
+	// Custom Handlers
+	// see: https://github.com/Leaflet/Leaflet.draw/issues/129#issuecomment-466672085
+	this.editHandler = (new L.EditToolbar({
+		featureGroup: this.drawnItems
+	})).getModeHandlers()[0].handler;
+	this.editHandler._map = this.map;
+
+	this.deleteHandler = (new L.EditToolbar({
+		featureGroup: this.drawnItems
+	})).getModeHandlers()[1].handler;
+	this.deleteHandler._map = this.map;
 
 	this.map.on('draw:created', createEvent => {
 		const { layer } = createEvent;
 		layer.leafletDrawState = this.leafletDrawState;
-		this.addDrawLayerPopup(layer);
+		this.addDrawLayerPopup(layer, this.drawnItems);
 		this.drawnItems.addLayer(layer);
 	});
 
@@ -1116,7 +1136,7 @@ private initMap(): void {
 		const { layers } = editEvent;
 		layers.eachLayer(layer => {
 			layer.leafletDrawState = this.leafletDrawState;
-			this.addDrawLayerPopup(layer);
+			this.addDrawLayerPopup(layer, this.drawnItems);
 		})
 	});
 
@@ -1143,19 +1163,19 @@ private initMap(): void {
 	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
 }
 
-private addDrawLayerPopup(layer) {
+private addDrawLayerPopup(layer, featureGroup) {
 	const layerGeoJSON = layer.toGeoJSON();
 	layer.on('click', clickEvent => {
 		// Only fire popup if not currently editing or deleting
 		if(Object.values(clickEvent.target.leafletDrawState).every(state => state === false)) {
 			let copyButtonID = Date.now();
-			L.popup({
+			let popup = L.popup({
 				closeButton: false
 			})
 			.setLatLng(clickEvent.latlng)
 			.setContent(`
 				<div class="flex flex-col" style="width: 300px; max-height: 300px;">
-					<button id="${copyButtonID}" class=" border p-3 inline border-[#569CD7] rounded hover:bg-[#a3c5e0] shadow" style="font-weight: 400;
+					<button id="${copyButtonID}c" class=" border p-3 inline border-[#569CD7] rounded hover:bg-[#a3c5e0] shadow" style="font-weight: 400;
 					font-size: 1rem;
 					line-height: 1.2;
 					letter-spacing: 0.0065em;">
@@ -1163,21 +1183,106 @@ private addDrawLayerPopup(layer) {
 							Copy GeoJSON
 						</span>
 					</button>
+					<div class="flex flex-row mt-2">
+						<button id="${copyButtonID}e" class="mr-2 border p-3 inline border-[#535353] rounded hover:bg-[#a3c5e0] shadow" style="flex-grow: 1; font-weight: 400;
+						font-size: 1rem;
+						line-height: 1.2;
+						letter-spacing: 0.0065em;">
+							<div class="flex flex-row justify-center items-center">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" fill="535353" viewBox="0 0 512 512"><path d="M464.37 49.2a22.07 22.07 0 00-31.88-.76l-18.31 18.25 31.18 31.1 18-17.91a22.16 22.16 0 001.01-30.68zM252.76 336H176V259.24l9.4-9.38L323.54 112H48v352h352V188.46L262.14 326.6l-9.38 9.4zM400 143.16l32.79-32.86-31.09-31.09L368.85 112H400v31.16z"/><path d="M208 304h31.49L400 143.16V112h-31.15L208 272.51V304z"/></svg>
+							<span class="standard-button-text text-[#535353] ml-2">
+								Edit Shape
+							</span>
+							</div>
+						</button>
+						<button id="${copyButtonID}d" class=" border p-3 inline border-[#535353] rounded hover:bg-[#a3c5e0] shadow" style="flex-grow: 1; font-weight: 400;
+						font-size: 1rem;
+						line-height: 1.2;
+						letter-spacing: 0.0065em;">
+							<div class="flex flex-row justify-center items-center">
+							<svg xmlns="http://www.w3.org/2000/svg" height="22px" fill="#535353" viewBox="0 0 512 512"><path d="M296 64h-80a7.91 7.91 0 00-8 8v24h96V72a7.91 7.91 0 00-8-8z" fill="none"/><path d="M292 64h-72a4 4 0 00-4 4v28h80V68a4 4 0 00-4-4z" fill="none"/><path d="M447.55 96H336V48a16 16 0 00-16-16H192a16 16 0 00-16 16v48H64.45L64 136h33l20.09 314A32 32 0 00149 480h214a32 32 0 0031.93-29.95L415 136h33zM176 416l-9-256h33l9 256zm96 0h-32V160h32zm24-320h-80V68a4 4 0 014-4h72a4 4 0 014 4zm40 320h-33l9-256h33z"/></svg>
+							<span class="standard-button-text text-[#535353] ml-2">
+									Delete Shape
+								</span>
+							</div>
+						</button>
+					</div>
 				</div>
-			`)
-			.openOn(this.map);
+			`);
+			// open it
+			popup.openOn(this.map);
 	
 			// copy geojson
 			// add copygeojson click listener
-			let copyButtonElement = document.getElementById(String(copyButtonID));
-			copyButtonElement.addEventListener('click',() => {
+			let copyButtonElement = document.getElementById(String(copyButtonID) + 'c');
+			let editButtonElement = document.getElementById(String(copyButtonID) + 'e');
+			let deleteButtonElement = document.getElementById(String(copyButtonID) + 'd');
+
+			copyButtonElement.addEventListener('click', () => {
 				// switch coord order!
 				layerGeoJSON.geometry.coordinates.reverse();
 				this.clipboard.copy(JSON.stringify(layerGeoJSON));
 				this.toastr.success('Copied to clipboard')
+				// close the popup
+				popup.close();
+			});
+
+			editButtonElement.addEventListener('click', () => {
+				this.customToolbar.editOn();
+				// close the popup
+				popup.close();
+			});
+
+			deleteButtonElement.addEventListener('click',() => {
+				featureGroup.removeLayer(layer);
+				this.toastr.info('Deleted shape');
+				// close the popup
+				popup.close();
 			});
 		}
 	})
+}
+
+customToolbar = {
+	editOn: () => {
+		this.editHandler.enable();
+		this.leafletDrawState.isEditing = true;
+	},
+	editCancel: () => {
+		this.editHandler.revertLayers();
+		this.editHandler.disable();
+		this.leafletDrawState.isEditing = false;
+	},
+	editSave: () => {
+		this.editHandler.save();
+		this.editHandler.disable();
+		this.leafletDrawState.isEditing = false;
+	},
+	deleteOn: () => {
+		this.deleteHandler.enable();
+		this.leafletDrawState.isDeleting = true;
+	},
+	deleteCancel: () => {
+		try {
+			this.deleteHandler.revertLayers();
+		} catch(err) {
+			console.log('No layers deleted');
+		}
+		this.deleteHandler.disable();
+		this.leafletDrawState.isDeleting = false;
+	},
+	deleteSave: () => {
+		this.deleteHandler.save();
+		this.deleteHandler.disable();
+		this.leafletDrawState.isDeleting = false;
+	},
+	allOff: () => {
+		this.leafletDrawState.isDeleting = false;
+		this.leafletDrawState.isEditing = false;
+	}
+}
+isShapesEmpty() {
+	return Object.keys(this.drawnItems._layers).length == 0;
 }
 
 // Must invalidate the size because a bug where the tiles do not render properly on first load
@@ -1222,7 +1327,6 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 		color: hexToRgb(relevantLayer.color),
 		opacity: relevantLayer.opacity,
 	}
-	console.log(geoType)
 	if(geoType == 'geoPoint') {
 		visualOptions.size = relevantLayer.size;
 		visualOptions.sensitivity = 1;
@@ -1241,7 +1345,6 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 		map: this.map,
 		preserveDrawingBuffer: isForImageSave,
 		data: geojson,
-		//sensitivity: 0.01,
 		click: (e, feature) => {
 			// Get the value from its row
 			const {
@@ -1332,8 +1435,8 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 		}
 	};
 
-	glify.latitudeFirst();
 	let gl;
+	glify.latitudeFirst();
 	if(geoType == 'geoPoint') {
 		gl = glify.points(glifyObject);
 	} else if(geoType == 'geoLine') {
@@ -1341,6 +1444,8 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 	} else if(geoType == 'geoRegion') {
 		gl = glify.shapes(glifyObject);
 	}
+
+	gl.layerID = relevantLayer.layerID;
 
 	// add to the layer
 	relevantLayer.renderObject = gl;
@@ -1366,10 +1471,22 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 	}
 }
 
+private geoTypeToGlifyInstanceArray = {
+	geoPoint: 'pointsInstances',
+	geoLine: 'linesInstances',
+	geoRegion: 'shapesInstances',
+}
 private clearGeography(layer) {
 	if(layer.renderObject) {
+		// Clear layer visually
 		layer.renderObject.remove();
 		layer.renderObject = null;
+		// Memory management: Whenever glify.points() is called it adds an instance with *all* of it's data to the
+		// pointsInstances array. It does not remove this instance on .remove() so we must do it manually to free
+		// up memory
+		let instanceArrayName = this.geoTypeToGlifyInstanceArray[layer.type];
+		const instanceIndex = glify[instanceArrayName].map(inst => inst.layerID == layer.layerID ? true : false).indexOf(true);
+		glify[instanceArrayName].splice(instanceIndex, 1);
 	}
 }
 
@@ -1558,14 +1675,14 @@ renderChangeStack = 0;
 private async debounceRenderChange(featureCollection, type, layerID) {
 	// push to stack
 	this.renderChangeStack++;
-	console.log('Added to Stack')
+	// console.log('Added to Stack')
 	// wait 
 	await new Promise(r => setTimeout(r, 500));
 	// pop from stack
 	this.renderChangeStack--;
 	// if stack is empty then run()
 	if(this.renderChangeStack == 0) {
-		console.log('Running')
+		console.log('Debounce complete: updating layer...')
 		this.renderGeography(featureCollection, type, layerID);
 	}
 }
@@ -1574,7 +1691,13 @@ removeLayer(layer) {
 	const { layerID } = layer;
 	const layerIndex = this.queryState.mapView.layers.map(layer => layer.layerID).indexOf(layerID);
 	const layerName = this.queryState.mapView.layers[layerIndex].name;
+	// remove points on the map
 	this.clearGeography(layer);
+	// remove pointers to layer data manually
+	this.queryState.mapView.layers[layerIndex].data.tableData = [];
+	this.queryState.mapView.layers[layerIndex].data.headerNames = [];
+	this.queryState.mapView.layers[layerIndex].data.primaryKeys = [];
+	// remove it from the state object
 	this.queryState.mapView.layers.splice(layerIndex, 1);
 	this.toastr.info('Removed Layer: ' + layerName, null, {positionClass: 'toast-top-left'});
 }
