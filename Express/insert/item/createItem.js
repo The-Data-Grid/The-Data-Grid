@@ -1,4 +1,4 @@
-const {postgresClient} = require('../../db/pg.js');
+const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
 const {
     returnableIDLookup,
@@ -7,7 +7,7 @@ const {
     requiredItemLookup,
     itemColumnObject,
     itemTableNames
-} = require('../../setup.js');
+} = require('../../preprocess/load.js');
 
 const {
     insertItemHistory,
@@ -23,7 +23,7 @@ const insertExternalColumn = {
     'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', CreateItemError),
     'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor', CreateItemError),
     'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', CreateItemError),
-    'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', CreateItemError),
+    //'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', CreateItemError),
     'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', CreateItemError),
     'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list', CreateItemError)
 };
@@ -104,7 +104,7 @@ async function createItem(options) {
             validateItemDataColumns(createItemObject.data, tableName);
         }
 
-        console.log('Validated');
+        console.log('Validated every Item');
 
         // 3. Insert every item
         let currentInsertedItemPrimaryKeyLookup = createItemObjectArray.map(el => null)
@@ -248,12 +248,14 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
                     continue;
                 }
                 const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+                primaryKeyAndColumnName.isLocation = false; // ** change this if you want to add location types to external columns
                 columnNamesAndValues.push(primaryKeyAndColumnName);
             // then a local column
             } else {
                 columnNamesAndValues.push({
                     columnName: itemColumn.columnName,
-                    columnValue
+                    columnValue,
+                    isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
                 });
             }
         // then not valid
@@ -285,7 +287,8 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     }
 
     // 7. Insert insertion record into history tables
-    await insertItemHistory(tableName, 'create', itemPrimaryKey, db);
+    // complete hack, don't want to deal with optimizing item creation yet
+    await insertItemHistory(tableName, 'create', [itemPrimaryKey], db);
 
     // Update the primary key lookup and return it
     insertedItemPrimaryKeyLookup[currentIndex] = itemPrimaryKey;
@@ -336,8 +339,14 @@ function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, 
 
     // make the column values SQL string
     let columnValuesSQL = [];
-    columnNamesAndValues.map(col => col.columnValue).forEach(columnValue => {
-        columnValuesSQL.push(formatSQL('$(columnValue)', {
+    columnNamesAndValues.forEach(col => {
+        let { columnValue, isLocation } = col;
+        let pgPromiseString = '$(columnValue)';
+        // Wrap GeoJSON in PostGIS type converter for location types
+        if(isLocation) {
+            pgPromiseString = `ST_GeomFromGeoJSON(${pgPromiseString})`;
+        }
+        columnValuesSQL.push(formatSQL(pgPromiseString, {
             columnValue
         }));
     });

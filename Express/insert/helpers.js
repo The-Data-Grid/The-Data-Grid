@@ -7,13 +7,13 @@ const {
     requiredItemLookup,
     returnableIDLookup,
     itemColumnObject,
-} = require('../setup.js');
+} = require('../preprocess/load.js');
 const {
     isValidDate,
     dateToUTC,
-} = require('../validate.js');
+} = require('../parse/validate.js');
 const type = require('@melgrove/type');
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 const formatSQL = postgresClient.format;
 
 class CreateItemError extends Error {
@@ -30,6 +30,7 @@ class CreateItemError extends Error {
       // Custom debugging information
       this.code = errObject.code
       this.msg = errObject.msg
+      this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -47,6 +48,7 @@ class CreateObservationError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -64,6 +66,7 @@ class DeleteObservationError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -81,6 +84,7 @@ class DeleteItemError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -98,6 +102,7 @@ class UpdateItemError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -115,6 +120,7 @@ class UpdateObservationError extends Error {
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
+        this.message = `\n\n|========================= ${this.name}\n\nCode: ${this.code}\nMsg: ${this.msg}\n\n|========================= STACK TRACE\n${this.message}`;
     }
 }
 
@@ -134,45 +140,65 @@ function insertManyToManyGenerator(isObservation, isUpdate) {
      * @param {String} listTableName 
      * @param {Object} db 
      */
-    return async (primaryKeyOfInsertedValue, primaryKey, listTableName, db) => {
+    return async (primaryKeysOfInsertedValues, primaryKeys, listTableName, db) => {
         const manyToManyTableName = 'm2m_' + listTableName;
-        if(type(primaryKeyOfInsertedValue) !== 'array') {
-            primaryKeyOfInsertedValue = [primaryKeyOfInsertedValue];
+        // if updating, remove all many to many values first
+        if(isUpdate) {
+            for(let primaryKey of primaryKeys) {
+                try {
+                    await db.none(formatSQL(`
+                        DELETE FROM $(manyToManyTableName:name)
+                        WHERE $(foreignKeyColumnName:name) = $(primaryKey)
+                    `, {
+                        manyToManyTableName,
+                        foreignKeyColumnName,
+                        primaryKey
+                    }));
+                } catch(err) {
+                    throw new CreateItemError({code: 500, msg: `Error when deleting key ${primaryKey} from ${manyToManyTableName}.${foreignKeyColumnName}`});
+                }
+            }
         }
+
+        let valuesSQL = ''
+        for(let i = 0; i < primaryKeys.length; i++) {
+            let keys = primaryKeysOfInsertedValues[0];
+            let primaryKey = primaryKeys[0];
+            valuesSQL += makeValuesSQL(keys, primaryKey);
+        }
+        valuesSQL = valuesSQL.slice(1);
+
         try {
-            // if updating, remove all many to many values first
-            if(isUpdate) {
-                await db.none(formatSQL(`
-                    DELETE FROM $(manyToManyTableName:name)
-                    WHERE $(foreignKeyColumnName:name) = $(primaryKey)
-                `, {
-                    manyToManyTableName,
-                    foreignKeyColumnName,
-                    primaryKey
-                }));
-            }
-            for(let key of primaryKeyOfInsertedValue) {
-                await db.none(formatSQL(`
-                    INSERT INTO $(manyToManyTableName:name) 
-                        (list_id, $(foreignKeyColumnName:name))
-                        VALUES
-                        ($(primaryKeyOfInsertedValue), $(primaryKey))
-                `, {
-                    manyToManyTableName,
-                    primaryKeyOfInsertedValue: key,
-                    primaryKey,
-                    foreignKeyColumnName
-                }));        
-            }
+            await db.none(formatSQL(`
+                INSERT INTO $(manyToManyTableName:name) 
+                    (list_id, $(foreignKeyColumnName:name))
+                    VALUES
+                    $(valuesSQL:raw)
+            `, {
+                manyToManyTableName,
+                foreignKeyColumnName,
+                valuesSQL,
+            }));
         } catch(err) {
-            throw new CreateItemError({code: 500, msg: `Error when inserting key ${key} and ${primaryKey} into ${manyToManyTableName}`});
+            throw new CreateItemError({code: 500, msg: `Error when inserting key ${primaryKeysOfInsertedValues} and ${primaryKeys} into ${manyToManyTableName}`});
+        }
+            
+        function makeValuesSQL(keys, primaryKey) {
+            let SQL = '';
+            for(let key of keys) {
+                SQL += ',' + formatSQL('($(key), $(primaryKey))', {
+                    key,
+                    primaryKey,
+                });
+            }
+            return SQL;
         }
     };
 }
 
 /**
  * Composes an external column insertion function for inserting
- * values into list, attribute, factor, or location tables
+ * values into list, attribute, or factor tables
  * @param {String} primaryKeyColumnName 
  * @param {Boolean} isMutable 
  * @param {String} referenceType
@@ -183,142 +209,43 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
     /**
      * @param {String} tableName 
      * @param {String} columnName 
-     * @param {String|Number|Date|Object|Boolean|Array} data 
-     * @returns {<{columnName: String, columnValue: Number | Number[]}>} Array of primary keys if list reference type
+     * @param {Array} data 
+     * @returns {<{columnName: String, columnValue: {Number[] | Number[][]}}>} Array of primary keys if list reference type
      */
     return async (tableName, columnName, data, db) => {
-        let primaryKey;
+        const isList = ['item-list', 'item-list-mutable', 'obs-list', 'obs-list-mutable'].includes(referenceType);
         const foreignKeyColumnName = tableName + '_id';
-        // List Handling
-        if(referenceType === 'item-list' || referenceType === 'obs-list') {
-            // check to see if all values are valid
-            try {
-                
-                if(data.length === 0) {
-                    primaryKey = [];
-                } else {
-                    primaryKey = (await db.any(formatSQL(`
-                        select list_id
-                        from $(tableName:name)
-                        WHERE $(columnName:name) IN ($(data:csv))
-                    `, {
-                        tableName,
-                        columnName,
-                        data,
-                    }))).map(pk => pk.list_id);
-                }
 
-            } catch(err) {
-                console.log(err)
-                throw new ErrorClass({code: 500, msg: `Error when getting current list values from ${tableName}`});
-            }
-            // if there are new values
-            if(primaryKey.length != data.length) {
-                const newValues = data.filter(value => !primaryKey.includes(value));
-                if(!isMutable) {
-                    throw new ErrorClass({code: 400, msg: `Value(s) ${newValues} from list input ${data.length} are not valid for the column ${columnName} and table ${tableName}`})
-                } else {
-                    // insert new values
-                    let newPrimaryKeys = [];
-                    try {
-                        for(let value of newValues) {
-                            // Now insert
-                            const newKey = (await db.one(formatSQL(`
-                                INSERT INTO $(tableName:name) 
-                                    ($(columnName:name))
-                                    VALUES
-                                    ($(value))
-                                        RETURNING $(primaryKeyColumnName:name)
-                            `, {
-                                tableName,
-                                columnName,
-                                value,
-                                primaryKeyColumnName
-                            })))[primaryKeyColumnName];
+        // unique values
+        let uniqueDataValues;
+        if(isList) {
+            uniqueDataValues = [...new Set(data.reduce((acc, el) => [...acc, ...el]))];
+        } else {
+            uniqueDataValues = [...new Set(data)].filter(value => value != null);
+        }
+        let dataValueKeyLookup = {};
 
-                            newPrimaryKeys.push(newKey);
-                        }
-                        primaryKey = [...primaryKey, ...newPrimaryKeys];
-                    } catch(err) {
-                        throw new ErrorClass({code: 500, msg: `Error when inserting ${newValues} into ${tableName}`})
-                    }
-                }
-            }
-        // Location handling
-        } 
-        else if(referenceType == 'item-location') {
-            // Now insert
-            try {
-                console.log(formatSQL(`
-                INSERT INTO $(tableName:name) 
-                    ($(columnName:name))
-                    VALUES
-                    (ST_GeomFromGeoJSON($(data)))
-                        RETURNING $(primaryKeyColumnName:name)
+        // note db.any here, we are deciding not to throw
+        // if more than one record is returned with the
+        // value. This is to prevent upload from breaking
+        // if duplicates are found in list, attribute,
+        // or factor tables
+        for(let value of uniqueDataValues) {
+
+            let primaryKey = (await db.any(formatSQL(`
+                SELECT $(primaryKeyColumnName:name)
+                FROM $(tableName:name)
+                WHERE $(columnName:name) = $(value)
             `, {
                 tableName,
                 columnName,
-                data,
+                value,
                 primaryKeyColumnName
-            }))
-                primaryKey = (await db.one(formatSQL(`
-                    INSERT INTO $(tableName:name) 
-                        ($(columnName:name))
-                        VALUES
-                        (ST_GeomFromGeoJSON($(data)))
-                            RETURNING $(primaryKeyColumnName:name)
-                `, {
-                    tableName,
-                    columnName,
-                    data,
-                    primaryKeyColumnName
-                })))[primaryKeyColumnName];
-            } catch(err) {
-                // This can probably be a 400 because this should only throw when the
-                // geojson isn't valid
-                throw new ErrorClass({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
-            }
+            })))[0];
 
-            return {
-                // Foreign key column name and value inside the item_... table
-                columnName: foreignKeyColumnName,
-                columnValue: primaryKey
-            };
-            
-        } 
-        // Factor, Attribute handling
-        else {
-            let dataValue = formatSQL('$(data)', {
-                data
-            });
-            console.log(formatSQL(`
-            SELECT $(primaryKeyColumnName:name)
-            FROM $(tableName:name)
-            WHERE $(columnName:name) = $(dataValue:raw)
-        `, {
-            tableName,
-            columnName,
-            dataValue,
-            primaryKeyColumnName
-        }))
-            try {
-                // note db.many here, we are deciding not to throw
-                // if more than one record is returned with the
-                // value. This is to prevent upload from breaking
-                // if duplicates are found in list, attribute, location,
-                // or factor tables
-                primaryKey = (await db.many(formatSQL(`
-                    SELECT $(primaryKeyColumnName:name)
-                    FROM $(tableName:name)
-                    WHERE $(columnName:name) = $(dataValue:raw)
-                `, {
-                    tableName,
-                    columnName,
-                    dataValue,
-                    primaryKeyColumnName
-                })))[0][primaryKeyColumnName];
-
-            } catch(err) {
+            // if not a valid value for the factor / attribute
+            if(primaryKey == null) {
+                // if not mutable then throw
                 if(!isMutable) {
                     const validValues = (await db.any(formatSQL(`
                         SELECT $(columnName:name)
@@ -327,34 +254,44 @@ function externalColumnInsertGenerator(primaryKeyColumnName, isMutable, referenc
                         tableName,
                         columnName
                     }))).map(v => v[columnName]).join(', ');
-                    throw new ErrorClass({code: 400, msg: `The value ${dataValue} is not one of the valid values (${validValues}) for ${tableName}`});
+                    throw new ErrorClass({code: 400, msg: `The value ${value} is not one of the valid values (${validValues}) for ${tableName}`});
                 }
-
-                // Now insert
+                // mutable so add it
                 try {
                     primaryKey = (await db.one(formatSQL(`
                         INSERT INTO $(tableName:name) 
                             ($(columnName:name))
                             VALUES
-                            ($(data))
+                            ($(value))
                                 RETURNING $(primaryKeyColumnName:name)
                     `, {
                         tableName,
                         columnName,
-                        data,
+                        value,
                         primaryKeyColumnName
                     })))[primaryKeyColumnName];
+
                 } catch(err) {
                     throw new ErrorClass({code: 500, msg: 'Server error when inserting foreign key into the item or observation column'})
                 }
+            } else {
+                primaryKey = primaryKey[primaryKeyColumnName]
             }
+            dataValueKeyLookup[value] = primaryKey;
         }
-        return {
-            // Foreign key column name and value inside the item or observation table
-            columnName: foreignKeyColumnName,
-            columnValue: primaryKey
-        };
-    };
+
+        if(isList) {
+            return {
+                columnName: foreignKeyColumnName,
+                columnValues: data.map(arr => arr.map(value => ({columnValue: dataValueKeyLookup[value], isLocation: false}))),
+            };
+        } else {
+            return {
+                columnName: foreignKeyColumnName,
+                columnValues: data.map(value => ({columnValue: value == null ? null : dataValueKeyLookup[value], isLocation: false})),
+            };
+        }
+    }    
 }
 
 /**
@@ -437,15 +374,15 @@ function externalColumnUpdateGenerator(primaryKeyColumnName, isMutable, referenc
 
 
 const sqlToJavascriptLookup = {
-    numeric: 'number',
-    integer: 'number',
-    timestamptz: 'date',
-    boolean: 'boolean',
-    json: 'object',
-    point: 'object',
-    linestring: 'object',
-    polygon: 'object',
-    text: 'string'
+    NUMERIC: 'number',
+    INTEGER: 'number',
+    TIMESTAMPTZ: 'string',
+    BOOLEAN: 'boolean',
+    JSON: 'object',
+    Point: 'object',
+    LineString: 'object',
+    Polygon: 'object',
+    TEXT: 'string'
 };
 function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
     /**
@@ -455,7 +392,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
      * @returns {undefined} 
      */
     return function validateDataColumns(dataObject, tableName) {
-        const {returnableIDs, data} = dataObject
+        const { returnableIDs, data, multiple } = dataObject
         const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
         // Get all of the columns needed to insert the item
         let itemColumns = itemColumnObject[tableName];
@@ -472,24 +409,46 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
         } else {
             relevantColumnObjects = itemColumns.filter(col => col.isItem);
         }
-        console.log(itemColumnObject[tableName])
-        const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID);
-        
+        const relevantColumnIDs = relevantColumnObjects.map(col => col.columnID); 
 
         // make sure all non nullable fields are included when creating a new item
         if(!isUpdate) {
-            const nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
+            var nonNullableColumnIDs = relevantColumnObjects.filter(col => !col.isNullable).map(col => col.columnID);
             if(!nonNullableColumnIDs.every(id => columnIDs.includes(id))) throw new ErrorClass({code: 400, msg: `Must include columnIDs ${nonNullableColumnIDs} and only included ${columnIDs} for ${tableName}`});
         }
         
         // check type of each field
         returnableIDs.forEach((returnableID, i) => {
-            // convert id to returnableID
+            // validate returnable is relevant
             const columnID = returnableIDLookup[returnableID].columnID
-            // is it one of the data columns?
+            let isNotNullable;
             if(relevantColumnIDs.includes(columnID)) {
+                isNotNullable = nonNullableColumnIDs.includes(columnID);
+            } else {
+                throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} is not valid for ${tableName}`});
+            }
+            // if multiple then go through every row of data
+            if(multiple === true) {
+                for(let rowIndex = 0; rowIndex < data.length; rowIndex++) {
+                    validateField(returnableID, i, data[rowIndex], isNotNullable, columnID);
+                }
+            } else {
+                // otherwise just have to check one row
+                validateField(returnableID, i, data, isNotNullable, columnID);
+            }
+        });
+        
+        function validateField(returnableID, i, data, isNotNullable, columnID) {
+            // if null make sure it's ok to be null
+            if(data[i] === null) {
+                if(isNotNullable) {
+                    throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} is not nullable but has been passed as null`});
+                }
+            }
+            // if not null make sure correct type
+            else {
                 // get correct type
-                let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType.toLowerCase()]
+                let correctType = sqlToJavascriptLookup[returnableIDLookup[returnableID].sqlType]
                 // make sure it's an array if list reference type or SOP
                 if(['item-list', 'obs-list'].includes(returnableIDLookup[returnableID].referenceType) || ('special' === returnableIDLookup[returnableID].referenceType && 'Standard Operating Procedure' === returnableIDLookup[returnableID].frontendName)) {
                     if(type(data[i]) !== 'array') throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} must be of type: array`})
@@ -500,22 +459,24 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
                 }
                 // check type for others
                 else {
-                    // format date
-                    if(correctType === 'date') {
-                        if(isValidDate(data[i])) {
-                            data[i] = dateToUTC(data[i]);
-                        } else {
-                            throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must be of type date in format: MM-DD-YYYY`})
-                        }
+                    if(type(data[i]) !== correctType) {
+                        throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}. Current Type: ${type(data[i])}. Current Value: ${data[i]}`})
+                    }     
+                }
+                // format GeoJSON
+                if(['geoPoint', 'geoLine', 'geoRegion'].includes(returnableIDLookup[returnableID].selectorType)) {
+                    data[i] = JSON.stringify(data[i]);
+                }
+                // format date
+                if(returnableIDLookup[returnableID].selectorType === 'date') {
+                    if(isValidDate(data[i])) {
+                        data[i] = dateToUTC(data[i]);
                     } else {
-                        // all other
-                        if(type(data[i]) !== correctType) throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}`})
+                        throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must be of type date in format: MM-DD-YYYY`})
                     }
                 }
-            } else {
-                throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} is not valid for ${tableName}`})
             }
-        })
+        }
     }
 }
 
@@ -527,17 +488,28 @@ function insertHistoryGenerator(isObservation) {
         const historyTableName = 'history_' + baseTableName;
         const typeID = historyLookup[historyType];
 
-        await db.none(formatSQL(`
+        let columnSQL = formatSQL(`
             insert into $(historyTableName:name)
             (type_id, $(foreignKeyColumnName:raw), time_submitted)
-            values
-            ($(typeID), $(primaryKey), NOW())
-        `, {
+            values `, {
             historyTableName,
-            typeID,
-            primaryKey,
-            foreignKeyColumnName
-        }))
+            foreignKeyColumnName,
+        });
+
+        let valueSQL = '';
+        for(let key of primaryKey) {
+            valueSQL += ', ' + getValueSQL(key);
+        }
+        valueSQL = valueSQL.slice(1);
+
+        function getValueSQL(primaryKey) {
+            return formatSQL(`
+                ($(typeID), $(primaryKey), NOW())
+            `, {
+                typeID,
+                primaryKey,
+            });
+        }
     }
 }
 
@@ -586,17 +558,20 @@ function validateRequiredItemsOnUpdate(requiredItemTableNames, tableName) {
 }
 
 function insertSOPGenerator(isUpdate, ErrorClass) {
-    return async (sopValue, observationCount, globalPrimaryKey, db) => {
+    return async (sopValues, observationCountReferences, globalPrimaryKey, db) => {
         // if updating remove old values
         if(isUpdate) {
             try {
                 // remove all current
-                await db.none(formatSQL(`
-                    DELETE FROM m2m_item_sop
-                    WHERE observation_count_id = $(observationCount)
-                `, {
-                    observationCount
-                }));
+                // can be optimized with `in` to be a single statement
+                for(let observationCount of observationCountReferences) {
+                    await db.none(formatSQL(`
+                        DELETE FROM m2m_item_sop
+                        WHERE observation_count_id = $(observationCount)
+                    `, {
+                        observationCount
+                    }));
+                }
             } catch {
                 ErrorClass({code: 500, msg: 'Error when removing old SOP on update'});
             }
@@ -613,11 +588,12 @@ function insertSOPGenerator(isUpdate, ErrorClass) {
                 globalPrimaryKey
             }))).id;
         } catch(err) {
-            console.log(err);
             throw new ErrorClass({code: 500, msg: `Error when getting organization ID from global with primary key ${globalPrimaryKey}`});
         }
         // SOP Value is validated to be an array
-        for(let sopName of sopValue) {
+        let uniqueSOPs = [...new Set(sopValues.reduce((acc, el) => [...acc, ...el]))];
+        let sopPrimaryKeyLookup
+        for(let sopName of uniqueSOPs) {
             try {
                 const sopPrimaryKey = (await db.one(formatSQL(`
                     select item_id from item_sop
@@ -627,20 +603,37 @@ function insertSOPGenerator(isUpdate, ErrorClass) {
                     sopName,
                     organizationID
                 }))).item_id;
-        
-                await db.none(formatSQL(`
-                    insert into m2m_item_sop
-                    (observation_count_id, item_sop_id)
-                    values
-                    ($(observationCount), $(sopPrimaryKey))
-                `, {
-                    observationCount,
-                    sopPrimaryKey
-                }));
+
+                sopPrimaryKeyLookup[sopName] = sopPrimaryKey;
+            
             } catch (err) {
-                console.log(err)
                 throw new ErrorClass({code: 400, msg: `SOP "${sopName}" is not a valid SOP in your organization`});
             }
+        }
+            
+        let SQL = '';
+        for(let i = 0; i < sopValues.length; i++) {
+            let sops = sopValues[i];
+            let observationCount = observationCountReferences[i];
+            for(let sopName of sops) {
+                SQL += ',' + getSOPSQL(observationCount, sopPrimaryKeyLookup[sopName]);
+            }    
+        }
+        if(SQL.length == 0) {
+            return;
+        }
+        SQL = SQL.slice(1);
+        await db.none(formatSQL(`
+            insert into m2m_item_sop
+            (observation_count_id, item_sop_id)
+            values
+            (SQL:raw)
+        `, {
+            SQL
+        }));
+
+        function getSOPSQL(sopPrimaryKey, observationCount) {
+            return formatSQL('($(observationCount), $(sopPrimaryKey))', {observationCount, sopPrimaryKey});
         }
     }
 }

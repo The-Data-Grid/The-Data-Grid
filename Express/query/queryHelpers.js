@@ -11,13 +11,12 @@ Functions:
 ============================================================ */
 
 // SQL Formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 const formatSQL = postgresClient.format;
 
 // SQL statements
 const {
-    where, 
-    whereCondition, 
+    whereConditionObject, 
     groupBy,
     rootFeatureJoin,
     subfeatureJoin,
@@ -29,12 +28,12 @@ const {
     pk
 } = require('../statement.js').query;
 
-const {returnableIDLookup, featureParents} = require('../setup.js')
+const {returnableIDLookup, featureParents} = require('../preprocess/load.js')
 
 
 module.exports = {
     makeFeatureClauseArray,
-    makeWhereClauseArray,
+    makeWhereClause,
     makeUniversalFilters,
     makeGroupByClause,
     makeInternalObjects
@@ -64,10 +63,8 @@ function makeInternalObjects(parsed, queryType) {
     // 2. returned filters
     // 3. column to sort by
     const filterColumnIDs = [];
-    parsed.filters.forEach( arr => {
-        arr.forEach( obj => {
-            filterColumnIDs.push(obj.key);
-        });
+    parsed.filters.forEach( obj => {
+        filterColumnIDs.push(obj.id);
     });
     let allIDs = [...new Set(parsed.columns.concat(filterColumnIDs, sortID))];
 
@@ -146,19 +143,19 @@ function makeFeatureClauseArray(feature, featureTree, queryType) {
 
 // WHERE CLAUSES
 // ==================================================
-function makeWhereClauseArray(whereLookup, filters) {
-    let whereClauseArray = [];
-    let initialWHERE = true;
+function makeWhereClause(whereLookup, builderObject) {
 
-    /*
-    [0, {a}, {b}, [1, {c}, {d}]]
-    a AND b AND (c OR d)
-
-    formatFilter(filter: object) {
-
+    if(builderObject === null) {
+        return '';
+    } else {
+        return 'WHERE ' + formatGroup(builderObject);
     }
 
-    formatGroup(group: array) {
+    /*
+        [0, {a}, {b}, [1, {c}, {d}]]
+        a AND b AND (c OR d)
+    */
+    function formatGroup(group) {
         let SQLString = [];
         let seperator = group[0] === 0 ? 'AND' : 'OR';
         for(let element of group.slice(1)) {
@@ -171,35 +168,28 @@ function makeWhereClauseArray(whereLookup, filters) {
                 SQLString.push(formatFilter(element));
             }
         }
-        return 'WHERE ' + SQLString.join(` ${seperator} `);
+        return SQLString.join(` ${seperator} `);
     }
-    */
-
-    for(let orGroup of filters) {
-
-        let out = {}
-        // The first clause must be WHERE and the following clauses must be AND
-        if(initialWHERE == true) {     
-            out.clause = 'WHERE';
-            initialWHERE = false;
+    
+    function formatFilter(filter) {
+        console.log(whereLookup)
+        // special case geoWithinDistance needing an additional argument
+        let filterIdAndValue;
+        if(filter.op === 'geoWithinDistance') {
+            filterIdAndValue = {
+                id: whereLookup[filter.id],
+                val: filter.val[0],
+                additionalArg: filter.val[1]
+            }
         } else {
-            out.clause = 'AND'
+            filterIdAndValue = {
+                id: whereLookup[filter.id],
+                val: filter.val
+            }
         }
-
-        // Getting the clause components
-        // if multiple values passed then implement logical OR
-        const condition = [];
-        orGroup.forEach(filter => {
-            condition.push(formatSQL(whereCondition, {
-                select: whereLookup[filter.key],
-                operation: filter.op,
-                filterValue: filter.val,
-            }));
-        });
-        out.condition = condition.join(' OR ');
-        whereClauseArray.push(formatSQL(where, out));
+        // format SQL with sanitization
+        return formatSQL(whereConditionObject[filter.op], filterIdAndValue)
     }
-    return whereClauseArray;
 }
 
 // UNIVERSAL FILTERS
@@ -223,7 +213,7 @@ function makeUniversalFilters(whereLookup, universalFilters, feature, queryType)
     let universalSort;
     if(queryType == 'observation') {
         // default column to sort observations by
-        let columnName = formatSQL('$(table:name).data_time_conducted', {
+        let columnName = formatSQL('$(table:name).observation_id', {
             table: feature
         })
 

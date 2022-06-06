@@ -1,0 +1,25 @@
+{
+    "items": {
+        "create": [
+            {
+                "itemTypeID": "TO_BE_FILLED",
+                "requiredItems": [],
+                "newRequiredItemIndices": [],
+                "globalPrimaryKey": 1,
+                "newGlobalItemIndex": null,
+                "data": {
+                    "returnableIDs": "TO_BE_FILLED_ARRAY",
+                    "data": [1]
+                }
+            }
+        ],
+        "update": [],
+        "delete": [],
+        "requestPermanentDeletion": []
+    },
+    "observations": {
+        "create": [],
+        "update": [],
+        "delete": []
+    }
+}

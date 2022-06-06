@@ -1,11 +1,11 @@
-const {postgresClient} = require('../../db/pg.js');
+const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
 
 const {
     itemTableNames,
     itemColumnObject,
     itemObservationTableNameLookup
-} = require('../../setup.js');
+} = require('../../preprocess/load.js');
 
 const {
     UpdateObservationError,
@@ -120,14 +120,16 @@ async function updateIndividualObservation(updateObservationObject, sessionObjec
                 continue;
             }
             const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+            primaryKeyAndColumnName.isLocation = false; // ** change this if you want to add location types to external columns
             columnNamesAndValues.push(primaryKeyAndColumnName);
         // handle auditor and sop special types
         } else if(itemColumn.referenceType == 'special') {
-            if(itemColumn.frontendName === 'Auditor Name') {
+            if(itemColumn.frontendName === 'Auditor') {
                 // always text, never user reference for now
                 columnNamesAndValues.push({
                     columnName: itemColumn.columnName,
-                    columnValue
+                    columnValue,
+                    isLocation: false
                 });
             } else if(itemColumn.frontendName === 'Standard Operating Procedure') {
                 sopValue = columnValue;
@@ -137,6 +139,8 @@ async function updateIndividualObservation(updateObservationObject, sessionObjec
         // then a local column
         } else {
             // convert data_time_conducted field from MM-DD-YYYY to UTC
+            // Not sure why this is happening here and not somewhere else
+            /*
             if(itemColumn.referenceType === 'obs-global' && itemColumn.columnName === 'data_time_conducted') {
                 try {
                     columnValue = apiDateToUTC(columnValue)
@@ -144,9 +148,11 @@ async function updateIndividualObservation(updateObservationObject, sessionObjec
                     throw new UpdateObservationError({code: 400, msg: `${columnValue} must be in MM-DD-YYYY format`});
                 }
             }
+            */
             columnNamesAndValues.push({
                 columnName: itemColumn.columnName,
-                columnValue
+                columnValue,
+                isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
             });
         }
         i++;
@@ -154,9 +160,15 @@ async function updateIndividualObservation(updateObservationObject, sessionObjec
 
     // sanitize and format into UPDATE ... SET SQL format
     columnNamesAndValues = columnNamesAndValues.map(obj => {
-        return formatSQL('$(columnName:name) = $(columnValue)', {
-            columnName: obj.columnName,
-            columnValue: obj.columnValue
+        let { columnName, columnValue, isLocation } = obj;
+        let pgPromiseColumnValueString = '$(columnValue)';
+        // Wrap GeoJSON in PostGIS type converter for location types
+        if(isLocation) {
+            pgPromiseColumnValueString = `ST_GeomFromGeoJSON(${pgPromiseString})`;
+        }
+        return formatSQL(`$(columnName:name) = ${pgPromiseColumnValueString}`, {
+            columnName,
+            columnValue,
         });
     });
 

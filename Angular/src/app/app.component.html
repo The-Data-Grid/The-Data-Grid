@@ -38,7 +38,7 @@
                [routerLinkActiveOptions]="{exact: true}" #rla8="routerLinkActive" [active]="rla8.isActive"></app-dropdown> -->
                 <div *ngIf="authService.isLoggedIn">
                     <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
-                        #rla7="routerLinkActive" [active]="rla7.isActive" routerLink="/audit" style="min-width: 0px">
+                        #rla7="routerLinkActive" [active]="rla7.isActive" routerLink="/audit" style="min-width: 150px">
                         <span *ngIf="currentWindowWidth >= 700">Audit Dashboard</span>
                         <mat-icon *ngIf="currentWindowWidth < 700">dashboard</mat-icon>
                         <!--
@@ -78,14 +78,14 @@
                 </div>
                 <div *ngIf="authService.isLoggedIn">
                     <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
-                        #rla6="routerLinkActive" [active]="rla6.isActive" routerLink="/manage" style="min-width: 0px">
+                        #rla6="routerLinkActive" [active]="rla6.isActive" routerLink="/manage" style="min-width: 150px">
                         <span *ngIf="currentWindowWidth >= 700">Organization Management</span>
                         <mat-icon *ngIf="currentWindowWidth < 700">people</mat-icon>
                     </a>
                 </div>
-                <a mat-tab-link routerLink="/filter" routerLinkActive="activeButton"
+                <a mat-tab-link routerLink="/table" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive"
-                    style="min-width: 0px">
+                    style="min-width: 150px">
                     <span *ngIf="currentWindowWidth >= 700"> Data </span>
                     <mat-icon *ngIf="currentWindowWidth < 700">pageview</mat-icon>
                 </a>
@@ -97,7 +97,7 @@
                 </a> -->
                 <a mat-tab-link routerLink="/about" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla3="routerLinkActive" [active]="rla3.isActive"
-                    style="min-width: 0px">
+                    style="min-width: 150px">
                     <span *ngIf="currentWindowWidth >= 700"> About </span>
                     <mat-icon *ngIf="currentWindowWidth < 700">info</mat-icon>
                 </a>
@@ -105,7 +105,7 @@
                 <div>
                     <a mat-tab-link routerLinkActive="activeB utton" [routerLinkActiveOptions]="{exact: true}"
                         #rla9="routerLinkActive" [active]="rla9.isActive" routerLink="/guide"
-                        style="overflow: hidden; min-width: 0px;">
+                        style="overflow: hidden; min-width: 150px;">
                         <button [matMenuTriggerFor]="menu__" #menuTrigger="matMenuTrigger"
                             (mouseenter)="openResourceMenu(0); recheckIfInMenu = true"
                             (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false" class="upload">
@@ -217,7 +217,7 @@
         </header>
         <div style="padding-top: 49px;"></div>
         <router-outlet></router-outlet>
-        <footer id="footer">
+        <footer *ngIf="router.url !== '/table' && router.url !== '/map'" id="footer">
             <nav>
                 <div fxLayout="row" fxLayoutAlign="space-around start" class="bottom-bar top-box">
                     <div style="width: 200px; margin-right: auto; margin-left: 22px; background-color: #9EACB8">

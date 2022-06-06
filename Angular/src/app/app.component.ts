@@ -140,8 +140,11 @@ export class AppComponent implements OnInit {
     this.currentWindowWidth = window.innerWidth;
   }
 
+  path = null;
+
 
   ngOnInit() {
+    this.path = window.location.href.split('/')[window.location.href.split('/').length - 1];
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -149,6 +152,10 @@ export class AppComponent implements OnInit {
     dialogConfig.height = "700px";
     this.currentWindowWidth = window.innerWidth;
     this.recheckIfInMenu = false;
+
+    console.log('asdfasdf')
+
+    
   }
 
   copyEmail() {

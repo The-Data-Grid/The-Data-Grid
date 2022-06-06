@@ -5,16 +5,20 @@ const router = express.Router(); //use router instead of app
 const multer  = require('multer');
 const uploadFile = multer()
 
+// Database
+const { postgresClient } = require('../pg.js');
+const db = postgresClient.getConnection.db;
+
 // Middleware
-const parse = require('../parse.js');
 const { formatDistinct } = require('../query/query.js');
-const { auditManagment, sopManagement, generateApiKey } = require('../query/direct.js');
-const { validateObservation, validateItem } = require('../validate.js')
+const setDatabaseConnection = require('../query/direct.js');
+const { auditManagment, sopManagement, generateApiKey } = setDatabaseConnection(db)
+const { validateObservation, validateItem } = require('../parse/validate.js')
 const cacheLayer = require('../query/cacheLayer.js');
-const template = require('../template.js');
+const template = require('./spreadsheet/template.js');
 const { sendSignedUrl } = require('./signedUrl.js');
 const { authorizeAuditor, authorizeAuditorAnyOrg } = require('../auth/authorizer.js');
-const { parseOrganizationID, parseSignedUrl } = require('../parse.js');
+const { parseOrganizationID, parseSignedUrl } = require('../parse/parse.js');
 const { itemOrObservationQuery, setupSpreadsheet, formatObjectsSpreadsheet, generateSpreadsheet } = require('./spreadsheet/generate.js');
 const { parseSpreadsheet } = require('./spreadsheet/upload.js');
 

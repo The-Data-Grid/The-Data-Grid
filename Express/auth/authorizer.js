@@ -5,7 +5,7 @@ const {
     allItems,
     observationItemTableNameLookup,
     columnIdItemLookup,
-} = require('../setup.js');
+} = require('../preprocess/load.js');
 
 const itemAuthorizationLookup = {};
 allItems.forEach(item => {
@@ -18,7 +18,7 @@ allItems.forEach(item => {
 });
 
 // Database connection and SQL formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 // get connection object
 const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;

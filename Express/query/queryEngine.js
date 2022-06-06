@@ -7,7 +7,7 @@ in the select and where clauses for the necessary returnables.
 ============================================================ */
 
 // pg-promise sql formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 const formatSQL = postgresClient.format;
 
 // alias join and global SQL statements
@@ -67,7 +67,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
             /*
                 2. add table.column clause to whereLookup
             */
-            whereLookup[returnable.ID] = returnable.selectSQL;
+            whereLookup[returnable.ID] = returnable.whereSQL ? returnable.whereSQL : returnable.selectSQL;
 
         } else { // then SQL needs to be appended
             /*
@@ -82,7 +82,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
             joinClauseArray.push(returnable.appendSQL);
 
             //  3. add table.column clause to whereLookup
-            whereLookup[returnable.ID] = returnable.selectSQL;
+            whereLookup[returnable.ID] = returnable.whereSQL ? returnable.whereSQL : returnable.selectSQL;
         };
     });
 
@@ -128,7 +128,7 @@ var dynamicSQLEngine = (returnableIDs, featureTreeArray, feature, queryType) => 
             selectClauseArray.push(formatSelectAlias(returnable.selectSQL, returnable.ID));
 
             // add table.column clause to whereLookup
-            whereLookup[returnable.ID] = returnable.selectSQL;
+            whereLookup[returnable.ID] = returnable.whereSQL ? returnable.whereSQL : returnable.selectSQL;
 
         } else { // then no appendSQL and alias must be interpolated into select and where clauses
 

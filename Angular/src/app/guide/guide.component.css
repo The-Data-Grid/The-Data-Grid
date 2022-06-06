@@ -65,7 +65,7 @@ h4 {
     display: flex;
     flex-direction: row;
     color: #569CD7;
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
 }
 
 .document {
@@ -77,21 +77,21 @@ h4 {
 
 .body {
     width: 55%;
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
     font-size: 1rem;
     line-height: 2rem;
     margin-bottom: 5px;
 }
 
 .body .b {
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
     font-size: 1rem;
     line-height: 2rem;
     font-weight: 700;
 }
 
 .body .i {
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
     font-size: 1rem;
     line-height: 2rem;
     font-style: italic;
@@ -127,7 +127,7 @@ h4 {
     color: #569dd7;
     text-decoration: underline;
     transition: 0.3s;
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
 }
 
 .linker:hover {
@@ -203,7 +203,7 @@ h4 {
 .guide-button-stack {
     display: flex;
     flex-direction: column;
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
 }
 
 ul {
@@ -211,13 +211,11 @@ ul {
     font-size: 1rem;
     line-height: 2rem;
     width: 45%;
-}
-
-ul li {
-    font-family: 'Open Sans';
-}
-
-ul li::before {
+  }
+  ul li {
+    font-family: 'Roboto';
+  }
+  ul li::before {
     content: "";
     width: calc(.55rem);
     height: calc(.55rem);
@@ -238,10 +236,9 @@ ol {
 
 ol li {
     counter-increment: counter;
-    font-family: 'Open Sans';
-}
-
-ol li::before {
+    font-family: 'Roboto';
+  }
+  ol li::before {
     content: counter(counter);
     width: calc(1.5rem);
     height: calc(1.5rem);
@@ -262,7 +259,7 @@ ol li::before {
     display: inline-block;
     line-height: calc(1.5rem);
     font-size: 13px;
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
     font-weight: 700;
     color: white;
     background-color: #5fa784;

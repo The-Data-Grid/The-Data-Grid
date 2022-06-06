@@ -1,8 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 declare var VANTA;
 
-
-
 @Component({
   selector: 'app-home',
   templateUrl: './index.component.html',

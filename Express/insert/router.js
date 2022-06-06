@@ -1,7 +1,7 @@
 const express = require('express'); 
 const router = express.Router(); //use router instead of app
 // Database connection and SQL formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 const { authorizeSubmission } = require('../auth/authorizer.js');
 // get connection object
 const db = postgresClient.getConnection.db
@@ -51,8 +51,6 @@ async function insertSubmission(submissionObject, sessionObject) {
     const createObservationObjectArray = submissionObject.observations.create
     const updateObservationObjectArray = submissionObject.observations.update
     const deleteObservationObjectArray = submissionObject.observations.delete
-
-    console.log(createItemObjectArray)
 
     // PostgreSQL transaction
     // must pass transaction database object to each helper
@@ -117,4 +115,7 @@ async function insertSubmissionHandler(req, res, next) {
 
 router.post('/', authorizeSubmission, insertSubmissionHandler);
 
-module.exports = router;
+module.exports = {
+    router,
+    insertSubmission,
+};

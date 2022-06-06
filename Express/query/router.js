@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router(); //use router instead of app
 
 // Middleware
-const parse = require('../parse.js');
+const parse = require('../parse/parse.js');
 const query = require('./query.js');
-const { validateObservation, validateItem } = require('../validate.js')
+const { validateObservation, validateItem } = require('../parse/validate.js')
 const cacheLayer = require('./cacheLayer.js');
-const template = require('../template.js');
+const template = require('../manage/spreadsheet/template.js');
 const { authorizeObservationQuery, authorizeItemQuery } =  require('../auth/authorizer.js');
 
 //** Observation Key Query **/	

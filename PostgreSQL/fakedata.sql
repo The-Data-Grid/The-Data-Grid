@@ -105,9 +105,9 @@ INSERT INTO item_room
 "is_existing",
 "item_building_id",
 "data_room_number",
-"data_exhaust_vent",
+"data_exhaust_vent_existence",
 "global_id",
-"data_access_panel")
+"data_access_panel_existence")
 VALUES
     (default, true, 1, '1234A', true, 2, false),
     (default, true, 1, '1235B', false, 2, false),
@@ -140,7 +140,7 @@ VALUES
     (default, 'Raytheon'),
     (default, 'Northrop Grumman');
 
-INSERT INTO list_sink_basin_condition 
+INSERT INTO list_obs_sink_basin_condition 
 ("list_id",
 "data_element")
 VALUES
@@ -148,7 +148,7 @@ VALUES
     (default, 'Dirty'),
     (default, 'Scratched');
 
-INSERT INTO list_sink_faucet_condition 
+INSERT INTO list_obs_sink_faucet_condition 
 ("list_id",
 "data_element")
 VALUES
@@ -156,7 +156,7 @@ VALUES
     (default, 'Scratches'),
     (default, 'Rusty');
 
-INSERT INTO list_sink_sensor_condition 
+INSERT INTO list_obs_sink_sensor_condition 
 ("list_id",
 "data_element")
 VALUES
@@ -219,7 +219,7 @@ INSERT INTO observation_sink
 "data_time_conducted",
 "data_commentary",
 "data_auditor",
-"data_gpm",
+"data_gallons_per_minute",
 "attribute_sink_basin_brand_id",
 "attribute_sink_faucet_brand_id")
 VALUES
@@ -248,7 +248,7 @@ VALUES
     (default, nextval('tdg_observation_count_observation_count_id_seq') - 1, 3, 16, NOW(), '4th', 'Jeremiah', 2.8, 2, 3);
 
 
-INSERT INTO m2m_list_sink_faucet_condition
+INSERT INTO m2m_list_obs_sink_faucet_condition
 ("observation_id",
 "list_id")
 VALUES
@@ -264,7 +264,7 @@ VALUES
 (15, 1),
 (16, 3);
     
-INSERT INTO m2m_list_sink_basin_condition
+INSERT INTO m2m_list_obs_sink_basin_condition
 ("observation_id",
 "list_id")
 VALUES
@@ -281,7 +281,7 @@ VALUES
 (16, 3);
 
 
-INSERT INTO m2m_list_sink_sensor_condition
+INSERT INTO m2m_list_obs_sink_sensor_condition
 ("observation_id",
 "list_id")
 VALUES

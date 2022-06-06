@@ -17,17 +17,23 @@ if (isDeployment) {
     httpPort = 4001;
 }
 
-// start the main connection pool	
-const {connectPostgreSQL} = require('./db/pg.js');	
-connectPostgreSQL('default');
+// Start the main connection pool
+const { connectPostgreSQL } = require('./pg.js');	
+let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
+if(postgresdb.length == 0) {
+    connectPostgreSQL('default');
+} else {
+    postgresdb = postgresdb[0].slice(13);
+    connectPostgreSQL('default', { customDatabase: postgresdb });
+}	
 
 // Middleware
-const { setupParse } = require('./parse.js');
+const { setupParse } = require('./parse/parse.js');
 const { sendSetup, sendMobileSetup, sendFilterSetup } = require('./query/query.js');
-const insertRouter = require('./insert/router.js');
+const insertRouter = require('./insert/router.js').router;
 const auditRouter = require('./query/router.js');
 const authRouter = require('./auth/router.js');
-const managementRouter = require('./manage/router.js');
+//const managementRouter = require('./manage/router.js');
 const setSession = require('./auth/session.js');
 const parseCredentials = require('./auth/parseCredentials.js');
 
@@ -80,7 +86,7 @@ app.get('/setup/mobile', setupParse, sendMobileSetup);
 app.get('/setup/filter', setupParse, sendFilterSetup);
 
 // Audit and Organization management router
-app.use('/manage', managementRouter);
+//app.use('/manage', managementRouter);
 
 // Route not found
 app.use('*', (req, res) => res.status(404).end());

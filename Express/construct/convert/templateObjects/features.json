@@ -1,0 +1,16 @@
+[
+    {
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        },
+        "information": "PASSED_TO_FILE",
+        "name": "PASSED_TO_FILE",
+        "observableItem": {
+            "requiredItem": [
+            ]
+        }
+    }
+]

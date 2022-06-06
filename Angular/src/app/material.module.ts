@@ -28,8 +28,9 @@ import { NgxHorizontalTimelineModule } from 'ngx-horizontal-timeline';
 import { MatStepper } from '@angular/material/stepper';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-
+import {MatBadgeModule} from '@angular/material/badge'; 
+import {MatSliderModule} from '@angular/material/slider';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle'; 
 
 @NgModule({
     imports: [
@@ -59,7 +60,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatStepperModule,
         NgxHorizontalTimelineModule,
         MatProgressBarModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatBadgeModule,
+        MatSliderModule,
+        MatSlideToggleModule
     ],
     exports: [
         MatAutocompleteModule,
@@ -88,7 +92,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatStepperModule,
         NgxHorizontalTimelineModule,
         MatProgressBarModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatBadgeModule,
+        MatSliderModule,
+        MatSlideToggleModule
     ],
 })
 export class MaterialModule { }

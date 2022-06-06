@@ -6,10 +6,10 @@ response object, and sends an HTTP response.
 ============================================================ */
 
 // Internal setup objects
-const {returnableIDLookup, featureParents, setupObject, setupMobileObject, filterSetupObject} = require('../setup.js')
+const {returnableIDLookup, featureParents, setupObject, setupMobileObject, filterSetupObject} = require('../preprocess/load.js')
 
 // Database connection and SQL formatter
-const {postgresClient} = require('../db/pg.js');
+const {postgresClient} = require('../pg.js');
 // get connection object
 const db = postgresClient.getConnection.db
 
@@ -59,29 +59,28 @@ function dataQueryWrapper(queryType) {
 
             const featureClauseArray = queryHelpers.makeFeatureClauseArray(feature, featureTreeArray, queryType);
             
-            const whereClauseArray = queryHelpers.makeWhereClauseArray(whereLookup, res.locals.parsed.filters);
+            const whereClause = queryHelpers.makeWhereClause(whereLookup, res.locals.parsed.builder);
             
             const universalClauseArray = queryHelpers.makeUniversalFilters(whereLookup, res.locals.parsed.universalFilters, feature, queryType);
             
             const groupByClause = queryHelpers.makeGroupByClause(allReturnableIDs, feature, queryType);
             
-
             // EXECUTING QUERY
             // ==================================================
     
             // Adding clauses to query in order
-            let query = [selectClause, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, groupByClause, ...universalClauseArray]; 
+            let query = [selectClause, ...featureClauseArray, ...joinClauseArray, whereClause, groupByClause, ...universalClauseArray]; 
     
             // Concatenating clauses to make final SQL query
             let finalQuery = query.join(' '); 
             
             // Number of row query without limit, offset, or sorting
-            let finalQueryForCounting = [selectClause, ...featureClauseArray, ...joinClauseArray, ...whereClauseArray, groupByClause].join(' ');
+            let finalQueryForCounting = [selectClause, ...featureClauseArray, ...joinClauseArray, whereClause, groupByClause].join(' ');
             // SQLi safe because `finalQueryForCouting` is sanitized
             const nRowsFinalQuery = `WITH query_to_count AS (${finalQueryForCounting}) SELECT COUNT(*)::INTEGER AS "n" FROM query_to_count`;
             
             // DEBUG: Show SQL Query //
-            // console.log(finalQuery); 
+            console.log(finalQuery); 
             // console.log(nRowsFinalQuery);
     
             // Finally querying the database and attaching the result
@@ -98,7 +97,6 @@ function dataQueryWrapper(queryType) {
             console.log(err)
             // Error
             return res.status(500).send(`Internal Server Error 1702: Malformed Query`);
-            
         }
     }
 }
@@ -106,6 +104,7 @@ function dataQueryWrapper(queryType) {
 // SEND OBSERVATION DATA
 // ============================================================
 function formatDefault(req, res, next) {
+    console.log('Formatting...');
     // This is row-major data
 
     /* DEBUG */
@@ -154,6 +153,7 @@ function formatDefault(req, res, next) {
 };
 
 function sendDefault(req, res) {
+    console.log('Returning...');
     return res.json(res.locals.formattedResponse)
 }
 

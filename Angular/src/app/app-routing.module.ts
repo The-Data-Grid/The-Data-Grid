@@ -24,6 +24,8 @@ import { GuideUploadComponent } from './guide-upload/guide.component';
 
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
+  { path: 'data', redirectTo: 'table', pathMatch: 'full'},
+  { path: 'filter', redirectTo: 'table', pathMatch: 'full'},
   { path: '', component: IndexComponent },
   // { path: 'filter', component: FilterComponent },
 //   { path: 'upload', component: UploadComponent },
@@ -36,7 +38,8 @@ const routes: Routes = [
   { path: 'team', component: TeamComponent },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'check-email', component: CheckEmailComponent },
-  { path: 'filter', component: NewFilterComponent},
+  { path: 'table', component: NewFilterComponent},
+  { path: 'map', component: NewFilterComponent},
   { path: 'manage', component: ManagementComponent, canActivate: [AuthGuard] },
   { path: 'guide', component: GuideComponent },
   { path: 'guide/manage', component: GuideManageComponent },

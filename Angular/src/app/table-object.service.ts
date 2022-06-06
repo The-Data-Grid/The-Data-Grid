@@ -110,7 +110,8 @@ export class TableObjectService {
     tableObject.returnableIDs.forEach(returnableID => {
       //treeID is an array containing numbers that represent the path through the tree
       //reverse so we can pop from it like a stack
-      let treeID = setupObject.returnableIDToTreeID[returnableID].split('>').reverse()
+      let treeID = setupObject.returnableIDToTreeID[returnableID].split('>');
+      treeID.reverse();
       returnableIDToItemPathArrays[returnableID] = [];
       let firstIndex = treeID.pop();
       // we have a global column
@@ -155,9 +156,9 @@ export class TableObjectService {
     return partialPath;
   }
 
-  getReturnableIDToColumnIndex(setupObject, tableObject) {
+  getReturnableIDToColumnIndex(setupObject, returnableIDs) {
     let returnableIDToColumnIndex = {};
-    tableObject.returnableIDs.forEach(returnableID => {
+    returnableIDs.forEach(returnableID => {
       //treeID is an array containing numbers that represent the path through the tree
       //reverse so we can pop from it like a stack
       let treeID = setupObject.returnableIDToTreeID[returnableID].split('>').reverse()

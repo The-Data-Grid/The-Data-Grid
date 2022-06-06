@@ -1,11 +1,11 @@
-const {postgresClient} = require('../../db/pg.js');
+const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
 
 const {
     itemTableNames,
     itemColumnObject,
     returnableIDLookup,
-} = require('../../setup.js');
+} = require('../../preprocess/load.js');
 
 const {
     UpdateItemError,
@@ -22,7 +22,7 @@ const insertExternalColumn = {
     'attribute': externalColumnInsertGenerator('attribute_id', false, 'attribute', UpdateItemError),
     'item-factor-mutable': externalColumnInsertGenerator('factor_id', true, 'item-factor', UpdateItemError),
     'item-factor': externalColumnInsertGenerator('factor_id', false, 'item-factor', UpdateItemError),
-    'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', UpdateItemError),
+    //'item-location': externalColumnInsertGenerator('location_id', false, 'item-location', UpdateItemError),
     'item-list': externalColumnInsertGenerator('list_id', false, 'item-list', UpdateItemError),
     'item-list-mutable': externalColumnInsertGenerator('list_id', true, 'item-list', UpdateItemError)
 };
@@ -151,13 +151,15 @@ async function updateIndividualItem(updateItemObject, db) {
                 continue;
             }
             const primaryKeyAndColumnName = await insertExternalColumn[itemColumn.referenceType](itemColumn.tableName, itemColumn.columnName, columnValue, db);
+            primaryKeyAndColumnName.isLocation = false; // ** change this if you want to add location types to external columns
             columnNamesAndValues.push(primaryKeyAndColumnName);
         }
         // then a local column
         else {
             columnNamesAndValues.push({
                 columnName: itemColumn.columnName,
-                columnValue
+                columnValue,
+                isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
             });
         }
         i++;
@@ -174,9 +176,15 @@ async function updateIndividualItem(updateItemObject, db) {
 
     // sanitize and format into UPDATE ... SET SQL format
     columnNamesAndValues = columnNamesAndValues.map(obj => {
-        return formatSQL('$(columnName:name) = $(columnValue)', {
-            columnName: obj.columnName,
-            columnValue: obj.columnValue
+        let { columnName, columnValue, isLocation } = obj;
+        let pgPromiseColumnValueString = '$(columnValue)';
+        // Wrap GeoJSON in PostGIS type converter for location types
+        if(isLocation) {
+            pgPromiseColumnValueString = `ST_GeomFromGeoJSON(${pgPromiseString})`;
+        }
+        return formatSQL(`$(columnName:name) = ${pgPromiseColumnValueString}`, {
+            columnName,
+            columnValue,
         });
     });
 

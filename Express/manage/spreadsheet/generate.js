@@ -1,5 +1,15 @@
 const excel = require('exceljs');
 const express = require('express');
+
+//connect to db
+const { postgresClient } = require('../../pg.js'); 
+const db = postgresClient.getConnection.db;
+const formatSQL = postgresClient.format;
+
+// internal imports
+const setDatabaseConnection = require('../../query/direct.js');
+const { getPresetValues } = setDatabaseConnection(db);
+
 const { 
     itemFISLookup,
     observationFISLookup,
@@ -11,31 +21,24 @@ const {
     observationItemTableNameLookup,
     columnObjects,
     itemColumnObject,
-} = require('../../setup.js');
-const { x } = require('joi');
+} = require('../../preprocess/load.js');
 const { itemQuery, featureQuery } = require('../../query/query.js');
-const { getPresetValues } = require('../../query/direct.js');
 const { 
     userName    
 } = require('../../statement.js').generate;
 
-//connect to db
-const { postgresClient } = require('../../db/pg.js'); 
-const db = postgresClient.getConnection.db;
-const formatSQL = postgresClient.format;
 
 function getXlsxFormattingType(referenceType, SQLType) {
     const referenceTypeGroups = {
         'obs': 1,
-        'obs-global': 1,
         'special': 1,
         'item-non-id': 1,
         'item-id': 1,
         'obs-list': 2,
         'item-list': 2,
         'attribute': 3,
-        'factor': 3,
-        'item-location': 4
+        'item-factor': 3,
+        'obs-factor': 3
     };
 
     const SQLTypeGroups = {

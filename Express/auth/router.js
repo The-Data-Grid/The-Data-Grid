@@ -4,15 +4,15 @@ const bcrypt = require('bcrypt');
 const { nanoid } = require('nanoid');
 const isTesting = ['-t', '--test'].includes(process.argv[2]);
 
-const {postgresClient} = require('../db/pg.js'); 
+const {postgresClient} = require('../pg.js'); 
 
 // get connection object
 const db = postgresClient.getConnection.db;
 // get SQL formatter
 const formatSQL = postgresClient.format;
 
-const { isValidEmail, isValidDate, isValidPassword } = require('../validate.js');
-const { apiDateToUTC, parseOrganizationID } = require('../parse.js');
+const { isValidEmail, isValidDate, isValidPassword } = require('../parse/validate.js');
+const { apiDateToUTC, parseOrganizationID } = require('../parse/parse.js');
 const SQL = require('../statement.js').login;
 const userSQL = require('../statement.js').addingUsers;
 const updating = require('../statement.js').updates;

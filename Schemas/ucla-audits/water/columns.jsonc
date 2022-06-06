@@ -1,0 +1,354 @@
+[
+    // Toilet
+    {
+        "featureName": "Toilet",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Toilet",
+        "globalPresetName": "Commentary"
+    },
+    {
+        "referenceType": "item-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
+        "sqlType": "INTEGER",
+        "isNullable": false,
+        "name": "Clockwise Integer",
+        "featureName": "Toilet"
+    },
+    {
+        "referenceType": "obs",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "NUMERIC",
+        "isNullable": false,
+        "name": "Gallons Per Flush",
+        "featureName": "Toilet"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Stall Condition",
+        "featureName": "Toilet"
+    },
+    {
+        "referenceType": "item-factor",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Basin Brand",
+        "featureName": "Toilet"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Basin Condition",
+        "featureName": "Toilet"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Sensor Condition",
+        "featureName": "Toilet"
+    },
+    {
+        "referenceType": "item-factor",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Flushometer Brand",
+        "featureName": "Toilet"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Flushometer Condition",
+        "featureName": "Toilet"
+    },
+    // Room
+    {
+        "featureName": "Room",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Room",
+        "globalPresetName": "Commentary"
+    },
+    {
+        "referenceType": "item-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": false,
+        "name": "Room Number",
+        "featureName": "Room"
+    },
+    {
+        "referenceType": "item-non-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "BOOLEAN",
+        "isNullable": true,
+        "name": "Exhaust Vent Existence",
+        "featureName": "Room"
+    },
+    {
+        "referenceType": "item-non-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "BOOLEAN",
+        "isNullable": true,
+        "name": "Access Panel Existence",
+        "featureName": "Room"
+    },
+    // Urinal
+    {
+        "featureName": "Urinal",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Urinal",
+        "globalPresetName": "Commentary"
+    },
+    {
+        "referenceType": "item-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": "Number of urinal based on a clockwise count looking down on the room starting from the door",
+        "sqlType": "INTEGER",
+        "isNullable": false,
+        "name": "Clockwise Integer",
+        "featureName": "Urinal"
+    },
+    {
+        "referenceType": "obs",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "NUMERIC",
+        "isNullable": false,
+        "name": "Gallons Per Flush",
+        "featureName": "Urinal"
+    },
+    {
+        "referenceType": "item-factor",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Basin Brand",
+        "featureName": "Urinal"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Basin Condition",
+        "featureName": "Urinal"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Sensor Condition",
+        "featureName": "Urinal"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Divider Condition",
+        "featureName": "Urinal"
+    },
+    {
+        "referenceType": "item-factor",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Flushometer Brand",
+        "featureName": "Urinal"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Flushometer Condition",
+        "featureName": "Urinal"
+    },
+    // Sink
+    {
+        "featureName": "Sink",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Sink",
+        "globalPresetName": "Commentary"
+    },
+    {
+        "referenceType": "item-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
+        "sqlType": "INTEGER",
+        "isNullable": false,
+        "name": "Clockwise Integer",
+        "featureName": "Sink"
+    },
+    {
+        "referenceType": "obs",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "NUMERIC",
+        "isNullable": false,
+        "name": "Gallons Per Minute",
+        "featureName": "Sink"
+    },
+    {
+        "referenceType": "item-factor",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Basin Brand",
+        "featureName": "Sink"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [
+            "Pretty alright",
+            "you know",
+            "yeah, i know"
+        ],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Basin Condition",
+        "featureName": "Sink"
+    },
+    {
+        "referenceType": "item-factor",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Faucet Brand",
+        "featureName": "Sink"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [
+            "Faucet is nice"
+        ],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Faucet Condition",
+        "featureName": "Sink"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Sensor Condition",
+        "featureName": "Sink"
+    },
+    // Mirror
+    {
+        "featureName": "Mirror",
+        "globalPresetName": "Time Conducted"
+    },
+    {
+        "featureName": "Mirror",
+        "globalPresetName": "Commentary"
+    },
+    {
+        "referenceType": "item-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": "Number of toilet based on a clockwise count looking down on the room starting from the door",
+        "sqlType": "INTEGER",
+        "isNullable": false,
+        "name": "Clockwise Integer",
+        "featureName": "Mirror"
+    },
+    {
+        "referenceType": "obs-list",
+        "presetValues": [],
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": true,
+        "name": "Condition",
+        "featureName": "Mirror"
+    },
+    // Building
+    {
+        "referenceType": "item-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "TEXT",
+        "isNullable": false,
+        "name": "Name",
+        "featureName": "Building"
+    },
+    {
+        "referenceType": "item-non-id",
+        "presetValues": null,
+        "accuracy": null,
+        "information": null,
+        "sqlType": "Polygon",
+        "isNullable": true,
+        "name": "Region",
+        "featureName": "Building"
+    }
+]

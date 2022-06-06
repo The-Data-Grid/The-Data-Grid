@@ -43,7 +43,7 @@ jobs:
         run: npm ci
 
       - name: Initialize the PostgreSQL Database and build the schema
-        # Runs a script that creates the v5 PostgreSQL database and builds the schema
+        # Runs a script that creates the v6 PostgreSQL database and builds the schema
         run: npm run db-init
 
       - name: Add Fake Data to the PostgreSQL Database

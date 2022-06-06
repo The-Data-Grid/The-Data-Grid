@@ -1,14 +1,14 @@
 const {
     itemTableNames,
     itemObservationTableNameLookup
-} = require('../../setup.js');
+} = require('../../preprocess/load.js');
 
 const {
     DeleteItemError,
     insertItemHistory
 } = require('../helpers.js');
 
-const {postgresClient} = require('../../db/pg.js');
+const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
 
 module.exports = deleteItem;

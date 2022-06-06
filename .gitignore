@@ -8,7 +8,7 @@ Angular/dist/*
 pg_upgrade_internal.log
 pg_upgrade_server.log
 pg_upgrade_utility.log
-Express/internalObjects.json
+Schemas/verboseToSimple.js
 
 # exclude
 !node_modules/.gitkeep
@@ -20,12 +20,15 @@ Express/internalObjects.json
 .env
 .DS_Store
 
-# computed returnables
-Express/dataRepresentation/auditSchemas/*/returnables/
-
 # schema dependent assets
-Express/dataRepresentation/schemaAssets/*
-!Express/dataRepresentation/schemaAssets/.gitkeep
+Express/schemaAssets/*
+!Express/schemaAssets/.gitkeep
+Express/construct/convert/outputObjects/*
+!Express/construct/convert/outputObjects/.gitkeep
+Express/construct/convert/seedData/*
+!Express/construct/convert/seedData/.gitkeep
+# Don't track submission objects because they are very large
+Schemas/*/*/submissionObject.json
 
 # helpers
 Express/queryTester.js
