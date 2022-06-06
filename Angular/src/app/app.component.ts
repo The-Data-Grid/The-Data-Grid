@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
   constructor(
     private apiService: ApiService, 
     private dialog: MatDialog, 
-    private router: Router, 
+    public router: Router, 
     private clipboard: Clipboard,
     private toastr: ToastrService,
     public authService: AuthService

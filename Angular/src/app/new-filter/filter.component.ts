@@ -1065,7 +1065,7 @@ drawnItems = new L.FeatureGroup();
 editHandler;
 deleteHandler;
 
-private leafletDrawState = {
+leafletDrawState = {
 	isEditing: false,
 	isDeleting: false,
 };
