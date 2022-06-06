@@ -460,7 +460,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
                 // check type for others
                 else {
                     if(type(data[i]) !== correctType) {
-                        throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}. Currently: ${type(data[i])}`})
+                        throw new ErrorClass({code: 400, msg: `returnableID ${returnableID} of columnID ${columnID} must of of type: ${correctType}. Current Type: ${type(data[i])}. Current Value: ${data[i]}`})
                     }     
                 }
                 // format GeoJSON

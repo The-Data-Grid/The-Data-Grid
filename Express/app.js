@@ -17,9 +17,15 @@ if (isDeployment) {
     httpPort = 4001;
 }
 
-// start the main connection pool	
-const {connectPostgreSQL} = require('./pg.js');	
-connectPostgreSQL('default');
+// Start the main connection pool
+const { connectPostgreSQL } = require('./pg.js');	
+let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
+if(postgresdb.length == 0) {
+    connectPostgreSQL('default');
+} else {
+    postgresdb = postgresdb[0].slice(13);
+    connectPostgreSQL('default', { customDatabase: postgresdb });
+}	
 
 // Middleware
 const { setupParse } = require('./parse/parse.js');

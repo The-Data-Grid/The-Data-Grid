@@ -1,7 +1,7 @@
 // Postgres connection, query execution, query formatting
 const pgp = require('pg-promise')();
 require('dotenv').config();
-const isDeployment = ['-d', '--deploy'].includes(process.argv[2]);
+const isDeployment = process.argv.includes('--deploy');
 console.log(isDeployment ? 'DEPLOYMENT' : 'DEVELOPMENT');
 
 // PostgreSQL -> Javascript type parsing
@@ -10,9 +10,15 @@ pgp.pg.types.setTypeParser(1184, require('./parse/parse.js').timestamptzParse) /
 
 var tdgdbname = isDeployment ? process.env.PGDATABASE : 'v6';
 var tdgdbuser = 'postgres';
-var tdgpassword = isDeployment ? process.env.PGPASSWORD : null;
+var tdgpassword = isDeployment ? process.env.PGPASSWORD : 'postgres';
 var tdghost = isDeployment ? process.env.PGHOST : 'localhost';
+console.log('==============================================')
 console.log('PostgreSQL Host: ' + tdghost);
+console.log('PostgreSQL Database: ' + tdgdbname);
+console.log('PostgreSQL User: ' + tdgdbuser);
+console.log('PostgreSQL Port: ' + 5432);
+console.log('PostgreSQL Pasword: ' + (isDeployment ? '*********' : tdgpassword));
+console.log('==============================================')
 
 const postgresClient = {
     format: pgp.as.format
@@ -21,6 +27,7 @@ const postgresClient = {
 function connectPostgreSQL(config, options={}) {
     if('customDatabase' in options) {
         tdgdbname = options.customDatabase;
+        console.log('Using custom database: ' + tdgdbname)
     }
     if(config == 'default') {
 

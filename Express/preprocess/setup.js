@@ -7,7 +7,13 @@
 
 // Database connection and SQL formatter
 const {postgresClient, connectPostgreSQL} = require('../pg.js');
-connectPostgreSQL('default');
+let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
+if(postgresdb.length == 0) {
+    connectPostgreSQL('default');
+} else {
+    postgresdb = postgresdb[0].slice(13);
+    connectPostgreSQL('default', { customDatabase: postgresdb });
+}
 // get connection object
 const db = postgresClient.getConnection.db;
 

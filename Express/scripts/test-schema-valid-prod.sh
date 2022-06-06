@@ -5,7 +5,8 @@ node ./construct/convert/converter.js \
     --parseType="$3" \
     --featureName="$4" \
     --auditorName="$5" \
-    --featureInformation="$6"
+    --featureInformation="$6" \
+    --deploy
 
 # Move objects to schema
 mkdir ../Schemas/$1/$2
@@ -21,9 +22,9 @@ mv ./construct/convert/outputObjects/features.jsonc ../Schemas/$1/$2
 # Build the schema in the tester database
 ## Always attempt to build schema on a non production database first
 #eval PGPASSWORD=postgres npm run construct -- make-schema ucla-audits water,waste,crime --postgresdb=schematester
-eval PGPASSWORD=postgres npm run construct -- make-schema $1 $2 --postgresdb=schematester
+npm run construct -- make-schema $1 $2 --deploy
 
-#eval PGPASSWORD=postgres psql -U postgres -d schematester -h localhost -p 5432 -f "../PostgreSQL/fakedata-noattribute.sql"
+#eval PGPASSWORD=postgres psql -U postgres -d schematester -h localhost -p 5432 -f "../PostgreSQL/fakedata-noattribute-nofeatures.sql"
 
 # Fill submission object
 node ./construct/convert/fillReturnables.js --featureName="$4"
@@ -35,7 +36,7 @@ mv ./construct/convert/outputObjects/submissionObject.json ../Schemas/$1/$2
 rm ./construct/convert/outputObjects/submissionObject1.json
 
 # Preprocess
-node ./preprocess/setup.js --postgresdb=schematester
+node ./preprocess/setup.js --deploy
 
 # Insert
-node ./insert/manual.js --schema="$2" --database="$1" --postgresdb=schematester
+node ./insert/manual.js --schema="$2" --database="$1" --deploy

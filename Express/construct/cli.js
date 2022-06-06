@@ -14,13 +14,14 @@ const {
 const { allItems } = require('../statement.js').setup
 
 // Database connection and SQL formatter
+const { postgresClient, connectPostgreSQL } = require('../pg.js');
 let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
 if(postgresdb.length == 0) {
-    throw Error('--postgresdb=... not set');
-}
-postgresdb = postgresdb[0];
-const { postgresClient, connectPostgreSQL } = require('../pg.js');
-connectPostgreSQL('custom', { customDatabase: postgresdb }) // Establish an new connection pool
+    connectPostgreSQL('construct'); // Establish an new connection pool
+} else {
+    postgresdb = postgresdb[0].slice(13);
+    connectPostgreSQL('construct', { customDatabase: postgresdb }) // Establish an new connection pool
+}	
 const db = postgresClient.getConnection.cdb; // get connection object
 const formatSQL = postgresClient.format; // get SQL formatter
 
@@ -328,6 +329,9 @@ async function makeAssets(featureOutput, databaseObject) {
     
     fs.writeFileSync(parentDir(__dirname) + `/schemaAssets/allItems.json`, JSON.stringify(await db.many(allItems)));
     console.log(chalk.whiteBright.bold(`Wrote allItems.json to schemaAssets`));    
+
+    fs.writeFileSync(parentDir(__dirname) + `/schemaAssets/returnableView.json`, JSON.stringify(await db.many('SELECT * FROM returnable_view')));
+    console.log(chalk.whiteBright.bold(`Wrote returnableView.json to schemaAssets`));    
 }
 
 async function showComputed(commandLineArgs, databaseObject) {
