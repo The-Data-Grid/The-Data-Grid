@@ -23,6 +23,12 @@ Schemas/verboseToSimple.js
 # schema dependent assets
 Express/schemaAssets/*
 !Express/schemaAssets/.gitkeep
+Express/construct/convert/outputObjects/*
+!Express/construct/convert/outputObjects/.gitkeep
+Express/construct/convert/seedData/*
+!Express/construct/convert/seedData/.gitkeep
+# Don't track submission objects because they are very large
+Schemas/*/*/submissionObject.json
 
 # helpers
 Express/queryTester.js

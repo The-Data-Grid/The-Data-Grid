@@ -170,12 +170,8 @@ changeViewType(e) {
 // Will come from API
 databases = [
 	{
-		id: 'ucla-audits',
-		name: 'UCLA Audits'
-	},
-	{
-		id: 'us-census',
-		name: 'US Census'
+		id: 'open-schemas',
+		name: 'Open Schemas'
 	}
 ]
 queryState: any = {
@@ -287,10 +283,11 @@ onFieldSelection(viewType: number, event?: any) {
 			isExpanded: false,
 			type: columnObject.selectorType,
 			typeName: columnObject.selectorType.replace('geo', ''),
-			color: randomHex(),
+			color: this.randomHex(),
+			isColorRandom: false,
 			colorByProperty: false,
 			size: 10,
-			opacity: 0.8,
+			opacity: columnObject.selectorType == 'geoRegion' ? 0.35 : 0.8,
 			// 1 = Circle, 2 = Square
 			pointType: 1,
 			name: columnObject.frontendName,
@@ -372,10 +369,10 @@ onFieldSelection(viewType: number, event?: any) {
 		relevantLayer.isExpanded = true;
 	}
 
-	// random color util
-	function randomHex() {
-		return '#' + Math.floor(Math.random()*16777215).toString(16);
-	}
+}
+// random color util
+private randomHex() {
+	return '#' + Math.floor(Math.random()*16777215).toString(16);
 }
 onFeatureSelectChange (viewType: number) {
 	const viewTypeString = this.viewTypeStringLookup[viewType]
@@ -848,6 +845,8 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 	// table handlers
 	if(viewType === undefined) viewType = this.viewType; // fall back on global viewType
 	if(viewType == 1) {
+		responseHandlerOptions.geospatialReturnableID = queryStateObject.geospatialReturnableID;
+
 		dataResponseHandler = this.tableViewDataResponseHandler(queryStateObject, queryDataObject, responseHandlerOptions);
 		errorResponseHandler = this.tableViewErrorResponseHandler(queryStateObject);
 	}
@@ -876,6 +875,7 @@ private tableViewDataResponseHandler(queryStateObject, queryDataObject, handlerO
 		isObservation,
 		selectedFeature,
 		isPaginationQuery,
+		geospatialReturnableID
 	} = handlerOptions;
 	return (res) => {
 		// Set data
@@ -886,6 +886,9 @@ private tableViewDataResponseHandler(queryStateObject, queryDataObject, handlerO
 		queryDataObject.isCached = res.cached === true;
 		queryDataObject.rowCount = res.nRows.n;
 		queryDataObject.primaryKeys = res.primaryKey;
+
+		const geospatialReturnableIDIndex = res.returnableIDs.indexOf(geospatialReturnableID);
+		queryStateObject.geospatialReturnableIDIndex = geospatialReturnableIDIndex;
 
 		if(!isPaginationQuery) {
 			this.paginator.firstPage();
@@ -1036,6 +1039,10 @@ basemapLayers = {
 	stamenToner: {
 		name: 'Stamen Toner',
 		data: L.tileLayer(this.stamenURLFormatter(stamen.stamen.tile.providers.toner.url), this.stamenOptionsFormatter(stamen.stamen.tile.providers.toner, 17))
+	},
+	noBasemap: {
+		name: 'No Basemap',
+		data: null
 	}
 }
 basemapLayersArray = Object.keys(this.basemapLayers);
@@ -1068,8 +1075,14 @@ onBasemapChange(key) {
 	if(key == this.selectedBasemapKey) return;
 	// add new and remove old
 	this.selectedBasemapKey = key;
-	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
-	this.map.removeLayer(this.basemapLayers[this.oldBasemapKey].data);
+	// if no basemap then just remove, don't add anything
+	if(key !== 'noBasemap') {
+		this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
+	}
+	// if old basemap is not empty, remove it
+	if(this.oldBasemapKey !== 'noBasemap') {
+		this.map.removeLayer(this.basemapLayers[this.oldBasemapKey].data);
+	}
 	this.oldBasemapKey = this.selectedBasemapKey;
 }
 
@@ -1219,8 +1232,6 @@ private addDrawLayerPopup(layer, featureGroup) {
 			let deleteButtonElement = document.getElementById(String(copyButtonID) + 'd');
 
 			copyButtonElement.addEventListener('click', () => {
-				// switch coord order!
-				layerGeoJSON.geometry.coordinates.reverse();
 				this.clipboard.copy(JSON.stringify(layerGeoJSON));
 				this.toastr.success('Copied to clipboard')
 				// close the popup
@@ -1323,9 +1334,9 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 		this.clearGeography(relevantLayer);
 	}	
 
-	let visualOptions: any = {
-		color: hexToRgb(relevantLayer.color),
-		opacity: relevantLayer.opacity,
+	let visualOptions: any = {};
+	if(!relevantLayer.isColorRandom) {
+		visualOptions.color = hexToRgb(relevantLayer.color, relevantLayer.opacity);
 	}
 	if(geoType == 'geoPoint') {
 		visualOptions.size = relevantLayer.size;
@@ -1378,6 +1389,8 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 			popupHTML += formatPopupTemplate('Type', geoType.slice(3));
 			// row values
 			for(let i = 0; i < headerArray.length; i++) {
+				// skip the geojson columns
+				if(i == relevantLayer.geospatialReturnableIDIndex + 1) continue;
 				// add title
 				if(i == 0) {
 					popupHTML += `
@@ -1411,7 +1424,7 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 					feature.properties[headerArray[i]] = valueArray[i - 1];
 				}
 				// switch coord order!
-				feature.geometry.coordinates.reverse();
+				//feature.geometry.coordinates.reverse();
 				this.clipboard.copy(JSON.stringify(feature));
 				this.toastr.success('Copied to clipboard')
 			});
@@ -1436,23 +1449,28 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 	};
 
 	let gl;
-	glify.latitudeFirst();
-	if(geoType == 'geoPoint') {
-		gl = glify.points(glifyObject);
-	} else if(geoType == 'geoLine') {
-		gl = glify.lines(glifyObject);
-	} else if(geoType == 'geoRegion') {
-		gl = glify.shapes(glifyObject);
+	try {
+		if(geoType == 'geoPoint') {
+			glify.latitudeFirst();
+			gl = glify.points(glifyObject);
+		} else if(geoType == 'geoLine') {
+			gl = glify.lines(glifyObject);
+		} else if(geoType == 'geoRegion') {
+			glify.latitudeFirst();
+			gl = glify.shapes(glifyObject);
+		}
+		gl.layerID = relevantLayer.layerID;
+	} catch(err) {
+		console.log(err)
+		this.toastr.error('Your browser does not support WebGL rendering. Please try again with a different browser (Chrome, Firefox, Edge preferred)');
 	}
-
-	gl.layerID = relevantLayer.layerID;
 
 	// add to the layer
 	relevantLayer.renderObject = gl;
 
 	relevantLayer.isRendering = false;
 
-	function hexToRgb(hex) {
+	function hexToRgb(hex, opacity) {
 		if (hex.length < 6) return null;
 		hex = hex.toLowerCase();
 	
@@ -1466,7 +1484,8 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 		return {
 			r: r / 255,
 			g: g / 255,
-			b: b / 255
+			b: b / 255,
+			a: opacity
 		};
 	}
 }
@@ -1617,6 +1636,7 @@ private changeURL(isMap) {
 updateColor(e, layerID) {
 	let layerToUpdate = this.queryState.mapView.layers.filter(layer => layer.layerID == layerID)[0];
 	layerToUpdate.color = e.target.value;
+	layerToUpdate.isColorRandom = false;
 	// update current layer if extant
 	if(layerToUpdate.hasQueried) {
 		const { type, layerID, geospatialReturnableIDIndex } = layerToUpdate;

@@ -205,12 +205,18 @@
                                     <span style="font-size: 14px; font-weight: 600">Visibility</span>
                                     <span style="font-size: 14px; font-weight: 400;">{{ layer.isVisible ? 'Visible' : 'Invisible'}}</span>
                                 </div>
-                                <div class="relative border-t cursor-pointer hover:bg-gray-200" matTooltip="Click to change color" style="height: 29px;">
-                                    <div class="absolute flex flex-row w-full justify-between px-3 items-center" style="height: 29px" >
-                                        <span style="font-size: 14px; font-weight: 600">Color</span>
-                                        <span class=" w-10 border" [style]="'height: 18px; background-color: ' + layer.color"></span>
+                                <div class="flex flex-row" style="height: 29px">
+                                    <div class="relative w-full border-t cursor-pointer hover:bg-gray-200" matTooltip="Click to change color" style="height: 29px;">
+                                        <div class="absolute w-full flex flex-row justify-between px-3 items-center" style="height: 29px" >
+                                            <span style="font-size: 14px; font-weight: 600">Color</span>
+                                            <span *ngIf="!layer.isColorRandom" class=" w-10 border mr-2" [style]="'height: 18px; background-color: ' + layer.color"></span>
+                                            <span *ngIf="layer.isColorRandom" class=" mr-2" style="height: 18px">Randomized</span>
+                                        </div>
+                                        <input (change)="updateColor($event, layer.layerID)" type="color" class="w-full h-full absoulte cursor-pointer" style="opacity: 0; height: 29px;">
                                     </div>
-                                    <input (change)="updateColor($event, layer.layerID)" type="color" class="w-full h-full absoulte cursor-pointer" style="opacity: 0; height: 29px;">
+                                    <div class="flex justify-center items-center border-t cursor-pointer hover:bg-gray-200" matTooltip="Toggle random colors" style="height: 29px; width: 35px">
+                                        <svg (click)="layer.isColorRandom = !layer.isColorRandom; sliderChanged( layer )" xmlns="http://www.w3.org/2000/svg" height="20px" fill="#535353" viewBox="0 0 512 512"><path d="M48 366.92L240 480V284L48 170zM192 288c8.84 0 16 10.75 16 24s-7.16 24-16 24-16-10.75-16-24 7.16-24 16-24zm-96 32c8.84 0 16 10.75 16 24s-7.16 24-16 24-16-10.75-16-24 7.16-24 16-24zM272 284v196l192-113.08V170zm48 140c-8.84 0-16-10.75-16-24s7.16-24 16-24 16 10.75 16 24-7.16 24-16 24zm0-88c-8.84 0-16-10.75-16-24s7.16-24 16-24 16 10.75 16 24-7.16 24-16 24zm96 32c-8.84 0-16-10.75-16-24s7.16-24 16-24 16 10.75 16 24-7.16 24-16 24zm0-88c-8.84 0-16-10.75-16-24s7.16-24 16-24 16 10.75 16 24-7.16 24-16 24zm32 77.64zM256 32L64 144l192 112 192-112zm0 120c-13.25 0-24-7.16-24-16s10.75-16 24-16 24 7.16 24 16-10.75 16-24 16z"/></svg>
+                                    </div>
                                 </div>
                                 <!--
                                     Not Implemented Yet
@@ -227,6 +233,7 @@
                                         max="40"
                                         step="1"
                                         (change)="sliderChanged( layer )"
+                                        [disabled]="layer.isColorRandom"
                                         [(ngModel)]="layer.size"></mat-slider>
                                         <div style="width:25px">
                                             {{layer.size}}px                              
@@ -319,7 +326,7 @@
                 <mat-expansion-panel *ngIf="viewType == 1" [(expanded)]="expandedPanelLookup['table-builder']">
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><title>Filter</title><path d="M16 120h480v48H16zM96 232h320v48H96zM192 344h128v48H192z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#535353" height="22px" viewBox="0 0 512 512"><path d="M16 120h480v48H16zM96 232h320v48H96zM192 344h128v48H192z"/></svg>
                             <span class="header-3-type text-[#535353]">
                                 &nbsp;&nbsp;Filter
                             </span>
@@ -388,7 +395,7 @@
                 <div *ngIf="viewType == 1">
                     <div *ngIf="queryState.tableView.queryTime !== null && queryState.tableView.progressBarMode === 'determinate'" class="result-text">
                         <p *ngIf="queryState.tableView.invalidQuery && queryState.tableView.queryError === 'queryBuilder'" ><span style="color: #f99;" class="cache-text" matTooltip="Check Query Builder">Invalid Query</span></p>
-                        <p *ngIf="!queryState.tableView.invalidQuery && queryState.tableView.queryError === null">{{queryTime}}ms <span *ngIf="queryState.tableView.data.isCached" class="cache-text" matTooltip="Results stored in memory">Cached</span></p>
+                        <p *ngIf="!queryState.tableView.invalidQuery && queryState.tableView.queryError === null">{{queryState.tableView.queryTime}}ms <span *ngIf="queryState.tableView.data.isCached" class="cache-text" matTooltip="Results stored in memory">Cached</span></p>
                         <p *ngIf="queryState.tableView.queryError !== null"><span style="color: #f99;" class="cache-text" matTooltip="Try again later or change the query">Error: {{ queryState.tableView.queryError }}</span></p>
                     </div>
                 </div>
@@ -461,7 +468,9 @@
                     </tr>
                     <!-- Data -->
                     <tr *ngFor="let row of queryState.tableView.data.tableData; index as i" class="h-50px text-sm hover-bg-gray-100">
-                        <td *ngFor="let cell of [queryState.tableView.data.primaryKeys[i]].concat(row)" class="border-t border-gray-200   w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+                        <td *ngFor="let cell of [queryState.tableView.data.primaryKeys[i]].concat(row); index as i2" class="border-t border-gray-200   w-1000px  pl-8 text-left min-w-150px">
+                            {{cell}}
+                        </td>
                     </tr>
                 </table>
             </div>
