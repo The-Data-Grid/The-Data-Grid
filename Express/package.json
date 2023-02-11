@@ -53,7 +53,7 @@
     "memorystore": "^1.6.4",
     "multer": "^1.4.4",
     "nanoid": "^3.2.0",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.20",
     "pg": "^8.3.3",
     "pg-promise": "^10.5.6",
     "selectize": "^0.12.6",
