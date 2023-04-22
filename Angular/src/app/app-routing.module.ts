@@ -21,6 +21,7 @@ import { GuideManageComponent } from './guide-manage/guide.component';
 import { GuideQueryComponent } from './guide-query/guide.component';
 import { GuideSchemaComponent } from './guide-schema/guide.component';
 import { GuideUploadComponent } from './guide-upload/guide.component';
+import { SchemaGen } from './schema-gen/schema-gen.component';
 
 const routes: Routes = [
   { path: 'index', redirectTo: '', pathMatch: 'full' },
@@ -46,6 +47,7 @@ const routes: Routes = [
   { path: 'guide/query', component: GuideQueryComponent },
   { path: 'guide/schema', component: GuideSchemaComponent },
   { path: 'guide/upload', component: GuideUploadComponent },
+  { path: 'generate', component: SchemaGen },
   { path: '**', redirectTo: '', pathMatch: 'full'}
 ];
 

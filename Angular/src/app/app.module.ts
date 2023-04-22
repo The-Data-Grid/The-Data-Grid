@@ -47,6 +47,7 @@ import { GuideManageComponent } from './guide-manage/guide.component';
 import { GuideUploadComponent } from './guide-upload/guide.component';
 import { GuideSchemaComponent } from './guide-schema/guide.component';
 import { GuideQueryComponent } from './guide-query/guide.component';
+import { SchemaGen } from './schema-gen/schema-gen.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import {MatIconModule} from '@angular/material/icon'
 
@@ -83,7 +84,8 @@ import {MatIconModule} from '@angular/material/icon'
     GuideManageComponent,
     GuideUploadComponent,
     GuideSchemaComponent,
-    GuideQueryComponent
+    GuideQueryComponent,
+    SchemaGen
   ],
   imports: [
     BrowserModule,

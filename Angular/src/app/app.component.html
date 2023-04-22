@@ -87,7 +87,13 @@
                     [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive"
                     style="min-width: 150px">
                     <mat-icon >pageview</mat-icon>
-                    <span class="header-link"> Data </span>
+                    <span class="header-link"> Query Data </span>
+                </a>
+                <a mat-tab-link routerLink="/generate" routerLinkActive="activeButton"
+                    [routerLinkActiveOptions]="{exact: true}" #rlagen="routerLinkActive" [active]="rlagen.isActive"
+                    style="min-width: 180px">
+                    <mat-icon >storage</mat-icon>
+                    <span class="header-link"> Generate Database </span>
                 </a>
 
                 <!-- <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
@@ -97,7 +103,7 @@
                 </a> -->
                 <a mat-tab-link routerLink="/about" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla3="routerLinkActive" [active]="rla3.isActive"
-                    style="min-width: 150px">
+                    style="min-width: 130px">
                     <mat-icon >info</mat-icon>
                     <span class="header-link"> About </span>
                 </a>
