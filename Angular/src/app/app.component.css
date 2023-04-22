@@ -29,6 +29,17 @@ body {
    background-color: #FBFBFB;
 }
 
+.footer-icons-logos {
+   margin-right: auto;
+   margin-left: 22px;
+   background-color: #9EACB8;
+   display: flex;
+}
+
+.col {
+   flex-direction: column;
+}
+
 /* dropdowns on mat-tab */
 .nav-dropdown-option {
    display: inline-block;
@@ -44,12 +55,17 @@ body {
 .bottom-bar {
    background-color: #9EACB8;
    min-height: 150px;
-   padding-top: 30px;
+   padding-top: 90px;
 }
 
 .bottom-card {
    background-color: inherit;
    width: 245px;
+}
+
+.mobilebottom {
+   margin-left: 20px;
+   margin-top: 30px;
 }
 
 .bot-text {
@@ -71,6 +87,7 @@ body {
 .social-button {
    height: 40px;
    margin: 5px;
+   flex-shrink: 0;
 }
 
 .mat-button.mat-primary .mat-button-focus-overlay {
