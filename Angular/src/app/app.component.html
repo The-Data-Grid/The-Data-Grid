@@ -12,7 +12,7 @@
                             <img src="../../favicon.png" alt="tdg logo" style="padding: 4px; height: 20px; width: 20px; float: left;">
                         -->
                         <img src="/assets/logo.png" alt="tdg logo" class="no-drag"
-                            style="padding: 4px; height: 27px; float: left; margin-top: 3px;">
+                            style="padding: 4px; height: 37px; float: left;">
                     </div>
                 </div>
                 <div *ngIf="authService.isLoggedIn" routerLink="" routerLinkActive="activeButton" mat-tab-link
@@ -86,8 +86,8 @@
                 <a mat-tab-link routerLink="/table" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla2="routerLinkActive" [active]="rla2.isActive"
                     style="min-width: 150px">
-                    <span *ngIf="currentWindowWidth >= 700"> Data </span>
-                    <mat-icon *ngIf="currentWindowWidth < 700">pageview</mat-icon>
+                    <mat-icon >pageview</mat-icon>
+                    <span class="header-link"> Data </span>
                 </a>
 
                 <!-- <a mat-tab-link routerLinkActive="activeButton" [routerLinkActiveOptions]="{exact: true}"
@@ -98,19 +98,22 @@
                 <a mat-tab-link routerLink="/about" routerLinkActive="activeButton"
                     [routerLinkActiveOptions]="{exact: true}" #rla3="routerLinkActive" [active]="rla3.isActive"
                     style="min-width: 150px">
-                    <span *ngIf="currentWindowWidth >= 700"> About </span>
-                    <mat-icon *ngIf="currentWindowWidth < 700">info</mat-icon>
+                    <mat-icon >info</mat-icon>
+                    <span class="header-link"> About </span>
                 </a>
 
                 <div>
                     <a mat-tab-link routerLinkActive="activeB utton" [routerLinkActiveOptions]="{exact: true}"
                         #rla9="routerLinkActive" [active]="rla9.isActive" routerLink="/guide"
-                        style="overflow: hidden; min-width: 150px;">
+                        style="overflow: hidden; min-width: 170px;">
                         <button [matMenuTriggerFor]="menu__" #menuTrigger="matMenuTrigger"
                             (mouseenter)="openResourceMenu(0); recheckIfInMenu = true"
-                            (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false" class="upload">
-                            <span *ngIf="currentWindowWidth >= 700" style="font-size: 14px;"> User Guide </span>
-                            <mat-icon *ngIf="currentWindowWidth < 700">description</mat-icon>
+                            (mouseleave)="closeResourceMenu(0); recheckIfInMenu = false" class="upload" 
+                            style="display: inline-flex;
+                            justify-content: center;
+                            align-items: center;">
+                            <mat-icon >description</mat-icon>
+                            <span class="header-link"> User Guide </span>
                         </button>
                         <mat-menu #menu__="matMenu" [overlapTrigger]="false" class="customize2">
                             <span (mouseenter)="recheckIfInMenu = true"

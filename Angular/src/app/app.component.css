@@ -148,3 +148,10 @@ button:focus {
    display: flex;
    flex-direction: row;
  }
+
+.header-link {
+   font-family: IBM Plex Sans;
+   font-size: 17px;
+   margin-left: 5px;
+   font-weight: 500;
+}
