@@ -59,7 +59,6 @@ body {
 }
 
 .bottom-card {
-   background-color: inherit;
    width: 245px;
 }
 
@@ -72,6 +71,7 @@ body {
    font-size: 16px;
    line-height: 15px;
    color: #ffffff;
+   font-family: IBM Plex Mono;
 }
 
 
