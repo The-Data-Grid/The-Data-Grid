@@ -1,13 +1,6 @@
 const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
-const {
-    returnableIDLookup,
-    itemM2M,
-    allItems,
-    requiredItemLookup,
-    itemColumnObject,
-    itemTableNames
-} = require('../../preprocess/load.js');
+const allInternalObjects = require("../../preprocess/load.js");
 
 const {
     insertItemHistory,
@@ -78,7 +71,9 @@ module.exports = createItem
  *   2. validateDataColumns()
  *   3. createIndividualItem()
  */
-async function createItem(options) {
+async function createItem(options, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
 
     const {
         createItemObjectArray,
@@ -97,11 +92,11 @@ async function createItem(options) {
             validateRequiredItems([
                 ...createItemObject.requiredItems.map(el => itemTableNames[el.itemTypeID]), 
                 ...createItemObject.newRequiredItemIndices.map(el => itemTableNames[createItemObjectArray[el].itemTypeID])
-            ], tableName);
+            ], tableName, dbName);
         
             // TODO: make dataColumnPresetLookup, add handling for mutible reference types
             // 2. Validate data columns
-            validateItemDataColumns(createItemObject.data, tableName);
+            validateItemDataColumns(createItemObject.data, tableName, dbName);
         }
 
         console.log('Validated every Item');
@@ -109,7 +104,7 @@ async function createItem(options) {
         // 3. Insert every item
         let currentInsertedItemPrimaryKeyLookup = createItemObjectArray.map(el => null)
         for(let i = 0; i < createItemObjectArray.length; i++) {
-            currentInsertedItemPrimaryKeyLookup = await createIndividualItem(i, createItemObjectArray, currentInsertedItemPrimaryKeyLookup, transaction)
+            currentInsertedItemPrimaryKeyLookup = await createIndividualItem(i, createItemObjectArray, currentInsertedItemPrimaryKeyLookup, transaction, dbName)
         }
 
         // sanity check
@@ -152,7 +147,10 @@ async function createItem(options) {
  *   6. Insert list values and many to many values
  *   7. Insert history
  */
-async function createIndividualItem(currentIndex, createItemObjectArray, insertedItemPrimaryKeyLookup, db) {
+async function createIndividualItem(currentIndex, createItemObjectArray, insertedItemPrimaryKeyLookup, db, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { returnableIDLookup, itemColumnObject, itemTableNames } = internalObjects;
+
     // first check if this item has already been recursively inserted, and skip if so
     if(insertedItemPrimaryKeyLookup[currentIndex] !== null) {
         return insertedItemPrimaryKeyLookup;
@@ -170,7 +168,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         if(createItemObject.newGlobalIndex !== null) {
             // if global item has not been inserted yet then make it
             if(insertedItemPrimaryKeyLookup[createItemObject.newGlobalIndex] === null) {
-                insertedItemPrimaryKeyLookup = createIndividualItem(createItemObject.newGlobalIndex, createItemObjectArray, insertedItemPrimaryKeyLookup, db)
+                insertedItemPrimaryKeyLookup = createIndividualItem(createItemObject.newGlobalIndex, createItemObjectArray, insertedItemPrimaryKeyLookup, db, dbName)
             } else {
                 // otherwise store primary key
                 globalReference = insertedItemPrimaryKeyLookup[createItemObject.newGlobalIndex]
@@ -186,7 +184,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
         // insert if not done yet
         if(insertedItemPrimaryKeyLookup[index] === null) {
             // insert and update lookup
-            insertedItemPrimaryKeyLookup = await createIndividualItem(index, createItemObjectArray, insertedItemPrimaryKeyLookup, db);
+            insertedItemPrimaryKeyLookup = await createIndividualItem(index, createItemObjectArray, insertedItemPrimaryKeyLookup, db, dbName);
             // sanity check
             if(insertedItemPrimaryKeyLookup[index] === null) throw new CreateItemError({code: 500, msg: `Error in required item recursion, createItemObject at index ${index} never got inserted`});
         }
@@ -270,7 +268,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
     if(nonNullableColumnIDs.length !== 0) throw new CreateItemError({code: 400, msg: `Missing (${nonNullableColumnIDs.join(', ')}) non nullable column IDs for ${tableName}`});
 
     // 4. Make the finished SQL statement
-    const fullSQLStatement = makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, requiredItems);
+    const fullSQLStatement = makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, requiredItems, dbName);
 
     // 5. Attempt to insert into the database and get the primary key
     const itemPrimaryKey = (await db.one(fullSQLStatement)).item_id;
@@ -288,7 +286,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
 
     // 7. Insert insertion record into history tables
     // complete hack, don't want to deal with optimizing item creation yet
-    await insertItemHistory(tableName, 'create', [itemPrimaryKey], db);
+    await insertItemHistory(tableName, 'create', [itemPrimaryKey], db, dbName);
 
     // Update the primary key lookup and return it
     insertedItemPrimaryKeyLookup[currentIndex] = itemPrimaryKey;
@@ -305,7 +303,10 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
  * @param {Array.<{columnName: String, columnValue: String|Number|Date|Object|Boolean}>} columnNamesAndValues 
  * @param {Number|null} globalReference 
  */
-function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, requiredItems) {
+function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, requiredItems, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { allItems, itemTableNames } = internalObjects;
+
     const itemMetadata = allItems.filter(item => item['i__table_name'] == tableName)[0];
 
     // add required item references to columnNamesAndValues

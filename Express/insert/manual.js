@@ -5,36 +5,41 @@
 // Database connection
 let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
 let schemaName = process.argv.filter(arg => /--schema=.*/.test(arg));
-let database = process.argv.filter(arg => /--database=.*/.test(arg));
-if(schemaName.length == 0 || database.length == 0) {
-    throw Error('--database=... or --schema=... not set');
+let dbFolderName = process.argv.filter(arg => /--dbFolderName=.*/.test(arg));
+let streamQueryLogsFileName = process.argv.filter(arg => /--streamQueryLogs=.*/.test(arg));
+if(schemaName.length == 0 || dbFolderName.length == 0) {
+    throw Error('--dbFolderName=... or --schema=... not set');
 }
 schemaName = schemaName[0].slice(9);
-database = database[0].slice(11);
-const { connectPostgreSQL } = require('../pg.js');
-if(postgresdb.length == 0) {
-    connectPostgreSQL('default');
-} else {
+dbFolderName = dbFolderName[0].slice(15);
+const { connectPostgreSQL, postgresClient } = require('../pg.js');
+const databaseOptions = {}
+if(postgresdb.length > 0) {
     postgresdb = postgresdb[0].slice(13);
-    connectPostgreSQL('default', { customDatabase: postgresdb });
+    databaseOptions.customDatabase = postgresdb;
+} else {
+    throw Error("Must include database to connect to with --postgresdb=...");
 }	
+if(streamQueryLogsFileName.length > 0) {
+    streamQueryLogsFileName = streamQueryLogsFileName[0].slice(18);
+    databaseOptions.streamQueryLogs = streamQueryLogsFileName;
+}	
+connectPostgreSQL('construct', databaseOptions);
+const insertionDb = postgresClient.getConnection[databaseOptions.customDatabase];
 
 const { insertSubmission } = require('./router.js');
 const fs = require('fs');
 
-let submissionObject = fs.readFileSync(parentDir(__dirname, 2) + `/Schemas/${database}/${schemaName}/submissionObject.json`, 'utf-8');
-submissionObject = JSON.parse(submissionObject);
-
-const sessionObject = {
-    privilege: 'user',
-    role: [2],
-    organizationID: [1],
-    userID: 1,
-}
-
-insertSubmission(submissionObject, sessionObject);
-
-function parentDir(dir, depth=1) {
-    // split on "\" or "/"
-    return dir.split(/\\|\//).slice(0, -depth).join('/');
+let fileNames = fs.readdirSync(`${dbFolderName}/${schemaName}/submissions`);
+for(let i = 0; i < fileNames.length; i++) {
+    console.log(`Inserting submissionObject ${i+1} into the database...`)
+    let submissionObject = fs.readFileSync(`${dbFolderName}/${schemaName}/submissions/${fileNames[i]}`, 'utf-8');
+    submissionObject = JSON.parse(submissionObject);
+    const sessionObject = {
+        privilege: 'user',
+        role: [2],
+        organizationID: [1],
+        userID: 1,
+    }
+    insertSubmission(submissionObject, sessionObject, insertionDb, databaseOptions.customDatabase);
 }

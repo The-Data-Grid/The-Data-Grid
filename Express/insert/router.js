@@ -4,7 +4,6 @@ const router = express.Router(); //use router instead of app
 const {postgresClient} = require('../pg.js');
 const { authorizeSubmission } = require('../auth/authorizer.js');
 // get connection object
-const db = postgresClient.getConnection.db
 const { clearCache } = require('../query/cacheLayer.js');
 // Handlers
 const createItem = require('./item/createItem.js');
@@ -42,7 +41,7 @@ const errorClassArray = [CreateItemError, CreateObservationError, DeleteObservat
  * Creates/Updates/Deletes items and/or observations from the database
  * @param {submissionObject} submissionObject 
  */
-async function insertSubmission(submissionObject, sessionObject) {
+async function insertSubmission(submissionObject, sessionObject, db, dbName) {
 
     const createItemObjectArray = submissionObject.items.create
     const updateItemObjectArray = submissionObject.items.update
@@ -58,39 +57,45 @@ async function insertSubmission(submissionObject, sessionObject) {
         await updateItem({
             updateItemObjectArray,
             transaction,
-            sessionObject
+            sessionObject,
+            dbName
         })
         
         await deleteItem({
             deleteItemObjectArray,
             requestPermanentDeletionItemObjectArray,
             transaction,
-            sessionObject
+            sessionObject,
+            dbName
         })
 
         await updateObservation({
             updateObservationObjectArray,
             transaction,
-            sessionObject
+            sessionObject,
+            dbName
         })
 
         await deleteObservation({
             deleteObservationObjectArray,
             transaction,
-            sessionObject
+            sessionObject,
+            dbName
         })
 
         const insertedItemPrimaryKeyLookup = await createItem({
             createItemObjectArray,
             transaction,
-            sessionObject
+            sessionObject,
+            dbName
         })
 
         await createObservation({
             createObservationObjectArray,
             insertedItemPrimaryKeyLookup,
             transaction,
-            sessionObject
+            sessionObject,
+            dbName
         })
         
         // clear the query cacheLayer
@@ -101,7 +106,7 @@ async function insertSubmission(submissionObject, sessionObject) {
 async function insertSubmissionHandler(req, res, next) {
     console.log(req.session)
     try {
-        await insertSubmission(req.body, res.locals.authorization);
+        await insertSubmission(req.body, res.locals.authorization, res.locals.databaseConnection, res.locals.databaseConnectionName);
         return res.status(201).end();
     } catch(err) {
         console.log("ERROR: ", err)

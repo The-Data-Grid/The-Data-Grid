@@ -1,0 +1,32 @@
+/*
+    PRESET DATA COLUMNS THAT CAN BE SELECTED TO BE INCLUDED IN ANY FEATURE USING:
+    {
+        "globalPresetName": "name" property of a column below,
+        "featureName": the name of the feature to include it in
+    }
+*/
+[
+    { // DATE CONDUCTED 
+        "name": "Time Conducted",
+        "featureName": null,
+        "information": "Date the feature was audited",
+        "isNullable": false,
+        "presetValues": null,
+        "accuracy": null,
+        "sqlType": "TIMESTAMPTZ",
+        "referenceType": "obs",
+        "isFilterable": true
+    },
+    { // COMMENTARY    
+        "sqlType": "TEXT",
+        "referenceType": "obs",
+        "name": "Commentary",
+        "featureName": null,
+        "information": "Additional commentary about the observation",
+        "isNullable": true,
+        "presetValues": null,
+        "accuracy": null,
+        "isFilterable": false
+    }
+]
+

@@ -3,12 +3,12 @@ const isTesting = ['-t', '--test'].includes(process.argv[2]);
 // Database connection and SQL formatter (for API Key)
 const {postgresClient} = require('../pg.js');
 // get connection object
-const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;
 // SQL Statements
 const { apiKeyAuthorization } = require('../statement.js').login;
 
 module.exports = async (req, res, next) => {
+    const db = res.locals.databaseConnection;
     // Testing
     if(isTesting) {
         let {

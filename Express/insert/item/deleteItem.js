@@ -1,7 +1,4 @@
-const {
-    itemTableNames,
-    itemObservationTableNameLookup
-} = require('../../preprocess/load.js');
+const allInternalObjects = require("../../preprocess/load.js");
 
 const {
     DeleteItemError,
@@ -16,7 +13,10 @@ module.exports = deleteItem;
  * 
  * @param {Object} options 
  */
-async function deleteItem(options) {
+async function deleteItem(options, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames, itemObservationTableNameLookup } = internalObjects;
+
     const {
         deleteItemObjectArray,
         requestPermanentDeletionItemObjectArray,
@@ -50,7 +50,7 @@ async function deleteItem(options) {
         }
 
         try {
-            await insertItemHistory(tableName, 'delete', primaryKey, db);
+            await insertItemHistory(tableName, 'delete', primaryKey, db, dbName);
         } catch(err) {
             console.log(err);
             throw new DeleteItemError({code: 500, msg: 'Error when inserting deletion into history table'});
@@ -109,7 +109,7 @@ async function deleteItem(options) {
         }
 
         try {
-            await insertItemHistory(itemTableName, 'permanent-deletion', deletedItemID, db);
+            await insertItemHistory(itemTableName, 'permanent-deletion', deletedItemID, db, dbName);
         } catch(err) {
             console.log(err);
             throw new DeleteItemError({err: 500, msg: 'Error when inserting permanent deletion into history table'});

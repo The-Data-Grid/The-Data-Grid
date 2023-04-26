@@ -6,8 +6,6 @@ const isTesting = ['-t', '--test'].includes(process.argv[2]);
 
 const {postgresClient} = require('../pg.js'); 
 
-// get connection object
-const db = postgresClient.getConnection.db;
 // get SQL formatter
 const formatSQL = postgresClient.format;
 
@@ -27,6 +25,7 @@ if(isTesting) {
 
 // Login
 router.post('/login', async (req, res) => {
+    const db = res.locals.databaseConnection;
     try {
         const password = (await db.one(formatSQL(SQL.password, {
             checkemail: req.body.email,
@@ -82,6 +81,7 @@ router.post('/logout', (req, res) => {
 
 // New user register
 router.post('/', async (req, res) => {
+    const db = res.locals.databaseConnection;
     if (!isValidPassword(req.body.pass)) {
         console.log('ERROR:', 'Bad Request 2211: Invalid Password');
         return res.status(400).send('Bad Request 2211: Invalid Password'); 
@@ -154,6 +154,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
+    const db = res.locals.databaseConnection;
     try {
         // first get userID from session
         const { userID, loggedIn } = req.session;
@@ -175,7 +176,8 @@ router.get('/', async (req, res) => {
 })
 
 // Verify email link of new user  
-router.post('/email/verify', async (req, res) => { 
+router.post('/email/verify', async (req, res) => {
+    const db = res.locals.databaseConnection;
     try {
         const {
             email,
@@ -208,6 +210,7 @@ router.post('/email/verify', async (req, res) => {
 
 // Send email to user for password reset  
 router.post('/password/request-reset', async (req, res) => {
+    const db = res.locals.databaseConnection;
     const rand = nanoid(50);
     try {
         await db.none(formatSQL(updating.updateToken, {
@@ -238,6 +241,7 @@ router.post('/password/request-reset', async (req, res) => {
 
 // User identity for requesting password reset is confirmed
 router.post('/password/reset', async (req, res) => {
+    const db = res.locals.databaseConnection;
     try {
         const {
             email,
@@ -283,6 +287,7 @@ const roleIDLookup = {
     admin: 2,
 };
 router.put('/role', async (req, res) => {
+    const db = res.locals.databaseConnection;
     try {
         const {
             userEmail,
@@ -384,6 +389,7 @@ router.put('/role', async (req, res) => {
 });
 
 router.get('/role', parseOrganizationID, authorizeAuditor, async (req, res) => {
+    const db = res.locals.databaseConnection;
     try {
         const data = await db.any(formatSQL(`
             SELECT 

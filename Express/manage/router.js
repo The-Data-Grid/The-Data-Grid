@@ -7,12 +7,11 @@ const uploadFile = multer()
 
 // Database
 const { postgresClient } = require('../pg.js');
-const db = postgresClient.getConnection.db;
 
 // Middleware
 const { formatDistinct } = require('../query/query.js');
-const setDatabaseConnection = require('../query/direct.js');
-const { auditManagment, sopManagement, generateApiKey } = setDatabaseConnection(db)
+// const setDatabaseConnection = require('../query/direct.js');
+// const { auditManagment, sopManagement, generateApiKey } = setDatabaseConnection(db)
 const { validateObservation, validateItem } = require('../parse/validate.js')
 const cacheLayer = require('../query/cacheLayer.js');
 const template = require('./spreadsheet/template.js');
@@ -21,8 +20,9 @@ const { authorizeAuditor, authorizeAuditorAnyOrg } = require('../auth/authorizer
 const { parseOrganizationID, parseSignedUrl } = require('../parse/parse.js');
 const { itemOrObservationQuery, setupSpreadsheet, formatObjectsSpreadsheet, generateSpreadsheet } = require('./spreadsheet/generate.js');
 const { parseSpreadsheet } = require('./spreadsheet/upload.js');
+const { download, convert } = require('../executive/generateSchema.js');
 
-
+/*
 router.get('/audits', 
     parseOrganizationID,
     authorizeAuditor,
@@ -65,5 +65,6 @@ router.put('/key',
 router.delete('/key', 
     authorizeAuditorAnyOrg, 
     generateApiKey({ remove: true }));
+*/
 
 module.exports = router;

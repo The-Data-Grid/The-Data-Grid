@@ -1,16 +1,7 @@
 const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
-const { apiDateToUTC } = require('../../parse/parse.js');
 
-const {
-    returnableIDLookup,
-    itemM2M,
-    allItems,
-    requiredItemLookup,
-    itemColumnObject,
-    itemTableNames,
-    itemObservationTableNameLookup
-} = require('../../preprocess/load.js');
+const allInternalObjects = require("../../preprocess/load.js");
 
 const {
     CreateObservationError,
@@ -57,8 +48,10 @@ module.exports = createObservation;
  *      1. Get the relevant data column metadata for the observation
  *      2. Insert values into external columns
  */
-async function createObservation(options) {
-    
+async function createObservation(options, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames, itemObservationTableNameLookup } = internalObjects;
+
     const {
         createObservationObjectArray,
         insertedItemPrimaryKeyLookup,
@@ -76,7 +69,7 @@ async function createObservation(options) {
             
             // TODO: make dataColumnPresetLookup, add handling for mutible reference types
             // 2. Validate data columns
-            validateObservationDataColumns(createObservationObject.data, itemTableName);
+            validateObservationDataColumns(createObservationObject.data, itemTableName, dbName);
         }
 
         console.log('Validated Observations');
@@ -141,7 +134,10 @@ async function createObservation(options) {
  */
 
 
-async function createIndividualObservation(createObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, db) {
+async function createIndividualObservation(createObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, db, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { returnableIDLookup, itemColumnObject } = internalObjects;
+    
     let curr = Date.now();
     function timer(id) {
         let cur = Date.now();
@@ -226,7 +222,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
     await insertSOP(sopValue, observationCountReferences, globalReference, db);
 
     // 7. Insert insertion record into history tables
-    await insertObservationHistory(observationTableName, 'create', observationPrimaryKeys, db);
+    await insertObservationHistory(observationTableName, 'create', observationPrimaryKeys, db, dbName);
     timer(5)
     // Leaving inside so it has access to scope of createIndividualObservation()
     async function getColumnsAndValues(returnableIDs, data) {

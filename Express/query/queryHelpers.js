@@ -28,8 +28,7 @@ const {
     pk
 } = require('../statement.js').query;
 
-const {returnableIDLookup, featureParents} = require('../preprocess/load.js')
-
+const allInternalObjects = require("../preprocess/load.js");
 
 module.exports = {
     makeFeatureClauseArray,
@@ -42,7 +41,9 @@ module.exports = {
 
 // QUERY INTERNAL OBJECTS
 // ==================================================
-function makeInternalObjects(parsed, queryType) {
+function makeInternalObjects(parsed, queryType, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { returnableIDLookup } = internalObjects;
 
     // array of all features in feature tree (features and subfeatures)
     let featureTree = [];
@@ -81,7 +82,10 @@ function makeInternalObjects(parsed, queryType) {
 
 // FEATURE CLAUSES
 // ==================================================
-function makeFeatureClauseArray(feature, featureTree, queryType) {
+function makeFeatureClauseArray(feature, featureTree, queryType, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { featureParents } = internalObjects;
+
     let featureClauseArray = [];
     //let subfeatures = Object.keys(featureParents).filter(key => featureParents[key] !== null).map(key => [key, featureParents[key]]);
     let rootFeature = feature

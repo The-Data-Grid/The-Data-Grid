@@ -1,30 +1,10 @@
 const queryHelpers = require('../query/queryHelpers.js');
-const {
-    itemTableNames,
-    columnIdTableNameLookup,
-    allItems,
-    observationItemTableNameLookup,
-    columnIdItemLookup,
-} = require('../preprocess/load.js');
-
-const itemAuthorizationLookup = {};
-allItems.forEach(item => {
-    itemAuthorizationLookup[item.i__table_name] = {
-        queryRole: item.qr__type_name,
-        uploadRole: item.ur__type_name,
-        queryPrivilege: item.qp__privilege_name,
-        uploadPrivilege: item.up__privilege_name,
-    };
-});
+const allInternalObjects = require("../preprocess/load.js");
 
 // Database connection and SQL formatter
 const {postgresClient} = require('../pg.js');
 // get connection object
-const db = postgresClient.getConnection.db;
 const formatSQL = postgresClient.format;
-
-const organizationItemTypeID = Object.entries(itemTableNames).filter(pair => pair[0] === 'item_organization')[1];
-const userItemTypeID = Object.entries(itemTableNames).filter(pair => pair[0] === 'item_user')[1];
 
 const validateUploadRecordLookup = {
     item_sop: ['organization_id'],
@@ -62,7 +42,7 @@ function authorizationGenerator(queryOrUpload, queryType) {
         let collectedItems;
         if(queryOrUpload === 'query') {
             // [tableName, ...]
-            collectedItems = collectQueryItems(res.locals.parsed, queryType);
+            collectedItems = collectQueryItems(res.locals.parsed, queryType, res.locals.databaseConnectionName);
         } else {
             // [{
             //    tableName: String,  
@@ -72,12 +52,12 @@ function authorizationGenerator(queryOrUpload, queryType) {
             //    globalID: Number | null
             //    isCreate: Boolean
             // }, ...]
-            collectedItems = collectSubmissionItems(req.body);
+            collectedItems = collectSubmissionItems(req.body, res.locals.databaseConnectionName);
         }
         
         try {
             // throws error if invalid
-            await validateItemsOnRequesterRole(collectedItems, res.locals.authorization, queryOrUpload);
+            await validateItemsOnRequesterRole(collectedItems, res.locals.authorization, queryOrUpload, res.locals.databaseConnection, res.locals.databaseConnectionName);
             return next();
         } catch(err) {
             console.log(err);
@@ -107,19 +87,19 @@ function authorizationGenerator(queryOrUpload, queryType) {
  * @param {'query' | 'submission'} queryOrUpload 
  * @throws {RequestValidationError}
  */
-async function validateItemsOnRequesterRole(items, authorizationObject, queryOrUpload) {
+async function validateItemsOnRequesterRole(items, authorizationObject, queryOrUpload, db, dbName) {
     
     // validate every passed item
     for(let itemObjectOrTableName of items) {
         // Check if upload and query is possible based on authorization properties of schemaFeatureInput
-        checkRequesterRole(itemObjectOrTableName, authorizationObject, queryOrUpload)
+        checkRequesterRole(itemObjectOrTableName, authorizationObject, queryOrUpload, dbName)
 
         // Additional upload checks
         if(queryOrUpload === 'upload') {
             // Check if upload is possible based on if reference to organization and user is self
             // optimization to not check same globalID twice
             const alreadyCheckedGlobalIDs = [];
-            const newCheckedGlobalID = await validateUploadRecordWithSession(itemObjectOrTableName, authorizationObject, alreadyCheckedGlobalIDs);
+            const newCheckedGlobalID = await validateUploadRecordWithSession(itemObjectOrTableName, authorizationObject, alreadyCheckedGlobalIDs, db);
             if(newCheckedGlobalID !== null) {
                 alreadyCheckedGlobalIDs.push(newCheckedGlobalID);
             }
@@ -133,10 +113,22 @@ async function validateItemsOnRequesterRole(items, authorizationObject, queryOrU
      * @param {*} authorizationObject 
      * @throws {RequestValidationError}
      */
-    function checkRequesterRole(itemTableName, authorizationObject, queryOrUpload) {
+    function checkRequesterRole(itemTableName, authorizationObject, queryOrUpload, dbName) {
         if(queryOrUpload === 'upload') {
             itemTableName = itemTableName.tableName;
         }
+
+        const internalObjects = allInternalObjects[dbName];
+        const { allItems } = internalObjects;
+        const itemAuthorizationLookup = {};
+        allItems.forEach(item => {
+            itemAuthorizationLookup[item.i__table_name] = {
+                queryRole: item.qr__type_name,
+                uploadRole: item.ur__type_name,
+                queryPrivilege: item.qp__privilege_name,
+                uploadPrivilege: item.up__privilege_name,
+            };
+        });
 
         const {
             queryRole,
@@ -205,7 +197,7 @@ async function validateItemsOnRequesterRole(items, authorizationObject, queryOrU
      * @param {Number[]} alreadyCheckedGlobalIDs
      * @throws {RequestValidationError}
      */
-    async function validateUploadRecordWithSession(itemObject, authorizationObject, alreadyCheckedGlobalIDs) {
+    async function validateUploadRecordWithSession(itemObject, authorizationObject, alreadyCheckedGlobalIDs, db) {
         const {
             tableName, 
             itemID,
@@ -294,7 +286,11 @@ async function validateItemsOnRequesterRole(items, authorizationObject, queryOrU
  * @param {ReturnableID[]} returnables 
  * @returns {String[]}
  */
-function collectQueryItems(parsed, queryType) {
+function collectQueryItems(parsed, queryType, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { columnIdItemLookup } = internalObjects;
+
+
     // get column
     let {
         allReturnableIDs
@@ -323,8 +319,12 @@ function collectQueryItems(parsed, queryType) {
  * @param {ReturnableID[]} returnables 
  * @returns {{tableName: String, itemID: Number | null, userID: Number | null, organizationID: Number | null, globalID: Number | null, isCreate: Boolean}}
  */
-function collectSubmissionItems(submissionObject) {
-    const items = [];   
+function collectSubmissionItems(submissionObject, dbName) {
+    const items = []; 
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
+    const userItemTypeID = Object.entries(itemTableNames).filter(pair => pair[0] === 'item_user')[1];
+    const organizationItemTypeID = Object.entries(itemTableNames).filter(pair => pair[0] === 'item_organization')[1];  
     for(let itemsOrObservations of Object.values(submissionObject)) {
         for(let actionPair of Object.entries(itemsOrObservations)) {
             const isCreate = actionPair[0] === 'create';

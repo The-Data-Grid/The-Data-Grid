@@ -13,21 +13,30 @@ const {
 } = require('../statement.js').construct
 const { allItems } = require('../statement.js').setup
 
-// Database connection and SQL formatter
-const { postgresClient, connectPostgreSQL } = require('../pg.js');
-let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
-if(postgresdb.length == 0) {
-    connectPostgreSQL('construct'); // Establish an new connection pool
-} else {
-    postgresdb = postgresdb[0].slice(13);
-    connectPostgreSQL('construct', { customDatabase: postgresdb }) // Establish an new connection pool
-}	
-const db = postgresClient.getConnection.cdb; // get connection object
-const formatSQL = postgresClient.format; // get SQL formatter
-
-
 // remove boilerplate argv elements
 process.argv.splice(0, 2);
+
+// Database connection options
+const { postgresClient, connectPostgreSQL } = require('../pg.js');
+let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
+let isTemp = process.argv.some(arg => arg === "--temp");
+let streamQueryLogsFileName = process.argv.filter(arg => /--streamQueryLogs=.*/.test(arg));
+const databaseOptions = {};
+if(postgresdb.length > 0) {
+    postgresdb = postgresdb[0].slice(13);
+    databaseOptions.customDatabase = postgresdb
+} else {
+    throw Error("Must include database to connect to with --postgresdb=...");
+}
+if(streamQueryLogsFileName.length > 0) {
+    streamQueryLogsFileName = streamQueryLogsFileName[0].slice(18);
+    databaseOptions.streamQueryLogs = streamQueryLogsFileName;
+}	
+
+// Database connection and SQL formatter
+connectPostgreSQL('construct', databaseOptions); // Establish an new connection pool
+const db = postgresClient.getConnection[postgresdb]; // get connection object
+const formatSQL = postgresClient.format; // get SQL formatter
 
 console.log(chalk.blue.bold(`Running ${process.argv[0]}`));
 
@@ -38,6 +47,7 @@ if(process.argv[0] == 'make-schema') {
     // get and remove audit type
     commandLineArgs.database = process.argv[0];
     commandLineArgs.schema = process.argv[1].split(',');
+    commandLineArgs.isTemp = isTemp;
     // configure command line arguments
     (process.argv.includes('--show-computed') || process.argv.includes('-sc') ? commandLineArgs.showComputed = true : commandLineArgs.showComputed = false);
     // here we go
@@ -110,10 +120,15 @@ async function makeSchema(commandLineArgs) {
         // Columns and Features
         let columns = [];
         let features = [];
+        if(commandLineArgs.isTemp) {
+            commandLineArgs.schemaDir = parentDir(__dirname, 2) + `/TempSchemas/${commandLineArgs.database}`;
+        } else {
+            commandLineArgs.schemaDir = parentDir(__Dirname, 2), `/Schemas/${commandLineArgs.database}`;
+        }
         commandLineArgs.schema.forEach(schema => {
-            columns = [...columns, ...readSchema(parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.database}/${schema}/columns.jsonc`)];
-            features = [...features, ...readSchema(parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.database}/${schema}/features.jsonc`)];
-        })
+            columns = [...columns, ...readSchema(`${commandLineArgs.schemaDir}/${schema}/columns.jsonc`)];
+            features = [...features, ...readSchema(`${commandLineArgs.schemaDir}/${schema}/features.jsonc`)];
+        });
         let globalPresetColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/presetColumns.jsonc');
         let globalSpecialColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/specialColumns.jsonc');
 
@@ -136,7 +151,7 @@ async function makeSchema(commandLineArgs) {
         await showComputed(commandLineArgs, databaseObject);
 
         // Creating schema assets
-        await makeAssets(featureOutput, databaseObject);
+        await makeAssets(featureOutput, databaseObject, commandLineArgs);
     })
     // Successful construction
         .then(() => {
@@ -310,30 +325,32 @@ async function inspectSchema(commandLineArgs) {
     console.log('Closed PostgreSQL Connection: construct')
 }
 
-async function makeAssets(featureOutput, databaseObject) {
+async function makeAssets(featureOutput, databaseObject, commandLineArgs) {
     const {itemIDColumnLookup, featureItemLookup, itemRealGeoLookup, itemParentLookup} = featureOutput;
     const {db} = databaseObject;
     
-    // Adding files to ./Express/schemaAssets
-    fs.writeFileSync(parentDir(__dirname) + `/schemaAssets/itemIDColumnLookup.json`, JSON.stringify(itemIDColumnLookup))
-    console.log(chalk.whiteBright.bold(`Wrote itemIDColumnLookup.json to schemaAssets`));
+    // Adding files to /_internalObjects
+    fs.writeFileSync(commandLineArgs.schemaDir + `/_internalObjects/itemIDColumnLookup.json`, JSON.stringify(itemIDColumnLookup))
+    console.log(chalk.whiteBright.bold(`Wrote itemIDColumnLookup.json to _internalObjects`));
 
-    fs.writeFileSync(parentDir(__dirname) + `/schemaAssets/itemParentLookup.json`, JSON.stringify(itemParentLookup))
-    console.log(chalk.whiteBright.bold(`Wrote itemParentLookup.json to schemaAssets`));
+    fs.writeFileSync(commandLineArgs.schemaDir + `/_internalObjects/itemParentLookup.json`, JSON.stringify(itemParentLookup))
+    console.log(chalk.whiteBright.bold(`Wrote itemParentLookup.json to _internalObjects`));
 
-    fs.writeFileSync(parentDir(__dirname) + `/schemaAssets/featureItemLookup.json`, JSON.stringify(featureItemLookup));
-    console.log(chalk.whiteBright.bold(`Wrote featireItemLookup.json to schemaAssets`));
+    fs.writeFileSync(commandLineArgs.schemaDir + `/_internalObjects/featureItemLookup.json`, JSON.stringify(featureItemLookup));
+    console.log(chalk.whiteBright.bold(`Wrote featireItemLookup.json to _internalObjects`));
 
-    fs.writeFileSync(parentDir(__dirname) + `/schemaAssets/itemRealGeoLookup.json`, JSON.stringify(itemRealGeoLookup));
-    console.log(chalk.whiteBright.bold(`Wrote itemRealGeoLookup.json to schemaAssets`));
+    fs.writeFileSync(commandLineArgs.schemaDir + `/_internalObjects/itemRealGeoLookup.json`, JSON.stringify(itemRealGeoLookup));
+    console.log(chalk.whiteBright.bold(`Wrote itemRealGeoLookup.json to _internalObjects`));
     
-    fs.writeFileSync(parentDir(__dirname) + `/schemaAssets/allItems.json`, JSON.stringify(await db.many(allItems)));
-    console.log(chalk.whiteBright.bold(`Wrote allItems.json to schemaAssets`));    
+    fs.writeFileSync(commandLineArgs.schemaDir + `/_internalObjects/allItems.json`, JSON.stringify(await db.many(allItems)));
+    console.log(chalk.whiteBright.bold(`Wrote allItems.json to _internalObjects`));    
 
-    fs.writeFileSync(parentDir(__dirname) + `/schemaAssets/returnableView.json`, JSON.stringify(await db.many('SELECT * FROM returnable_view')));
-    console.log(chalk.whiteBright.bold(`Wrote returnableView.json to schemaAssets`));    
+    fs.writeFileSync(commandLineArgs.schemaDir + `/_internalObjects/returnableView.json`, JSON.stringify(await db.many('SELECT * FROM returnable_view')));
+    console.log(chalk.whiteBright.bold(`Wrote returnableView.json to _internalObjects`));    
 }
 
+// TODO fix the directory that is written to
+// need to do this forEach schema 
 async function showComputed(commandLineArgs, databaseObject) {
     const {db} = databaseObject;
     // Creating the computed file and returnables folder 

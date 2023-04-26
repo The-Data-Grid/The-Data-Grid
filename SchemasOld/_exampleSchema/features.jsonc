@@ -1,0 +1,23 @@
+[
+    // Example
+    {
+        "name": "Feature Name",                          // required
+        "information": "Information about the feature",  // optional, default null
+        "observableItem" : {
+            "requiredItem": [
+                {
+                    "name": "item_entity", 
+                    "isID": true, 
+                    "isNullable": false, 
+                    "information": null
+                }
+            ]
+        },
+        "authorization": {
+            "queryPrivilege": "guest",
+            "queryRole": null,
+            "uploadPrivilege": "user",
+            "uploadRole": "auditor"
+        }
+    }
+]

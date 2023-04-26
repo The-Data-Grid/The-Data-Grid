@@ -17,25 +17,38 @@ if (isDeployment) {
     httpPort = 4001;
 }
 
-// Start the main connection pool
-const { connectPostgreSQL } = require('./pg.js');	
-let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
-if(postgresdb.length == 0) {
-    connectPostgreSQL('default');
+// Start the main connection pool for each database
+const { connectPostgreSQL, postgresClient } = require('./pg.js');
+const { getConnection } = postgresClient;
+let database = process.argv.filter(arg => /--database=.*/.test(arg));
+if(database.length > 0) {
+    database = postgresdb[0].slice(13).split(",");
+    for(let databaseName of database) {
+        connectPostgreSQL('default', { customDatabase: databaseName });
+    }
 } else {
-    postgresdb = postgresdb[0].slice(13);
-    connectPostgreSQL('default', { customDatabase: postgresdb });
-}	
+    console.log("Starting service without any TDG databases");
+}
+// Start the executive database connection
+connectPostgreSQL('executive');
 
-// Middleware
-const { setupParse } = require('./parse/parse.js');
-const { sendSetup, sendMobileSetup, sendFilterSetup } = require('./query/query.js');
-const insertRouter = require('./insert/router.js').router;
-const auditRouter = require('./query/router.js');
-const authRouter = require('./auth/router.js');
-//const managementRouter = require('./manage/router.js');
-const setSession = require('./auth/session.js');
-const parseCredentials = require('./auth/parseCredentials.js');
+// Middleware Router
+const mainRouter = require('./router.js');
+
+// Attach which database is being queried
+function attachDatabaseToRequest(req, res, next) {
+    let databaseName = req.params.dbName;
+    if(databaseName in getConnection) {
+        res.locals.databaseConnection = getConnection[databaseName];
+        res.locals.databaseConnectionName = databaseName;
+        return next();
+    } else {
+        return res.status(400).end("Must specify database in request");
+    }
+}
+
+// Executive calls
+const executiveDatabase = require("./executive/router.js");
 
 // CORS, JSON, URL encoding
 app.use(cors({
@@ -50,7 +63,6 @@ if(isDeployment) {
     app.set('trust proxy', true);
 }
 
-
 // Security headers
 app.use(helmet.dnsPrefetchControl());
 app.use(helmet.expectCt());
@@ -64,35 +76,16 @@ app.use(helmet.xssFilter());
 // require TLS for production
 app.use(isDeployment ? helmet.hsts() : (req, res, next) => next());
 
-// Session and format request authorization credentials
-app.use('/', setSession, parseCredentials)
+// Executive requests like create new db, delete db, check all databases
+app.use('/executive', executiveDatabase);
 
-// User Management API Router
-app.use('/user', authRouter);
-
-// Audit Upload API Router
-app.use('/audit/submission', insertRouter);
-
-// Audit API Router
-app.use('/audit', auditRouter);
-
-// Setup Object
-app.get('/setup', setupParse, sendSetup);
-
-// Setup Mobile Object
-app.get('/setup/mobile', setupParse, sendMobileSetup);
-
-// Filter Setup Object
-app.get('/setup/filter', setupParse, sendFilterSetup);
-
-// Audit and Organization management router
-//app.use('/manage', managementRouter);
+// Core TDG router 
+app.use('/db/:dbName', attachDatabaseToRequest, mainRouter);
 
 // Route not found
 app.use('*', (req, res) => res.status(404).end());
 
 ////// LISTEN //////
-
 if(isDeployment) {
     app.listen(httpsPort, () => console.log(`TDG Backend Node.js server is running on port ${httpsPort}`));
 }

@@ -7,15 +7,17 @@
 
 // Database connection and SQL formatter
 const {postgresClient, connectPostgreSQL} = require('../pg.js');
-let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
-if(postgresdb.length == 0) {
-    connectPostgreSQL('default');
+let database = process.argv.filter(arg => /--database=.*/.test(arg));
+let isTemp = process.argv.some(arg => arg === "--temp");
+if(database.length > 0) {
+    console.log(database)
+    database = database[0].slice(13);
+    connectPostgreSQL('default', { customDatabase: database });
 } else {
-    postgresdb = postgresdb[0].slice(13);
-    connectPostgreSQL('default', { customDatabase: postgresdb });
+    throw Error("Must include database to connect to with --database=...");
 }
 // get connection object
-const db = postgresClient.getConnection.db;
+const db = postgresClient.getConnection[database];
 
 // get SQL formatter
 const formatSQL = postgresClient.format;
@@ -24,7 +26,7 @@ const fs = require('fs');
 // QUERIES //
 // ==================================================
 
-async function asyncWrapper() {
+async function asyncWrapper(db) {
 
 let {
        columnQuery, 
@@ -1165,19 +1167,25 @@ return {
 };
 }
 
-async function writeToFile() {
+async function writeToFile(db) {
     try {
-        var internalObjects = await asyncWrapper();
+        var internalObjects = await asyncWrapper(db);
     } catch(err) {
         console.log(err);
         console.log('Preprocessing failed. Exiting')
         process.exit(1);
     }
 
-    fs.writeFileSync('./schemaAssets/internalObjects.json', JSON.stringify(internalObjects));
-    console.log('Preprocessing finished. Wrote internalObjects.json to Express/schemaAssets')
+    fs.writeFileSync(parentDir(__dirname, 2) + (isTemp ? "/TempSchemas/" : "/Schemas/") + database + "/internalObjects/internalObjects.json", JSON.stringify(internalObjects));
+    console.log('Preprocessing finished. Wrote internalObjects.json to /internalObjects')
 
     process.exit(0);
 }
 
-writeToFile();
+function parentDir(dir, depth=1) {
+    // split on "\" or "/"
+    return dir.split(/\\|\//).slice(0, -depth).join('/');
+}
+
+
+writeToFile(db);

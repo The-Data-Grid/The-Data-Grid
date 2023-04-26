@@ -1,6 +1,4 @@
-const {
-    itemTableNames
-} = require('../../preprocess/load.js');
+const allInternalObjects = require("../../preprocess/load.js");
 
 const {
     DeleteObservationError,
@@ -15,7 +13,10 @@ module.exports = deleteObservation;
  * 
  * @param {Object} options 
  */
-async function deleteObservation(options) {
+async function deleteObservation(options, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
+
     const {
         deleteObservationObjectArray,
         transaction,
@@ -66,7 +67,7 @@ async function deleteObservation(options) {
         }
 
         try {
-            await insertObservationHistory(observationTableName, 'delete', deletedPrimaryKey, db);
+            await insertObservationHistory(observationTableName, 'delete', deletedPrimaryKey, db, dbName);
         } catch(err) {
             console.log(err);
             throw new DeleteObservationError({err: 500, msg: 'Error when inserting deletion into history table'})

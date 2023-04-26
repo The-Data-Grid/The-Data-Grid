@@ -1,0 +1,14 @@
+[
+// Example
+    { 
+        "featureName": "Name",                       // required
+        "name": "Name",                              // required
+        "sqlType": "TEXT",                           // required
+        "referenceType": "item-id",                  // required
+        "presetValues": null,                        // required
+        "information": "Example TDG Column schema",  // optional, defaults to null
+        "accuracy": null,                            // optional, defaults to null
+        "isNullable": false,                         // optional, defaults to false
+        "isFilterable": true                         // optional, defaults to true
+    }
+]

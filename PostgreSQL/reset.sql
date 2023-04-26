@@ -1,2 +1,2 @@
 -- Not for production
-drop database if exists v6; create database v6;
+drop database if exists executive; create database executive;

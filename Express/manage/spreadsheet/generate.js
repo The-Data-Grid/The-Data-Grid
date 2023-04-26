@@ -1,14 +1,17 @@
+// TODO: Update so it picks the database dynamically using res.locals.databaseConnection
+Error("File not production ready")
+
 const excel = require('exceljs');
 const express = require('express');
 
 //connect to db
 const { postgresClient } = require('../../pg.js'); 
-const db = postgresClient.getConnection.db;
+// const db = postgresClient.getConnection.db; SEE ABOVE TODO
 const formatSQL = postgresClient.format;
 
 // internal imports
 const setDatabaseConnection = require('../../query/direct.js');
-const { getPresetValues } = setDatabaseConnection(db);
+//const { getPresetValues } = setDatabaseConnection(db);
 
 const { 
     itemFISLookup,

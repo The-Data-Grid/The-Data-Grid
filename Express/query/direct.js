@@ -139,6 +139,10 @@ function setDatabaseConnection(db) {
     
         }
     }
+
+    function createNewDatabase(dbName) {
+        
+    }
 }
 
 

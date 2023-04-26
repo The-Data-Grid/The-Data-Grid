@@ -6,12 +6,7 @@ response object, and sends an HTTP response.
 ============================================================ */
 
 // Internal setup objects
-const {returnableIDLookup, featureParents, setupObject, setupMobileObject, filterSetupObject} = require('../preprocess/load.js')
-
-// Database connection and SQL formatter
-const {postgresClient} = require('../pg.js');
-// get connection object
-const db = postgresClient.getConnection.db
+const allInternalObjects = require("../preprocess/load.js");
 
 // Query Engine
 const queryEngine = require('./queryEngine.js');
@@ -36,13 +31,15 @@ const {writeToBuffer} = require('@fast-csv/format');
  */
 function dataQueryWrapper(queryType) {
     return async (req, res, next) => {   
+        const db = res.locals.databaseConnection;
+        const dbName = res.locals.databaseConnectionName;
         try {
             let {
                 allReturnableIDs,
                 allIDs,
                 feature,
                 featureTree
-            } = queryHelpers.makeInternalObjects(res.locals.parsed, queryType)
+            } = queryHelpers.makeInternalObjects(res.locals.parsed, queryType, dbName)
             // A lot happens here... The query engine contains an algorithm that trims unneeded joins, asigns aliases to arbitrary columns, stores a lookup of
             // aliases for the where clause, does some SQL formatting, and a bit more.
             let {
@@ -57,7 +54,7 @@ function dataQueryWrapper(queryType) {
                 return res.status(500).send('Internal Server Error 7701: Number of columns found different than number of columns requested')
             }
 
-            const featureClauseArray = queryHelpers.makeFeatureClauseArray(feature, featureTreeArray, queryType);
+            const featureClauseArray = queryHelpers.makeFeatureClauseArray(feature, featureTreeArray, queryType, dbName);
             
             const whereClause = queryHelpers.makeWhereClause(whereLookup, res.locals.parsed.builder);
             
@@ -104,6 +101,10 @@ function dataQueryWrapper(queryType) {
 // SEND OBSERVATION DATA
 // ============================================================
 function formatDefault(req, res, next) {
+    const dbName = res.locals.databaseConnectionName;
+    const internalObjects = allInternalObjects[dbName];
+    const { returnableIDLookup } = internalObjects;
+    
     console.log('Formatting...');
     // This is row-major data
 
@@ -207,6 +208,10 @@ function sendDownload(req, res) {
 function formatDistinct(req, res, next) {
     // This is column-major data
 
+    const dbName = res.locals.databaseConnectionName;
+    const internalObjects = allInternalObjects[dbName];
+    const { returnableIDLookup } = internalObjects;
+
     let keys = res.locals.parsed.finalQuery.fields.map(field => field.name).filter(key => key !== 'observation_pkey' && key !== 'item_pkey');
     let returnableIDs = keys.map(key => parseInt(key.slice(1)));
     
@@ -288,18 +293,30 @@ function sendKey(req, res) {
 // SEND SETUP OBJECT
 // ============================================================
 function sendSetup(req, res) {
+    const dbName = res.locals.databaseConnectionName;
+    const internalObjects = allInternalObjects[dbName];
+    const { setupObject } = internalObjects;
+
     return res.status(200).json(setupObject) // send setupObject
 };
 
 // SEND SETUP MOBILE OBJECT
 // ============================================================
 function sendMobileSetup(req, res) {
+    const dbName = res.locals.databaseConnectionName;
+    const internalObjects = allInternalObjects[dbName];
+    const { setupMobileObject } = internalObjects;
+
     return res.status(200).json(setupMobileObject) // send setupMobileObject
 };
 
 // SEND FILTER SETUP OBJECT
 // ============================================================
 function sendFilterSetup(req, res) {
+    const dbName = res.locals.databaseConnectionName;
+    const internalObjects = allInternalObjects[dbName];
+    const { filterSetupObject } = internalObjects;
+
     return res.status(200).json(filterSetupObject)
 };
 

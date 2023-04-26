@@ -1,11 +1,7 @@
 const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
 
-const {
-    itemTableNames,
-    itemColumnObject,
-    itemObservationTableNameLookup
-} = require('../../preprocess/load.js');
+const allInternalObjects = require("../../preprocess/load.js");
 
 const {
     UpdateObservationError,
@@ -31,7 +27,10 @@ module.exports = updateObservation;
  * 
  * @param {Object} options 
  */
-async function updateObservation(options) {
+async function updateObservation(options, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
+
     const {
         updateObservationObjectArray,
         transaction,
@@ -52,7 +51,7 @@ async function updateObservation(options) {
             const tableName = itemTableNames[itemTypeID];
 
             // validate returnables
-            validateUpdateObservationDataColumns(data, tableName);
+            validateUpdateObservationDataColumns(data, tableName, dbName);
         }
             
         console.log('Validated');
@@ -73,7 +72,10 @@ async function updateObservation(options) {
     }
 }
 
-async function updateIndividualObservation(updateObservationObject, sessionObject, db) {
+async function updateIndividualObservation(updateObservationObject, sessionObject, db, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames, itemColumnObject, itemObservationTableNameLookup } = internalObjects;
+
     const {
         itemTypeID,
         observationPrimaryKey,
@@ -203,5 +205,5 @@ async function updateIndividualObservation(updateObservationObject, sessionObjec
     }
 
     // Insert into history
-    await insertObservationHistory(observationTableName, 'update', observationPrimaryKey, db);
+    await insertObservationHistory(observationTableName, 'update', observationPrimaryKey, db, dbName);
 }

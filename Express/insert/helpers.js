@@ -1,13 +1,7 @@
 /**
  * Insertion helper functions
  */
-const {
-    observationHistory,
-    itemHistory,
-    requiredItemLookup,
-    returnableIDLookup,
-    itemColumnObject,
-} = require('../preprocess/load.js');
+const allInternalObjects = require('../preprocess/load.js');
 const {
     isValidDate,
     dateToUTC,
@@ -391,7 +385,10 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
      * @param {string} tableName
      * @returns {undefined} 
      */
-    return function validateDataColumns(dataObject, tableName) {
+    return function validateDataColumns(dataObject, tableName, dbName) {
+        const internalObjects = allInternalObjects[dbName];
+        const { returnableIDLookup, itemColumnObject } = internalObjects;
+
         const { returnableIDs, data, multiple } = dataObject
         const columnIDs = returnableIDs.map(id => returnableIDLookup[id].columnID);
         // Get all of the columns needed to insert the item
@@ -481,10 +478,11 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
 }
 
 function insertHistoryGenerator(isObservation) {
-    const historyLookup = isObservation ? observationHistory : itemHistory;
-    const foreignKeyColumnName = isObservation ? 'observation_id' : 'item_id';
-
-    return async function insertHistory(baseTableName, historyType, primaryKey, db) {
+    return async function insertHistory(baseTableName, historyType, primaryKey, db, dbName) {
+        const internalObjects = allInternalObjects[dbName];
+        const { observationHistory, itemHistory } = internalObjects;
+        const historyLookup = isObservation ? observationHistory : itemHistory;
+        const foreignKeyColumnName = isObservation ? 'observation_id' : 'item_id';
         const historyTableName = 'history_' + baseTableName;
         const typeID = historyLookup[historyType];
 
@@ -521,7 +519,10 @@ function insertHistoryGenerator(isObservation) {
  * 
  * uses requiredItemLookup
  */
-function validateRequiredItems(requiredItemTableNames, tableName) {
+function validateRequiredItems(requiredItemTableNames, tableName, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { requiredItemLookup } = internalObjects;
+
     // make sure all required items exist and all non nullable required items are included
     const nonNullableNeededAmount = requiredItemLookup[tableName].nonNullable.length;
     let nonNullableCurrentAmount = 0;
@@ -548,7 +549,10 @@ function validateRequiredItems(requiredItemTableNames, tableName) {
  * 
  * uses requiredItemLookup
  */
-function validateRequiredItemsOnUpdate(requiredItemTableNames, tableName) {
+function validateRequiredItemsOnUpdate(requiredItemTableNames, tableName, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { requiredItemLookup } = internalObjects;
+
     // make sure all required items are non nullable
     for(let requiredItemTableName of requiredItemTableNames) {
         if(!requiredItemLookup[tableName].nonId.includes(requiredItemTableName)) {

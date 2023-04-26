@@ -12,7 +12,8 @@ process.argv.slice(2).forEach(arg => {
     cli[parsed[0].slice(2)] = parsed[1];
 })
 console.log('CLI args: ' + process.argv.slice(2).join(', '));
-if(!['featureName', 'auditorName', 'featureInformation', 'parseType'].every(arg => Object.keys(cli).includes(arg))) {
+// featureInformation is optional
+if(!['featureName', 'auditorName', 'parseType', 'tempFolderName'].every(arg => arg in csv)) {
     throw Error('Not enough CLI arguments passed');
 }
 // set parse type
@@ -53,9 +54,8 @@ async function generateObjects() {
 
     console.log('Schema generated successfully');
     // Write to file
-    fs.writeFileSync(__dirname + '/outputObjects/features.jsonc', JSON.stringify(features));
-    fs.writeFileSync(__dirname + '/outputObjects/columns.jsonc', JSON.stringify(columns));
-    console.log('Schema written to /outputObjects');
+    fs.writeFileSync(cli.tempFolderName + '/features.jsonc', JSON.stringify(features));
+    fs.writeFileSync(cli.tempFolderName + '/columns.jsonc', JSON.stringify(columns));
 
     // 3. Generate the submissionObject(s)
     writeSubmissionObject(parsed, colNames, columns, 1, submissionObjectTemplate, {
@@ -64,7 +64,7 @@ async function generateObjects() {
         latName,
         longName
     });
-    console.log('Done!');
+    console.log('Data insertion object generated successfully');
 }
 
 /*
@@ -88,7 +88,7 @@ async function parseData() {
     };
 
     function parseJSON() {
-        let parsed = JSON.parse(fs.readFileSync(__dirname + '/seedData/data.json', 'utf-8'));
+        let parsed = JSON.parse(fs.readFileSync(cli.tempFolderName + '/geojson.json', 'utf-8'));
         
         // Convert to CSV format
         if(parsed.type !== 'FeatureCollection') {
@@ -110,7 +110,7 @@ async function parseData() {
     function parseCSV() {
         return new Promise((resolve, reject) => {
             let parsed = [];
-            fs.createReadStream(__dirname + '/seedData/data.csv', 'utf-8')
+            fs.createReadStream(cli.tempFolderName + '/csv.csv', 'utf-8')
                 .pipe(csv())
                 .on('data', data => parsed.push(data))
                 .on('end', () => {
@@ -127,7 +127,7 @@ async function parseData() {
 function generateSchema(parsed, featuresTemplate, geospatialKey, geospatialType) {
     // pass arg info
     let features = featuresTemplate;
-    features[0].information =  cli.featureInformation;
+    features[0].information = cli.featureInformation ?? null;
     features[0].name = cli.featureName;
 
     let longName = null;
@@ -371,7 +371,8 @@ function writeSubmissionObject(parsed, colNames, columns, wroteObjectIndex, obj,
     // write file or recurse
     if(stopIndex == parsed.length) {
         console.log('Writing submissionObject #' + wroteObjectIndex);
-        fs.writeFileSync(__dirname + `/outputObjects/submissionObject1.json`, JSON.stringify(obj));
+        fs.mkdirSync(`${cli.tempFolderName}/submissionsWithoutReturnables`);
+        fs.writeFileSync(`${cli.tempFolderName}/submissionsWithoutReturnables/submissionObject_${wroteObjectIndex}.json`, JSON.stringify(obj));
         console.log('Wrote submissionObject #' + wroteObjectIndex);
     } else {
         writeSubmissionObject(parsed, colNames, columns, wroteObjectIndex + 1, obj, geoObject);

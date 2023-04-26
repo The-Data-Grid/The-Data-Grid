@@ -1,11 +1,7 @@
 const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
 
-const {
-    itemTableNames,
-    itemColumnObject,
-    returnableIDLookup,
-} = require('../../preprocess/load.js');
+const allInternalObjects = require("../../preprocess/load.js");
 
 const {
     UpdateItemError,
@@ -32,7 +28,10 @@ module.exports = updateItem;
  * 
  * @param {Object} options 
  */
-async function updateItem(options) {
+async function updateItem(options, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
+
     const {
         updateItemObjectArray,
         transaction,
@@ -57,11 +56,11 @@ async function updateItem(options) {
             const requiredItemPrimaryKeys = nonIDRequiredItems.map(item => item.primaryKey);
 
             // validate returnables
-            validateUpdateItemDataColumns(data, tableName);
+            validateUpdateItemDataColumns(data, tableName, dbName);
 
             // validate non id required items
             //     existence of type and non-id ness
-            validateRequiredItemsOnUpdate(requiredItemTableNames, tableName);
+            validateRequiredItemsOnUpdate(requiredItemTableNames, tableName, dbName);
             //     existence of item itself
             let i = 0;
             for(let tableName of requiredItemTableNames) {
@@ -103,7 +102,10 @@ async function updateItem(options) {
     }
 }
 
-async function updateIndividualItem(updateItemObject, db) {
+async function updateIndividualItem(updateItemObject, db, dbName) {
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames, itemColumnObject, returnableIDLookup } = internalObjects;
+
     const {
         itemTypeID,
         primaryKey,
@@ -213,5 +215,5 @@ async function updateIndividualItem(updateItemObject, db) {
     }
 
     // Insert into history
-    await insertItemHistory(tableName, 'update', primaryKey, db)
+    await insertItemHistory(tableName, 'update', primaryKey, db, dbName)
 }
