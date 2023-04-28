@@ -28,21 +28,21 @@ module.exports = updateItem;
  * 
  * @param {Object} options 
  */
-async function updateItem(options, dbName) {
-    const internalObjects = allInternalObjects[dbName];
-    const { itemTableNames } = internalObjects;
-
+async function updateItem(options) {
     const {
         updateItemObjectArray,
         transaction,
-        sessionObject
+        sessionObject,
+        dbName,
     } = options;
+    
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
 
     const db = transaction;
 
     try {
         // Validate
-        console.log(updateItemObjectArray)
         for(let updateItemObject of updateItemObjectArray) {
             const {
                 itemTypeID,

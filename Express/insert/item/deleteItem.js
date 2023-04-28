@@ -13,16 +13,17 @@ module.exports = deleteItem;
  * 
  * @param {Object} options 
  */
-async function deleteItem(options, dbName) {
-    const internalObjects = allInternalObjects[dbName];
-    const { itemTableNames, itemObservationTableNameLookup } = internalObjects;
-
+async function deleteItem(options) {
     const {
         deleteItemObjectArray,
         requestPermanentDeletionItemObjectArray,
         transaction,
-        sessionObject
+        sessionObject,
+        dbName,
     } = options;
+    
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames, itemObservationTableNameLookup } = internalObjects;
 
     const db = transaction;
     // Simply set `is_existing` to false

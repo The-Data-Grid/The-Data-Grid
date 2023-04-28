@@ -71,14 +71,15 @@ module.exports = createItem
  *   2. validateDataColumns()
  *   3. createIndividualItem()
  */
-async function createItem(options, dbName) {
-    const internalObjects = allInternalObjects[dbName];
-    const { itemTableNames } = internalObjects;
-
+async function createItem(options) {
     const {
         createItemObjectArray,
-        transaction
-    } = options
+        transaction,
+        dbName,
+    } = options;
+
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
 
     // Validate reqiured items and data fields for every item
     try {

@@ -13,15 +13,16 @@ module.exports = deleteObservation;
  * 
  * @param {Object} options 
  */
-async function deleteObservation(options, dbName) {
-    const internalObjects = allInternalObjects[dbName];
-    const { itemTableNames } = internalObjects;
-
+async function deleteObservation(options) {
     const {
         deleteObservationObjectArray,
         transaction,
-        sessionObject
+        sessionObject,
+        dbName,
     } = options;
+    
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
 
     const db = transaction;
 

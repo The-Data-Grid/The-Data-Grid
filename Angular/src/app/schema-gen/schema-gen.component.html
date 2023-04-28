@@ -1,6 +1,6 @@
-<div class="w-full h-full flex items-center flex-col" style="padding-top: 100px; min-height: calc(100vh - 199px);">
+<div id="entirePageContainer" class="w-full h-full flex items-center flex-col" [style.padding-top]="chosenOption === null ? '100px' : '40px'" style="min-height: calc(100vh - 199px);" >
   <!-- Icon -->  
-  <svg width="150px" height="160px" viewBox="0 0 432.071 445.383" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <svg [class]="chosenOption === null ? 'postgres-logo-large' : 'postgres-logo-small'" style="transition: width 0.5s, height 0.5s" viewBox="0 0 432.071 445.383" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
     <g id="orginal" style="fill-rule:nonzero;clip-rule:nonzero;stroke:#000000;stroke-miterlimit:4;">
       </g>
     <g id="Layer_x0020_3" style="fill-rule:nonzero;clip-rule:nonzero;fill:none;stroke:#FFFFFF;stroke-width:12.4651;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;">
@@ -18,36 +18,39 @@
     <path style="stroke-width:3;" d="M0,60.232"/>
     </g>
     </svg>
-  <div class="main-text">
+  <div class="main-text" [class.main-text-hidden]="chosenOption !== null">
     Generate a PostgreSQL Database and query it in the cloud
   </div>
-  <div class="flex flex-row justify-between w-full" style="padding: 0 15%; gap: 20px; margin: 25px 0 50px;">
-    <div class="gen-option">
-      <span>Tabluar Database</span>
-      <p>
-        Automatically convert a spreadsheet or table into PostgreSQL. Database design best practices, data formatting, insertion, and more are all handled for you.
-      </p>
-      <button mat-button>
-        Upload CSV File
-      </button>
-    </div>
-    <div class="gen-option">
-      <span>Geospatial Database</span>    
-      <p>
-        Create a database with geographic features that can run geospatial analysis from the map page. Uses PostGIS under the hood for efficient spatial queries.
-      </p> 
-      <button mat-button>
-        Upload GeoJSON File
-      </button>
-    </div>
-    <div class="gen-option">
-      <span>Custom Database</span>
-      <p>
-        Write a custom database schema using the universal data representation format. Allows complete control over fields, relations, constraints, and more.
-      </p> 
-      <button mat-button>
-        Upload JSON
-      </button>
+  <div class="flex flex-row justify-center w-full gen-option-container" [style.gap]="chosenOption === null ? '20px' : '0px'">
+    <div class="gen-option" 
+    *ngFor="let option of options"
+    [class.not-chosen-option]="chosenOption !== option && chosenOption !== null"
+    [class.chosen-option]="chosenOption === option"
+    [class.gen-option-none-chosen]="chosenOption === null"
+    [class.not-chosen-or-none-chosen-option]="chosenOption !== option">
+      <span class="option-title">{{optionText[option][0]}}</span>
+      <p class="option-subtext">{{optionText[option][1]}}</p>
+      <button class="upload-button" mat-button (click)="uploadFile(option)">{{optionText[option][2]}}</button>
+      <div id="optionsForm" *ngIf="chosenOption === option" class="options-form" [class.options-form-hidden]="isFormHidden">
+        <div  class="blue-callout" style="margin: 0.5rem 0 1.9rem 0; flex-direction: column;">
+          <p><span style="font-weight: bold;">File name: </span><span style="font-family: IBM Plex Mono;">{{selectedFile.name}}</span></p>
+          <p><span style="font-weight: bold;">File size: </span><span style="font-family: IBM Plex Mono;">{{formatBytes(selectedFile.size)}}</span></p>
+        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Database Name</mat-label>
+          <input matInput type="text" style="outline: none" [(ngModel)]="databaseName" (input)="checkValidOptions()">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Feature Name</mat-label>
+          <input matInput type="text" style="outline: none" [(ngModel)]="featureName" (input)="checkValidOptions()">
+        </mat-form-field>
+        <div class="flex flex-row justify-between" style="margin: 0.3rem 0 35px">
+          <button mat-button style="background-color: #ff9999;" (click)="resetOptions()">Cancel</button>
+          <button [disabled]="!areOptionsValid" [class]="areOptionsValid ? 'generate-button' : 'disabled-generate-button'" mat-button (click)="generateSchema()"><span style="font-weight: 500">Generate Database</span></button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<input id="fileInput" hidden="true" type="file" [accept]="mimeTypes[potentialChosenOption]" onclick="this.value=null" (change)="fileUploadChange($event)" />

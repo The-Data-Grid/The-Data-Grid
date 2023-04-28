@@ -1,57 +1,70 @@
-// Executive Node.js process which manages TDG instances by doing the following:
-// - Create new databases
-// - Delete databases
+// Executive Node.js process which manages TDG instances
 
-const express = require('express');
-const app = express();
-// SQL Formatter
-const { postgresClient, connectPostgreSQL } = require('../pg.js');
-const { getConnection } = postgresClient;
+const fs = require("fs");
+const bcrypt = require('bcrypt');
 const { nanoid } = require('nanoid');
+// SQL Formatter
+const { postgresClient, connectPostgreSQL, disconnectPostgreSQL, psqlProcess } = require('../pg.js');
+const { getConnection } = postgresClient;
+const V6UserSql = postgresClient.importSql("V6_user.sql");
 
-async function createNewDatabase(locals) {
+async function createNewDatabase(res) {
     const {
-        databaseConnection,
+        executiveDatabaseConnection,
         dbName,
         dbSqlName,
         dbLogFileName,
         hasValidDbApiKey,
-    } = locals;
+        genType,
+    } = res.locals;
     // "executive" database connection
-    let db = databaseConnection;
-    const rand = nanoid(50);
+    let db = executiveDatabaseConnection;
+    const claimCode = nanoid(30);
     const isTemp = !hasValidDbApiKey;
     // Insert into exec
     await db.none(`
         INSERT INTO item_database_executive
         (data_database_name, data_database_sql_name, data_claim_code, data_is_temp)
         VALUES
-        ($(dbName), $(dbSqlName), $(rand), $(isTemp))
+        ($(dbName), $(dbSqlName), $(claimCode), $(isTemp))
     `, {
         dbName,
         dbSqlName,
-        rand,
+        claimCode,
         isTemp,
     });
     // Create DB
-    await db.none("CREATE DATABASE $(dbSqlName)", { dbSqlName });
-    // Make new connection
-    connectPostgreSQL("construct", { customDatabase: dbSqlName, streamQueryLogs: dbLogFileName });
-    const newlyCreatedDbConnection = getConnection[dbSqlName];
-    // Run V6
-    const v6 = postgresClient.QueryFile(parentDir(__dirname) + "/PostgreSQL/V6.sql")
-    await newlyCreatedDbConnection.none(v6);
-    return rand;
+    await db.none("CREATE DATABASE $(dbSqlName:name)", { dbSqlName });
+    // Make new connection and get the connection object
+    connectPostgreSQL("construct", { customDatabase: dbSqlName, streamQueryLogs: dbLogFileName, log: false });
+    const newlyCreatedDatabase = postgresClient.getConnection[dbSqlName];
+    // Run V6 via psql commandline
+    await psqlProcess(dbSqlName, "V6.sql", (data) => {
+        res.write(data);
+    });
+    // Generate a single user, organization, audit, and global item
+    // Generate a password so the user can log into their database
+    const userPassword = nanoid(15);
+    const hashedPassword = await bcrypt.hash(userPassword, 13); 
+    await newlyCreatedDatabase.none(V6UserSql, {
+        hashedPassword,
+        auditName: `Database generated with ${genType} pipeline`,
+    });
+
+    return {
+        claimCode,
+        userPassword,
+    };  
 }
 
 async function checkDatabaseNameIsValid(locals) {
     const {
-        databaseConnection,
+        executiveDatabaseConnection,
         dbName,
         dbSqlName,
     } = locals;
     // "executive" database connection
-    let db = databaseConnection;
+    let db = executiveDatabaseConnection;
     // First, make sure that the database isn't called "executive" as that would collide
     if(dbSqlName === "executive") {
         return false;
@@ -70,6 +83,7 @@ async function checkDatabaseNameIsValid(locals) {
         // query has run successfully and we are sure there are no matches
         return true;
     } catch(err) {
+        console.log(err)
         // either query has failed or there is a match
         return false;
     }
@@ -82,6 +96,7 @@ async function cleanUpFailedDatabaseGeneration(cleanupObject) {
             fs.rmSync(cleanupObject.cleanFiles, { recursive: true, force: true });
             console.log("CLEANED UP FILES");
         } catch(err) {
+            console.log(err);
             console.log("FAILED TO CLEANUP FILES");
         }
     }
@@ -92,17 +107,18 @@ async function cleanUpFailedDatabaseGeneration(cleanupObject) {
             disconnectPostgreSQL(dbName);
             // Drop database
             const db = executiveDatabaseConnection;
-            await db.none("DROP DATABASE $(dbName)", { dbName });
+            await db.none("DROP DATABASE IF EXISTS $(dbName:name)", { dbName });
+            // Remove database from executive
+            await db.none(`
+                DELETE FROM item_database_executive
+                WHERE data_database_sql_name = $(dbName)
+            `, { dbName });
             console.log("CLEANED UP DATABASE");
         } catch(err) {
+            console.log(err);
             console.log("FAILED TO CLEANUP DATABASE");
         }
     }
-}
-
-function parentDir(dir, depth=1) {
-    // split on "\" or "/"
-    return dir.split(/\\|\//).slice(0, -depth).join('/');
 }
 
 async function allDatabases(req, res, next) {

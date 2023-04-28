@@ -11,9 +11,8 @@ process.argv.slice(2).forEach(arg => {
     let parsed = arg.split('=');
     cli[parsed[0].slice(2)] = parsed[1];
 })
-console.log('CLI args: ' + process.argv.slice(2).join(', '));
 // featureInformation is optional
-if(!['featureName', 'auditorName', 'parseType', 'tempFolderName'].every(arg => arg in csv)) {
+if(!['featureName', 'auditorName', 'parseType', 'tempFolderName'].every(arg => arg in cli)) {
     throw Error('Not enough CLI arguments passed');
 }
 // set parse type
@@ -127,7 +126,7 @@ async function parseData() {
 function generateSchema(parsed, featuresTemplate, geospatialKey, geospatialType) {
     // pass arg info
     let features = featuresTemplate;
-    features[0].information = cli.featureInformation ?? null;
+    features[0].information = cli.featureInformation ?? "";
     features[0].name = cli.featureName;
 
     let longName = null;
@@ -291,6 +290,10 @@ function generateSchema(parsed, featuresTemplate, geospatialKey, geospatialType)
  *  ==========================================================
 */
 function writeSubmissionObject(parsed, colNames, columns, wroteObjectIndex, obj, geoObject) {
+    // Create the folder if its the first call
+    if(wroteObjectIndex === 1) {
+        fs.mkdirSync(`${cli.tempFolderName}/submissions`);
+    }
     // unpack geo
     const {
         geospatialKey,
@@ -298,14 +301,23 @@ function writeSubmissionObject(parsed, colNames, columns, wroteObjectIndex, obj,
         latName,
         longName
     } = geoObject;
+
     // submissionObject
-    obj.observations.create.push({
-        "itemTypeID": "TO_BE_FILLED",
-        "itemPrimaryKey": null,
-        "newItemIndex": 0,
-        "globalPrimaryKey": 1,
-        "newGlobalIndex": null,
-        "data": {multiple: true, returnableIDs: null, data: []}});
+    const observationObject = {
+        itemTypeID: "TO_BE_FILLED",
+        globalPrimaryKey: 1,
+        newGlobalIndex: null,
+        itemPrimaryKey: null,
+        newItemIndex: 0,
+        data: {
+            multiple: true,
+            returnableIDs: null,
+            data: []
+        }
+    };
+    obj.observations.create.push(observationObject);
+
+
     // add returnables as names
     let returnables = [
         'Auditor',
@@ -317,10 +329,10 @@ function writeSubmissionObject(parsed, colNames, columns, wroteObjectIndex, obj,
     returnables = [...returnables, ...colNames.map(name => formatName(name))];
     obj.observations.create[obj.observations.create.length - 1].data.returnableIDs = returnables;
 
-    console.log('Computing submissionObject #' + wroteObjectIndex);
     // 50k at a time
     let startIndex = (wroteObjectIndex - 1) * ROWS_PER_OBSERVATION;
     let stopIndex = Math.min(wroteObjectIndex * ROWS_PER_OBSERVATION, parsed.length);
+    console.log(`Computing rows ${startIndex}-${stopIndex} of submissionObject`);
     for(let i = startIndex; i < stopIndex; i++) {
         // prepend Auditor and Standard Operating Procedure data
         let prepend = [cli.auditorName, []];
@@ -368,14 +380,13 @@ function writeSubmissionObject(parsed, colNames, columns, wroteObjectIndex, obj,
         obj.observations.create[obj.observations.create.length - 1].data.data.push(combined);
     }
     
-    // write file or recurse
-    if(stopIndex == parsed.length) {
-        console.log('Writing submissionObject #' + wroteObjectIndex);
-        fs.mkdirSync(`${cli.tempFolderName}/submissionsWithoutReturnables`);
-        fs.writeFileSync(`${cli.tempFolderName}/submissionsWithoutReturnables/submissionObject_${wroteObjectIndex}.json`, JSON.stringify(obj));
-        console.log('Wrote submissionObject #' + wroteObjectIndex);
-    } else {
+    // finish or recurse
+    if(stopIndex !== parsed.length) {
         writeSubmissionObject(parsed, colNames, columns, wroteObjectIndex + 1, obj, geoObject);
+    } else {
+        // write file
+        fs.writeFileSync(`${cli.tempFolderName}/submissions/submissionObjectWithoutReturnables.json`, JSON.stringify(obj));
+        console.log('Wrote submissionObject');
     }
 }
 

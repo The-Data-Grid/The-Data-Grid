@@ -4,6 +4,7 @@
 // ============================================================
 
 const fs = require('fs');
+const { parentDir } = require("../utils.js");
 
 const allInternalObjects = {};
 
@@ -13,20 +14,16 @@ const dbFoldersTemp = fs.readdirSync(parentDir(__dirname, 2) + "/TempSchemas", {
 // Permenant
 for(let dbFolder of dbFolders) {
     if(dbFolder.isDirectory() && dbFolder.name !== "_exampleSchema" && dbFolder.name !== "_globalSchema") {
-        allInternalObjects[dbFolder.name] = JSON.parse(fs.readFileSync(parentDir(__dirname) + "/Schemas/" + dbFolder.name + "/internalObjects/internalObjects.json"));
+        allInternalObjects[dbFolder.name] = JSON.parse(fs.readFileSync(parentDir(__dirname, 2) + "/Schemas/" + dbFolder.name + "/_internalObjects/internalObjects.json"));
     }
 }
 // Temp
 for(let dbFolder of dbFoldersTemp) {
     if(dbFolder.isDirectory()) {
-        allInternalObjects[dbFolder.name] = JSON.parse(fs.readFileSync(parentDir(__dirname) + "/TempSchemas/" + dbFolder.name + "/internalObjects/internalObjects.json"));
+        allInternalObjects[dbFolder.name] = JSON.parse(fs.readFileSync(parentDir(__dirname, 2) + "/TempSchemas/" + dbFolder.name + "/_internalObjects/internalObjects.json"));
     }
 }
 
-function parentDir(dir, depth=1) {
-    // split on "\" or "/"
-    return dir.split(/\\|\//).slice(0, -depth).join('/');
-}
-
-console.log("Loaded internalObjects from " + (dbFolders.length - 2 + dbFoldersTemp.length) + " databases");
+const nDatabases = dbFolders.length - 2 + dbFoldersTemp.length
+console.log("Loaded internalObjects from " + nDatabases + " database" + (nDatabases > 1 ? "s" : ""));
 module.exports = allInternalObjects;

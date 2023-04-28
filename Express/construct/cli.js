@@ -6,6 +6,7 @@ const { asyncConstructAuditingTables } = require('./constructor.js'); // Main sc
 const fs = require('fs'); // Node.js File System
 const stripJsonComments = require('strip-json-comments'); // .jsonc handling
 const chalk = require('chalk'); // pretty console.log
+const { parentDir } = require("../utils.js");
 
 // SQL Statements
 const {
@@ -21,7 +22,9 @@ const { postgresClient, connectPostgreSQL } = require('../pg.js');
 let postgresdb = process.argv.filter(arg => /--postgresdb=.*/.test(arg));
 let isTemp = process.argv.some(arg => arg === "--temp");
 let streamQueryLogsFileName = process.argv.filter(arg => /--streamQueryLogs=.*/.test(arg));
-const databaseOptions = {};
+const databaseOptions = {
+    log: false,
+};
 if(postgresdb.length > 0) {
     postgresdb = postgresdb[0].slice(13);
     databaseOptions.customDatabase = postgresdb
@@ -371,9 +374,4 @@ async function showComputed(commandLineArgs, databaseObject) {
 
 function readSchema(file) { // Schema read function
     return JSON.parse(stripJsonComments(fs.readFileSync(file, 'utf8')))
-}
-
-function parentDir(dir, depth=1) {
-    // split on "\" or "/"
-    return dir.split(/\\|\//).slice(0, -depth).join('/');
 }

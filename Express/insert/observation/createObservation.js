@@ -48,17 +48,18 @@ module.exports = createObservation;
  *      1. Get the relevant data column metadata for the observation
  *      2. Insert values into external columns
  */
-async function createObservation(options, dbName) {
-    const internalObjects = allInternalObjects[dbName];
-    const { itemTableNames, itemObservationTableNameLookup } = internalObjects;
-
+async function createObservation(options) {
     const {
         createObservationObjectArray,
         insertedItemPrimaryKeyLookup,
         transaction,
-        sessionObject
+        sessionObject,
+        dbName,
     } = options;
-
+    
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames, itemObservationTableNameLookup } = internalObjects;
+    
     try {
         // Validate data fields for every observation
         for(let createObservationObject of createObservationObjectArray) {
@@ -76,7 +77,7 @@ async function createObservation(options, dbName) {
         var timer = Date.now();
         for(let i = 0; i < createObservationObjectArray.length; i++) {
             if(i % 100 == 0) {
-                console.log(`Inserted ${i}/${createObservationObjectArray.length} Objects`);
+                console.log(`Inserted ${i}/${createObservationObjectArray.length} 50,000 row chunks`);
                 if(i === 1000) {
                     console.log(`
                         Note: If inserting many values in the same table, it is much faster to set 
@@ -109,12 +110,12 @@ async function createObservation(options, dbName) {
                         }
                     }
                     newCreateObservationObject.data.data = createObservationObject.data.data.slice(sliceIndex, sliceIndex + batchSize);
-                    await createIndividualObservation(newCreateObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, transaction);
+                    await createIndividualObservation(newCreateObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, transaction, dbName);
                     console.log(`Inserted rows ${sliceIndex} to ${sliceIndex + batchSize < createObservationObject.data.data.length ? sliceIndex + batchSize : createObservationObject.data.data.length} of Object ${i+1}`);
                     sliceIndex += batchSize;
                 }
             } else {
-                await createIndividualObservation(createObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, transaction);
+                await createIndividualObservation(createObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, transaction, dbName);
             }
         }
 
@@ -186,13 +187,13 @@ async function createIndividualObservation(createObservationObject, insertedItem
     //    external table
     const isMultiple = createObservationObject.data.multiple === true;
     const data = isMultiple ? createObservationObject.data.data : [createObservationObject.data.data];
-    timer(1)
+    // timer(1)
     let {
         columnNameValueMap,
         listColumnsAndValues,
         sopValue
     } = await getColumnsAndValues(createObservationObject.data.returnableIDs, data);
-    timer(2)
+    // timer(2)
     // Make the SQL Statement
     const fullSQLStatement = makeObservationSQLStatement(observationTableName, columnNameValueMap, globalReference, itemReference);
 
@@ -200,7 +201,7 @@ async function createIndividualObservation(createObservationObject, insertedItem
     const returnedIDs = (await db.any(fullSQLStatement));
     let observationPrimaryKeys = returnedIDs.map(obj => obj.observation_id);
     let observationCountReferences = returnedIDs.map(obj => obj.observaiton_count_id);
-    timer(3)
+    // timer(3)
 
     // Insert list values and list many to many values
     for(let columnsAndValues of listColumnsAndValues) {
@@ -217,13 +218,13 @@ async function createIndividualObservation(createObservationObject, insertedItem
         }
         await insertObservationManyToMany(values, observationPrimaryKeys, itemColumn.tableName, db);
     }
-    timer(4)
+    // timer(4)
     // Insert into SOP many to many
     await insertSOP(sopValue, observationCountReferences, globalReference, db);
 
     // 7. Insert insertion record into history tables
     await insertObservationHistory(observationTableName, 'create', observationPrimaryKeys, db, dbName);
-    timer(5)
+    // timer(5)
     // Leaving inside so it has access to scope of createIndividualObservation()
     async function getColumnsAndValues(returnableIDs, data) {
         let columnNameValueMap = {};

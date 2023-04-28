@@ -50,6 +50,8 @@ import { GuideQueryComponent } from './guide-query/guide.component';
 import { SchemaGen } from './schema-gen/schema-gen.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import {MatIconModule} from '@angular/material/icon'
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from "@angular/material/form-field";
 
 @NgModule({
   declarations: [
@@ -101,6 +103,8 @@ import {MatIconModule} from '@angular/material/icon'
     MaterialModule,
     DragDropModule,
     MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
     ToastrModule.forRoot({timeOut: 2500, maxOpened: 5, autoDismiss: true}),
   ],
   providers: [ApiService, DatePipe, SetupObjectService, TableObjectService, AuthService],

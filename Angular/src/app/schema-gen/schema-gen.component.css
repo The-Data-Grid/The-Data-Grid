@@ -735,6 +735,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   font-family: 'Open Sans';
 }
 
+.postgres-logo-large {
+  height: 160px;
+  width: 150px;
+}
+
+.postgres-logo-small {
+  height: 96px;
+  width: 90px;
+}
+
 .main-text {
   font-family: IBM Plex Sans;
   font-style: normal;
@@ -744,9 +754,24 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(65, 106, 135);
   cursor: default;
   user-select: none;
-  margin-top: 10px;
+  margin-top: 20px;
   padding: 0 10%;
   text-align: center;
+  transition-property: line-height, opacity;
+  transition-duration: 0.5s;
+}
+
+.main-text-hidden {
+  line-height: 0px;
+  opacity: 0%;
+}
+
+.gen-option-container {
+  padding: 0 15%;
+  margin: 25px 0 100px;
+  transition: gap 0.3s;
+  align-items: start;
+  transition: height 0.5s;
 }
 
 .gen-option {
@@ -755,30 +780,35 @@ Ensure the default browser behavior of the `hidden` attribute.
   flex-direction: column;
   align-items: center;
   border-radius: 4px;
-  transition: 0.5s;
+  transition: width 0.5s, height 0.5s, visibility 0.3s, opacity 0.3s, box-shadow 0.3s, background-color 0.3s;
   border: 1px solid #569dd7;
+  overflow: hidden;
 }
 
-.gen-option:hover {
+.gen-option-none-chosen:hover {
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),0px 2px 2px 0px rgba(0, 0, 0, 0.14),0px 1px 5px 0px rgba(0, 0, 0, 0.12);
   background-color: #fafafa;
-}
-
-.gen-option span {
-  color: #569dd7;
-  font-weight: 500;
-  font-size: 20px;
-  margin: 30px 0 18px;
   cursor: default;
 }
 
-.gen-option p {
+.gen-option .option-title {
+  color: #569dd7;
+  font-weight: 500;
+  font-size: 20px;
+  transition: font-size 0.5s;
+  margin: 30px 0 18px;
+  cursor: default;
+  transition: line-height 0.3s, opacity 0.3s;
+}
+
+.gen-option .option-subtext {
   padding: 0 10%;
   font-size: 14px;
   line-height: 20px;
   text-align: center;
   color: rgb(83, 83, 83);
   font-weight: 300;
+  transition: line-height 0.3s, opacity 0.3s;
 }
 
 .gen-option button {
@@ -787,4 +817,71 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding: 8px 18px;
   color: white;
   margin: 25px 10%;
+  transition-property: opacity 0.3s, height 0.3s;
+}
+
+.not-chosen-option {
+  width: 0%;
+  height: 0px;
+  visibility: hidden;
+  opacity: 0%;
+}
+
+.not-chosen-option .option-title {
+  line-height: 0px;
+  opacity: 0%;
+}
+
+.not-chosen-option .option-subtext {
+  line-height: 0px;
+  opacity: 0%;
+}
+
+.chosen-option .option-subtext {
+  line-height: 0px;
+  opacity: 0%;
+}
+
+.chosen-option .option-title {
+  font-size: 30px;
+}
+
+.chosen-option {
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),0px 2px 2px 0px rgba(0, 0, 0, 0.14),0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  width: 50%;
+}
+
+.chosen-option button {
+  margin: 0px;
+}
+
+.chosen-option .upload-button {
+  opacity: 0%;
+  display: none;
+  height: 0px;
+}
+
+.options-form {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  transition: max-height 0.5s, opacity 0.5s;
+  max-height: 400px;
+}
+
+.options-form-hidden {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0%;
+}
+
+.generate-button {
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),0px 2px 2px 0px rgba(0, 0, 0, 0.14),0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 1s, background-color 1s;
+}
+
+.disabled-generate-button {
+  box-shadow: none;
+  background-color: #bfc0c1 !important;
+  transition: box-shadow 1s, background-color 1s;
 }

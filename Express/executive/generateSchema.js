@@ -7,6 +7,7 @@ const {
     checkDatabaseNameIsValid,
     cleanUpFailedDatabaseGeneration
 } = require("./executive.js");
+const { parentDir } = require("../utils.js");
 
 function generationError(type, message, cleanupObject={}) {
     // clean up the temp files asynchronously
@@ -21,8 +22,9 @@ async function download(req, res, next) {
     // POST request but neccessary because multer must pipe to a file before it reads anything)
     res.locals.dbName = req.query.name;
     res.locals.genType = req.query.type;
-    if(res.locals.dbName && /[A-Za-z ]{4,20}/.test(res.locals.dbName) && /[A-Za-z]/.test(res.locals.dbName)) {
-        res.status(400).write(generationError("Formatting Error", "Database name must contain only letters and spaces and be 4-20 characters."));
+    res.locals.dbFeatureName = req.query.featureName;
+    if(!(res.locals.dbName && /[A-Za-z ]{4,20}/.test(res.locals.dbName) && /[A-Za-z]/.test(res.locals.dbName))) {
+        res.write(generationError("Formatting Error", "Database name must contain only letters and spaces and be 4-20 characters."));
         return res.end();
     }
     res.locals.dbSqlName = res.locals.dbName.toLowerCase().replaceAll(" ", "_");
@@ -30,7 +32,7 @@ async function download(req, res, next) {
     // First, check for name collision
     const isDatabaseNameValid = await checkDatabaseNameIsValid(res.locals);
     if(!isDatabaseNameValid) {
-        res.status(400).write(generationError("Formatting Error", "A Database exists with that name, try another."));
+        res.write(generationError("Formatting Error", "A Database exists with that name, try another."));
         return res.end();
     }
 
@@ -39,9 +41,10 @@ async function download(req, res, next) {
     try {
 
         // set header for streaming response
-        res.setHeader('Content-Type', 'text/plain');   
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Connection', 'keep-alive');   
+
         // get api key if it exists
-        const fileSize = req.headers["content-length"];
         const dbApiKey = req.headers["DB-API-KEY"];
         if(dbApiKey) {
             // check for validity
@@ -51,17 +54,23 @@ async function download(req, res, next) {
             res.locals.hasValidDbApiKey = false;
         }
 
-        if(res.locals.genType !== "CSV" && res.locals.genType !== "GeoJSON" && res.locals.genType !== "Custom") {
-            res.status(400).write(generationError("Formatting Error", "Must use CSV, GeoJSON, or custom JSON."));
+        if(res.locals.genType === "CSV") {
+            res.locals.uploadFileName = "csv.csv";
+        } else if (res.locals.genType === "GeoJSON") {
+            res.locals.uploadFileName = "geojson.json";
+        } else if (res.locals.genType === "Custom") {
+            res.locals.uploadFileName = "custom.json";
+        } else {
+            res.write(generationError("Formatting Error", "Must use CSV, GeoJSON, or custom JSON."));
             return res.end();
         }
     
         // create temp folder and uploader
         let tempDirName;
         if(res.locals.hasValidDbApiKey) {
-            tempDirName = parentDir(__dirname, 1) + "/Schemas/" + res.locals.dbSqlName;
+            tempDirName = parentDir(__dirname, 2) + "/Schemas/" + res.locals.dbSqlName;
         } else {
-            tempDirName = parentDir(__dirname, 1) + "/TempSchemas/" + res.locals.dbSqlName;
+            tempDirName = parentDir(__dirname, 2) + "/TempSchemas/" + res.locals.dbSqlName;
         } 
         // make parent dir
         fs.mkdirSync(tempDirName);
@@ -70,53 +79,55 @@ async function download(req, res, next) {
         fs.mkdirSync(tempDirName + "/_internalObjects");
         res.locals.dbTempDirName = tempDirName;
         res.locals.dbLogFileName = res.locals.dbTempDirName + "/default/Schema_Construction_SQL.sql";
-        res.locals.dbLogFileNameInsertion = res.locals.dbTempDirName + "/default/Data_Insertion_SQL.sql"
-        const upload = multer({ 
-            dest: tempDirName + "/default/",
+        res.locals.dbLogFileNameInsertion = res.locals.dbTempDirName + "/default/Data_Insertion_SQL.sql";
+        res.write(`${res.locals.genType} received, starting upload...\n`)
+        const fileStorage = multer.diskStorage({
+            destination: (req, file, cb) => {
+                cb(null, tempDirName + "/default");
+            },
+            filename: (req, file, cb) => {
+                cb(null, file.fieldname);
+            }
+        })
+        const upload = multer({
+            storage: fileStorage,
             limits: {fileSize: 10737418240}, // 10 GB limit
             fileFilter: (req, file, cb) => {
-                if(file.mimetype !== "text/csv" && file.mimetype !== "application/json") {
+                if(file.mimetype !== "text/csv" && file.mimetype !== "application/vnd.ms-excel" && file.mimetype !== "application/json") {
                     cb(new Error("Invalid file type. Must be CSV, GeoJSON, or JSON"));
                 } else {
                     cb(null, true);
                 }
             }
-        }).single(res.locals.genType);
-        // Track progress
-        let progressBytes = 0;
-        let progressPercent = 0;
-        let progressBar = "[                    ]"
-        req.on("data", (chunk) => {
-            progressBytes += chunk.length;
-            const newProgressPercent = Math.round((progressBytes / fileSize) * 100);
-            if(newProgressPercent > progressPercent) {
-                progressPercent = newProgressPercent;
-                const progressBarCutoff = Math.round(progressPercent / 5);
-                progressBar = '[';
-                for(let n = 1; n <= 20; n++) {
-                    progressBar += n > progressBarCutoff ? ' ' : '#';
-                }
-                progressBar += ']';
-                res.write(`${progressBar} ${progressPercent}%`);
-            }
-        })
+        }).any();
         // Upload the file
-        res.write(`${res.locals.genType} received, starting upload...`)
-        upload(req, res, (err) => {
-            if(err) {
-                res.status(400).write(generationError("File Conversion Error", err, {
-                    cleanFiles: tempDirName
-                }))
-                return res.end();
-            } else {
-                // success, pass to next middleware
-                res.write("File successfully uploaded!")
-                res.write("Starting conversion to TDG objects...")
-                return next();
-            }
+        res.write(`${res.locals.genType} received, starting upload...\n`)
+        const uploadPromise = new Promise((resolve, reject) => {
+            upload(req, res, (err) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
         });
+        try {
+            await uploadPromise;
+            // success, pass to next middleware
+            res.write("File successfully uploaded!\n");
+            res.write("Starting conversion to TDG objects...\n");
+            return next();
+        } catch(err) {
+            console.log(err);
+            res.write(generationError("File Conversion Error", err, {
+                cleanFiles: tempDirName
+            }))
+            return res.end();
+        }
+
     } catch(err) {
-        res.status(500).write(generationError("File Conversion Error", err, {
+        console.log(err)
+        res.write(generationError("File Conversion Error", err, {
             cleanFiles: res.locals.dbTempDirName
         }));
         return res.end();
@@ -138,17 +149,23 @@ function convert(req, res, next) {
             return res.next();
         } else {
             // spawn conversion program
-            conversionNodejsProcess = child.execFile(__dirname + "/construct/convert/converter.js", [
-                "--parseType=" + req.params.type.toLowerCase(),
+            conversionNodejsProcess = child.execFile("node", [
+                parentDir(__dirname) + "/construct/convert/converter.js",
+                "--parseType=" + res.locals.genType.toLowerCase(),
                 "--featureName=" + res.locals.dbFeatureName,
                 "--auditorName=" + "TDG Auto-convert",
                 "--tempFolderName=" + res.locals.dbTempDirName + "/default"
             ], (err, stdout, stderr) => {
                 if(err) {
                     // clean up
+                    console.log(err)
+                    res.write(generationError("File Conversion Error", err, {
+                        cleanFiles: res.locals.dbTempDirName
+                    }));
+                    return res.end();
                 } else {
-                    res.write("File conversion complete!");
-                    res.write("Starting database construction...");
+                    res.write("File conversion complete!\n");
+                    res.write("Starting database construction...\n");
                     return next();
                 }
             });
@@ -159,7 +176,8 @@ function convert(req, res, next) {
             });
         }
     } catch(err) {
-        res.status(500).write(generationError("File Conversion Error", err, {
+        console.log(err);
+        res.write(generationError("File Conversion Error", err, {
             cleanFiles: res.locals.dbTempDirName
         }));
         return res.end();
@@ -171,13 +189,15 @@ async function construct(req, res, next) {
     try {
         // 1. Insert row into executive database
         // 2. Create new database and run v6
-        const claimCode = await createNewDatabase(res.locals);
+        const { claimCode, userPassword } = await createNewDatabase(res);
         res.locals.claimCode = claimCode;
+        res.locals.userPassword = userPassword;
     
-        res.write("New PostgreSQL database created: " + res.locals.dbSqlName);
+        res.write("New PostgreSQL database created: " + res.locals.dbSqlName + "\n");
     
         // 3. Run construction script on new database
         const constructionParams = [
+            parentDir(__dirname) + "/construct/cli.js",
             "make-schema",
             res.locals.dbSqlName, // database
             "default", // "default" schema for one-shot conversion and generation
@@ -187,29 +207,36 @@ async function construct(req, res, next) {
         if(!res.locals.hasValidDbApiKey) {
             constructionParams.push("--temp")
         }
-        constructionNodejsProcess = child.execFile(
-            __dirname + "/construct/cli.js",
-            constructionParams,
-            (err, stdout, stderr) => {
-                if(err) {
-                    // clean up
-                } else {
-                    res.write("Database successfully constructed!");
-                    res.write("Starting data insertion...");
-                    return next();
-                }
-            })
+        constructionNodejsProcess = child.execFile("node", constructionParams, (err, stdout, stderr) => {
+            if(err) {
+                // clean up
+                console.log(err)
+                res.write(generationError("File Conversion Error", err, {
+                    cleanFiles: res.locals.dbTempDirName,
+                    cleanDatabase: {
+                        dbName: res.locals.dbSqlName,
+                        executiveDatabaseConnection: res.locals.executiveDatabaseConnection
+                    }
+                }));
+                return res.end();
+            } else {
+                res.write("Database successfully constructed!\n");
+                res.write("Starting data insertion...\n");
+                return next();
+            }
+        })
     
         // capture logs
         constructionNodejsProcess.stdout.on("data", (data) => {
             res.write(data);
         });
     } catch(err) {
-        res.status(500).write(generationError("Database Construction Error", err, {
+        console.log(err)
+        res.write(generationError("Database Construction Error", err, {
             cleanFiles: res.locals.dbTempDirName,
             cleanDatabase: {
                 dbName: res.locals.dbSqlName,
-                executiveDatabaseConnection: res.locals.databaseConnection
+                executiveDatabaseConnection: res.locals.executiveDatabaseConnection
             }
         }));
         return res.end();
@@ -219,9 +246,9 @@ async function construct(req, res, next) {
 // 4. Fill the submissionObject with correct returnable IDs
 function fillReturnables(req, res, next) {
     try {
-        fillReturnablesNodejsProcess = child.execFile(
-            __dirname + "/construct/convert/fillReturnables.js",
+        fillReturnablesNodejsProcess = child.execFile("node",
             [
+                parentDir(__dirname) + "/construct/convert/fillReturnables.js",
                 "--featureName=" + res.locals.dbFeatureName,
                 "--dbFolderName=" + res.locals.dbTempDirName,
                 "--schema=default" 
@@ -229,8 +256,17 @@ function fillReturnables(req, res, next) {
             (err, stdout, stderr) => {
                 if(err) {
                     // clean up
+                    console.log(err)
+                    res.write(generationError("Data Insertion Error", err, {
+                        cleanFiles: res.locals.dbTempDirName,
+                        cleanDatabase: {
+                            dbName: res.locals.dbSqlName,
+                            executiveDatabaseConnection: res.locals.executiveDatabaseConnection
+                        }
+                    }));
+                    return res.end();
                 } else {
-                    res.write("Successfully filled returnables...");
+                    res.write("Successfully filled returnables...\n");
                     return next();
                 }
             }
@@ -241,11 +277,12 @@ function fillReturnables(req, res, next) {
             res.write(data);
         });
     } catch(err) {
-        res.status(500).write(generationError("Data Insertion Error", err, {
+        console.log(err)
+        res.write(generationError("Data Insertion Error", err, {
             cleanFiles: res.locals.dbTempDirName,
             cleanDatabase: {
                 dbName: res.locals.dbSqlName,
-                executiveDatabaseConnection: res.locals.databaseConnection
+                executiveDatabaseConnection: res.locals.executiveDatabaseConnection
             }
         }));
         return res.end();
@@ -255,18 +292,26 @@ function fillReturnables(req, res, next) {
 // 5. Write internalObjects.js to the database folder
 function preprocess(req, res, next) {
     try {
-        const setupParams = ["--postgresdb=" + res.locals.dbSqlName];
+        const setupParams = [parentDir(__dirname) + "/preprocess/setup.js", "--database=" + res.locals.dbSqlName, "--no-log"];
         if(!res.locals.hasValidDbApiKey) {
             setupParams.push("--temp");
         }
-        preprocessNodejsProcess = child.execFile(
-            __dirname + "/preprocess/setup.js",
+        preprocessNodejsProcess = child.execFile("node",
             setupParams,
             (err, stdout, stderr) => {
                 if(err) {
                     // clean up
+                    console.log(err)
+                    res.write(generationError("Data Insertion Error", err, {
+                        cleanFiles: res.locals.dbTempDirName,
+                        cleanDatabase: {
+                            dbName: res.locals.dbSqlName,
+                            executiveDatabaseConnection: res.locals.executiveDatabaseConnection
+                        }
+                    }));
+                    return res.end();
                 } else {
-                    res.write("Successfully completed preprocessing...");
+                    res.write("Successfully completed preprocessing...\n");
                     return next();
                 }
             }
@@ -277,11 +322,12 @@ function preprocess(req, res, next) {
             res.write(data);
         });
     } catch(err) {
-        res.status(500).write(generationError("Data Insertion Error", err, {
+        console.log(err)
+        res.write(generationError("Data Insertion Error", err, {
             cleanFiles: res.locals.dbTempDirName,
             cleanDatabase: {
                 dbName: res.locals.dbSqlName,
-                executiveDatabaseConnection: res.locals.databaseConnection
+                executiveDatabaseConnection: res.locals.executiveDatabaseConnection
             }
         }));
         return res.end();
@@ -291,9 +337,9 @@ function preprocess(req, res, next) {
 // 6. Insert the data into the database
 function insert(req, res, next) {
     try {
-        insertNodejsProcess = child.execFile(
-            __dirname + "/insert/manual.js",
+        insertNodejsProcess = child.execFile("node",
             [
+                parentDir(__dirname) + "/insert/manual.js",
                 "--postgresdb=" + res.locals.dbSqlName,
                 "--dbFolderName=" + res.locals.dbTempDirName,
                 "--schema=default",
@@ -302,8 +348,18 @@ function insert(req, res, next) {
             (err, stdout, stderr) => {
                 if(err) {
                     // clean up
+                    console.log(err)
+                    res.write(generationError("File Conversion Error", err, {
+                        cleanFiles: res.locals.dbTempDirName,
+                        cleanDatabase: {
+                            dbName: res.locals.dbSqlName,
+                            executiveDatabaseConnection: res.locals.executiveDatabaseConnection
+                        }
+                    }));
+                    return res.end();
                 } else {
-                    res.write("Successfully inserted all data!");
+                    res.write("Successfully inserted all data!\n");
+                    res.write("GENERATIONSUCCESS: " + JSON.stringify({ userPassword: res.locals.userPassword, claimCode: res.locals.claimCode }));
                     res.status(201)
                     res.end();
                 }
@@ -315,20 +371,16 @@ function insert(req, res, next) {
             res.write(data);
         });
     } catch(err) {
-        res.status(500).write(generationError("Data Insertion Error", err, {
+        console.log(err)
+        res.write(generationError("Data Insertion Error", err, {
             cleanFiles: res.locals.dbTempDirName,
             cleanDatabase: {
                 dbName: res.locals.dbSqlName,
-                executiveDatabaseConnection: res.locals.databaseConnection
+                executiveDatabaseConnection: res.locals.executiveDatabaseConnection
             }
         }));
         return res.end();
     }
-}
-
-function parentDir(dir, depth=1) {
-    // split on "\" or "/"
-    return dir.split(/\\|\//).slice(0, -depth).join('/');
 }
 
 module.exports = {

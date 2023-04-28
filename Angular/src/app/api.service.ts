@@ -367,6 +367,23 @@ export class ApiService {
 
   // POST REQUESTS
 
+  async generateSchema(options) {
+    const {
+      contentType,
+      file,
+      fileType,
+      fileExtension,
+      featureName,
+      dbName
+    } = options;
+    const formData = new FormData();
+    formData.append(`${fileType.toLowerCase()}.${fileExtension}`, file);
+    return fetch(`${API_URL}/executive/generate?type=${fileType}&name=${encodeURIComponent(dbName)}&featureName=${encodeURIComponent(featureName)}`, {
+      "body": formData,
+      "method": "POST"
+    });
+  }
+
   uploadSpreadsheet(file, sops, organizationID) {
     const reqHeader = new HttpHeaders({ 'No-Auth': 'True', 'With-Credentials': 'True' })
     const formData: FormData = new FormData();

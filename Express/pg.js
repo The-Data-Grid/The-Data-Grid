@@ -4,35 +4,41 @@ require('dotenv').config();
 const fs = require("fs");
 const isDeployment = process.argv.includes('--deploy');
 console.log(isDeployment ? 'DEPLOYMENT' : 'DEVELOPMENT');
+const child = require("child_process");
+const { parentDir } = require("./utils.js");
 
 // PostgreSQL -> Javascript type parsing
 pgp.pg.types.setTypeParser(1700, parseFloat) //Parsing the NUMERIC SQL type as a JS float 
 pgp.pg.types.setTypeParser(1184, require('./parse/parse.js').timestamptzParse) //Parsing the TIMESTAMPTZ SQL type as a JS Date
 
-var tdgdbname = isDeployment ? process.env.PGDATABASE : 'v6';
-var tdgdbuser = 'postgres';
-var tdgpassword = isDeployment ? process.env.PGPASSWORD : 'postgres';
-var tdghost = isDeployment ? process.env.PGHOST : 'localhost';
+const TDG_DB_NAME = isDeployment ? process.env.PGDATABASE : 'v6';
+const TDG_DB_USER = 'postgres';
+const TDG_DB_PASSWORD = isDeployment ? process.env.PGPASSWORD : 'postgres';
+const TDG_HOST = isDeployment ? process.env.PGHOST : 'localhost';
+const TDG_PORT = 5432;
 
-function logNewDatabaseConnection(connectionObject) {
-    console.log('========== NEW DATABASE CONNECTION ==========')
-    console.log('=============================================')
-    console.log('PostgreSQL Host: ' + connectionObject.host);
-    console.log('PostgreSQL Database: ' + connectionObject.database);
-    console.log('PostgreSQL User: ' + connectionObject.user);
-    console.log('PostgreSQL Port: ' + connectionObject.port);
-    console.log('PostgreSQL Pasword: ' + (isDeployment ? '*********' : connectionObject.password));
-    console.log('PostgreSQL Max Connections: ' + connectionObject.max);
-    console.log('=============================================')
+function logNewDatabaseConnection(connectionObject, logConnection) {
+    if(logConnection) {
+        console.log('========== NEW DATABASE CONNECTION ==========')
+        console.log('=============================================')
+        console.log('PostgreSQL Host: ' + (isDeployment ? '*********' : connectionObject.host));
+        console.log('PostgreSQL Database: ' + connectionObject.database);
+        console.log('PostgreSQL User: ' + connectionObject.user);
+        console.log('PostgreSQL Port: ' + connectionObject.port);
+        console.log('PostgreSQL Pasword: ' + (isDeployment ? '*********' : connectionObject.password));
+        console.log('PostgreSQL Max Connections: ' + connectionObject.max);
+        console.log('=============================================')
+    }
 }
 
 const postgresClient = {
     format: pgp.as.format,
-    QueryFile: pgp.QueryFile,
+    importSql: (fileName) => new pgp.QueryFile(`${parentDir(__dirname)}/PostgreSQL/${fileName}`),
     getConnection: {},
 };
 
-function connectPostgreSQL(config, options={}) {
+function connectPostgreSQL(config, options={ log: true }) {
+    let tdgdbname = TDG_DB_NAME;
     if('customDatabase' in options) {
         tdgdbname = options.customDatabase;
     }
@@ -41,15 +47,16 @@ function connectPostgreSQL(config, options={}) {
 
         // Schema construction CLI database connection
         const executiveConnection = { 
-            host: tdghost,
-            port: 5432,
+            host: TDG_HOST,
+            port: TDG_PORT,
             database: "executive",
-            user: tdgdbuser,
-            password: tdgpassword,
-            max: 5
+            user: TDG_DB_USER,
+            password: TDG_DB_PASSWORD,
+            max: 5,
+            idleTimeoutMillis: 10 // disconnect right after
         };
         const db = pgp(executiveConnection);
-        logNewDatabaseConnection(executiveConnection);
+        logNewDatabaseConnection(executiveConnection, options.log);
         postgresClient.getExecutiveConnection = db;
     } else if(config == 'default') {
 
@@ -57,15 +64,15 @@ function connectPostgreSQL(config, options={}) {
 
         // Default runtime database connection
         const defaultConnection = { //connection info
-            host: tdghost,
-            port: 5432,
+            host: TDG_HOST,
+            port: TDG_PORT,
             database: tdgdbname,
-            user: tdgdbuser,
-            password: tdgpassword,
+            user: TDG_DB_USER,
+            password: TDG_DB_PASSWORD,
             max: 10
         };
         const db = pgp(defaultConnection);
-        logNewDatabaseConnection(defaultConnection);
+        logNewDatabaseConnection(defaultConnection, options.log);
 
         postgresClient.getConnection[tdgdbname] = db;        
     } else if(config == 'construct') {
@@ -73,16 +80,16 @@ function connectPostgreSQL(config, options={}) {
         console.log(`Establishing PostgreSQL connection...`)
         // Schema construction CLI database connection
         const constructionConnection = { 
-            host: tdghost,
-            port: 5432,
+            host: TDG_HOST,
+            port: TDG_PORT,
             database: tdgdbname,
-            user: tdgdbuser,
-            password: tdgpassword,
+            user: TDG_DB_USER,
+            password: TDG_DB_PASSWORD,
             max: 1, // use only one connection
             idleTimeoutMillis: 10 // disconnect right after
         };
         const db = pgp(constructionConnection);
-        logNewDatabaseConnection(defaultConnection);
+        logNewDatabaseConnection(constructionConnection, options.log);
 
         postgresClient.getConnection[tdgdbname] = db;
     } else throw Error('Must use a valid connection type: \'default\', \'construct\', \'executive\'');
@@ -92,22 +99,34 @@ function connectPostgreSQL(config, options={}) {
 
     // query logging
     if('streamQueryLogs' in options) {
+        /*
+        This doesn't work right now. The pg-promise methods are read-only so the proxy has to return its actual value
+        and thus doesn't have access to the arguments
+
         const logFileName = options.streamQueryLogs;
         console.log("Created query logging file");
         console.log("INFO: This database connection is logging its queries to a file. Keep in mind that this slows down performance!")
-        const loggingPgPromise = new Proxy(postgresClient.getConnection[tdgdbname], {
-            get: (target, propKey) => {
-                const prop = target[propKey];
-                if(typeof prop === 'function') {
-                    // write the query synchronously to ensure correct order
-                    fs.appendFileSync(logFileName, arguments[0] + ';\n');
+        const nonLoggingPgPromise = postgresClient.getConnection[tdgdbname];
+
+        function loggingPgPromise(obj) {
+            const handler = {
+                get: (target, propKey) => {
+                    const parentMethod = target[propKey];
+                    return function(...args) {
+                        if(typeof parentMethod === "function") {
+                            // write the query to file synchronously to ensure correct order
+                            fs.appendFileSync(logFileName, args[0] + ';\n');
+                        }
+                        // pass the call the pg-promise
+                        return parentMethod.apply(target, args);
+                    }
                 }
-                // pass the call the pg-promise
-                return Reflect.get(...arguments);
-            }
-        })
-        postgresClient.getConnection[tdgdbname] = loggingPgPromise;
+            };
+            return new Proxy(obj, handler);
+        }
+        postgresClient.getConnection[tdgdbname] = loggingPgPromise(nonLoggingPgPromise);
         console.log('======== LOGGING ATTACHED TO DATABASE =======');
+        */
     }
 };
 
@@ -127,8 +146,36 @@ function disconnectPostgreSQL(dbName) {
     }
 }
 
+async function psqlProcess(dbName, fileName, streamLogsCallback) {
+    const psqlParams = [
+        "-U",
+        TDG_DB_USER,
+        "-d",
+        dbName,
+        "-h",
+        TDG_HOST,
+        "-p",
+        TDG_PORT,
+        "-f",
+        parentDir(__dirname) + "/PostgreSQL/" + fileName
+    ];
+    return new Promise((resolve, reject) => {
+        const psql = child.execFile("psql", psqlParams, (err, stdout, stderr) => {
+            resolve([err, stdout, stderr]);
+        });
+
+        if(streamLogsCallback) {
+            // capture logs
+            psql.stdout.on("data", (data) => {
+                streamLogsCallback(data);
+            });
+        }
+    });
+}
+
 module.exports = {
     postgresClient,
     connectPostgreSQL,
     disconnectPostgreSQL,
+    psqlProcess,
 };

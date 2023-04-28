@@ -27,15 +27,16 @@ module.exports = updateObservation;
  * 
  * @param {Object} options 
  */
-async function updateObservation(options, dbName) {
-    const internalObjects = allInternalObjects[dbName];
-    const { itemTableNames } = internalObjects;
-
+async function updateObservation(options) {
     const {
         updateObservationObjectArray,
         transaction,
-        sessionObject
+        sessionObject,
+        dbName,
     } = options;
+    
+    const internalObjects = allInternalObjects[dbName];
+    const { itemTableNames } = internalObjects;
 
     const db = transaction;
 

@@ -7,12 +7,13 @@
 
 // Database connection and SQL formatter
 const {postgresClient, connectPostgreSQL} = require('../pg.js');
+const { parentDir } = require("../utils.js");
 let database = process.argv.filter(arg => /--database=.*/.test(arg));
 let isTemp = process.argv.some(arg => arg === "--temp");
+let noLog = process.argv.some(arg => arg === "--no-log");
 if(database.length > 0) {
-    console.log(database)
-    database = database[0].slice(13);
-    connectPostgreSQL('default', { customDatabase: database });
+    database = database[0].slice(11);
+    connectPostgreSQL('default', { customDatabase: database, log: !noLog });
 } else {
     throw Error("Must include database to connect to with --database=...");
 }
@@ -1176,16 +1177,10 @@ async function writeToFile(db) {
         process.exit(1);
     }
 
-    fs.writeFileSync(parentDir(__dirname, 2) + (isTemp ? "/TempSchemas/" : "/Schemas/") + database + "/internalObjects/internalObjects.json", JSON.stringify(internalObjects));
-    console.log('Preprocessing finished. Wrote internalObjects.json to /internalObjects')
+    fs.writeFileSync(parentDir(__dirname, 2) + (isTemp ? "/TempSchemas/" : "/Schemas/") + database + "/_internalObjects/internalObjects.json", JSON.stringify(internalObjects));
+    console.log('Preprocessing finished. Wrote internalObjects.json to /_internalObjects')
 
     process.exit(0);
 }
-
-function parentDir(dir, depth=1) {
-    // split on "\" or "/"
-    return dir.split(/\\|\//).slice(0, -depth).join('/');
-}
-
 
 writeToFile(db);

@@ -13,7 +13,9 @@ if(schemaName.length == 0 || dbFolderName.length == 0) {
 schemaName = schemaName[0].slice(9);
 dbFolderName = dbFolderName[0].slice(15);
 const { connectPostgreSQL, postgresClient } = require('../pg.js');
-const databaseOptions = {}
+const databaseOptions = {
+    log: false,
+};
 if(postgresdb.length > 0) {
     postgresdb = postgresdb[0].slice(13);
     databaseOptions.customDatabase = postgresdb;
@@ -30,16 +32,13 @@ const insertionDb = postgresClient.getConnection[databaseOptions.customDatabase]
 const { insertSubmission } = require('./router.js');
 const fs = require('fs');
 
-let fileNames = fs.readdirSync(`${dbFolderName}/${schemaName}/submissions`);
-for(let i = 0; i < fileNames.length; i++) {
-    console.log(`Inserting submissionObject ${i+1} into the database...`)
-    let submissionObject = fs.readFileSync(`${dbFolderName}/${schemaName}/submissions/${fileNames[i]}`, 'utf-8');
-    submissionObject = JSON.parse(submissionObject);
-    const sessionObject = {
-        privilege: 'user',
-        role: [2],
-        organizationID: [1],
-        userID: 1,
-    }
-    insertSubmission(submissionObject, sessionObject, insertionDb, databaseOptions.customDatabase);
+console.log(`Inserting submissionObject into the database...`)
+let submissionObject = fs.readFileSync(`${dbFolderName}/${schemaName}/submissions/submissionObject.json`, 'utf-8');
+submissionObject = JSON.parse(submissionObject);
+const sessionObject = {
+    privilege: 'user',
+    role: [2],
+    organizationID: [1],
+    userID: 1,
 }
+insertSubmission(submissionObject, sessionObject, insertionDb, databaseOptions.customDatabase);
