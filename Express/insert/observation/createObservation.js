@@ -111,7 +111,7 @@ async function createObservation(options) {
                     }
                     newCreateObservationObject.data.data = createObservationObject.data.data.slice(sliceIndex, sliceIndex + batchSize);
                     await createIndividualObservation(newCreateObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, transaction, dbName);
-                    console.log(`Inserted rows ${sliceIndex} to ${sliceIndex + batchSize < createObservationObject.data.data.length ? sliceIndex + batchSize : createObservationObject.data.data.length} of Object ${i+1}`);
+                    console.log(`Inserted rows ${sliceIndex} to ${sliceIndex + batchSize < createObservationObject.data.data.length ? sliceIndex + batchSize : createObservationObject.data.data.length} of chunk ${i+1}`);
                     sliceIndex += batchSize;
                 }
             } else {

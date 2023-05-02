@@ -39,17 +39,18 @@ async function download(req, res, next) {
     // At this point we know that a database doesn't exist with the name that has
     // been given, so on arbitrary errors we can wipe everything without risk of data loss
     try {
-
-        // set header for streaming response
+        
+        // set header for streaming response and begin generation stream
         res.setHeader('Content-Type', 'text/plain');
         res.setHeader('Connection', 'keep-alive');   
+        res.write("GENERATIONSTART: " + res.locals.dbSqlName + "\n");
 
         // get api key if it exists
         const dbApiKey = req.headers["DB-API-KEY"];
         if(dbApiKey) {
             // check for validity
             // TODO
-            res.locals.hasValidDbApiKey = true;
+            res.locals.hasValidDbApiKey = false;
         } else {
             res.locals.hasValidDbApiKey = false;
         }
@@ -80,7 +81,6 @@ async function download(req, res, next) {
         res.locals.dbTempDirName = tempDirName;
         res.locals.dbLogFileName = res.locals.dbTempDirName + "/default/Schema_Construction_SQL.sql";
         res.locals.dbLogFileNameInsertion = res.locals.dbTempDirName + "/default/Data_Insertion_SQL.sql";
-        res.write(`${res.locals.genType} received, starting upload...\n`)
         const fileStorage = multer.diskStorage({
             destination: (req, file, cb) => {
                 cb(null, tempDirName + "/default");
@@ -101,7 +101,7 @@ async function download(req, res, next) {
             }
         }).any();
         // Upload the file
-        res.write(`${res.locals.genType} received, starting upload...\n`)
+        res.write(`${res.locals.genType} received, uploading... (this might take a minute)\n`)
         const uploadPromise = new Promise((resolve, reject) => {
             upload(req, res, (err) => {
                 if(err) {

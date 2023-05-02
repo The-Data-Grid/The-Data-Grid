@@ -369,7 +369,6 @@ export class ApiService {
 
   async generateSchema(options) {
     const {
-      contentType,
       file,
       fileType,
       fileExtension,

@@ -1,6 +1,6 @@
 <div id="entirePageContainer" class="w-full h-full flex items-center flex-col" [style.padding-top]="chosenOption === null ? '100px' : '40px'" style="min-height: calc(100vh - 199px);" >
   <!-- Icon -->  
-  <svg [class]="chosenOption === null ? 'postgres-logo-large' : 'postgres-logo-small'" style="transition: width 0.5s, height 0.5s" viewBox="0 0 432.071 445.383" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <svg [class]="chosenOption === null ? 'postgres-logo-large' : (onOptionsPage ? 'postgres-logo-small' : 'postgres-logo-none')" style="transition: width 0.5s, height 0.5s" viewBox="0 0 432.071 445.383" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
     <g id="orginal" style="fill-rule:nonzero;clip-rule:nonzero;stroke:#000000;stroke-miterlimit:4;">
       </g>
     <g id="Layer_x0020_3" style="fill-rule:nonzero;clip-rule:nonzero;fill:none;stroke:#FFFFFF;stroke-width:12.4651;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;">
@@ -21,16 +21,21 @@
   <div class="main-text" [class.main-text-hidden]="chosenOption !== null">
     Generate a PostgreSQL Database and query it in the cloud
   </div>
+  <h1 class="header-text" [class.header-text-hidden]="onOptionsPage">
+    {{headerText}}
+  </h1>
   <div class="flex flex-row justify-center w-full gen-option-container" [style.gap]="chosenOption === null ? '20px' : '0px'">
     <div class="gen-option" 
     *ngFor="let option of options"
     [class.not-chosen-option]="chosenOption !== option && chosenOption !== null"
     [class.chosen-option]="chosenOption === option"
     [class.gen-option-none-chosen]="chosenOption === null"
-    [class.not-chosen-or-none-chosen-option]="chosenOption !== option">
+    [class.not-chosen-or-none-chosen-option]="chosenOption !== option"
+    [class.terminal-mode]="!onOptionsPage">
       <span class="option-title">{{optionText[option][0]}}</span>
       <p class="option-subtext">{{optionText[option][1]}}</p>
       <button class="upload-button" mat-button (click)="uploadFile(option)">{{optionText[option][2]}}</button>
+      <!-- FORM -->
       <div id="optionsForm" *ngIf="chosenOption === option" class="options-form" [class.options-form-hidden]="isFormHidden">
         <div  class="blue-callout" style="margin: 0.5rem 0 1.9rem 0; flex-direction: column;">
           <p><span style="font-weight: bold;">File name: </span><span style="font-family: IBM Plex Mono;">{{selectedFile.name}}</span></p>
@@ -47,7 +52,12 @@
         <div class="flex flex-row justify-between" style="margin: 0.3rem 0 35px">
           <button mat-button style="background-color: #ff9999;" (click)="resetOptions()">Cancel</button>
           <button [disabled]="!areOptionsValid" [class]="areOptionsValid ? 'generate-button' : 'disabled-generate-button'" mat-button (click)="generateSchema()"><span style="font-weight: 500">Generate Database</span></button>
+          <button [class]="areOptionsValid ? 'generate-button' : 'disabled-generate-button'" mat-button (click)="generateSchema()"><span style="font-weight: 500">test</span></button>
         </div>
+      </div>
+      <!-- TERMINAL -->
+      <div class="terminal" id="terminal-scroller">
+        <p class="terminal-line" *ngFor="let line of responseStream; let i = index" [id]="'line-'+i"><span class="terminal-line terminal-line-stub">{{databaseSqlName}}@TDG:~# </span>{{line}}</p>
       </div>
     </div>
   </div>

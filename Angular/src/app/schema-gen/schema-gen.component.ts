@@ -32,6 +32,9 @@ export class SchemaGen implements AfterContentInit {
     ["Custom Database", "Write a custom database schema using the universal data representation format. Allows complete control over fields, relations, constraints, and more.", "Upload JSON"]
   ];
 
+
+  onOptionsPage = true;
+  generationInProgress = false;
   responseStream = [];
   chosenOption = null;
   potentialChosenOption = null;
@@ -43,6 +46,11 @@ export class SchemaGen implements AfterContentInit {
   selectedFile = null;
   areOptionsValid = false;
 
+  headerText = "";
+  databaseSqlName = null;
+  generationError = null;
+  generationSuccess = false;
+
   ngAfterContentInit(): void {
     // Add the transition after init so it doesn't fire on first load
     setTimeout(() => {
@@ -52,6 +60,10 @@ export class SchemaGen implements AfterContentInit {
   }
 
   async generateSchema() {
+    this.headerText = "in progress..."
+    this.generationInProgress = true;
+    this.onOptionsPage = false;
+    this.isFormHidden = true;
     const options = {
       contentType: this.mimeTypes[this.chosenOption],
       file: this.selectedFile,
@@ -60,16 +72,18 @@ export class SchemaGen implements AfterContentInit {
       featureName: this.featureName,
       dbName: this.databaseName
     };
-    const res = await this.apiService.generateSchema(options);
-    const reader = res.body.getReader()
-    reader.read().then(function processChunk({ done, value }) {
-      if (done) {
+    const response = await this.apiService.generateSchema(options)
+    const reader = response.body.getReader();
+    const responseDecoder = new TextDecoder('utf-8');
+    while(true) {
+      const { done, value } = await reader.read();
+      if(done) {
+        this.generationInProgress = false;
         return;
       }
 
-      this.responseStream.push(new TextDecoder('utf-8').decode(value));
-      return reader.read().then(processChunk);
-    });
+      this.handleResponseStream(responseDecoder.decode(value))
+    }
   }
 
   uploadFile(option) {
@@ -108,6 +122,42 @@ export class SchemaGen implements AfterContentInit {
     } else {
       this.areOptionsValid = false;
     }
+  }
+
+  handleResponseStream(line) {
+    if(line.split(": ")[0] === "GENERATIONERROR") {
+      this.throwGenerationError(JSON.parse(line.split(": ")[1]));
+    }
+    if(this.databaseSqlName === null) {
+      if(line.split(": ")[0] === "GENERATIONSTART") {
+        const firstChunk = line.split(": ")[1].split("\n");
+        this.databaseSqlName = firstChunk[0];
+        for(let remaining of firstChunk.slice(1)) {
+          this.responseStream.push(remaining);
+        }
+      } else {
+        this.throwGenerationError({type: "Unknown", message: "Did not receive an expected response from the API, try again later."})
+      }
+    } else {
+      if(line.split(": ")[0] === "GENERATIONSUCCESS") {
+        this.generationSuccess = true;
+      } else {
+        // Most responses
+        for(let remaining of line.split("\n")) {
+          if(remaining.length > 0) {
+            this.responseStream.push(remaining);
+            const currIndex = this.responseStream.length - 1;
+            setTimeout(() => {
+              document.getElementById("line-" + currIndex).scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+            }, 10);
+          }
+        }
+      }
+    }
+  }
+
+  throwGenerationError(errorObject) {
+
   }
 
   formatBytes(a,b=2,k=1024) {let d=Math.floor(Math.log(a)/Math.log(k));return 0==a?"0 Bytes":parseFloat((a/Math.pow(k,d)).toFixed(Math.max(0,b)))+" "+["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}
