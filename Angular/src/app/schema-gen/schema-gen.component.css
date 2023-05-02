@@ -908,6 +908,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   scroll-behavior: smooth;
 }
 
+.chosen-option.terminal-mode.error-mode {
+  border: 1px solid #ff9999;
+}
+
+.chosen-option.terminal-mode.success-mode {
+  border: 1px solid #5fa784;
+}
+
 .terminal-line {
   font-family: IBM Plex Mono;
   line-height: 20px;
@@ -918,7 +926,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 .header-text {
-  transition-property: line-height, margin, font-size, opacity;
+  transition-property: line-height, margin, font-size, opacity, color;
   transition-duration: 0.5s;
 }
 
@@ -927,6 +935,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin: 0;
   font-size: 0px;
   opacity: 0%;
+}
+
+.header-text-error {
+  color: #ff9999;
+  border-color: #ff9999;
+}
+
+.header-text-success {
+  color: #5fa784;
+  border-color: #5fa784;
 }
 
 h1 {
@@ -939,4 +957,25 @@ h1 {
   border-top: #569dd7 dotted 1.5px;
   padding: 0;
   width: 49%;
+}
+
+.utility-button-gray {
+  background-color: white;
+  border-color: #535353;
+  border-width: 1px;
+  border-style: solid;
+  color: #535353;
+  padding: 10px;
+  margin-top: 25px;
+}
+
+::ng-deep .utility-button-gray .mat-button-wrapper {
+  display: block !important;
+}
+
+.header-3-type {
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: 0.0065em;
 }

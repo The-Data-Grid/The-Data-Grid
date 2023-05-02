@@ -358,7 +358,6 @@ function insert(req, res, next) {
                     }));
                     return res.end();
                 } else {
-                    res.write("Successfully inserted all data!\n");
                     res.write("GENERATIONSUCCESS: " + JSON.stringify({ userPassword: res.locals.userPassword, claimCode: res.locals.claimCode }));
                     res.status(201)
                     res.end();

@@ -21,9 +21,27 @@
   <div class="main-text" [class.main-text-hidden]="chosenOption !== null">
     Generate a PostgreSQL Database and query it in the cloud
   </div>
-  <h1 class="header-text" [class.header-text-hidden]="onOptionsPage">
+  <h1 class="header-text" [class.header-text-hidden]="onOptionsPage" [class.header-text-error]="generationError !== null" [class.header-text-success]="generationSuccess === true">
     {{headerText}}
   </h1>
+  <div *ngIf="generationError !== null" class="blue-callout" style="margin: 1rem 0 0 0; flex-direction: column; border-color: #ff9999 !important; background-color: #ffefef; width: 45%">
+    <p><span style="font-weight: bold;">Error: </span><span style="font-family: IBM Plex Mono;">{{generationError?.type}}</span></p>
+    <p><span style="font-weight: bold;">Message: </span><span style="font-family: IBM Plex Mono;">{{generationError?.message}}</span></p>
+  </div>
+  <div *ngIf="generationError !== null" class="flex flex-row" style="width: 49%; justify-content: space-between; gap: 20px">
+    <button (click)="resetOptions()" class="utility-button-gray w-full border p-3 inline" mat-button >
+      <mat-icon style="color:#535353;">refresh</mat-icon>
+      <span class="header-3-type m-auto">
+          &nbsp;&nbsp;Start Over
+      </span>
+    </button>
+    <button (click)="editConfig()" class="utility-button-gray w-full border p-3 inline" mat-button >
+      <mat-icon style="color:#535353;">edit</mat-icon>
+      <span class="header-3-type m-auto">
+          &nbsp;&nbsp;Edit Configuration
+      </span>
+    </button>
+  </div>
   <div class="flex flex-row justify-center w-full gen-option-container" [style.gap]="chosenOption === null ? '20px' : '0px'">
     <div class="gen-option" 
     *ngFor="let option of options"
@@ -31,7 +49,9 @@
     [class.chosen-option]="chosenOption === option"
     [class.gen-option-none-chosen]="chosenOption === null"
     [class.not-chosen-or-none-chosen-option]="chosenOption !== option"
-    [class.terminal-mode]="!onOptionsPage">
+    [class.terminal-mode]="!onOptionsPage"
+    [class.error-mode]="generationError !== null"
+    [class.success-mode]="generationSuccess === true">
       <span class="option-title">{{optionText[option][0]}}</span>
       <p class="option-subtext">{{optionText[option][1]}}</p>
       <button class="upload-button" mat-button (click)="uploadFile(option)">{{optionText[option][2]}}</button>
@@ -52,7 +72,6 @@
         <div class="flex flex-row justify-between" style="margin: 0.3rem 0 35px">
           <button mat-button style="background-color: #ff9999;" (click)="resetOptions()">Cancel</button>
           <button [disabled]="!areOptionsValid" [class]="areOptionsValid ? 'generate-button' : 'disabled-generate-button'" mat-button (click)="generateSchema()"><span style="font-weight: 500">Generate Database</span></button>
-          <button [class]="areOptionsValid ? 'generate-button' : 'disabled-generate-button'" mat-button (click)="generateSchema()"><span style="font-weight: 500">test</span></button>
         </div>
       </div>
       <!-- TERMINAL -->

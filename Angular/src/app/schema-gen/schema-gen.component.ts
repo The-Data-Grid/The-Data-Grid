@@ -60,29 +60,33 @@ export class SchemaGen implements AfterContentInit {
   }
 
   async generateSchema() {
-    this.headerText = "in progress..."
-    this.generationInProgress = true;
-    this.onOptionsPage = false;
-    this.isFormHidden = true;
-    const options = {
-      contentType: this.mimeTypes[this.chosenOption],
-      file: this.selectedFile,
-      fileType: this.genTypes[this.chosenOption],
-      fileExtension: this.extensionTypes[this.chosenOption],
-      featureName: this.featureName,
-      dbName: this.databaseName
-    };
-    const response = await this.apiService.generateSchema(options)
-    const reader = response.body.getReader();
-    const responseDecoder = new TextDecoder('utf-8');
-    while(true) {
-      const { done, value } = await reader.read();
-      if(done) {
-        this.generationInProgress = false;
-        return;
+    try {
+      this.headerText = "in progress..."
+      this.generationInProgress = true;
+      this.onOptionsPage = false;
+      this.isFormHidden = true;
+      const options = {
+        contentType: this.mimeTypes[this.chosenOption],
+        file: this.selectedFile,
+        fileType: this.genTypes[this.chosenOption],
+        fileExtension: this.extensionTypes[this.chosenOption],
+        featureName: this.featureName,
+        dbName: this.databaseName
+      };
+      const response = await this.apiService.generateSchema(options)
+      const reader = response.body.getReader();
+      const responseDecoder = new TextDecoder('utf-8');
+      while(true) {
+        const { done, value } = await reader.read();
+        if(done) {
+          this.generationInProgress = false;
+          return;
+        }
+  
+        this.handleResponseStream(responseDecoder.decode(value))
       }
-
-      this.handleResponseStream(responseDecoder.decode(value))
+    } catch(err) {
+      this.throwGenerationError({type: "Request Error", message: "Failed to get a response from the API"});
     }
   }
 
@@ -108,12 +112,27 @@ export class SchemaGen implements AfterContentInit {
     // Wait until the transition finishes
     setTimeout(() => {
       // Now trigger the derender
-      this.potentialChosenOption = null;
+      this.onOptionsPage = true;
+      this.generationInProgress = false;
+      this.responseStream = [];
       this.chosenOption = null;
+      this.potentialChosenOption = null;
       this.databaseName = "";
       this.featureName = "";
       this.selectedFile = null;
+      this.headerText = "";
+      this.databaseSqlName = null;
+      this.generationError = null;
+      this.generationSuccess = false;
     }, 200);  
+  }
+
+  editConfig() {
+    this.generationInProgress = false;
+    this.onOptionsPage = true;
+    this.isFormHidden = false;
+    this.generationError = null;
+    this.responseStream = [];
   }
   
   checkValidOptions() {
@@ -126,7 +145,13 @@ export class SchemaGen implements AfterContentInit {
 
   handleResponseStream(line) {
     if(line.split(": ")[0] === "GENERATIONERROR") {
-      this.throwGenerationError(JSON.parse(line.split(": ")[1]));
+      try {
+        this.throwGenerationError(JSON.parse(line.split(": ")[1]));
+      } catch(err) {
+        // Could not parse JSON
+        this.throwGenerationError({type: "Unknown", message:line.split(": ")[1]});
+      }
+      return;
     }
     if(this.databaseSqlName === null) {
       if(line.split(": ")[0] === "GENERATIONSTART") {
@@ -140,7 +165,12 @@ export class SchemaGen implements AfterContentInit {
       }
     } else {
       if(line.split(": ")[0] === "GENERATIONSUCCESS") {
-        this.generationSuccess = true;
+        try {
+          this.successfulGeneration(JSON.parse(line.split(": ")[1]));
+        } catch(err) {
+          // Could not parse JSON
+          this.throwGenerationError({type: "Unknown", message:"Received successful generation signal from API but malformed accompanying information"});
+        }
       } else {
         // Most responses
         for(let remaining of line.split("\n")) {
@@ -157,7 +187,23 @@ export class SchemaGen implements AfterContentInit {
   }
 
   throwGenerationError(errorObject) {
+    if(errorObject.message && typeof errorObject.message !== "string") {
+      errorObject.message = JSON.stringify(errorObject.message);
+    }
+    this.generationError = errorObject;
+    this.headerText = "Generation Error";
+  }
 
+  successfulGeneration(generationInfo) {
+    // flash success in the header and fire a snackbar
+    this.generationSuccess = true;
+    this.headerText = "Successfully Generated"
+    // SNACKBAR
+    // parse string and get password, log user in on the frontend, now there is a cookie, fire another snackbar
+    // AUTH
+
+    // top bar should change with log in status, redirect to new management page
+    // LETS GET OUT OF HERE!
   }
 
   formatBytes(a,b=2,k=1024) {let d=Math.floor(Math.log(a)/Math.log(k));return 0==a?"0 Bytes":parseFloat((a/Math.pow(k,d)).toFixed(Math.max(0,b)))+" "+["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}
