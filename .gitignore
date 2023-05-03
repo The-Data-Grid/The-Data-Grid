@@ -29,6 +29,7 @@ Express/construct/convert/seedData/*
 !Express/construct/convert/seedData/.gitkeep
 # Don't track submission objects because they are very large
 Schemas/*/*/submissionObject.json
+SchemasOld/*/*/submissionObject.json
 TempSchemas/*
 
 # helpers
