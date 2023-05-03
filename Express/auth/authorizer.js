@@ -118,7 +118,7 @@ async function validateItemsOnRequesterRole(items, authorizationObject, queryOrU
             itemTableName = itemTableName.tableName;
         }
 
-        const internalObjects = allInternalObjects[dbName];
+        const { internalObjects } = allInternalObjects[dbName];
         const { allItems } = internalObjects;
         const itemAuthorizationLookup = {};
         allItems.forEach(item => {
@@ -287,7 +287,7 @@ async function validateItemsOnRequesterRole(items, authorizationObject, queryOrU
  * @returns {String[]}
  */
 function collectQueryItems(parsed, queryType, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { columnIdItemLookup } = internalObjects;
 
 
@@ -321,7 +321,7 @@ function collectQueryItems(parsed, queryType, dbName) {
  */
 function collectSubmissionItems(submissionObject, dbName) {
     const items = []; 
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames } = internalObjects;
     const userItemTypeID = Object.entries(itemTableNames).filter(pair => pair[0] === 'item_user')[1];
     const organizationItemTypeID = Object.entries(itemTableNames).filter(pair => pair[0] === 'item_organization')[1];  

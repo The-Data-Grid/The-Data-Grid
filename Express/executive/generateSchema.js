@@ -5,14 +5,14 @@ const child = require("child_process");
 const {
     createNewDatabase,
     checkDatabaseNameIsValid,
-    cleanUpFailedDatabaseGeneration,
+    cleanUpDatabaseGeneration,
     checkApiKeyIsValid,
 } = require("./executive.js");
 const { parentDir } = require("../utils.js");
 
 function generationError(type, message, cleanupObject={}) {
     // clean up the temp files asynchronously
-    cleanUpFailedDatabaseGeneration(cleanupObject)
+    cleanUpDatabaseGeneration(cleanupObject)
     // return error message
     return `GENERATIONERROR: ${JSON.stringify({type, message})}`
 }
@@ -195,9 +195,10 @@ async function construct(req, res, next) {
     try {
         // 1. Insert row into executive database
         // 2. Create new database and run v6
-        const { claimCode, userPassword } = await createNewDatabase(res);
-        res.locals.claimCode = claimCode;
+        const { userPassword, userEmail, deletionTimer } = await createNewDatabase(res);
+        res.locals.userEmail = userEmail;
         res.locals.userPassword = userPassword;
+        res.locals.deletionTimer = deletionTimer;
     
         res.write("New PostgreSQL database created: " + res.locals.dbSqlName + "\n");
     
@@ -222,7 +223,8 @@ async function construct(req, res, next) {
                     cleanDatabase: {
                         dbName: res.locals.dbSqlName,
                         executiveDatabaseConnection: res.locals.executiveDatabaseConnection
-                    }
+                    },
+                    clearDeletionTimer: res.locals.deletionTimer
                 }));
                 return res.end();
             } else {
@@ -243,7 +245,8 @@ async function construct(req, res, next) {
             cleanDatabase: {
                 dbName: res.locals.dbSqlName,
                 executiveDatabaseConnection: res.locals.executiveDatabaseConnection
-            }
+            },
+            clearDeletionTimer: res.locals.deletionTimer
         }));
         return res.end();
     }
@@ -268,7 +271,8 @@ function fillReturnables(req, res, next) {
                         cleanDatabase: {
                             dbName: res.locals.dbSqlName,
                             executiveDatabaseConnection: res.locals.executiveDatabaseConnection
-                        }
+                        },
+                        clearDeletionTimer: res.locals.deletionTimer
                     }));
                     return res.end();
                 } else {
@@ -289,7 +293,8 @@ function fillReturnables(req, res, next) {
             cleanDatabase: {
                 dbName: res.locals.dbSqlName,
                 executiveDatabaseConnection: res.locals.executiveDatabaseConnection
-            }
+            },
+            clearDeletionTimer: res.locals.deletionTimer
         }));
         return res.end();
     }
@@ -313,7 +318,8 @@ function preprocess(req, res, next) {
                         cleanDatabase: {
                             dbName: res.locals.dbSqlName,
                             executiveDatabaseConnection: res.locals.executiveDatabaseConnection
-                        }
+                        },
+                        clearDeletionTimer: res.locals.deletionTimer
                     }));
                     return res.end();
                 } else {
@@ -334,7 +340,8 @@ function preprocess(req, res, next) {
             cleanDatabase: {
                 dbName: res.locals.dbSqlName,
                 executiveDatabaseConnection: res.locals.executiveDatabaseConnection
-            }
+            },
+            clearDeletionTimer: res.locals.deletionTimer
         }));
         return res.end();
     }
@@ -360,11 +367,12 @@ function insert(req, res, next) {
                         cleanDatabase: {
                             dbName: res.locals.dbSqlName,
                             executiveDatabaseConnection: res.locals.executiveDatabaseConnection
-                        }
+                        },
+                        clearDeletionTimer: res.locals.deletionTimer
                     }));
                     return res.end();
                 } else {
-                    res.write("GENERATIONSUCCESS: " + JSON.stringify({ userPassword: res.locals.userPassword, claimCode: res.locals.claimCode }));
+                    res.write("GENERATIONSUCCESS: " + JSON.stringify({ userPassword: res.locals.userPassword, userEmail: res.locals.userEmail }));
                     res.status(201)
                     res.end();
                 }
@@ -382,7 +390,8 @@ function insert(req, res, next) {
             cleanDatabase: {
                 dbName: res.locals.dbSqlName,
                 executiveDatabaseConnection: res.locals.executiveDatabaseConnection
-            }
+            },
+            clearDeletionTimer: res.locals.deletionTimer
         }));
         return res.end();
     }

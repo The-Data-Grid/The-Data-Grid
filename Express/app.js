@@ -19,18 +19,50 @@ if (isDeployment) {
 
 // Start the main connection pool for each database
 const { connectPostgreSQL, postgresClient } = require('./pg.js');
-const { getConnection } = postgresClient;
-let database = process.argv.filter(arg => /--database=.*/.test(arg));
-if(database.length > 0) {
-    database = postgresdb[0].slice(13).split(",");
-    for(let databaseName of database) {
-        connectPostgreSQL('default', { customDatabase: databaseName });
+// Start the executive database connection
+connectPostgreSQL('executive');
+// Get the connection objects
+const { getConnection, getExecutiveConnection } = postgresClient;
+// Import the internal objects for every database
+const allInternalObjects = require('./preprocess/load.js');
+// Import the executive file for database pruning
+const { pruneTempDatabases } = require('./executive/executive.js');
+
+let passedDatabase = process.argv.filter(arg => /--database=.*/.test(arg));
+const startAllDatabases = process.argv.some(arg => arg === "--all-databases");
+const isNoPruningMode = process.argv.some(arg => arg === "--no-prune");
+const deleteFolderOnMismatch = process.argv.some(arg => arg === "--delete-folder-on-mismatch");
+const deleteRowOnMismatch = process.argv.some(arg => arg === "--delete-row-on-mismatch");
+if(startAllDatabases) {
+    if(!isNoPruningMode) {
+        pruneTempDatabases({
+            allInternalObjects,
+            db: getExecutiveConnection,
+            deleteFolderOnMismatch,
+            deleteRowOnMismatch,
+        }, (validDatabases) => {
+            // Connect to every database after invalid databases have been pruned
+            for(let databaseName of validDatabases) {
+                connectPostgreSQL('default', { customDatabase: databaseName, log: true });
+            }
+            console.log(`Connected to ${validDatabases.length} database${validDatabases.length === 1 ? "" : "s"}`);
+        });
+    } else {
+        // Connect to every database immediately
+        for(let databaseName in allInternalObjects) {
+            connectPostgreSQL('default', { customDatabase: databaseName, log: true });
+        }
+        console.log(`Skipped pruning and connected to ${Object.keys(allInternalObjects).length} database${Object.keys(allInternalObjects).length === 1 ? "" : "s"}`);
     }
+} else if(passedDatabase.length > 0) {
+    passedDatabase = passedDatabase[0].slice(11).split(",");
+    for(let databaseName of passedDatabase) {
+        connectPostgreSQL('default', { customDatabase: databaseName, log: true });
+    }
+    console.log(`Skipped pruning and connected to ${passedDatabase.length} database${passedDatabase.length === 1 ? "" : "s"}`);
 } else {
     console.log("Starting service without any TDG databases");
 }
-// Start the executive database connection
-connectPostgreSQL('executive');
 
 // Middleware Router
 const mainRouter = require('./router.js');

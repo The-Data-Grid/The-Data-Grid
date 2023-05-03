@@ -51,22 +51,20 @@ function connectPostgreSQL(config, options={ log: true }) {
         tdgdbname = options.customDatabase;
     }
     if(config == 'executive') {
-
-        // Schema construction CLI database connection
+        // Executive database connection
         const executiveConnection = { 
             host: TDG_HOST,
             port: TDG_PORT,
             database: "executive",
             user: TDG_DB_USER,
             password: TDG_DB_PASSWORD,
-            max: 5,
+            max: 10,
             idleTimeoutMillis: 10 // disconnect right after
         };
         const db = pgp(executiveConnection, "executive");
         logNewDatabaseConnection(executiveConnection, options.log);
         postgresClient.getExecutiveConnection = db;
     } else if(config == 'default') {
-
         // Default runtime database connection
         const defaultConnection = { //connection info
             host: TDG_HOST,
@@ -74,14 +72,14 @@ function connectPostgreSQL(config, options={ log: true }) {
             database: tdgdbname,
             user: TDG_DB_USER,
             password: TDG_DB_PASSWORD,
-            max: 10
+            max: 5,
+            idleTimeoutMillis: 10 // disconnect right after
         };
         const db = pgp(defaultConnection, tdgdbname);
         logNewDatabaseConnection(defaultConnection, options.log);
 
         postgresClient.getConnection[tdgdbname] = db;        
     } else if(config == 'construct') {
-
         // Schema construction CLI database connection
         const constructionConnection = { 
             host: TDG_HOST,

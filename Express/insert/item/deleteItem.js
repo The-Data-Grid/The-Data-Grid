@@ -22,7 +22,7 @@ async function deleteItem(options) {
         dbName,
     } = options;
     
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames, itemObservationTableNameLookup } = internalObjects;
 
     const db = transaction;

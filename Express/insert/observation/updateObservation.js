@@ -35,7 +35,7 @@ async function updateObservation(options) {
         dbName,
     } = options;
     
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames } = internalObjects;
 
     const db = transaction;
@@ -74,7 +74,7 @@ async function updateObservation(options) {
 }
 
 async function updateIndividualObservation(updateObservationObject, sessionObject, db, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames, itemColumnObject, itemObservationTableNameLookup } = internalObjects;
 
     const {

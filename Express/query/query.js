@@ -102,7 +102,7 @@ function dataQueryWrapper(queryType) {
 // ============================================================
 function formatDefault(req, res, next) {
     const dbName = res.locals.databaseConnectionName;
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { returnableIDLookup } = internalObjects;
     
     console.log('Formatting...');
@@ -209,7 +209,7 @@ function formatDistinct(req, res, next) {
     // This is column-major data
 
     const dbName = res.locals.databaseConnectionName;
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { returnableIDLookup } = internalObjects;
 
     let keys = res.locals.parsed.finalQuery.fields.map(field => field.name).filter(key => key !== 'observation_pkey' && key !== 'item_pkey');
@@ -294,7 +294,7 @@ function sendKey(req, res) {
 // ============================================================
 function sendSetup(req, res) {
     const dbName = res.locals.databaseConnectionName;
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { setupObject } = internalObjects;
 
     return res.status(200).json(setupObject) // send setupObject
@@ -304,7 +304,7 @@ function sendSetup(req, res) {
 // ============================================================
 function sendMobileSetup(req, res) {
     const dbName = res.locals.databaseConnectionName;
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { setupMobileObject } = internalObjects;
 
     return res.status(200).json(setupMobileObject) // send setupMobileObject
@@ -314,7 +314,7 @@ function sendMobileSetup(req, res) {
 // ============================================================
 function sendFilterSetup(req, res) {
     const dbName = res.locals.databaseConnectionName;
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { filterSetupObject } = internalObjects;
 
     return res.status(200).json(filterSetupObject)

@@ -21,7 +21,7 @@ async function deleteObservation(options) {
         dbName,
     } = options;
     
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames } = internalObjects;
 
     const db = transaction;

@@ -9,7 +9,8 @@ const Joi = require('joi');
 const allInternalObjects = require('../preprocess/load.js');
 const allIdValidationLookups = {}
 for(let keyVal of Object.entries(allInternalObjects)) {
-    allIdValidationLookups[keyVal[0]] = keyVal[1];
+    const { internalObjects } = keyVal[1]
+    allIdValidationLookups[keyVal[0]] = internalObjects;
 }
 
 /*

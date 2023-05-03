@@ -36,7 +36,7 @@ async function updateItem(options) {
         dbName,
     } = options;
     
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames } = internalObjects;
 
     const db = transaction;
@@ -103,7 +103,7 @@ async function updateItem(options) {
 }
 
 async function updateIndividualItem(updateItemObject, db, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames, itemColumnObject, returnableIDLookup } = internalObjects;
 
     const {

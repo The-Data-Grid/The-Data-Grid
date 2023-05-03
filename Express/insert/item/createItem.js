@@ -78,7 +78,7 @@ async function createItem(options) {
         dbName,
     } = options;
 
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames } = internalObjects;
 
     // Validate reqiured items and data fields for every item
@@ -149,7 +149,7 @@ async function createItem(options) {
  *   7. Insert history
  */
 async function createIndividualItem(currentIndex, createItemObjectArray, insertedItemPrimaryKeyLookup, db, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { returnableIDLookup, itemColumnObject, itemTableNames } = internalObjects;
 
     // first check if this item has already been recursively inserted, and skip if so
@@ -305,7 +305,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
  * @param {Number|null} globalReference 
  */
 function makeItemSQLStatement(tableName, columnNamesAndValues, globalReference, requiredItems, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { allItems, itemTableNames } = internalObjects;
 
     const itemMetadata = allItems.filter(item => item['i__table_name'] == tableName)[0];

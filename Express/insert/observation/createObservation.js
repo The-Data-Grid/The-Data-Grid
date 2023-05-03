@@ -57,7 +57,7 @@ async function createObservation(options) {
         dbName,
     } = options;
     
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { itemTableNames, itemObservationTableNameLookup } = internalObjects;
     
     try {
@@ -136,7 +136,7 @@ async function createObservation(options) {
 
 
 async function createIndividualObservation(createObservationObject, insertedItemPrimaryKeyLookup, itemTableName, observationTableName, sessionObject, db, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { returnableIDLookup, itemColumnObject } = internalObjects;
     
     let curr = Date.now();

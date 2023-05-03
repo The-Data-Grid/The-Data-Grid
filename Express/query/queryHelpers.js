@@ -42,7 +42,7 @@ module.exports = {
 // QUERY INTERNAL OBJECTS
 // ==================================================
 function makeInternalObjects(parsed, queryType, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { returnableIDLookup } = internalObjects;
 
     // array of all features in feature tree (features and subfeatures)
@@ -83,7 +83,7 @@ function makeInternalObjects(parsed, queryType, dbName) {
 // FEATURE CLAUSES
 // ==================================================
 function makeFeatureClauseArray(feature, featureTree, queryType, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { featureParents } = internalObjects;
 
     let featureClauseArray = [];

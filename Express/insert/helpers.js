@@ -386,7 +386,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
      * @returns {undefined} 
      */
     return function validateDataColumns(dataObject, tableName, dbName) {
-        const internalObjects = allInternalObjects[dbName];
+        const { internalObjects } = allInternalObjects[dbName];
         const { returnableIDLookup, itemColumnObject } = internalObjects;
 
         const { returnableIDs, data, multiple } = dataObject
@@ -479,7 +479,7 @@ function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
 
 function insertHistoryGenerator(isObservation) {
     return async function insertHistory(baseTableName, historyType, primaryKey, db, dbName) {
-        const internalObjects = allInternalObjects[dbName];
+        const { internalObjects } = allInternalObjects[dbName];
         const { observationHistory, itemHistory } = internalObjects;
         const historyLookup = isObservation ? observationHistory : itemHistory;
         const foreignKeyColumnName = isObservation ? 'observation_id' : 'item_id';
@@ -520,7 +520,7 @@ function insertHistoryGenerator(isObservation) {
  * uses requiredItemLookup
  */
 function validateRequiredItems(requiredItemTableNames, tableName, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { requiredItemLookup } = internalObjects;
 
     // make sure all required items exist and all non nullable required items are included
@@ -550,7 +550,7 @@ function validateRequiredItems(requiredItemTableNames, tableName, dbName) {
  * uses requiredItemLookup
  */
 function validateRequiredItemsOnUpdate(requiredItemTableNames, tableName, dbName) {
-    const internalObjects = allInternalObjects[dbName];
+    const { internalObjects } = allInternalObjects[dbName];
     const { requiredItemLookup } = internalObjects;
 
     // make sure all required items are non nullable

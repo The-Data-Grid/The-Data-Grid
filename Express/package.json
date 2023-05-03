@@ -4,8 +4,7 @@
   "description": "Development management at UCLA Bruin Home Solutions",
   "main": "app.js",
   "scripts": {
-    "dev": "node preprocess/setup.js && nodemon app.js",
-    "dev-no-setup": "nodemon app.js",
+    "dev": "nodemon app.js --all-databases",
     "dev-tester": "node preprocess/setup.js --postgresdb=schematester && nodemon app.js --postgresdb=schematester",
     "start": "node preprocess/setup.js --deploy && node app.js --deploy",
     "test-audit": "jest audit.test.js --detectOpenHandles --silent=false",

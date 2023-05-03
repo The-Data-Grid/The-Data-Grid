@@ -14,13 +14,23 @@ const dbFoldersTemp = fs.readdirSync(parentDir(__dirname, 2) + "/TempSchemas", {
 // Permenant
 for(let dbFolder of dbFolders) {
     if(dbFolder.isDirectory() && dbFolder.name !== "_exampleSchema" && dbFolder.name !== "_globalSchema") {
-        allInternalObjects[dbFolder.name] = JSON.parse(fs.readFileSync(parentDir(__dirname, 2) + "/Schemas/" + dbFolder.name + "/_internalObjects/internalObjects.json"));
+        const folderName = parentDir(__dirname, 2) + "/Schemas/" + dbFolder.name;
+        allInternalObjects[dbFolder.name] = {
+            internalObjects: JSON.parse(fs.readFileSync(folderName + "/_internalObjects/internalObjects.json")),
+            folderName,
+            isTemp: false,
+        };
     }
 }
 // Temp
 for(let dbFolder of dbFoldersTemp) {
     if(dbFolder.isDirectory()) {
-        allInternalObjects[dbFolder.name] = JSON.parse(fs.readFileSync(parentDir(__dirname, 2) + "/TempSchemas/" + dbFolder.name + "/_internalObjects/internalObjects.json"));
+        const folderName = parentDir(__dirname, 2) + "/TempSchemas/" + dbFolder.name;
+        allInternalObjects[dbFolder.name] = {
+            internalObjects: JSON.parse(fs.readFileSync(folderName + "/_internalObjects/internalObjects.json")),
+            folderName,
+            isTemp: true,
+        };
     }
 }
 
