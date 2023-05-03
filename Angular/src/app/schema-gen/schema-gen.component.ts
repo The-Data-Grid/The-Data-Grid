@@ -5,7 +5,9 @@ import {FormControl, Validators} from '@angular/forms';
 import { AuthService } from '../auth.service';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
-import { Clipboard } from '@angular/cdk/clipboard'
+import { Clipboard } from '@angular/cdk/clipboard';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'schema-gen',
@@ -19,7 +21,8 @@ export class SchemaGen implements AfterContentInit {
     private authService: AuthService,
     private setupObjectService: SetupObjectService,
     private toastr: ToastrService,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private router: Router
   ) { }
 
   genTypes = ["CSV", "GeoJSON", "Custom"];
@@ -143,7 +146,7 @@ export class SchemaGen implements AfterContentInit {
     }
   }
 
-  handleResponseStream(line) {
+  async handleResponseStream(line) {
     if(line.split(": ")[0] === "GENERATIONERROR") {
       try {
         this.throwGenerationError(JSON.parse(line.split(": ")[1]));
@@ -166,7 +169,11 @@ export class SchemaGen implements AfterContentInit {
     } else {
       if(line.split(": ")[0] === "GENERATIONSUCCESS") {
         try {
-          this.successfulGeneration(JSON.parse(line.split(": ")[1]));
+          const {
+            userPassword,
+            userEmail,
+          } = JSON.parse(line.split(": ")[1]);
+          await this.successfulGeneration(userPassword, userEmail);
         } catch(err) {
           // Could not parse JSON
           this.throwGenerationError({type: "Unknown", message:"Received successful generation signal from API but malformed accompanying information"});
@@ -192,18 +199,36 @@ export class SchemaGen implements AfterContentInit {
     }
     this.generationError = errorObject;
     this.headerText = "Generation Error";
+    this.generationSuccess = false;
   }
 
-  successfulGeneration(generationInfo) {
+  async successfulGeneration(userPassword, userEmail) {
     // flash success in the header and fire a snackbar
     this.generationSuccess = true;
     this.headerText = "Successfully Generated"
-    // SNACKBAR
+    this.toastr.success("Database Created", "");
+    // Wait a second for aesthetic purposes
+    await new Promise(r => setTimeout(r, 1000));
     // parse string and get password, log user in on the frontend, now there is a cookie, fire another snackbar
-    // AUTH
+    if (this.authService.isLocalStorageBlocked) {
+      this.toastr.error('Your browser is blocking access to local storage', 'Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
+      this.throwGenerationError({type: "Unable to log in", message:`Your browser is blocking access to local storage. Allow local storage to store your database information and manage it in your browser.\
+Your database has been successfully created and is publicly accessible on the 'Query Data' page. After allowing access to local storage, log in to your database ${this.databaseName} with email ${userEmail} and\
+password ${userPassword} to manage it. Do not share this password with anyone, this is the only time it will be displayed.`});
+    } else {
+      const userLoginObject = { email: userEmail, pass: userPassword };
+      this.apiService.attemptLogin(this.databaseName, userLoginObject)
+        .subscribe((res) => {
+          // top bar should change with log in status, redirect to new management page
+          this.authService.setSession(res)
+          this.toastr.success('Log in Successful', '');
+          this.router.navigate(['/manage'])
+        }, (err) => {
+          this.throwGenerationError({type: "Unable to log in", message:"Log in has failed for unknown reasons. Your database has been successfully created and is publicly accessible on the 'Query Data' page."})
+        });
+    }
 
-    // top bar should change with log in status, redirect to new management page
-    // LETS GET OUT OF HERE!
+    
   }
 
   formatBytes(a,b=2,k=1024) {let d=Math.floor(Math.log(a)/Math.log(k));return 0==a?"0 Bytes":parseFloat((a/Math.pow(k,d)).toFixed(Math.max(0,b)))+" "+["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}

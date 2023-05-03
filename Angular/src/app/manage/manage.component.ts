@@ -68,15 +68,13 @@ export class ManagementComponent implements OnInit {
   }
 
   getSetupObjects() {
-    this.apiService.getSetupObject().subscribe((res) => {
+    this.apiService.getSetupObject(this.sessionObject.databaseName).subscribe((res) => {
       this.setupObject = res;
       this.parseSetupObject();
     });
 
-    this.apiService.getSetupFilterObject().subscribe((res) => {
+    this.apiService.getSetupFilterObject(this.sessionObject.databaseName).subscribe((res) => {
       this.setupFilterObject = res;
-      console.log('SETUP FILTER')
-      console.log(res)
       this.setupLoading[1] = true;
       this.checkLoading();
     })

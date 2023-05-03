@@ -14,9 +14,10 @@ INSERT INTO item_user
 "tdg_p_hash",
 "data_is_email_public",
 "data_is_quarterly_updates",
+"is_pending",
 "privilege_id")
 VALUES
-    (default, 'Generated', 'User', 'user-generated@thedatagrid.org', $(hashedPassword), true, true, 3);
+    (default, 'Generated', 'User', 'user-generated@thedatagrid.org', $(hashedPassword), true, true, false, 2);
 
 INSERT INTO tdg_role 
 ("role_id",

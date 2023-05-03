@@ -60,8 +60,8 @@ export class ApiService {
     return this.http.post(`${API_URL}/audit/submission`, submissionObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
-  public getSetupObject(): Observable<any> {
-    var url = API_URL + '/setup';
+  public getSetupObject(databaseName): Observable<any> {
+    var url = `${API_URL}/db/${databaseName}/setup`;
 
     return this.http.get<any>(url, {
       observe: 'response',
@@ -92,8 +92,8 @@ export class ApiService {
       }));
   }
 
-  public getSetupFilterObject() {
-    const url = API_URL + '/setup/filter';
+  public getSetupFilterObject(databaseName) {
+    const url = `${API_URL}/db/${databaseName}/setup/filter`;
 
     return this.http.get<any>(url, {
       observe: 'response',
@@ -393,9 +393,9 @@ export class ApiService {
     return this.http.post<any>(url, formData, { headers: reqHeader, withCredentials: true});
   }
 
-  attemptLogin(loginObject, withCredentials = true) {
+  attemptLogin(databaseName, loginObject, withCredentials = true) {
     var reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'withCredentials': 'True', 'With-Credentials': 'True' });
-    return this.http.post(`${API_URL}/user/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
+    return this.http.post(`${API_URL}/db/${databaseName}/user/login`, loginObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
   attemptSignUp(signUpObject, withCredentials = true) {

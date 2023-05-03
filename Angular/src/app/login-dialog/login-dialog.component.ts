@@ -39,6 +39,7 @@ export class DialogComponent implements OnInit {
 
   modal = "sign_in"
   formsFilledOut = false;
+  loginDatabase;
   loginEmail;
   loginPassword;
   signUpPassword;
@@ -259,7 +260,7 @@ export class DialogComponent implements OnInit {
       // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);
       this.userLoginObject = { email: this.loginEmail, pass: this.loginPassword };
       // console.log(this.userLoginObject);
-      this.apiService.attemptLogin(this.userLoginObject)
+      this.apiService.attemptLogin(this.loginDatabase, this.userLoginObject)
         .subscribe((res) => {
           console.log(res);
           this.authService.setSession(res)
