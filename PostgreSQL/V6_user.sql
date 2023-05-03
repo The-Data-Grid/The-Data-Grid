@@ -16,7 +16,7 @@ INSERT INTO item_user
 "data_is_quarterly_updates",
 "privilege_id")
 VALUES
-    (default, 'Oliver', 'Melgrove', 'user-generated@thedatagrid.org', $(hashedPassword), true, true, 3);
+    (default, 'Generated', 'User', 'user-generated@thedatagrid.org', $(hashedPassword), true, true, 3);
 
 INSERT INTO tdg_role 
 ("role_id",

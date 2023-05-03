@@ -89,6 +89,19 @@ async function checkDatabaseNameIsValid(locals) {
     }
 }
 
+async function checkApiKeyIsValid(db, key) {
+    try {
+        await db.one(`
+            SELECT * FROM db_api_key
+            WHERE data_key = $(key)
+        `, { key });
+
+        return true;
+    } catch(err) {
+        return false;
+    }
+}
+
 async function cleanUpFailedDatabaseGeneration(cleanupObject) {
     if("cleanFiles" in cleanupObject) {
         try {
@@ -150,4 +163,5 @@ module.exports = {
     createNewDatabase,
     checkDatabaseNameIsValid,
     cleanUpFailedDatabaseGeneration,
+    checkApiKeyIsValid,
 };

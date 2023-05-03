@@ -5,7 +5,8 @@ const child = require("child_process");
 const {
     createNewDatabase,
     checkDatabaseNameIsValid,
-    cleanUpFailedDatabaseGeneration
+    cleanUpFailedDatabaseGeneration,
+    checkApiKeyIsValid,
 } = require("./executive.js");
 const { parentDir } = require("../utils.js");
 
@@ -49,8 +50,13 @@ async function download(req, res, next) {
         const dbApiKey = req.headers["DB-API-KEY"];
         if(dbApiKey) {
             // check for validity
-            // TODO
-            res.locals.hasValidDbApiKey = false;
+            const isApiKeyValid = await checkApiKeyIsValid(res.locals.executiveDatabaseConnection, dbApiKey);
+            if(isApiKeyValid) {
+                res.locals.hasValidDbApiKey = true;
+            } else {
+                res.write(generationError("Authentication Error", "API Key provided is not valid."));
+                return res.end();
+            }
         } else {
             res.locals.hasValidDbApiKey = false;
         }
