@@ -1,7 +1,15 @@
 // Postgres connection, query execution, query formatting
-const pgp = require('pg-promise')();
-require('dotenv').config();
 const fs = require("fs");
+const currentlyLoggingDatabases = {};
+const pgp = require('pg-promise')({
+    query(e) {
+        const dbContext = e.dc;
+        if(dbContext in currentlyLoggingDatabases) {
+            fs.appendFileSync(currentlyLoggingDatabases[dbContext], e.query + ";\n");
+        }
+    }
+});
+require('dotenv').config();
 const isDeployment = process.argv.includes('--deploy');
 console.log(isDeployment ? 'DEPLOYMENT' : 'DEVELOPMENT');
 const child = require("child_process");
@@ -43,7 +51,6 @@ function connectPostgreSQL(config, options={ log: true }) {
         tdgdbname = options.customDatabase;
     }
     if(config == 'executive') {
-        console.log(`Establishing PostgreSQL connection...`)
 
         // Schema construction CLI database connection
         const executiveConnection = { 
@@ -55,12 +62,10 @@ function connectPostgreSQL(config, options={ log: true }) {
             max: 5,
             idleTimeoutMillis: 10 // disconnect right after
         };
-        const db = pgp(executiveConnection);
+        const db = pgp(executiveConnection, "executive");
         logNewDatabaseConnection(executiveConnection, options.log);
         postgresClient.getExecutiveConnection = db;
     } else if(config == 'default') {
-
-        console.log(`Establishing PostgreSQL connection...`)
 
         // Default runtime database connection
         const defaultConnection = { //connection info
@@ -71,13 +76,12 @@ function connectPostgreSQL(config, options={ log: true }) {
             password: TDG_DB_PASSWORD,
             max: 10
         };
-        const db = pgp(defaultConnection);
+        const db = pgp(defaultConnection, tdgdbname);
         logNewDatabaseConnection(defaultConnection, options.log);
 
         postgresClient.getConnection[tdgdbname] = db;        
     } else if(config == 'construct') {
 
-        console.log(`Establishing PostgreSQL connection...`)
         // Schema construction CLI database connection
         const constructionConnection = { 
             host: TDG_HOST,
@@ -88,45 +92,21 @@ function connectPostgreSQL(config, options={ log: true }) {
             max: 1, // use only one connection
             idleTimeoutMillis: 10 // disconnect right after
         };
-        const db = pgp(constructionConnection);
+        const db = pgp(constructionConnection, tdgdbname);
         logNewDatabaseConnection(constructionConnection, options.log);
 
         postgresClient.getConnection[tdgdbname] = db;
     } else throw Error('Must use a valid connection type: \'default\', \'construct\', \'executive\'');
 
-    console.log("Total connected TDG databases: " + Object.keys(postgresClient.getConnection).length);
-    console.log("Total connected executive databases: 1");
+    if(options.log) {
+        console.log("Total connected TDG databases: " + Object.keys(postgresClient.getConnection).length);
+        console.log("Total connected executive databases: 1");
+    }
 
     // query logging
     if('streamQueryLogs' in options) {
-        /*
-        This doesn't work right now. The pg-promise methods are read-only so the proxy has to return its actual value
-        and thus doesn't have access to the arguments
-
         const logFileName = options.streamQueryLogs;
-        console.log("Created query logging file");
-        console.log("INFO: This database connection is logging its queries to a file. Keep in mind that this slows down performance!")
-        const nonLoggingPgPromise = postgresClient.getConnection[tdgdbname];
-
-        function loggingPgPromise(obj) {
-            const handler = {
-                get: (target, propKey) => {
-                    const parentMethod = target[propKey];
-                    return function(...args) {
-                        if(typeof parentMethod === "function") {
-                            // write the query to file synchronously to ensure correct order
-                            fs.appendFileSync(logFileName, args[0] + ';\n');
-                        }
-                        // pass the call the pg-promise
-                        return parentMethod.apply(target, args);
-                    }
-                }
-            };
-            return new Proxy(obj, handler);
-        }
-        postgresClient.getConnection[tdgdbname] = loggingPgPromise(nonLoggingPgPromise);
-        console.log('======== LOGGING ATTACHED TO DATABASE =======');
-        */
+        currentlyLoggingDatabases[tdgdbname] = logFileName;
     }
 };
 
@@ -134,6 +114,8 @@ function disconnectPostgreSQL(dbName) {
     if(dbName in postgresClient.getConnection) {
         try {
             postgresClient.getConnection[dbName].$pool.end();
+            // remove logging if it exists
+            delete currentlyLoggingDatabases[dbName];
             console.log(`====== DISCONNECTED FROM DATABASE "${dbName}" ======`)
             return true;
         } catch (err) {
