@@ -373,14 +373,21 @@ export class ApiService {
       fileType,
       fileExtension,
       featureName,
-      dbName
+      dbName,
+      apiKey,
+      separator
     } = options;
     const formData = new FormData();
     formData.append(`${fileType.toLowerCase()}.${fileExtension}`, file);
-    return fetch(`${API_URL}/executive/generate?type=${fileType}&name=${encodeURIComponent(dbName)}&featureName=${encodeURIComponent(featureName)}`, {
+    const headers = {
       "body": formData,
       "method": "POST"
-    });
+    };
+    if(apiKey) {
+      headers['DB-API-KEY'] = apiKey;
+    }
+    let url = `${API_URL}/executive/generate?type=${fileType}&name=${encodeURIComponent(dbName)}&featureName=${encodeURIComponent(featureName)}`;
+    return fetch(url + separator ? `&separator=${separator}` : '', headers);
   }
 
   uploadSpreadsheet(file, sops, organizationID) {

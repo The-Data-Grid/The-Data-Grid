@@ -56,27 +56,56 @@
       <p class="option-subtext">{{optionText[option][1]}}</p>
       <button class="upload-button" mat-button (click)="uploadFile(option)">{{optionText[option][2]}}</button>
       <!-- FORM -->
-      <div id="optionsForm" *ngIf="chosenOption === option" class="options-form" [class.options-form-hidden]="isFormHidden">
+      <div [id]="'optionsForm' + option" *ngIf="chosenOption === option" class="options-form" 
+      [class.options-form-hidden]="isFormHidden" 
+      [style.max-height]="isFormHidden ? '0' : showOptions ? (optionsFormHeight[option] + optionsDropdownFormHeight) + 'px' :  optionsFormHeight[option] + 'px'">
         <div  class="blue-callout" style="margin: 0.5rem 0 1.9rem 0; flex-direction: column;">
           <p><span style="font-weight: bold;">File name: </span><span style="font-family: IBM Plex Mono;">{{selectedFile.name}}</span></p>
           <p><span style="font-weight: bold;">File size: </span><span style="font-family: IBM Plex Mono;">{{formatBytes(selectedFile.size)}}</span></p>
         </div>
         <mat-form-field appearance="outline">
           <mat-label>Database Name</mat-label>
-          <input matInput type="text" style="outline: none" [(ngModel)]="databaseName" (input)="checkValidOptions()">
+          <input matInput type="text" style="outline: none" [(ngModel)]="databaseName" (input)="checkValidOptions(true)">
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Feature Name</mat-label>
-          <input matInput type="text" style="outline: none" [(ngModel)]="featureName" (input)="checkValidOptions()">
-        </mat-form-field>
-        <div class="flex flex-row justify-between" style="margin: 0.3rem 0 35px">
-          <button mat-button style="background-color: #ff9999;" (click)="resetOptions()">Cancel</button>
-          <button [disabled]="!areOptionsValid" [class]="areOptionsValid ? 'generate-button' : 'disabled-generate-button'" mat-button (click)="generateSchema()"><span style="font-weight: 500">Generate Database</span></button>
+        <!-- Options -->
+        <div class="options-dropdown">
+          <div id="odf" class="options-dropdown-form" [style.height]="showOptions ? optionsDropdownFormHeight + 'px' : '0'">
+            <mat-form-field appearance="outline">
+              <mat-label>Feature Name</mat-label>
+              <input matInput type="text" style="outline: none" [(ngModel)]="featureName" (input)="checkValidOptions()">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>CSV Separator</mat-label>
+              <input matInput type="text" style="outline: none" [(ngModel)]="CSVSeparator" (input)="checkValidOptions()">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>API Key (optional)</mat-label>
+              <input matInput type="text" style="outline: none" [(ngModel)]="apiKey" (input)="checkValidOptions()">
+            </mat-form-field>
+          </div>
         </div>
+        <!-- Buttons -->
+        <div class="flex flex-row justify-between" style="margin: 0.3rem 0">
+          <button mat-button style="background-color: #ff9999;" (click)="resetOptions()">Cancel</button>
+          <div class="flex">
+            <button mat-button (click)="showOptions = !showOptions" class="show-options-button">
+              <mat-icon color="#a0a0a0" style="transform: scale(0.7)">build</mat-icon>&nbsp;{{showOptions ? "Less" : "More"}} Options
+            </button>
+            <a matTooltip="Read the guide" style="display: inline-block; padding: 10px 15px" target="_blank" href="/guide/query#multi-database"><img width="20px" height="20px" src="/assets/info-gray.png" alt=""></a>
+          </div>
+        </div>
+        <button style="margin-top: 10px;" 
+          [matTooltip]="formError"
+          [matTooltipDisabled]="areOptionsValid"
+          [disabled]="!areOptionsValid"
+          [class]="areOptionsValid ? 'generate-button' : 'disabled-generate-button'"
+          mat-button (click)="generateSchema()">
+          <span style="font-weight: 500;">Generate Database</span>
+        </button>
       </div>
       <!-- TERMINAL -->
       <div class="terminal" id="terminal-scroller">
-        <p class="terminal-line" *ngFor="let line of responseStream; let i = index" [id]="'line-'+i"><span class="terminal-line terminal-line-stub">{{databaseSqlName}}@TDG:~# </span>{{line}}</p>
+        <p class="terminal-line" *ngFor=" let line of responseStream; let i = index" [id]="'line-'+i"><span class="terminal-line terminal-line-stub">{{databaseSqlName}}@TDG:~# </span>{{line}}</p>
       </div>
     </div>
   </div>

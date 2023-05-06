@@ -39,27 +39,44 @@ export class SchemaGen implements AfterContentInit {
   onOptionsPage = true;
   generationInProgress = false;
   responseStream = [];
-  chosenOption = null;
-  potentialChosenOption = null;
+  //chosenOption = null;
+  //potentialChosenOption = null;
   // For handling the form transition
-  isFormHidden = true;
+  //isFormHidden = true;
   
   databaseName = "";
+  prevDatabaseName = "";
   featureName = "";
-  selectedFile = null;
+  CSVSeparator = ",";
+  apiKey = "";
+  //selectedFile = null;
   areOptionsValid = false;
+  showOptions = false;
+
+  selectedFile = {name: 'test', size: 1000};
+  chosenOption = 0;
+  potentialChosenOption = 0;
+  isFormHidden = false;
+  formError = "Database name is required"
 
   headerText = "";
   databaseSqlName = null;
   generationError = null;
   generationSuccess = false;
 
+  optionsDropdownFormHeight = 0;
+  optionsFormHeight = {}
+
   ngAfterContentInit(): void {
     // Add the transition after init so it doesn't fire on first load
     setTimeout(() => {
       // Really not sure why I need to hack it like this
       document.getElementById("entirePageContainer").style.transition = "padding-top 0.5s";
-    }, 500)
+      this.optionsDropdownFormHeight = document.getElementById("odf").scrollHeight;
+      this.optionsFormHeight[0] = document.getElementById("optionsForm0").scrollHeight;
+      this.optionsFormHeight[1] = document.getElementById("optionsForm1").scrollHeight;
+      this.optionsFormHeight[2] = document.getElementById("optionsForm2").scrollHeight;
+    }, 500);
   }
 
   async generateSchema() {
@@ -68,14 +85,20 @@ export class SchemaGen implements AfterContentInit {
       this.generationInProgress = true;
       this.onOptionsPage = false;
       this.isFormHidden = true;
-      const options = {
+      const options: any = {
         contentType: this.mimeTypes[this.chosenOption],
         file: this.selectedFile,
         fileType: this.genTypes[this.chosenOption],
         fileExtension: this.extensionTypes[this.chosenOption],
         featureName: this.featureName,
-        dbName: this.databaseName
+        dbName: this.databaseName,
       };
+      if(this.apiKey.length > 0) {
+        options.apiKey = this.apiKey;
+      }
+      if(this.CSVSeparator.length > 0 && this.CSVSeparator !== ",") {
+        options.separator = this.CSVSeparator;
+      }
       const response = await this.apiService.generateSchema(options)
       const reader = response.body.getReader();
       const responseDecoder = new TextDecoder('utf-8');
@@ -127,6 +150,10 @@ export class SchemaGen implements AfterContentInit {
       this.databaseSqlName = null;
       this.generationError = null;
       this.generationSuccess = false;
+      this.showOptions = false;
+      this.apiKey = "";
+      this.prevDatabaseName = "";
+      this.CSVSeparator = ",";
     }, 200);  
   }
 
@@ -138,11 +165,26 @@ export class SchemaGen implements AfterContentInit {
     this.responseStream = [];
   }
   
-  checkValidOptions() {
+  checkValidOptions(isDatabase) {
+    // copy database name to feature
+    if(isDatabase) {
+      if(this.featureName === this.prevDatabaseName) {
+        this.featureName = this.databaseName;
+      }
+      this.prevDatabaseName = this.databaseName;
+    }
     if(this.databaseName.length > 0 && this.featureName.length > 0) {
-      this.areOptionsValid = true;
+      if(
+        !(/^[A-Za-z ]{4,20}$/.test(this.databaseName) && /^[A-Za-z]/.test(this.databaseName)) ||
+        !(/^[A-Za-z ]{4,20}$/.test(this.featureName) && /^[A-Za-z]/.test(this.featureName))) {
+        this.formError = "Database and feature name must contain only letters and spaces and be 4-20 characters";
+        this.areOptionsValid = false;
+      } else {
+        this.areOptionsValid = true;
+      }
     } else {
       this.areOptionsValid = false;
+      this.formError = `${this.databaseName.length > 0 ? 'Feature' : 'Database'} name is required`;
     }
   }
 

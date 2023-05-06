@@ -110,7 +110,7 @@ async function parseData() {
         return new Promise((resolve, reject) => {
             let parsed = [];
             fs.createReadStream(cli.tempFolderName + '/csv.csv', 'utf-8')
-                .pipe(csv())
+                .pipe(csv({ separator: cli.separator ?? "," }))
                 .on('data', data => parsed.push(data))
                 .on('end', () => {
                     resolve(parsed);

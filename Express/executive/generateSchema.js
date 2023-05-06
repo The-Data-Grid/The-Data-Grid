@@ -24,7 +24,8 @@ async function download(req, res, next) {
     res.locals.dbName = req.query.name;
     res.locals.genType = req.query.type;
     res.locals.dbFeatureName = req.query.featureName;
-    if(!(res.locals.dbName && /[A-Za-z ]{4,20}/.test(res.locals.dbName) && /[A-Za-z]/.test(res.locals.dbName))) {
+    res.locals.separator = req.query.separator;
+    if(!(res.locals.dbName && /^[A-Za-z ]{4,20}$/.test(res.locals.dbName) && /^[A-Za-z]/.test(res.locals.dbName))) {
         res.write(generationError("Formatting Error", "Database name must contain only letters and spaces and be 4-20 characters."));
         return res.end();
     }
@@ -155,13 +156,17 @@ function convert(req, res, next) {
             return res.next();
         } else {
             // spawn conversion program
-            conversionNodejsProcess = child.execFile("node", [
+            const conversionParams = [
                 parentDir(__dirname) + "/construct/convert/converter.js",
                 "--parseType=" + res.locals.genType.toLowerCase(),
                 "--featureName=" + res.locals.dbFeatureName,
                 "--auditorName=" + "TDG Auto-convert",
                 "--tempFolderName=" + res.locals.dbTempDirName + "/default"
-            ], (err, stdout, stderr) => {
+            ];
+            if(res.locals.separator) {
+                conversionParams.push("--separator=" + res.locals.separator);
+            }
+            conversionNodejsProcess = child.execFile("node", conversionParams, (err, stdout, stderr) => {
                 if(err) {
                     // clean up
                     console.log(err)

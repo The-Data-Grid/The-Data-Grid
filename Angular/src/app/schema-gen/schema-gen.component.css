@@ -871,11 +871,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   display: flex;
   flex-direction: column;
   transition: max-height 0.5s, opacity 0.5s;
-  max-height: 400px;
+  padding-bottom: 35px;
 }
 
 .options-form-hidden {
-  max-height: 0;
   overflow: hidden;
   opacity: 0%;
 }
@@ -889,6 +888,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   box-shadow: none;
   background-color: #bfc0c1 !important;
   transition: box-shadow 1s, background-color 1s;
+}
+
+::ng-deep .generate-button .mat-button-wrapper {
+  display: block !important;
+}
+
+::ng-deep .disabled-generate-button .mat-button-wrapper {
+  display: block !important;
 }
 
 .terminal-mode .option-title {
@@ -978,4 +985,22 @@ h1 {
   font-size: 1rem;
   line-height: 1.2;
   letter-spacing: 0.0065em;
+}
+
+.options-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.options-dropdown-form {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: height 0.5s;
+}
+
+.show-options-button {
+  background-color: transparent !important;
+  color: #a0a0a0 !important;
+  border: 1px solid #a0a0a0 !important;
 }
