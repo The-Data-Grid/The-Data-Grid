@@ -50,7 +50,7 @@ router.post('/login', async (req, res) => {
                 organizationFrontendName: sessionData.organizationName,
                 privilege: sessionData.privilege,
                 isApiKeySet: sessionData.isApiKeySet, // Boolean of whether an api key has been set yet, not exposing api key itself in cookie
-                databaseName: databaseConnectionName,
+                databaseName: res.locals.databaseConnectionName,
             };
             
             // update session

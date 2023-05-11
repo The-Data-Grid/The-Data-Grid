@@ -126,7 +126,7 @@ async function makeSchema(commandLineArgs) {
         if(commandLineArgs.isTemp) {
             commandLineArgs.schemaDir = parentDir(__dirname, 2) + `/TempSchemas/${commandLineArgs.database}`;
         } else {
-            commandLineArgs.schemaDir = parentDir(__Dirname, 2), `/Schemas/${commandLineArgs.database}`;
+            commandLineArgs.schemaDir = parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.database}`;
         }
         commandLineArgs.schema.forEach(schema => {
             columns = [...columns, ...readSchema(`${commandLineArgs.schemaDir}/${schema}/columns.jsonc`)];

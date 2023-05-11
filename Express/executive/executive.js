@@ -109,6 +109,7 @@ async function checkDatabaseNameIsValid(locals) {
 }
 
 async function checkApiKeyIsValid(db, key) {
+    // Note: the same key can be used multiple times
     try {
         await db.one(`
             SELECT * FROM db_api_key
@@ -166,7 +167,7 @@ async function pruneTempDatabases(options, connectionCallback) {
     const validDatabases = [];
     const invalidDatabases = [];
     // DATABASE_VALIDITY_WINDOW is hardcoded into SQL after `INTERVAL`
-    const databaseValidityObject = Object.fromEntries((await db.many(`
+    const databaseValidityObject = Object.fromEntries((await db.any(`
         SELECT data_database_sql_name "dbSqlName", data_is_temp "isTemp", data_time_created + INTERVAL '1 hour' > NOW() "isTimeValid"
         FROM item_database_executive
     `)).map(e => [e.dbSqlName, e]));

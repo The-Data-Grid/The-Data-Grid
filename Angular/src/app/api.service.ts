@@ -60,7 +60,7 @@ export class ApiService {
     return this.http.post(`${API_URL}/audit/submission`, submissionObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
-  public getSetupObject(databaseName): Observable<any> {
+  public getSetupObject(databaseName = "idk"): Observable<any> {
     var url = `${API_URL}/db/${databaseName}/setup`;
 
     return this.http.get<any>(url, {
@@ -379,15 +379,15 @@ export class ApiService {
     } = options;
     const formData = new FormData();
     formData.append(`${fileType.toLowerCase()}.${fileExtension}`, file);
-    const headers = {
+    const fetchOptions: any = {
       "body": formData,
       "method": "POST"
     };
     if(apiKey) {
-      headers['DB-API-KEY'] = apiKey;
+      fetchOptions.headers = {'db-api-key': apiKey};
     }
     let url = `${API_URL}/executive/generate?type=${fileType}&name=${encodeURIComponent(dbName)}&featureName=${encodeURIComponent(featureName)}`;
-    return fetch(url + separator ? `&separator=${separator}` : '', headers);
+    return fetch(url + (separator ? `&separator=${separator}` : ''), fetchOptions);
   }
 
   uploadSpreadsheet(file, sops, organizationID) {

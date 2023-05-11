@@ -48,7 +48,7 @@ async function download(req, res, next) {
         res.write("GENERATIONSTART: " + res.locals.dbSqlName + "\n");
 
         // get api key if it exists
-        const dbApiKey = req.headers["DB-API-KEY"];
+        const dbApiKey = req.headers["db-api-key"];
         if(dbApiKey) {
             // check for validity
             const isApiKeyValid = await checkApiKeyIsValid(res.locals.executiveDatabaseConnection, dbApiKey);

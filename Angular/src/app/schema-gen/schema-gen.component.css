@@ -877,6 +877,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 .options-form-hidden {
   overflow: hidden;
   opacity: 0%;
+  pointer-events: none;
 }
 
 .generate-button {
