@@ -115,12 +115,13 @@ async function download(req, res, next) {
                 if(err) {
                     reject(err);
                 } else {
-                    resolve();
+                    resolve(req);
                 }
             });
         });
         try {
             await uploadPromise;
+            res.locals.fileSize = req.size;
             // success, pass to next middleware
             res.write("File successfully uploaded!\n");
             res.write("Starting conversion to TDG objects...\n");

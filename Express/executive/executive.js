@@ -18,6 +18,7 @@ async function createNewDatabase(res) {
         dbLogFileName,
         hasValidDbApiKey,
         genType,
+        fileSize,
         dbTempDirName,
     } = res.locals;
     // "executive" database connection
@@ -26,13 +27,15 @@ async function createNewDatabase(res) {
     // Insert into exec
     await db.none(`
         INSERT INTO item_database_executive
-        (data_database_name, data_database_sql_name, data_is_temp)
+        (data_database_name, data_database_sql_name, data_is_temp, data_file_size, data_gen_type)
         VALUES
-        ($(dbName), $(dbSqlName), $(isTemp))
+        ($(dbName), $(dbSqlName), $(isTemp), $(fileSize), $(genType))
     `, {
         dbName,
         dbSqlName,
         isTemp,
+        fileSize,
+        genType,
     });
     // Create DB
     await db.none("CREATE DATABASE $(dbSqlName:name)", { dbSqlName });
@@ -234,7 +237,10 @@ async function allDatabases(req, res, next) {
             SELECT 
                 data_database_name "dbName",
                 data_database_sql_name "dbSqlName",
-                data_is_temp "isTemp"
+                data_is_temp "isTemp",
+                data_time_created "timeCreated",
+                data_file_size "fileSize",
+                data_gen_type "genType"
                 FROM item_database_executive
         `);
         // Get databases currently being served by Node.js
