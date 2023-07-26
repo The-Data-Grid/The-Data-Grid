@@ -3,12 +3,17 @@
 const fs = require("fs");
 const bcrypt = require('bcrypt');
 const { nanoid } = require('nanoid');
+const { parentDir } = require("../utils.js");
+const SQL = require('../statement.js').login;
+const { allInternalObjects } = require("../preprocess/load.js");
 // Time before deletion of temp database, also need to change in SQL in `pruneTempDatabases()`
 const DATABASE_VALIDITY_WINDOW = 3600000; // 1 hour
 // SQL Formatter
 const { postgresClient, connectPostgreSQL, disconnectPostgreSQL, psqlProcess } = require('../pg.js');
 const { getConnection, importSql } = postgresClient;
 const V6UserSql = importSql("V6_user.sql");
+// Deletion timer data store
+const deletionTimers = {};
 
 async function createNewDatabase(res) {
     const {
@@ -72,6 +77,7 @@ async function createNewDatabase(res) {
             });
         }, DATABASE_VALIDITY_WINDOW); // 1 hour
         generationFlowObject.deletionTimer = deletionTimer;
+        deletionTimers[dbSqlName] = deletionTimer;
     } else {
         generationFlowObject.deletionTimer = null;
     }
@@ -126,7 +132,7 @@ async function checkApiKeyIsValid(db, key) {
 }
 
 async function cleanUpDatabaseGeneration(cleanupObject) {
-    if("cleanFiles" in cleanupObject) {
+    if(cleanupObject.cleanFiles) {
         try {
             // Careful!
             fs.rmSync(cleanupObject.cleanFiles, { recursive: true, force: true });
@@ -214,7 +220,7 @@ async function pruneTempDatabases(options, connectionCallback) {
     for(let databaseName of invalidDatabases) {
         // Do this syncronously because interpretability is more important than startup time 
         await cleanUpDatabaseGeneration({
-            cleanFiles: allInternalObjects[databaseName].folderName,
+            cleanFiles: deleteRowOnMismatch ? undefined : allInternalObjects[databaseName].folderName,
             cleanDatabase: {
                 dbName: databaseName,
                 executiveDatabaseConnection: db
@@ -254,9 +260,75 @@ async function allDatabases(req, res, next) {
     }
 }
 
+async function downloadSql(req, res, next) {
+    try {
+        const dbSqlName = req.params.db;
+        const dbParentFolder = allInternalObjects[dbSqlName].isTemp ? "TempSchemas" : "Schemas";
+
+        res.writeHead(200, {
+            'Content-Disposition': `attachment; filename="${dbSqlName}_database_image.zip"`,
+            'Content-Type': 'application/zip',
+        });
+
+        const readStream = fs.createReadStream(`${parentDir(__dirname, 2)}/${dbParentFolder}/${dbSqlName}/${dbSqlName}_database_image.zip`).on('error', (err) => {
+            console.log(err);
+            return res.end();
+        });
+        readStream.pipe(res);
+        
+    } catch(err) {
+        console.log(err);
+        return res.end();
+    }
+}
+
+async function deleteDatabase(req, res, next) {
+    try {
+        const dbSqlName = req.params.db;
+        const auditDbConn = res.locals.allDatabaseConnections[dbSqlName];
+        const execDbConn = res.locals.executiveDatabaseConnection;
+        
+        const dbParentFolder = allInternalObjects[dbSqlName].isTemp ? "TempSchemas" : "Schemas";
+        const dbFolderPath = `${parentDir(__dirname, 2)}/${dbParentFolder}/${dbSqlName}`;
+        
+        // First validate the password
+        const { password } = req.body;
+        const truePassword = (await auditDbConn.one(SQL.password, {
+            checkemail: "user-generated@thedatagrid.org",
+        })).password;
+
+        let result = await bcrypt.compare(password, truePassword);
+        
+        if(result) {
+            // password correct
+            await cleanUpDatabaseGeneration({
+                cleanFiles: dbFolderPath,
+                cleanDatabase: {
+                    dbName: dbSqlName,
+                    executiveDatabaseConnection: execDbConn,
+                },
+                deletionTimer: deletionTimers[dbSqlName],
+            });
+
+            return res.status(200).end();
+        } else {
+            // password incorrect
+            return res.status(401).end();
+        }
+
+
+
+    } catch(err) {
+        console.log(err);
+        res.status(500).end();
+    }
+}
+
 module.exports = {
     // Middleware
     allDatabases,
+    downloadSql,
+    deleteDatabase,
     // Helpers
     createNewDatabase,
     checkDatabaseNameIsValid,

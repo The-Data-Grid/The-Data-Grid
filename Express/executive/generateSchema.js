@@ -1,6 +1,7 @@
 const fs = require('fs');
 const multer = require('multer');
 const child = require("child_process");
+const archiver = require("archiver");
 
 const {
     createNewDatabase,
@@ -115,13 +116,13 @@ async function download(req, res, next) {
                 if(err) {
                     reject(err);
                 } else {
-                    resolve(req);
+                    resolve();
                 }
             });
         });
         try {
             await uploadPromise;
-            res.locals.fileSize = req.size;
+            res.locals.fileSize = (await fs.promises.stat(res.locals.dbTempDirName + "/default/" + res.locals.uploadFileName)).size;
             // success, pass to next middleware
             res.write("File successfully uploaded!\n");
             res.write("Starting conversion to TDG objects...\n");
@@ -381,9 +382,31 @@ function insert(req, res, next) {
                     }));
                     return res.end();
                 } else {
-                    res.write("GENERATIONSUCCESS: " + JSON.stringify({ userPassword: res.locals.userPassword, userEmail: res.locals.userEmail }));
-                    res.status(201)
-                    res.end();
+                    // First, create and write the zip file
+                    res.write("Generating zip file with database image\n");
+                    const output = fs.createWriteStream(`${res.locals.dbTempDirName}/${res.locals.dbSqlName}_database_image.zip`);
+                    const archive = archiver("zip", {
+                        zlib: { level: 6 },
+                    });
+                    archive.pipe(output);
+
+                    const instructions = "\
+TDG database self-generation instructions\n\n\
+1. Begin in an environment with PostgreSQL 12 or greater\n\
+2. Run Schema_Construction_SQL.sql with psql command line file runner\n\
+3. Run Data_Insertion_SQL.sql with psql command line file runner\n\
+4. The database is now fully constructed. You may now psql into the SQL command line and run raw SQL commands. To generate raw SQL commands, use the 'Download Query as SQL' button on the Query Data page\n";
+                    archive.append(instructions, { name: "INSTRUCTIONS.txt" });
+
+                    archive.append(`${res.locals.dbTempDirName}/default/Schema_Construction_SQL.sql`, { name: "Schema_Construction_SQL.sql" });
+                    archive.append(`${res.locals.dbTempDirName}/default/Data_Insertion_SQL.sql`, { name: "Data_Insertion_SQL.sql" });
+
+                    archive.finalize().then(() => {
+                        // Done!
+                        res.write("GENERATIONSUCCESS: " + JSON.stringify({ userPassword: res.locals.userPassword, userEmail: res.locals.userEmail }));
+                        res.status(201)
+                        res.end();
+                    });
                 }
             }
         )

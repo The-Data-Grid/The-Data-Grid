@@ -4,7 +4,7 @@
 
 const express = require('express'); 
 const router = express.Router();
-const { getExecutiveConnection } = require('../pg.js').postgresClient;	
+const { getExecutiveConnection, getConnection } = require('../pg.js').postgresClient;	
 
 
 const {
@@ -17,12 +17,15 @@ const {
 } = require("./generateSchema.js");
 
 const {
-    allDatabases
+    allDatabases,
+    downloadSql,
+    deleteDatabase,
 } = require("./executive.js");
 
 // Attach the executive database connection to the request
 router.use((req, res, next) => {
     res.locals.executiveDatabaseConnection = getExecutiveConnection;
+    res.locals.allDatabaseConnections = getConnection;
     return next();
 })
 
@@ -33,8 +36,12 @@ router.post("/generate",
     fillReturnables,
     preprocess,
     insert
-)
+);
 
-router.get("/databases", allDatabases)
+router.post("/delete/:db", deleteDatabase);
+
+router.get("/databases", allDatabases);
+
+router.get("/download/:db", downloadSql);
 
 module.exports = router;

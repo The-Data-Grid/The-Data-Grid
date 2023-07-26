@@ -293,7 +293,6 @@ function sendKey(req, res) {
 // SEND SETUP OBJECT
 // ============================================================
 function sendSetup(req, res) {
-    console.log(res.locals)
     const dbName = res.locals.databaseConnectionName;
     const { internalObjects } = allInternalObjects[dbName];
     const { setupObject } = internalObjects;
