@@ -6,7 +6,7 @@
 const fs = require('fs')
 const Joi = require('joi');
 
-const allInternalObjects = require('../preprocess/load.js');
+const { allInternalObjects } = require('../preprocess/load.js');
 const allIdValidationLookups = {}
 for(let keyVal of Object.entries(allInternalObjects)) {
     const { internalObjects } = keyVal[1]

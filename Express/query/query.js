@@ -6,7 +6,7 @@ response object, and sends an HTTP response.
 ============================================================ */
 
 // Internal setup objects
-const allInternalObjects = require("../preprocess/load.js");
+const { allInternalObjects } = require("../preprocess/load.js");
 
 // Query Engine
 const queryEngine = require('./queryEngine.js');
@@ -293,6 +293,7 @@ function sendKey(req, res) {
 // SEND SETUP OBJECT
 // ============================================================
 function sendSetup(req, res) {
+    console.log(res.locals)
     const dbName = res.locals.databaseConnectionName;
     const { internalObjects } = allInternalObjects[dbName];
     const { setupObject } = internalObjects;

@@ -28,7 +28,7 @@ const {
     pk
 } = require('../statement.js').query;
 
-const allInternalObjects = require("../preprocess/load.js");
+const { allInternalObjects } = require("../preprocess/load.js");
 
 module.exports = {
     makeFeatureClauseArray,

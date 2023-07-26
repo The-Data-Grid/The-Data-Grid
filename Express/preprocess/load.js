@@ -8,32 +8,40 @@ const { parentDir } = require("../utils.js");
 
 const allInternalObjects = {};
 
-// collect internalObjects from every database
-const dbFolders = fs.readdirSync(parentDir(__dirname, 2) + "/Schemas", { withFileTypes: true });
-const dbFoldersTemp = fs.readdirSync(parentDir(__dirname, 2) + "/TempSchemas", { withFileTypes: true });
-// Permenant
-for(let dbFolder of dbFolders) {
-    if(dbFolder.isDirectory() && dbFolder.name !== "_exampleSchema" && dbFolder.name !== "_globalSchema") {
-        const folderName = parentDir(__dirname, 2) + "/Schemas/" + dbFolder.name;
-        allInternalObjects[dbFolder.name] = {
-            internalObjects: JSON.parse(fs.readFileSync(folderName + "/_internalObjects/internalObjects.json")),
-            folderName,
-            isTemp: false,
-        };
+function readInternalObjectsFromDisk() {
+    // collect internalObjects from every database
+    const dbFolders = fs.readdirSync(parentDir(__dirname, 2) + "/Schemas", { withFileTypes: true });
+    const dbFoldersTemp = fs.readdirSync(parentDir(__dirname, 2) + "/TempSchemas", { withFileTypes: true });
+    // Permenant
+    for(let dbFolder of dbFolders) {
+        if(dbFolder.isDirectory() && dbFolder.name !== "_exampleSchema" && dbFolder.name !== "_globalSchema") {
+            const folderName = parentDir(__dirname, 2) + "/Schemas/" + dbFolder.name;
+            allInternalObjects[dbFolder.name] = {
+                internalObjects: JSON.parse(fs.readFileSync(folderName + "/_internalObjects/internalObjects.json")),
+                folderName,
+                isTemp: false,
+            };
+        }
     }
-}
-// Temp
-for(let dbFolder of dbFoldersTemp) {
-    if(dbFolder.isDirectory()) {
-        const folderName = parentDir(__dirname, 2) + "/TempSchemas/" + dbFolder.name;
-        allInternalObjects[dbFolder.name] = {
-            internalObjects: JSON.parse(fs.readFileSync(folderName + "/_internalObjects/internalObjects.json")),
-            folderName,
-            isTemp: true,
-        };
+    // Temp
+    for(let dbFolder of dbFoldersTemp) {
+        if(dbFolder.isDirectory()) {
+            const folderName = parentDir(__dirname, 2) + "/TempSchemas/" + dbFolder.name;
+            allInternalObjects[dbFolder.name] = {
+                internalObjects: JSON.parse(fs.readFileSync(folderName + "/_internalObjects/internalObjects.json")),
+                folderName,
+                isTemp: true,
+            };
+        }
     }
+    const nDatabases = dbFolders.length - 2 + dbFoldersTemp.length
+    console.log("Loaded internalObjects from " + nDatabases + " database" + (nDatabases > 1 ? "s" : ""));
 }
 
-const nDatabases = dbFolders.length - 2 + dbFoldersTemp.length
-console.log("Loaded internalObjects from " + nDatabases + " database" + (nDatabases > 1 ? "s" : ""));
-module.exports = allInternalObjects;
+// Initial read
+readInternalObjectsFromDisk();
+
+module.exports = {
+    allInternalObjects,
+    readInternalObjectsFromDisk,
+};

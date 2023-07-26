@@ -13,6 +13,7 @@ const formatSQL = postgresClient.format;
 const setDatabaseConnection = require('../../query/direct.js');
 //const { getPresetValues } = setDatabaseConnection(db);
 
+const { allInternalObjects } = require('../../preprocess/load.js');
 const { 
     itemFISLookup,
     observationFISLookup,
@@ -24,7 +25,7 @@ const {
     observationItemTableNameLookup,
     columnObjects,
     itemColumnObject,
-} = require('../../preprocess/load.js');
+} = allInternalObjects;
 const { itemQuery, featureQuery } = require('../../query/query.js');
 const { 
     userName    

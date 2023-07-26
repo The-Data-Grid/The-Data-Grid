@@ -1,6 +1,6 @@
 const {postgresClient} = require('../../pg.js');
 const formatSQL = postgresClient.format;
-const allInternalObjects = require("../../preprocess/load.js");
+const { allInternalObjects } = require("../../preprocess/load.js");
 
 const {
     insertItemHistory,

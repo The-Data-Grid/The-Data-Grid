@@ -9,6 +9,7 @@ const {
     checkApiKeyIsValid,
 } = require("./executive.js");
 const { parentDir } = require("../utils.js");
+const { readInternalObjectsFromDisk } = require('../preprocess/load.js');
 
 function generationError(type, message, cleanupObject={}) {
     // clean up the temp files asynchronously
@@ -329,6 +330,8 @@ function preprocess(req, res, next) {
                     return res.end();
                 } else {
                     res.write("Successfully completed preprocessing...\n");
+                    // Invalidate and reload the preprocess cache
+                    readInternalObjectsFromDisk();
                     return next();
                 }
             }

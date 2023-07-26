@@ -1,7 +1,7 @@
 /**
  * Insertion helper functions
  */
-const allInternalObjects = require('../preprocess/load.js');
+const { allInternalObjects } = require('../preprocess/load.js');
 const {
     isValidDate,
     dateToUTC,

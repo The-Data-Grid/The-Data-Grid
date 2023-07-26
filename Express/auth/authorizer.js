@@ -1,5 +1,5 @@
 const queryHelpers = require('../query/queryHelpers.js');
-const allInternalObjects = require("../preprocess/load.js");
+const { allInternalObjects } = require("../preprocess/load.js");
 
 // Database connection and SQL formatter
 const {postgresClient} = require('../pg.js');

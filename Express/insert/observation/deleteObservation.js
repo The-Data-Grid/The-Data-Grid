@@ -1,4 +1,4 @@
-const allInternalObjects = require("../../preprocess/load.js");
+const { allInternalObjects } = require("../../preprocess/load.js");
 
 const {
     DeleteObservationError,

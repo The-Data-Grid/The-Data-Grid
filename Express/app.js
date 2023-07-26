@@ -24,7 +24,7 @@ connectPostgreSQL('executive');
 // Get the connection objects
 const { getConnection, getExecutiveConnection } = postgresClient;
 // Import the internal objects for every database
-const allInternalObjects = require('./preprocess/load.js');
+const { allInternalObjects } = require('./preprocess/load.js');
 // Import the executive file for database pruning
 const { pruneTempDatabases } = require('./executive/executive.js');
 
