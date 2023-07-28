@@ -92,7 +92,7 @@ export class ApiService {
       }));
   }
 
-  public getSetupFilterObject(databaseName) {
+  public getSetupFilterObject(databaseName: string = "default") {
     const url = `${API_URL}/db/${databaseName}/setup/filter`;
 
     return this.http.get<any>(url, {
