@@ -60,7 +60,7 @@ export class ApiService {
     return this.http.post(`${API_URL}/audit/submission`, submissionObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
-  public getSetupObject(databaseName): Observable<any> {
+  public getSetupObject(databaseName: string = "default"): Observable<any> {
     var url = `${API_URL}/db/${databaseName}/setup`;
 
     return this.http.get<any>(url, {
