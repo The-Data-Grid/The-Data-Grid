@@ -53,7 +53,9 @@ function getXlsxFormattingType(referenceType, SQLType) {
         BOOLEAN: 'e',
         Point: 'f',
         LineString: 'f',
-        Polygon: 'f'
+        Polygon: 'f',
+        MultiPolygon: 'f',
+        MultiLineString: 'f',
     };
 
     const arrayMap = {

@@ -155,7 +155,7 @@ async function updateIndividualObservation(updateObservationObject, sessionObjec
             columnNamesAndValues.push({
                 columnName: itemColumn.columnName,
                 columnValue,
-                isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
+                isLocation: ['Point', 'LineString', 'Polygon', 'MultiPolygon', 'MutliLineString'].includes(itemColumn.sqlType)
             });
         }
         i++;

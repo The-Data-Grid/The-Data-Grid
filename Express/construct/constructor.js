@@ -469,7 +469,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
 
             // Location Handling
             let isLocation = false;
-            if(['Point', 'LineString', 'Polygon'].includes(column.sqlType)) {
+            if(['Point', 'LineString', 'Polygon', 'MultiPolygon', 'MutliLineString'].includes(column.sqlType)) {
                 column.sqlType = `geometry(${column.sqlType}, 4326)`;
                 isLocation = true;
             }
@@ -1115,7 +1115,9 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             BOOLEAN: 'e',
             Point: 'f',
             LineString: 'g',
-            Polygon: 'h'
+            Polygon: 'h',
+            MultiPolygon: 'i',
+            MultiLineString: 'j',
         };        
 
         /*

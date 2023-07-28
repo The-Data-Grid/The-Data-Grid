@@ -161,7 +161,7 @@ async function updateIndividualItem(updateItemObject, db, dbName) {
             columnNamesAndValues.push({
                 columnName: itemColumn.columnName,
                 columnValue,
-                isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
+                isLocation: ['Point', 'LineString', 'Polygon', 'MultiPolygon', 'MutliLineString'].includes(itemColumn.sqlType)
             });
         }
         i++;

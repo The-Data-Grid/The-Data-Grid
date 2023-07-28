@@ -100,8 +100,8 @@ async function parseData() {
         });
         geospatialKey = cli.featureName + ' Location';
         geospatialType = csvFormat[0][geospatialKey].type;
-        if(!['Point', 'LineString', 'Polygon'].includes(geospatialType)) {
-            throw Error(`Only Point, LineString, and Polygon GeoJSON types allowed`);
+        if(!['Point', 'LineString', 'Polygon', 'MultiPolygon', 'MutliLineString'].includes(geospatialType)) {
+            throw Error(`Only Point, LineString, Polygon, MultiPolygon, and MutliLineString GeoJSON types allowed. Passed: ${geospatialType}`);
         }
         return csvFormat;
     }

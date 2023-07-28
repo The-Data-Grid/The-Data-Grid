@@ -254,7 +254,7 @@ async function createIndividualItem(currentIndex, createItemObjectArray, inserte
                 columnNamesAndValues.push({
                     columnName: itemColumn.columnName,
                     columnValue,
-                    isLocation: ['Point', 'LineString', 'Polygon'].includes(itemColumn.sqlType)
+                    isLocation: ['Point', 'LineString', 'Polygon', 'MultiPolygon', 'MutliLineString'].includes(itemColumn.sqlType)
                 });
             }
         // then not valid

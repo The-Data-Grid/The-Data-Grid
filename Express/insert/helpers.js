@@ -376,6 +376,8 @@ const sqlToJavascriptLookup = {
     Point: 'object',
     LineString: 'object',
     Polygon: 'object',
+    MultiPolygon: 'object',
+    MultiLineString: 'object',
     TEXT: 'string'
 };
 function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {
