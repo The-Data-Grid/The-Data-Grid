@@ -182,7 +182,7 @@ export class SchemaGen implements AfterContentInit {
     this.responseStream = [];
   }
   
-  checkValidOptions(isDatabase) {
+  checkValidOptions(isDatabase: boolean = false) {
     // copy database name to feature
     if(isDatabase) {
       if(this.featureName === this.prevDatabaseName) {
