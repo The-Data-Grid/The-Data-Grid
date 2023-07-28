@@ -146,7 +146,7 @@ async function cleanUpDatabaseGeneration(cleanupObject) {
         try {
             const { dbName, executiveDatabaseConnection } = cleanupObject.cleanDatabase;
             // Make sure all connections to database are closed
-            disconnectPostgreSQL(dbName);
+            await disconnectPostgreSQL(dbName);
             // Drop database
             const db = executiveDatabaseConnection;
             await db.none("DROP DATABASE IF EXISTS $(dbName:name)", { dbName });

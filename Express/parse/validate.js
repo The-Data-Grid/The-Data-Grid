@@ -8,11 +8,16 @@ const Joi = require('joi');
 
 const { allInternalObjects } = require('../preprocess/load.js');
 const allIdValidationLookups = {}
-for(let keyVal of Object.entries(allInternalObjects)) {
-    const { internalObjects } = keyVal[1]
-    allIdValidationLookups[keyVal[0]] = internalObjects;
-}
+var globals = {
+    filter: [],
+    column: []
+};
 
+// Validity objects for every database
+const allValidateObservation = {};
+const allValidateItem = {};
+const allValidFeatures = {};
+const allValidItems = {};
 /*
     'text',
     'decimal',
@@ -52,130 +57,127 @@ const validOperatorLookup = {
     'geoRegion': ['geoContains', 'geoCrosses', 'geoDisjoint', 'geoWithinDistance', 'geoEquals', 'geoIntersects', 'geoTouches', 'geoOverlaps', 'geoWithin']
 };
 
-/*
-*************
-** Imports **
-*************
-idValidationLookup:
-    Contains every returnableID and some values for each:
-        rootFeature
-        feature // null if item returnable
-        item
-        referenceType
-        isFilterable
-        isGlobal
-        sqlType
-        baseItem // null if feature returnable
+computeValidationObjects();
 
-******************
-** Observation ***
-******************
-validateObservation:
-    Contains every feature and some values for each:
-        valid returnableIDs to query
-        valid returnableIDs to filter by
-        sql type of filterable returnableIDs
-
-globals:
-    Contains every global returnableID:
-        filterable global returnableIDs
-        column returnableIDs
-
-validFeatures
-    Array of valid features (just the keys of validateObservation)
-
-**********
-** Item **
-********** 
-validateItem:
-    Contains every item and some values for each:
-        valid returnableIDs to query
-            valid for _item_ if:
-                referenceType in item-id, item-non-id, item-list, item-factor, attribute (current)
-        valid returnableIDs to filter
-        sql type of filterable returnableIDs
-
-validItems:
-    Array of valid items (just the keys of validateItem)
-
-*/
-
-
-
-var globals = {
-    filter: [],
-    column: []
-};
-
-// Validity objects for every database
-let allValidateObservation = {};
-let allValidateItem = {};
-let allValidFeatures = {};
-let allValidItems = {};
-
-for(let dbName in allIdValidationLookups) {
-    const idValidationLookup = allIdValidationLookups[dbName];
-    let validateObservation = {};
-    let validateItem = {};
-    
-    for (let id in idValidationLookup) { 
-        if (idValidationLookup[id].isGlobal === true) {
-            globals.column.push(parseInt(id));
-            if(idValidationLookup[id].isFilterable === true) {
-                globals.filter.push(parseInt(id));
-            };
-        };
-    };
-    
-    // Dynamically generating validateObservation by
-    // looping through all ids in idValidationLookup
-    for (let id in idValidationLookup) {
-        let baseItem = idValidationLookup[id].baseItem
-        // feature or item returnable ?
-        let currentValidator, currentBase;
-        if(baseItem === null) {
-            currentValidator = validateObservation
-            currentBase = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
-        } else {
-            currentValidator = validateItem
-            currentBase = baseItem
-        }
-    
-        // if empty or not included yet, initialize column and filter array for new feature
-        // we can do this because currentValidator is a pointer
-        if(!(currentBase in currentValidator)) {
-            currentValidator[currentBase] = {
-        // // Getting the root feature
-        // let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
-        
-        // // if empty or feature not included yet, initialize column and filter array for new feature
-        // if(!Object.keys(validateObservation).includes(feature)) {
-        //     validateObservation[feature] = {
-                column: [],
-                filter: [],
-                sqlType: [],
-                selectorType: [],
-            };
-        }
-    
-        let idToInt = parseInt(id); // in case id isn't already an int
-        currentValidator[currentBase].column.push(idToInt);
-        
-        if (idValidationLookup[id].isFilterable) {
-            currentValidator[currentBase].filter.push(idToInt);
-            currentValidator[currentBase].sqlType.push(idValidationLookup[id].sqlType);
-            currentValidator[currentBase].selectorType.push(idValidationLookup[id].selectorType);
-        }
+function computeValidationObjects() {
+    for(let keyVal of Object.entries(allInternalObjects)) {
+        const { internalObjects } = keyVal[1]
+        allIdValidationLookups[keyVal[0]] = internalObjects;
     }
     
-    let validFeatures = Object.keys(validateObservation);
-    let validItems = Object.keys(validateItem);
-
-    // attach to database-wide objects
-    allValidateObservation[dbName] = validateObservation;
-    allValidateItem[dbName] =  validateItem;
-    allValidFeatures[dbName] = validFeatures;
-    allValidItems[dbName] =  validItems;
+    
+    /*
+    *************
+    ** Imports **
+    *************
+    idValidationLookup:
+        Contains every returnableID and some values for each:
+            rootFeature
+            feature // null if item returnable
+            item
+            referenceType
+            isFilterable
+            isGlobal
+            sqlType
+            baseItem // null if feature returnable
+    
+    ******************
+    ** Observation ***
+    ******************
+    validateObservation:
+        Contains every feature and some values for each:
+            valid returnableIDs to query
+            valid returnableIDs to filter by
+            sql type of filterable returnableIDs
+    
+    globals:
+        Contains every global returnableID:
+            filterable global returnableIDs
+            column returnableIDs
+    
+    validFeatures
+        Array of valid features (just the keys of validateObservation)
+    
+    **********
+    ** Item **
+    ********** 
+    validateItem:
+        Contains every item and some values for each:
+            valid returnableIDs to query
+                valid for _item_ if:
+                    referenceType in item-id, item-non-id, item-list, item-factor, attribute (current)
+            valid returnableIDs to filter
+            sql type of filterable returnableIDs
+    
+    validItems:
+        Array of valid items (just the keys of validateItem)
+    
+    */
+    
+    for(let dbName in allIdValidationLookups) {
+        const { idValidationLookup } = allIdValidationLookups[dbName];
+        let validateObservation = {};
+        let validateItem = {};
+        
+        for (let id in idValidationLookup) { 
+            if (idValidationLookup[id].isGlobal === true) {
+                globals.column.push(parseInt(id));
+                if(idValidationLookup[id].isFilterable === true) {
+                    globals.filter.push(parseInt(id));
+                };
+            };
+        };
+        
+        // Dynamically generating validateObservation by
+        // looping through all ids in idValidationLookup
+        for (let id in idValidationLookup) {
+            let baseItem = idValidationLookup[id].baseItem
+            // feature or item returnable ?
+            let currentValidator, currentBase;
+            if(baseItem === null) {
+                currentValidator = validateObservation
+                currentBase = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
+            } else {
+                currentValidator = validateItem
+                currentBase = baseItem
+            }
+        
+            // if empty or not included yet, initialize column and filter array for new feature
+            // we can do this because currentValidator is a pointer
+            if(!(currentBase in currentValidator)) {
+                currentValidator[currentBase] = {
+            // // Getting the root feature
+            // let feature = (idValidationLookup[id].rootfeature === null ? idValidationLookup[id].feature : idValidationLookup[id].rootfeature)
+            
+            // // if empty or feature not included yet, initialize column and filter array for new feature
+            // if(!Object.keys(validateObservation).includes(feature)) {
+            //     validateObservation[feature] = {
+                    column: [],
+                    filter: [],
+                    sqlType: [],
+                    selectorType: [],
+                };
+            }
+        
+            let idToInt = parseInt(id); // in case id isn't already an int
+            currentValidator[currentBase].column.push(idToInt);
+            
+            if (idValidationLookup[id].isFilterable) {
+                currentValidator[currentBase].filter.push(idToInt);
+                currentValidator[currentBase].sqlType.push(idValidationLookup[id].sqlType);
+                currentValidator[currentBase].selectorType.push(idValidationLookup[id].selectorType);
+            }
+        }
+        
+        let validFeatures = Object.keys(validateObservation);
+        let validItems = Object.keys(validateItem);
+    
+        // attach to database-wide objects
+        allValidateObservation[dbName] = validateObservation;
+        allValidateItem[dbName] =  validateItem;
+        allValidFeatures[dbName] = validFeatures;
+        allValidItems[dbName] =  validItems;
+    }
 }
 
 
@@ -192,13 +194,13 @@ function validationConstructor(init) {
         throw Error('Invalid validationConstructor initialization');
     }
     
-    function itemOrObservation(validate, globals, validateFeatures) {
+    function itemOrObservation(passedValidate, globals, passedValidateFeatures) {
 
         //// Validate request feature, columns, and filters ////
         return (req, res, next) => {
             const dbName = res.locals.databaseConnectionName;
-            validate = validate[dbName];
-            validateFeatures = validateFeatures[dbName];
+            const validate = passedValidate[dbName];
+            const validateFeatures = passedValidateFeatures[dbName];
             // item_... or obs_... depending on endpoint
             let feature = (init == 'item' ? 'item_' + res.locals.parsed.features : 'observation_' + res.locals.parsed.features);
             let universalFilters = res.locals.parsed.universalFilters;
@@ -423,6 +425,7 @@ async function setRoleObject(req, res, next) {
 module.exports = {
     validateObservation: validationConstructor('observation'),
     validateItem: validationConstructor('item'),
+    computeValidationObjects,
     hasDuplicates,
     isText,
     isNumber,

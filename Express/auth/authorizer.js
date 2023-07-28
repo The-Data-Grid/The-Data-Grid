@@ -294,7 +294,7 @@ function collectQueryItems(parsed, queryType, dbName) {
     // get column
     let {
         allReturnableIDs
-    } = queryHelpers.makeInternalObjects(parsed, queryType);
+    } = queryHelpers.makeInternalObjects(parsed, queryType, dbName);
     // go through all the returnables and get unique items
     const uniqueItems = [];
     // console.log(allReturnableIDs)

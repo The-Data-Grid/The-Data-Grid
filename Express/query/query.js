@@ -70,6 +70,7 @@ function dataQueryWrapper(queryType) {
     
             // Concatenating clauses to make final SQL query
             let finalQuery = query.join(' '); 
+            res.locals.finalQuerySQL = finalQuery;
             
             // Number of row query without limit, offset, or sorting
             let finalQueryForCounting = [selectClause, ...featureClauseArray, ...joinClauseArray, whereClause, groupByClause].join(' ');
@@ -111,8 +112,6 @@ function formatDefault(req, res, next) {
     /* DEBUG */
     // console.log(res.locals.parsed.finalQuery);
     
-
-    // fuck .fill(), all my homies hate .fill() 
     // (we don't use .fill([]) here because it fills the array with references to a single array, instead of multiple arrays)
     let rowData = Array(res.locals.parsed.finalQuery.rows.length).fill().map(e => [])
     let primaryKey = Array(res.locals.parsed.finalQuery.rows.length).fill(null)
@@ -148,6 +147,7 @@ function formatDefault(req, res, next) {
         rowData,
         primaryKey,
         nRows: res.locals.queryLength,
+        sql: res.locals.finalQuerySQL,
     }
 
     next()

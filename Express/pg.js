@@ -108,10 +108,10 @@ function connectPostgreSQL(config, options={ log: true }) {
     }
 };
 
-function disconnectPostgreSQL(dbName) {
+async function disconnectPostgreSQL(dbName) {
     if(dbName in postgresClient.getConnection) {
         try {
-            postgresClient.getConnection[dbName].$pool.end();
+            await postgresClient.getConnection[dbName].$pool.end()
             // remove logging if it exists
             delete currentlyLoggingDatabases[dbName];
             console.log(`====== DISCONNECTED FROM DATABASE "${dbName}" ======`)
