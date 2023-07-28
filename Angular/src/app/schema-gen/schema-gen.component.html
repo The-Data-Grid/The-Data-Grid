@@ -91,7 +91,7 @@
         <div class="flex flex-row justify-between" style="margin: 0.3rem 0">
           <button mat-button style="background-color: #ff9999;" (click)="resetOptions()">Cancel</button>
           <div class="flex">
-            <a [disabled]="true" [class.options-form-hidden]="!showOptions" matTooltip="Read the guide" style="display: inline-block; padding: 10px 15px; transition: opacity 0.5s;" target="_blank" href="/guide/query#multi-database"><img width="20px" height="20px" src="/assets/info-gray.png" alt=""></a>
+            <a [class.options-form-hidden]="!showOptions" matTooltip="Read the guide" style="display: inline-block; padding: 10px 15px; transition: opacity 0.5s;" target="_blank" href="/guide/query#multi-database"><img width="20px" height="20px" src="/assets/info-gray.png" alt=""></a>
             <button mat-button (click)="showOptions = !showOptions" class="show-options-button">
               <mat-icon color="#a0a0a0" style="transform: scale(0.7)">build</mat-icon>&nbsp;{{showOptions ? "Less" : "More"}} Options
             </button>
