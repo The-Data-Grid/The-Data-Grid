@@ -60,7 +60,7 @@ export class ApiService {
     return this.http.post(`${API_URL}/audit/submission`, submissionObject, { headers: reqHeader, responseType: 'text', withCredentials: true });
   }
 
-  public getSetupObject(databaseName = "idk"): Observable<any> {
+  public getSetupObject(databaseName): Observable<any> {
     var url = `${API_URL}/db/${databaseName}/setup`;
 
     return this.http.get<any>(url, {
@@ -119,12 +119,37 @@ export class ApiService {
     return this.http.get<TableObject>(url);
   }
 
-  public newGetTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, pageObject: any) {
+  public getAllDatabases() {
+    const url = `${API_URL}/executive/databases`;
+    const reqHeader = new HttpHeaders({ 'With-Credentials': 'True' });
+
+    return this.http.get<any>(url, {
+      observe: 'response',
+    })
+    .pipe(map((response: any) => {
+      return response.body;
+    }));
+  }
+
+  public downloadDatabase(dbSqlName) {
+    const url = `${API_URL}/executive/download/${dbSqlName}`;
+
+    return this.http.get<any>(url, { responseType: "arrayBuffer" as "json" })
+  }
+
+  public deleteDatabase(dbSqlName, password) {
+    const url = `${API_URL}/executive/delete/${dbSqlName}`;
+    const reqHeader = new HttpHeaders({ 'Content-Type': 'application/json', 'No-Auth': 'True', 'With-Credentials': 'True' })
+
+    return this.http.post<any>(url, { password }, { headers: reqHeader, withCredentials: true, responseType: "json" });
+  }
+
+  public newGetTableObject(database: string, isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, pageObject: any) {
     const observationOrItem = isObservation ? 'observation' : 'item';
     const formattedSort: string = this.formatSort(sortObject);
     const formattedPage: string = this.formatPage(pageObject);
     const formattedFilterSelections: string = this.formatFilterSelections(appliedFilterSelections);
-    const urlNoQuery = API_URL + '/audit/' + observationOrItem + '/' + feature + '/' + returnableIDs.join('&');
+    const urlNoQuery = API_URL + '/db/' + database + '/audit/' + observationOrItem + '/' + feature + '/' + returnableIDs.join('&');
     const queryString = [formattedSort, formattedPage, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
     const finalUrl = queryString.length > 0 ? urlNoQuery + '?' + queryString : urlNoQuery;
     // console.log(finalUrl)
@@ -268,13 +293,14 @@ export class ApiService {
     return this.http.get(url, { headers: reqHeader, responseType: 'json', withCredentials: true});
   }
 
-  public downloadTableObject(isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, isCSV: boolean) {
+  public downloadTableObject(database: string, isObservation: boolean, feature: string, returnableIDs: Array<Number>, appliedFilterSelections: any, sortObject: any, isCSV: boolean, pageObject: any) {
     const observationOrItem = isObservation ? 'observation' : 'item';
     const formattedSort: string = this.formatSort(sortObject);
+    const formattedPage: string = this.formatPage(pageObject);
     const formattedFilterSelections: string = this.formatFilterSelections(appliedFilterSelections);
     const downloadType = isCSV ? 'csv' : 'json'
-    const urlNoQuery = API_URL + '/audit/' + observationOrItem + '/download/' + downloadType + '/' + feature + '/' + returnableIDs.join('&');
-    const queryString = [formattedSort, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
+    const urlNoQuery = API_URL + '/db/' + database + '/audit/' + observationOrItem + '/download/' + downloadType + '/' + feature + '/' + returnableIDs.join('&');
+    const queryString = [formattedSort, formattedPage, formattedFilterSelections].filter(arg => arg.length > 0).join('&');
     const finalUrl = queryString.length > 0 ? urlNoQuery + '?' + queryString : urlNoQuery;
 
     return this.http.get<any>(finalUrl, { responseType: 'blob' as 'json'} );

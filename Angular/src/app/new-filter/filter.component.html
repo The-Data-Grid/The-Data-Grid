@@ -43,13 +43,13 @@
                     </ng-template>
                 </mat-tab>
             </mat-tab-group>
-            <!-- Field Selections -->
+            <!-- Table Field Selections -->
             <div *ngIf="viewType == 1" class="flex flex-row justify-between items-center bg-white pl-4 pr-2 py-3 border-b" style="z-index:1;">
                 <span class="header-3-type text-[#535353]">Database <a matTooltip="Read the guide" style="display: inline-block; padding-left: 3px" target="_blank" href="/guide/query#multi-database"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
                 <mat-form-field appearance="fill" style="margin-bottom: -21px; font-size: 0.9rem">
                     <mat-label>Select Database</mat-label>
                     <mat-select [(ngModel)]="queryState.tableView.selectedDatabase" (ngModelChange)="onDatabaseChange(1)">
-                        <mat-option *ngFor="let db of databases; index as i" [value]="i">{{ db.name }}</mat-option>
+                        <mat-option *ngFor="let db of databases; index as i" [value]="i">{{ db.dbName }}</mat-option>
                     </mat-select>
                 </mat-form-field>              
             </div>
@@ -81,12 +81,13 @@
                     </mat-select>
                 </mat-form-field>              
             </div>
+            <!-- Map Field Selections -->
             <div *ngIf="viewType == 2" class="flex flex-row justify-between items-center bg-white pl-4 pr-2 py-3 border-b" style="z-index:1;">
                 <span class="header-3-type text-[#535353]">Database <a matTooltip="Read the guide" style="display: inline-block; padding-left: 3px" target="_blank" href="/guide/query#multi-database"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></span>
                 <mat-form-field appearance="fill" style="margin-bottom: -21px; font-size: 0.9rem">
                     <mat-label>Select Database</mat-label>
                     <mat-select [(ngModel)]="queryState.mapView.selectedDatabase" (ngModelChange)="onDatabaseChange(2)">
-                        <mat-option *ngFor="let db of databases; index as i" [value]="i">{{ db.name }}</mat-option>
+                        <mat-option *ngFor="let db of databases; index as i" [value]="i">{{ db.dbName }}</mat-option>
                     </mat-select>
                 </mat-form-field>              
             </div>
@@ -265,7 +266,7 @@
                                 </div>
                                 <div class="flex flex-row justify-between border-t px-3 py-1">
                                     <span style="font-size: 14px; font-weight: 600">Database</span>
-                                    <span style="font-size: 14px; font-weight: 400;">{{ databases[layer.selectedDatabase].name }}</span>
+                                    <span style="font-size: 14px; font-weight: 400;">{{ databases[layer.selectedDatabase].dbName }}</span>
                                 </div>
                                 <div class="flex flex-row justify-between border-t px-3 py-1">
                                     <span style="font-size: 14px; font-weight: 600">Query Type</span>
@@ -423,10 +424,16 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#a0a0a0" height="22px" viewBox="0 0 512 512"><title>Build</title><path d="M230 209.2L32 405.58 106.65 480l197.59-198.17c46.47 17.46 105.52 12.54 143-24.78 40.44-40.32 40.35-108 16.81-156.79l-87.33 87.06-52.32-52.13 87.33-87.06C363 24.46 294.67 24.34 254.23 64.66c-38.03 37.91-42.78 97.6-24.23 144.54z"/></svg>
                     &nbsp;&nbsp;Utilities
                 </div>
-                <button (click)="queryDatabase(true)" id="utility" class="utility-button w-full border p-3 inline" mat-button >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M472.7 189.5c-15.76-10-36.21-16.79-58.59-19.54-6.65-39.1-24.22-72.52-51.27-97.26C334.15 46.45 296.21 32 256 32c-35.35 0-68 11.08-94.37 32a149.7 149.7 0 00-45.29 60.42c-30.67 4.32-57 14.61-76.71 30C13.7 174.83 0 203.56 0 237.6 0 305 55.92 352 136 352h104V208h32v144h124c72.64 0 116-34.24 116-91.6 0-30.05-13.59-54.57-39.3-70.9zM240 419.42L191.98 371l-22.61 23L256 480l86.63-86-22.61-23L272 419.42V352h-32v67.42z"/></svg>
+                <button (click)="queryDatabase(true)" id="utility" class="utility-button-blue w-full border inline" mat-button >
+                    <mat-icon style="color: #569CD7">cloud_download</mat-icon>
                     <span class="header-3-type text-[#569CD7] m-auto">
                         &nbsp;&nbsp;Download {{viewType == 1 ? 'Table' : 'Map'}} Data
+                    </span>
+                </button>
+                <button *ngIf="viewType === 1" (click)="copyQuerySQL()" id="utility" class="utility-button-blue w-full border inline" mat-button style="margin-top: 10px">
+                    <mat-icon style="color: #569CD7">code</mat-icon>
+                    <span class="header-3-type text-[#569CD7] m-auto">
+                        &nbsp;&nbsp;Copy Query as SQL
                     </span>
                 </button>
                 <!--
@@ -437,8 +444,8 @@
                     </span>
                 </button>
                 -->
-                <button (click)="saveMapImage()" [disabled]="savingImage" *ngIf="viewType == 2" id="utility" class="mt-2 utility-button w-full border p-3 inline" mat-button >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="#569CD7" height="22px" viewBox="0 0 512 512"><path xmlns="http://www.w3.org/2000/svg" d="M456 144h-83c-3 0-6.72-1.94-9.62-5L336.1 96.2C325 80 320 80 302 80h-92c-18 0-24 0-34.07 16.21L148.62 139c-2.22 2.42-5.34 5-8.62 5v-16a8 8 0 00-8-8H92a8 8 0 00-8 8v16H56a24 24 0 00-24 24v240a24 24 0 0024 24h400a24 24 0 0024-24V168a24 24 0 00-24-24zM260.51 367.9a96 96 0 1191.39-91.39 96.11 96.11 0 01-91.39 91.39z"/></svg>
+                <button (click)="saveMapImage()" [disabled]="savingImage" *ngIf="viewType == 2" id="utility" class="mt-2 utility-button-blue w-full border inline" mat-button >
+                    <mat-icon style="color: #569CD7">photo_camera</mat-icon>
                     <span class="header-3-type text-[#569CD7] m-auto">
                         &nbsp;&nbsp;{{ savingImage ? 'Loading...' : 'Save Image of Map' }}
                     </span>
@@ -477,7 +484,7 @@
             <div class="flex justify-between">
                 
                 <div [class.mt-4]="isXs" [class.flex-col]="isXs" [class.flex-row]="!isXs" class="flex items-center">
-                    <button [class.mb-2]="isXs" class="text-semibold bg-[#569CD7] px-2 mx-2 text-sm" style="height: 25px;" mat-button (click)="queryDatabase(true)">{{ isDownloading ? 'Downloading...' : 'Download all pages' }}</button>
+                    <button [class.mb-2]="isXs" class="text-semibold bg-[#569CD7] px-2 mx-2 text-sm" style="height: 25px;" mat-button (click)="queryDatabase(true)">{{ isDownloading ? 'Downloading...' : 'Download ' + currentDisplayedNRows + ' rows' }}</button>
                     <div>
                         <mat-radio-group class="flex flex-row text-sm" aria-label="Select an option" [(ngModel)]="downloadType">
                           <mat-radio-button style="margin-right: 5px" value="csv">CSV</mat-radio-button>
@@ -487,7 +494,7 @@
                 </div>
                 <mat-paginator *ngIf="viewType == 1" #paginator [length]="queryState.tableView.data.rowCount"
                     [pageSize]="queryState.tableView.currentPageSize"
-                    [pageSizeOptions]="[10, 25, 100, 1000]"
+                    [pageSizeOptions]="[10, 25, 100, 1000, 2500]"
                     (page)="onPageChange($event, 1)"
                     aria-label="Select page">
                 </mat-paginator>

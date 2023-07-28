@@ -469,7 +469,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
 
             // Location Handling
             let isLocation = false;
-            if(['Point', 'LineString', 'Polygon', 'MultiPolygon', 'MutliLineString'].includes(column.sqlType)) {
+            if(['Point', 'LineString', 'Polygon'].includes(column.sqlType)) {
                 column.sqlType = `geometry(${column.sqlType}, 4326)`;
                 isLocation = true;
             }
@@ -1116,8 +1116,6 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             Point: 'f',
             LineString: 'g',
             Polygon: 'h',
-            MultiPolygon: 'i',
-            MultiLineString: 'j',
         };        
 
         /*
@@ -1140,7 +1138,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
             e: ['checkbox', 'checkboxList', null, null],
             f: ['geoPoint', null, null, null],
             g: ['geoLine', null, null, null],
-            h: ['geoRegion', null, null, null]
+            h: ['geoRegion', null, null, null],
         };
 
         // Converter
@@ -1244,7 +1242,7 @@ async function asyncConstructAuditingTables(featureSchema, columnSchema, databas
     
     function isSchemaNameValid(name) {
         return (
-            name.length >= 3 &&
+            name.length >= 1 &&
             /[a-zA-Z]/.test(name[0]) &&
             /[a-zA-Z0-9]/.test(name[name.length - 1]) &&
             name.split('').every(char => /[a-zA-Z0-9 ]/.test(char))

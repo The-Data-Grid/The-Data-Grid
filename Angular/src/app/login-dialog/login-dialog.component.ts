@@ -39,7 +39,6 @@ export class DialogComponent implements OnInit {
 
   modal = "sign_in"
   formsFilledOut = false;
-  loginDatabase;
   loginEmail;
   loginPassword;
   signUpPassword;
@@ -55,6 +54,7 @@ export class DialogComponent implements OnInit {
   day;
   year;
   resetPassEmail;
+  databaseName = "";
 
   showLoading = false;
 
@@ -83,7 +83,7 @@ export class DialogComponent implements OnInit {
     var user = (<HTMLInputElement>document.getElementById("username_attempt")).value;
     var pass = (<HTMLInputElement>document.getElementById("password_attempt")).value;
 
-    if (user.length != 0 && pass.length != 0) {
+    if (user.length != 0 && pass.length != 0 && this.databaseName.length != 0) {
       this.formsFilledOut = true;
     }
     else {
@@ -256,11 +256,13 @@ export class DialogComponent implements OnInit {
     // Check for localStorage being blocked
     if (this.authService.isLocalStorageBlocked) {
       this.toastr.error('Your browser is blocking access to local storage. Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
+    } else if(!this.formsFilledOut) {
+      this.toastr.error('All fields must be filled out') 
     } else {
       // console.log("email: " + this.loginEmail + ", password: " + this.loginPassword);
       this.userLoginObject = { email: this.loginEmail, pass: this.loginPassword };
       // console.log(this.userLoginObject);
-      this.apiService.attemptLogin(this.loginDatabase, this.userLoginObject)
+      this.apiService.attemptLogin(this.databaseName, this.userLoginObject)
         .subscribe((res) => {
           console.log(res);
           this.authService.setSession(res)

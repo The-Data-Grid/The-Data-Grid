@@ -14,7 +14,7 @@ import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { CheckEmailComponent } from './verify-email/check-email/check-email.component';
 import { NewFilterComponent } from './new-filter/filter.component';
 import { AuditDashboard } from './audit-dashboard/dashboard.component';
-import { ManagementComponent } from './manage/manage.component';
+import { NewManage } from './new-manage/manage.component';
 import { AuthGuard } from './auth.guard';
 import { GuideComponent } from './guide/guide.component';
 import { GuideManageComponent } from './guide-manage/guide.component';
@@ -31,17 +31,17 @@ const routes: Routes = [
   // { path: 'filter', component: FilterComponent },
 //   { path: 'upload', component: UploadComponent },
   { path: 'about', component: AboutComponent },
-  { path: 'upload-files', component: UploadFilesComponent },
-  { path: 'upload-audit', component: UploadAuditComponent },
-  { path: 'audit-summary', component: AuditSummaryComponent },
-  { path: 'audit', component: AuditDashboard, canActivate: [AuthGuard] },
-  { path: 'settings', component: SettingsComponent },
-  { path: 'team', component: TeamComponent },
-  { path: 'verify-email', component: VerifyEmailComponent },
-  { path: 'check-email', component: CheckEmailComponent },
+//  { path: 'upload-files', component: UploadFilesComponent },
+//  { path: 'upload-audit', component: UploadAuditComponent },
+//  { path: 'audit-summary', component: AuditSummaryComponent },
+//  { path: 'audit', component: AuditDashboard, canActivate: [AuthGuard] },
+//  { path: 'settings', component: SettingsComponent },
+  { path: 'team', redirectTo: '', pathMatch: 'full' },
+//  { path: 'verify-email', component: VerifyEmailComponent },
+//  { path: 'check-email', component: CheckEmailComponent },
   { path: 'table', component: NewFilterComponent},
   { path: 'map', component: NewFilterComponent},
-  { path: 'manage', component: ManagementComponent, canActivate: [AuthGuard] },
+  { path: 'manage', component: NewManage, canActivate: [AuthGuard] },
   { path: 'guide', component: GuideComponent },
   { path: 'guide/manage', component: GuideManageComponent },
   { path: 'guide/query', component: GuideQueryComponent },

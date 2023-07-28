@@ -10,12 +10,18 @@
     <h2 class="logIn" style="font-size: 40px; margin: 10px 0px 25px 0px;">Log In</h2>
     <p>
       <mat-form-field appearance="outline" class="formField">
+        <mat-label>Database Name</mat-label>
+        <input id="database_name" matInput (input)="checkForms()" [(ngModel)]="databaseName" placeholder="">
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field appearance="outline" class="formField">
         <mat-label>Email</mat-label>
         <input id="username_attempt" matInput (input)="checkForms()" [(ngModel)]="loginEmail" placeholder="">
       </mat-form-field>
     </p>
     <p>
-      <mat-form-field appearance="outline" class="formField" style="top: -60px">
+      <mat-form-field appearance="outline" class="formField">
         <mat-label>Password</mat-label>
         <input type="password" id="password_attempt" matInput [(ngModel)]="loginPassword" (input)="checkForms()"
           placeholder="">

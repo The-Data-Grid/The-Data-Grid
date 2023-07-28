@@ -927,6 +927,19 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: #569CD7;
 }
 
+.utility-button-blue {
+  background-color: white;
+  border-color: #569CD7;
+  border-width: 1px;
+  border-style: solid;
+  color: #569CD7;
+  padding: 10px;
+}
+
+::ng-deep .utility-button-blue .mat-button-wrapper {
+  display: block !important;
+}
+
 .standard-button {
   border-color: #a0a0a0;
   color: #535353;

@@ -94,14 +94,33 @@ async function parseData() {
             throw Error('Only FeatureCollection geojson type accepted');
         }
         // Add each feature
-        let csvFormat = parsed.features.map(feature => {
-            feature.properties[cli.featureName + ' Location'] = feature.geometry;
-            return feature.properties;
+        let csvFormat = [];
+        parsed.features.forEach(feature => {
+            // convert MultiPolygon, MultiPoint, MultiLineString to Polygon and LineString
+            if(feature.geometry.type === "MultiPolygon" || feature.geometry.type === "MultiLineString" || feature.geometry.type === "MultiPoint") {
+                feature.geometry.coordinates.forEach(coordinate => {
+                    // Remove 'Multi'
+                    csvFormat.push({
+                        ...feature.properties,
+                        [cli.featureName + ' Location']: {
+                            type: feature.geometry.type.slice(5),
+                            coordinates: coordinate,
+                        },
+                    });
+                });
+            } else {
+                // Otherwise don't
+                csvFormat.push({
+                    ...feature.properties,
+                    [cli.featureName + ' Location']: feature.geometry,
+                });
+            }
         });
         geospatialKey = cli.featureName + ' Location';
+        // Use first
         geospatialType = csvFormat[0][geospatialKey].type;
-        if(!['Point', 'LineString', 'Polygon', 'MultiPolygon', 'MutliLineString'].includes(geospatialType)) {
-            throw Error(`Only Point, LineString, Polygon, MultiPolygon, and MutliLineString GeoJSON types allowed. Passed: ${geospatialType}`);
+        if(!['Point', 'LineString', 'Polygon'].includes(geospatialType)) {
+            throw Error(`Only Point, LineString, Polygon, MultiPolygon, MultiLineString, and MultiPoint GeoJSON types allowed. Passed: ${geospatialType}`);
         }
         return csvFormat;
     }
@@ -391,6 +410,10 @@ function writeSubmissionObject(parsed, colNames, columns, wroteObjectIndex, obj,
 }
 
 function formatName(name) {
+    if(name.length === 0) {
+        return "Unnamed Column";
+    }
+    name = name.replace(/\W/g, 'x');
     name = name.split(/[_\- ]/);
     name = name.map(substring => {
         if(substring.length == 0) return null;

@@ -101,7 +101,7 @@ async function download(req, res, next) {
         })
         const upload = multer({
             storage: fileStorage,
-            limits: {fileSize: 10737418240}, // 10 GB limit
+            limits: {fileSize: 1073741824}, // 1 GB limit
             fileFilter: (req, file, cb) => {
                 if(file.mimetype !== "text/csv" && file.mimetype !== "application/vnd.ms-excel" && file.mimetype !== "application/json") {
                     cb(new Error("Invalid file type. Must be CSV, GeoJSON, or JSON"));
@@ -400,12 +400,16 @@ TDG database self-generation instructions\n\n\
 4. The database is now fully constructed. You may now psql into the SQL command line and run raw SQL commands. To generate raw SQL commands, use the 'Download Query as SQL' button on the Query Data page\n";
                     archive.append(instructions, { name: "INSTRUCTIONS.txt" });
 
-                    archive.append(`${res.locals.dbTempDirName}/default/Schema_Construction_SQL.sql`, { name: "Schema_Construction_SQL.sql" });
-                    archive.append(`${res.locals.dbTempDirName}/default/Data_Insertion_SQL.sql`, { name: "Data_Insertion_SQL.sql" });
+                    archive.file(`${res.locals.dbTempDirName}/default/Schema_Construction_SQL.sql`, { name: "Schema_Construction_SQL.sql" });
+                    archive.file(`${res.locals.dbTempDirName}/default/Data_Insertion_SQL.sql`, { name: "Data_Insertion_SQL.sql" });
 
                     archive.finalize().then(() => {
                         // Done!
-                        res.write("GENERATIONSUCCESS: " + JSON.stringify({ userPassword: res.locals.userPassword, userEmail: res.locals.userEmail }));
+                        res.write("GENERATIONSUCCESS: " + JSON.stringify({
+                            userPassword: res.locals.userPassword,
+                            userEmail: res.locals.userEmail,
+                            dbSqlName: res.locals.dbSqlName,
+                        }));
                         res.status(201)
                         res.end();
                     });

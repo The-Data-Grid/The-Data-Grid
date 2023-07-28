@@ -28,7 +28,7 @@ export class SchemaGen implements AfterContentInit {
   genTypes = ["CSV", "GeoJSON", "Custom"];
   extensionTypes = ["csv", "json", "json"];
   mimeTypes = ["text/csv", "application/json", "application/json"];
-  options = [0,1,2];
+  options = [0,1];
   optionText = [
     ["Tabluar Database", "Automatically convert a spreadsheet or table into PostgreSQL. Database design best practices, data formatting, insertion, and more are all handled for you.", "Upload CSV File"],
     ["Geospatial Database", "Create a database with geographic features that can run geospatial analysis from the map page. Uses PostGIS under the hood for efficient spatial queries.", "Upload GeoJSON File"],
@@ -53,10 +53,10 @@ export class SchemaGen implements AfterContentInit {
   areOptionsValid = false;
   showOptions = false;
 
-  selectedFile = {name: 'test', size: 1000};
-  chosenOption = 0;
-  potentialChosenOption = 0;
-  isFormHidden = false;
+  selectedFile = null;
+  chosenOption = null;
+  potentialChosenOption = null;
+  isFormHidden = true;
   formError = "Database name is required"
 
   headerText = "";
@@ -67,15 +67,29 @@ export class SchemaGen implements AfterContentInit {
   optionsDropdownFormHeight = 0;
   optionsFormHeight = {}
 
+  setElementHooks() {
+    // All of these need to run even if one of the elements isn't rendered, so try catch everything
+    try {
+      document.getElementById("entirePageContainer").style.transition = "padding-top 0.5s";
+    } catch(err) {}
+    try {
+      this.optionsDropdownFormHeight = document.getElementById("odf").scrollHeight;
+    } catch(err) {}
+    try {
+      this.optionsFormHeight[0] = document.getElementById("optionsForm0").scrollHeight;
+    } catch(err) {}
+    try {
+      this.optionsFormHeight[1] = document.getElementById("optionsForm1").scrollHeight;
+    } catch(err) {}
+    try {
+      this.optionsFormHeight[2] = document.getElementById("optionsForm2").scrollHeight;
+    } catch(err) {}
+  }
+
   ngAfterContentInit(): void {
     // Add the transition after init so it doesn't fire on first load
     setTimeout(() => {
-      // Really not sure why I need to hack it like this
-      document.getElementById("entirePageContainer").style.transition = "padding-top 0.5s";
-      this.optionsDropdownFormHeight = document.getElementById("odf").scrollHeight;
-      this.optionsFormHeight[0] = document.getElementById("optionsForm0").scrollHeight;
-      this.optionsFormHeight[1] = document.getElementById("optionsForm1").scrollHeight;
-      this.optionsFormHeight[2] = document.getElementById("optionsForm2").scrollHeight;
+      this.setElementHooks();
     }, 500);
   }
 
@@ -126,7 +140,10 @@ export class SchemaGen implements AfterContentInit {
     if(fileInputEvent.target.files[0]) {
       this.selectedFile = fileInputEvent.target.files[0];
       this.chosenOption = this.potentialChosenOption;
-      setTimeout(() => this.isFormHidden = false, 1);
+      setTimeout(() => {
+        this.isFormHidden = false;
+        this.setElementHooks();
+      }, 1);
     }
   }
 
@@ -188,6 +205,7 @@ export class SchemaGen implements AfterContentInit {
     }
   }
 
+  lastScrollTime = Date.now();
   async handleResponseStream(line) {
     if(line.split(": ")[0] === "GENERATIONERROR") {
       try {
@@ -214,8 +232,9 @@ export class SchemaGen implements AfterContentInit {
           const {
             userPassword,
             userEmail,
+            dbSqlName,
           } = JSON.parse(line.split(": ")[1]);
-          await this.successfulGeneration(userPassword, userEmail);
+          await this.successfulGeneration(userPassword, userEmail, dbSqlName);
         } catch(err) {
           // Could not parse JSON
           this.throwGenerationError({type: "Unknown", message:"Received successful generation signal from API but malformed accompanying information"});
@@ -226,9 +245,12 @@ export class SchemaGen implements AfterContentInit {
           if(remaining.length > 0) {
             this.responseStream.push(remaining);
             const currIndex = this.responseStream.length - 1;
-            setTimeout(() => {
-              document.getElementById("line-" + currIndex).scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-            }, 10);
+            if(this.lastScrollTime + 50 < Date.now()) {
+              this.lastScrollTime = Date.now();
+              setTimeout(() => {
+                document.getElementById("line-" + currIndex).scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+              }, 10);
+            }
           }
         }
       }
@@ -244,7 +266,7 @@ export class SchemaGen implements AfterContentInit {
     this.generationSuccess = false;
   }
 
-  async successfulGeneration(userPassword, userEmail) {
+  async successfulGeneration(userPassword, userEmail, dbSqlName) {
     // flash success in the header and fire a snackbar
     this.generationSuccess = true;
     this.headerText = "Successfully Generated"
@@ -255,14 +277,14 @@ export class SchemaGen implements AfterContentInit {
     if (this.authService.isLocalStorageBlocked) {
       this.toastr.error('Your browser is blocking access to local storage', 'Allow cookies and local storage for www.thedatagrid.org in your browser to continue.')
       this.throwGenerationError({type: "Unable to log in", message:`Your browser is blocking access to local storage. Allow local storage to store your database information and manage it in your browser.\
-Your database has been successfully created and is publicly accessible on the 'Query Data' page. After allowing access to local storage, log in to your database ${this.databaseName} with email ${userEmail} and\
+Your database has been successfully created and is publicly accessible on the 'Query Data' page. After allowing access to local storage, log in to your database ${dbSqlName} with email ${userEmail} and\
 password ${userPassword} to manage it. Do not share this password with anyone, this is the only time it will be displayed.`});
     } else {
       const userLoginObject = { email: userEmail, pass: userPassword };
-      this.apiService.attemptLogin(this.databaseName, userLoginObject)
-        .subscribe((res) => {
+      this.apiService.attemptLogin(dbSqlName, userLoginObject)
+        .subscribe((res: any) => {
           // top bar should change with log in status, redirect to new management page
-          this.authService.setSession(res)
+          this.authService.setSession(JSON.stringify({ ...JSON.parse(res), userPassword }));
           this.toastr.success('Log in Successful', '');
           this.router.navigate(['/manage'])
         }, (err) => {

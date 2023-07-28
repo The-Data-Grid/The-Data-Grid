@@ -38,7 +38,7 @@ class CreateObservationError extends Error {
             Error.captureStackTrace(this, CreateObservationError);
         }
     
-        this.name = 'CreateItemError';
+        this.name = 'CreateObservationError';
         // Custom debugging information
         this.code = errObject.code;
         this.msg = errObject.msg;
@@ -376,8 +376,6 @@ const sqlToJavascriptLookup = {
     Point: 'object',
     LineString: 'object',
     Polygon: 'object',
-    MultiPolygon: 'object',
-    MultiLineString: 'object',
     TEXT: 'string'
 };
 function validateDataColumnsGenerator(isObservation, isUpdate, ErrorClass) {

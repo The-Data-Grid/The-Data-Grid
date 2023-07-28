@@ -1,0 +1,174 @@
+<div id="entirePageContainer" class="w-full h-full flex items-center flex-col management-page" style="min-height: calc(100vh - 199px); padding-top: 40px;" >
+  <h1 class="header-text" style="width: 60%; margin-bottom: 15px;">
+    {{ sessionObject.databaseName }}
+  </h1>
+  <div class="manage-section-container">
+    <div class="flex flex-col w-full">
+      <!-- Info -->
+      <div class="spread-list">
+        <span class="b">Generation time</span><span>{{ databaseInfo ? databaseInfo.timeCreated : "Loading" }}</span>
+      </div>
+      <div class="spread-list">
+        <span class="b">Original file size</span><span>{{ databaseInfo ? databaseInfo.fileSize + " bytes" : "Loading" }}</span>
+      </div>
+      <div class="spread-list">
+        <span class="b">Original file type</span><span>{{ databaseInfo ? databaseInfo.genType : "Loading" }}</span>
+      </div>
+      <div class="spread-list">
+        <span class="b">Type</span><span>{{ databaseInfo ? (databaseInfo.isTemp ? "Temporary 1 day" : "Permenant" ) : "Loading" }}</span>
+      </div>
+      <div class="gen-option gen-option2 chosen-option" style="margin-top: 10px;">
+        <p class="option-header text-gray-500"><mat-icon>pageview</mat-icon>&nbsp;&nbsp;Query Database</p>
+        <p style="font-size: 15px; line-height: 20px; margin: 5px 20px 15px;">
+          Use the <a class="linker-manage" href="/filter">Query Data page</a>
+          and select '{{ sessionObject.databaseName }}' from the dropdown. If you are using a geographic feature, click 
+          <a class="linker-manage" href="/map">Map View</a> to see it on a map.
+        </p>
+      </div>
+      <div class="gen-option gen-option2 chosen-option" style="margin-top: 10px;">
+        <p class="option-header text-gray-500"><mat-icon>code</mat-icon>&nbsp;&nbsp;Generate SQL</p>
+        <p style="font-size: 15px; line-height: 20px; margin: 5px 20px 15px;">
+          Download '{{ sessionObject.databaseName }}' its SQL format, allowing it to be reconstructed locally in PostgreSQL. Queries can also be downloaded as SQL on the
+          <a class="linker-manage" href="/filter">Query Data page</a>.
+          <button (click)="downloadDatabase()" class="utility-button-gray w-full border p-3 inline" mat-button style="background-color: white; margin-top: 10px">
+            <mat-icon style="color: #535353">cloud_download</mat-icon>
+            <span class="header-3-type m-auto" style="color: #535353">
+                &nbsp;&nbsp;Download Database as SQL
+            </span>
+          </button>
+        </p>
+      </div>
+      
+    </div>
+    
+    <!-- Log in -->
+    <div class="flex flex-col w-full">
+      <div class="gen-option gen-option2 chosen-option" >
+        <p class="option-header" style="color: #569dd7"><mat-icon> vpn_key</mat-icon>&nbsp;&nbsp;Credentials</p>
+        <div class="spread-list p">
+          <span >Email</span><span class="b">user-generated@thedatagrid.org</span>
+        </div>
+        <div *ngIf="!sessionObject.userPassword" class="spread-list p" style="margin-bottom: 15px;">
+          <span >Password</span><span class="b">●●●●●●●●●●●</span>
+        </div>
+        <div *ngIf="sessionObject.userPassword" class="spread-list p" style="margin-bottom: 15px;">
+          <span >Password</span><span class="b">{{ sessionObject.userPassword }}</span>
+        </div>
+        <div *ngIf="sessionObject.userPassword" class="p">
+          <p style="font-size: 15px; line-height: 20px; margin: 5px 20px 15px;">This password will only be displayed once, save it now if you would like to be able to log in or delete your database in the future.</p>
+        </div>
+      </div>
+      <!-- Ephemeral -->
+      <div class="gen-option gen-option2 chosen-option" style="margin-top: 10px">
+        <p class="option-header" style="color: #e07171;"><mat-icon>delete</mat-icon>&nbsp;Deletion</p>
+        <p style="font-size: 15px; line-height: 20px; margin: 5px 20px 15px;">
+          Permanently delete '{{ sessionObject.databaseName }}'
+        </p>
+        <mat-form-field id="confirm-box" appearance="outline" style="font-size: 14px; width: 100%; padding: 0 20px;" height="30px">
+          <mat-label>Enter password</mat-label>
+          <input matInput type="password" style="outline: none" [(ngModel)]="enterPassword" (input)="checkPasswordNotEmpty()">
+        </mat-form-field>
+        <mat-checkbox class="example-margin" style="font-size: 14px; margin-bottom: 10px;" [(ngModel)]="downloadBeforeDelete">Download database before deletion</mat-checkbox>
+        <button style="margin: 10px 0;" 
+          [matTooltip]="formError"
+          [matTooltipDisabled]="allowDelete"
+          [disabled]="!allowDelete"
+          [class]="allowDelete ? 'generate-button' : 'disabled-generate-button'"
+          mat-button (click)="deleteDatabase()">
+          <span >Delete Database</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schema -->
+  <p class="border-b-2 border-gray-300 text-lg text-gray-500" style="width: 60%; margin: 15px 0 0;">Schema <a style="display: inline-block; padding-left: 3px" target="_blank" href="/user-guide/data-model"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p> 
+  <div class="manage-section-container">
+    <div class="flex flex-col w-full" style="margin-bottom: 60px;">
+      <!-- Table vs Map controller -->
+      <mat-tab-group [selectedIndex]="schemaView" (selectedTabChange)="schemaView = (schemaView === 1 ? 0 : 1)" mat-align-tabs="center" style="z-index: 2; margin-top: 0px; margin-bottom: 0px; background-color: white; box-shadow: 0px 4px 8px -4px rgb(138, 138, 138);">
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <span class="header-2-type">Observations</span>
+            </ng-template>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <span class="header-2-type">Items</span>
+            </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+      <!-- Observations-->
+      <mat-accordion *ngIf="!isLoading[0] && !isLoading[1] && allFeatures.length > 0 && schemaView === 0" style="margin-top: 15px">
+        <mat-expansion-panel *ngFor="let feature of allFeatures; index as i" [(expanded)]="isFeatureExpanded[i]">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ feature.frontendName }}
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="text-black iu text-sm">{{ setupFilterObject.observationReturnableIDs[i].length }}</span><span class="text-sm">&nbsp;queryable fields</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <!-- List of fields -->
+          <p *ngIf="setupFilterObject.observationReturnableIDs[i].length == 0" class="text-center" > No queryable fields </p>
+          <div *ngIf="setupFilterObject.observationReturnableIDs[i].length > 0" class="">
+            <table class=" ">
+              <!-- Heaader -->
+              <tr class="h-70px text-gray-700   text-sm ">
+                  <th *ngFor="let header of ['ID', 'Name', 'Nullable', 'Filterable', 'UI Type']" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
+              </tr>
+              <!-- Data -->
+              <tr onMouseOver="this.style.background='lightblue';" onMouseOut="this.style.background='none';" *ngFor="let columnIndex of setupFilterObject.observationColumnObjectIndices[i]; index as ii" class="h-8 text-sm cursor-default" >
+                  <td *ngFor="let cell of [setupFilterObject.observationReturnableIDs[i][ii], setupObject.columns[columnIndex].frontendName, setupObject.columns[columnIndex].nullable, setupObject.columns[columnIndex].isFilterable, setupObject.columns[columnIndex].selectorType]" class="border-t border-gray-200 w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+              </tr>
+            </table>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <!-- Items -->
+      <mat-accordion *ngIf="!isLoading[0] && !isLoading[1] && allItems.length > 0 && schemaView === 1" style="margin-top: 15px">
+        <mat-expansion-panel *ngFor="let feature of allItems; index as i" [(expanded)]="isItemExpanded[i]">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ feature.frontendName }}
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="text-black iu text-sm">{{ setupFilterObject.itemReturnableIDs[i].length }}</span><span class="text-sm">&nbsp;queryable fields</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <!-- List of required items -->
+          <p *ngIf="setupObject.items[i].information" class="text-sm italics my-1 text-gray-400">{{ setupObject.items[i].information }}</p>
+          <p *ngIf="setupObject.items[i].children[1].concat(setupObject.items[i].children[3]).length == 0" class="text-center" > No required items </p>
+          <p *ngIf="setupObject.items[i].children[1].concat(setupObject.items[i].children[3]).length > 0" class="font-bold mb-2"> Required items: <span class="italic">(click below to open)</span><a style="display: inline-block; padding-left: 10px" target="_blank" href="/user-guide/roles"><img width="16px" height="16px" src="/assets/info-gray.png" alt=""></a></p>
+          <div *ngIf="setupObject.items[i].children[1].concat(setupObject.items[i].children[3]).length > 0" class="mb-2">
+            <table class=" ">
+              <!-- Heaader -->
+              <tr class="h-70px text-gray-700   text-sm ">
+                  <th *ngFor="let header of ['Name', 'Relation', 'Nullable']" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
+              </tr>
+              <!-- Data -->
+              <tr onMouseOver="this.style.background='lightgray'; this.style.textDecoration='underline'" onMouseOut="this.style.background='none'; this.style.textDecoration='none'" *ngFor="let reqItem of setupObject.items[i].children[1].concat(setupObject.items[i].children[3])" class="h-10 text-sm cursor-pointer" (click)="openRequiredItem(reqItem.index)">
+                  <td *ngFor="let cell of [setupObject.items[reqItem.index].frontendName, reqItem.frontendName, reqItem.nullable]" class="border-t border-gray-200 w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+              </tr>
+            </table>
+          </div>
+          <!-- List of fields -->
+          <p *ngIf="setupFilterObject.itemReturnableIDs[i].length == 0" class="text-center" > No queryable fields </p>
+          <button mat-button style="background-color: #569CD7; padding: 3px 6px;" *ngIf="setupFilterObject.itemReturnableIDs[i].length > 0" class=" mb-2 p-2 text-white rounded" (click)="showFields(i)"> {{ showingFields[i] ? 'Hide' : 'Show' }} queryable fields</button>
+          <div *ngIf="setupFilterObject.itemReturnableIDs[i].length > 0 && showingFields[i]" class="">
+            <table class=" ">
+              <!-- Heaader -->
+              <tr class="h-70px text-gray-700   text-sm ">
+                  <th *ngFor="let header of ['ID', 'Name', 'Nullable', 'Filterable', 'UI Type']" class="w-1000px  pl-8 text-left min-w-150px">{{ header }}</th>
+              </tr>
+              <!-- Data -->
+              <tr onMouseOver="this.style.background='lightblue';" onMouseOut="this.style.background='none';" *ngFor="let columnIndex of setupFilterObject.itemColumnObjectIndices[i]; index as ii" class="h-8 text-sm cursor-default" >
+                  <td *ngFor="let cell of [setupFilterObject.itemReturnableIDs[i][ii], setupObject.columns[columnIndex].frontendName, setupObject.columns[columnIndex].nullable, setupObject.columns[columnIndex].isFilterable, setupObject.columns[columnIndex].selectorType]" class="border-t border-gray-200 w-1000px  pl-8 text-left min-w-150px">{{ cell }}</td>
+              </tr>
+            </table>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</div>

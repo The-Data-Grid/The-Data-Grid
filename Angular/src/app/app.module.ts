@@ -48,6 +48,7 @@ import { GuideUploadComponent } from './guide-upload/guide.component';
 import { GuideSchemaComponent } from './guide-schema/guide.component';
 import { GuideQueryComponent } from './guide-query/guide.component';
 import { SchemaGen } from './schema-gen/schema-gen.component';
+import { NewManage } from './new-manage/manage.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import {MatIconModule} from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input';
@@ -87,7 +88,8 @@ import { MatFormFieldModule } from "@angular/material/form-field";
     GuideUploadComponent,
     GuideSchemaComponent,
     GuideQueryComponent,
-    SchemaGen
+    SchemaGen,
+    NewManage
   ],
   imports: [
     BrowserModule,

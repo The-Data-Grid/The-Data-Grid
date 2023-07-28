@@ -91,13 +91,16 @@ ngOnInit() {
 	// Data Waterfall
 	// ==========================================
 	
-	this.getSetupObjectsAndFormatBuilder(this.viewType);
-	
+	this.apiService.getAllDatabases().subscribe((res) => {
+		this.databases = res;
+		if(this.databases.length > 0) {
+			this.getSetupObjectsAndFormatBuilder(this.viewType, this.databases[0].dbSqlName);
+		}
+	})
+
 	this.expandFilter(this.viewType == 1 ? 'table-builder' : 'map-builder-global', true);
 
-	if(this.viewType == 1) {
-	} 
-	else {
+	if(this.viewType === 2) {
 		this.mountMap();
 	}
 
@@ -132,9 +135,10 @@ changeViewType(e) {
 
 	// reset queryState
 	this.resetQueryState();
+	this.onDatabaseChange(newViewType);
 
 	// format columnObjects
-	this.getFilterableColumnIDs(this.queryState[viewTypeString], 2);
+	this.getFilterableColumnIDs(this.queryState[viewTypeString], this.queryState[viewTypeString].selectedFeature);
 	this.setSelectedValues(this.queryState[viewTypeString], this.viewType == 1);
 	// Init builder
 	this.getQueryBuilder(this.viewType)
@@ -148,7 +152,7 @@ changeViewType(e) {
 		this.changeURL(false);
 
 		// Fill table
-		this.runQuery(this.queryState.tableView, this.queryState.tableView.data,{isPaginationQuery: false, target: 'table-builder', viewType: 1});
+		this.runQuery(this.queryState.tableView, this.queryState.tableView.data, {isPaginationQuery: false, target: 'table-builder', viewType: 1});
 	}
 
 	// Map view
@@ -168,12 +172,7 @@ changeViewType(e) {
 // QUERY STATE
 
 // Will come from API
-databases = [
-	{
-		id: 'open-schemas',
-		name: 'Open Schemas'
-	}
-]
+databases = [];
 queryState: any = {
 	tableView: {
 		selectedDatabase: 0,
@@ -181,7 +180,7 @@ queryState: any = {
 		// queryTypes = ['Observations', 'Items'] // Don't need to store this, it's implied
 		queryType: 'Observations',
 		
-		selectedFeature: 2, //Sink
+		selectedFeature: 0, // First one
 		featuresOrItems: [],
 		
 		selectedFields: [],
@@ -222,6 +221,7 @@ queryState: any = {
 			rowCount: null,
 			isCached: null,
 			primaryKeys: [],
+			sql: null,
 		}
 	},
 	mapView: {
@@ -229,7 +229,7 @@ queryState: any = {
 
 		queryType: 'Observations',
 
-		selectedFeature: 2, //Sink
+		selectedFeature: 0, // First one
 		featuresOrItems: [],
 
 		selectedFields: [],
@@ -263,7 +263,7 @@ queryState: any = {
 onQueryTypeChange(viewType: number)  {
 	const viewTypeString = this.viewTypeStringLookup[viewType]
 	this.queryState[viewTypeString].featuresOrItems = this.queryState[viewTypeString].queryType == 'Observations' ? this.allFeatures : this.allItems;
-	this.queryState[viewTypeString].selectedFeature = this.queryState[viewTypeString].queryType == 'Observations' ? 2 : 15;
+	this.queryState[viewTypeString].selectedFeature = 0;
 	this.onFeatureSelectChange(viewType);	
 }
 onFieldSelection(viewType: number, event?: any) {
@@ -354,6 +354,7 @@ onFieldSelection(viewType: number, event?: any) {
 				rowCount: null,
 				isCached: null,
 				primaryKeys: [],
+				sql: null,
 			}
 		});
 		const relevantLayer = this.queryState.mapView.layers[this.queryState.mapView.layers.length - 1];
@@ -378,6 +379,7 @@ onFeatureSelectChange (viewType: number) {
 	const viewTypeString = this.viewTypeStringLookup[viewType]
 	this.getFilterableColumnIDs(this.queryState[viewTypeString], this.queryState[viewTypeString].selectedFeature);
 }
+currentDisplayedNRows = 10;
 onPageChange(event: PageEvent, viewType: number): PageEvent {
 	const viewTypeString = this.viewTypeStringLookup[viewType];
 	// update page data
@@ -389,7 +391,8 @@ onPageChange(event: PageEvent, viewType: number): PageEvent {
 }
 onDatabaseChange(viewType) {
 	const viewTypeString = this.viewTypeStringLookup[viewType];
-	// do something
+	const selectedDatabaseIndex = this.queryState[viewTypeString].selectedDatabase;
+	this.getSetupObjectsAndFormatBuilder(viewType, this.databases[selectedDatabaseIndex].dbSqlName);
 }
 
 
@@ -421,7 +424,7 @@ validOperatorLookup = {
     ],
     'geoPoint': ['geoContains', 'geoCrosses', 'geoDisjoint', 'geoWithinDistance', 'geoEquals', 'geoIntersects', 'geoTouches', 'geoOverlaps', 'geoWithin'],
     'geoLine': ['geoContains', 'geoCrosses', 'geoDisjoint', 'geoWithinDistance', 'geoEquals', 'geoIntersects', 'geoTouches', 'geoOverlaps', 'geoWithin'],
-    'geoRegion': ['geoContains', 'geoCrosses', 'geoDisjoint', 'geoWithinDistance', 'geoEquals', 'geoIntersects', 'geoTouches', 'geoOverlaps', 'geoWithin']
+    'geoRegion': ['geoContains', 'geoCrosses', 'geoDisjoint', 'geoWithinDistance', 'geoEquals', 'geoIntersects', 'geoTouches', 'geoOverlaps', 'geoWithin'],
 };
 TDGOperatorToBuilderOperatorLookup = {
 	equals: 'equals',
@@ -463,7 +466,7 @@ TDGSelectorTypeToBuilderInputLookup = {
 	dropdown: 'select',
 	geoPoint: 'text', // custom
 	geoLine: 'text', // custom
-	geoRegion: 'text' // custom
+	geoRegion: 'text', // custom
 }
 
 builderLookup = {
@@ -644,24 +647,24 @@ setupFilterObject;
 allFeatures;
 allItems;
 
-getSetupObjectsAndFormatBuilder(viewType: number) {
+getSetupObjectsAndFormatBuilder(viewType: number, database: string) {
 	let viewTypeString = this.viewTypeStringLookup[viewType];
 	let finishSetup;
 	let hasSetupFinished = new Promise((resolve, reject) => {
 		finishSetup = resolve;
 	})
 
-	this.apiService.getSetupObject().subscribe((res) => {
+	this.apiService.getSetupObject(database).subscribe((res) => {
 		this.setupObject = res;
 		this.parseSetupObject();
 		finishSetup();
 	});
 
-	this.apiService.getSetupFilterObject().subscribe((res) => {
+	this.apiService.getSetupFilterObject(database).subscribe((res) => {
 		hasSetupFinished.then(() => {
 			this.setupFilterObject = res;
 			// format the column objects
-			this.getFilterableColumnIDs(this.queryState[viewTypeString], 2);
+			this.getFilterableColumnIDs(this.queryState[viewTypeString], 0);
 			// set the selected fields (all for table, none for map)
 			this.setSelectedValues(this.queryState[viewTypeString], viewType == 1); // set all as selected for table view
 			// init the query builder given the column objects
@@ -697,21 +700,23 @@ getFilterableColumnIDs(queryStateObject: any, featureID: number): any {
 	}
 
 	queryStateObject.currentFilterableColumnObjects = queryStateObject.currentColumnObjectIndices
-			.map(index => this.setupObject.columns[index])
-			.filter(col => col.isFilterable);
+		.map(index => this.setupObject.columns[index])
+		.filter(col => col.isFilterable);
 
 	queryStateObject.currentFilterableReturnableIDs = queryStateObject.currentColumnObjectIndices
-			.map((columnObjectIndex, arrayIndex) => [this.setupObject.columns[columnObjectIndex], arrayIndex])
-			.filter(arr => arr[0].isFilterable)
-			.map(arr => queryStateObject.currentReturnableIDs[arr[1]]);
+		.map((columnObjectIndex, arrayIndex) => [this.setupObject.columns[columnObjectIndex], arrayIndex])
+		.filter(arr => arr[0].isFilterable)
+		.map(arr => queryStateObject.currentReturnableIDs[arr[1]]);
 
 	queryStateObject.currentGeospatialFieldObjects = queryStateObject.currentColumnObjectIndices
-			.map((columnObjectIndex, arrayIndex) => [this.setupObject.columns[columnObjectIndex], arrayIndex])
-			.filter(arr => ['geoPoint', 'geoLine', 'geoRegion'].includes(arr[0].selectorType))
-			.map(arr => ({returnableID: queryStateObject.currentReturnableIDs[arr[1]], columnObject: arr[0], arrayIndex: arr[1]}));
+		.map((columnObjectIndex, arrayIndex) => [this.setupObject.columns[columnObjectIndex], arrayIndex])
+		.filter(arr => ['geoPoint', 'geoLine', 'geoRegion'].includes(arr[0].selectorType))
+		.map(arr => ({returnableID: queryStateObject.currentReturnableIDs[arr[1]], columnObject: arr[0], arrayIndex: arr[1]}));
 
 	queryStateObject.currentColumnObjects = queryStateObject.currentColumnObjectIndices
 		.map(index => this.setupObject.columns[index]);
+
+	this.setSelectedValues(queryStateObject, true);
 }
 
 setSelectedValues(queryStateObject: any, setAllAsSelected: boolean) {
@@ -861,7 +866,8 @@ private runQuery(queryStateObject: any, queryDataObject: any, options: any) {
 	}
 
 	// Handle data or error response with applicable handler
-	this.apiService.newGetTableObject(isObservation, feature, returnableIDs, queryString, sortObject, pageObject)
+	const databaseName = this.databases[queryStateObject.selectedDatabase].dbSqlName;
+	this.apiService.newGetTableObject(databaseName, isObservation, feature, returnableIDs, queryString, sortObject, pageObject)
 		.subscribe(
 			// Ignoring typescript here, observables aren't liking my beautiful closure :(
 			// @ts-ignore: No overload matches this call
@@ -886,17 +892,24 @@ private tableViewDataResponseHandler(queryStateObject, queryDataObject, handlerO
 		queryDataObject.isCached = res.cached === true;
 		queryDataObject.rowCount = res.nRows.n;
 		queryDataObject.primaryKeys = res.primaryKey;
+		queryDataObject.sql = res.sql;
 
 		const geospatialReturnableIDIndex = res.returnableIDs.indexOf(geospatialReturnableID);
 		queryStateObject.geospatialReturnableIDIndex = geospatialReturnableIDIndex;
 
 		if(!isPaginationQuery) {
-			this.paginator.firstPage();
+			try {
+				this.paginator.firstPage();
+			} catch(err) {
+				// Do nothing, user has likely derendered the table view before the query finished
+			}
 		}
 
 		queryStateObject.progressBarMode = 'determinate';
 		queryStateObject.hasQueried = true;
 		queryStateObject.queryTimer(false);
+
+		this.currentDisplayedNRows = Math.min(res.nRows.n, this.queryState.tableView.currentPageSize);
 	};
 }
 
@@ -926,6 +939,7 @@ private mapViewDataResponseHandler(queryStateObject, queryDataObject, handlerOpt
 		queryDataObject.isCached = res.cached === true;
 		queryDataObject.rowCount = res.nRows.n;
 		queryDataObject.primaryKeys = res.primaryKey;
+		queryDataObject.sql = res.sql;
 
 		// parse the geojson row and hand it to the rendering engine
 		const geospatialReturnableIDIndex = res.returnableIDs.indexOf(geospatialReturnableID);
@@ -989,7 +1003,12 @@ runDownload(queryStateObject) {
 		returnableID: this.getReturnablesFromColumnIDs([queryStateObject.selectedSortField], isObservation, queryStateObject.selectedFeature)[0]
 	} : null;
 	const isCSV = this.downloadType === 'csv';
-	this.apiService.downloadTableObject(isObservation, feature, returnableIDs, '', sortObject, isCSV).subscribe((res) => {
+	const databaseName = this.databases[queryStateObject.selectedDatabase].dbSqlName;
+	const pageObject = {
+		limit: queryStateObject.currentPageSize,
+		offset: queryStateObject.currentPageIndex * queryStateObject.currentPageSize
+	};
+	this.apiService.downloadTableObject(databaseName, isObservation, feature, returnableIDs, '', sortObject, isCSV, pageObject).subscribe((res) => {
 		this.blob = new Blob([res], {type: isCSV ? 'text/csv' : 'application/json'});
 
 		var downloadURL = window.URL.createObjectURL(res);
@@ -1004,6 +1023,26 @@ runDownload(queryStateObject) {
 downloadType = 'csv';
 blob;
 isDownloading = false;
+
+copyQuerySQL(layer = null) {
+	if(layer !== null) {
+		// Map view
+		if(this.queryState.mapView.layers[layer].sql !== null) {
+			this.clipboard.copy(this.queryState.mapView.layers[layer].sql);
+			this.toastr.success("SQL query copied to clipboard", "");
+		} else {
+			this.toastr.error("Run the query first", "");
+		}
+	} else {
+		// Table view
+		if(this.queryState.tableView.data.sql !== null) {
+			this.clipboard.copy(this.queryState.tableView.data.sql);
+			this.toastr.success("SQL of the most recently run query copied to clipboard", "");
+		} else {
+			this.toastr.error("Run the query first", "");
+		}
+	}
+}
 
 // =================================================
 // GEOSPATIAL
@@ -1061,6 +1100,7 @@ private stamenOptionsFormatter(obj, zoom) {
 }
 
 private map;
+private imageMap;
 drawnItems = new L.FeatureGroup();
 editHandler;
 deleteHandler;
@@ -1086,8 +1126,8 @@ onBasemapChange(key) {
 	this.oldBasemapKey = this.selectedBasemapKey;
 }
 
-private initMap(): void {
-	this.map = L.map('map', {
+private initMap(isImage): void {
+	const mapElement = L.map((isImage ? 'image-map' : 'map'), {
 		center: [ 34.06551008335871, -118.4418661368747 ],
 		zoom: 10,
 		zoomControl: false
@@ -1095,11 +1135,11 @@ private initMap(): void {
 
 	L.control.zoom({
 		position: 'bottomright'
-	}).addTo(this.map);
+	}).addTo(mapElement);
 
-	L.control.scale().addTo(this.map)
+	L.control.scale().addTo(mapElement)
 
-	this.map.addLayer(this.drawnItems);
+	mapElement.addLayer(this.drawnItems);
 
 	let drawControl = new L.Control.Draw({
 		draw : {
@@ -1131,21 +1171,21 @@ private initMap(): void {
 	this.editHandler = (new L.EditToolbar({
 		featureGroup: this.drawnItems
 	})).getModeHandlers()[0].handler;
-	this.editHandler._map = this.map;
+	this.editHandler._map = mapElement;
 
 	this.deleteHandler = (new L.EditToolbar({
 		featureGroup: this.drawnItems
 	})).getModeHandlers()[1].handler;
-	this.deleteHandler._map = this.map;
+	this.deleteHandler._map = mapElement;
 
-	this.map.on('draw:created', createEvent => {
+	mapElement.on('draw:created', createEvent => {
 		const { layer } = createEvent;
 		layer.leafletDrawState = this.leafletDrawState;
 		this.addDrawLayerPopup(layer, this.drawnItems);
 		this.drawnItems.addLayer(layer);
 	});
 
-	this.map.on('draw:edited', editEvent => {
+	mapElement.on('draw:edited', editEvent => {
 		const { layers } = editEvent;
 		layers.eachLayer(layer => {
 			layer.leafletDrawState = this.leafletDrawState;
@@ -1154,26 +1194,32 @@ private initMap(): void {
 	});
 
 	// Handle edit and delete state to conditionally fire popup
-	this.map.on('draw:editstart', e => {
+	mapElement.on('draw:editstart', e => {
 		this.leafletDrawState.isEditing = true;
 	});
 
-	this.map.on('draw:editstop', e => {
+	mapElement.on('draw:editstop', e => {
 		this.leafletDrawState.isEditing = false;
 	});
 
-	this.map.on('draw:deletestart', e => {
+	mapElement.on('draw:deletestart', e => {
 		this.leafletDrawState.isDeleting = true;
 	});
 
-	this.map.on('draw:deletestop', e => {
+	mapElement.on('draw:deletestop', e => {
 		this.leafletDrawState.isDeleting = false;
 	});
 	  
-	this.map.addControl(drawControl); 
+	mapElement.addControl(drawControl); 
 
 	// default basemap
-	this.map.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
+	mapElement.addLayer(this.basemapLayers[this.selectedBasemapKey].data);
+
+	if(isImage) {
+		this.imageMap = mapElement;
+	} else {
+		this.map = mapElement;
+	}
 }
 
 private addDrawLayerPopup(layer, featureGroup) {
@@ -1297,9 +1343,9 @@ isShapesEmpty() {
 }
 
 // Must invalidate the size because a bug where the tiles do not render properly on first load
-private invalidate() {
+private invalidate(mapElement) {
 	setTimeout(() => {
-		this.map.invalidateSize(true);
+		mapElement.invalidateSize(true);
 	 }, 1);
 }
 
@@ -1308,9 +1354,9 @@ layerDropped(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.queryState.mapView.layers, event.previousIndex, event.currentIndex);
 }
  
-private mountMap() {
-	this.initMap();
-	this.invalidate();
+private mountMap(isImage: boolean = false) {
+	this.initMap(isImage);
+	this.invalidate(isImage ? this.imageMap : this.map);
 	this.hasMapMounted = true;
 }
 
@@ -1344,7 +1390,7 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 		visualOptions.fragmentShaderSource = this.shaderLookup[relevantLayer.pointType];
 	} else if(geoType == 'geoLine') {
 		visualOptions.sensitivity = 0.06;
-		visualOptions.weight = 6;
+		visualOptions.weight = 0.3;
 	} else if(geoType == 'geoRegion') {
 		visualOptions.sensitivity = 0.06;
 		visualOptions.border = true;
@@ -1353,7 +1399,7 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 
 	const glifyObject = {
 		...visualOptions,
-		map: this.map,
+		map: isForImageSave ? this.imageMap : this.map,
 		preserveDrawingBuffer: isForImageSave,
 		data: geojson,
 		click: (e, feature) => {
@@ -1412,7 +1458,7 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 			})
 			.setLatLng(e.latlng)
 			.setContent(popupHTML)
-			.openOn(this.map);
+			.openOn(isForImageSave ? this.imageMap : this.map);
 
 			// add copygeojson click listener
 			let popupIDElement = document.getElementById(popupID);
@@ -1454,8 +1500,15 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 			glify.latitudeFirst();
 			gl = glify.points(glifyObject);
 		} else if(geoType == 'geoLine') {
+			glify.longitudeFirst();
 			gl = glify.lines(glifyObject);
 		} else if(geoType == 'geoRegion') {
+			glify.latitudeFirst();
+			gl = glify.shapes(glifyObject);
+		} 
+		// Need to unpack
+		else if(geoType == 'geoMultiRegion') {
+			glifyObject.data = MultiPolygon2PolygonOnly(glifyObject.data);
 			glify.latitudeFirst();
 			gl = glify.shapes(glifyObject);
 		}
@@ -1469,6 +1522,20 @@ private async renderGeography(geojson, geoType, layerID, isForImageSave = false)
 	relevantLayer.renderObject = gl;
 
 	relevantLayer.isRendering = false;
+
+	function MultiPolygon2PolygonOnly(geoJ) {
+		let polyOnly = {type: 'FeatureCollection', features:[]}
+		geoJ.features.forEach((f)=>{
+			let g = f.geometry
+			if (!g || !g.type) return
+			if (g.type=='Polygon') return polyOnly.features.push(f)
+			if (g.type!='MultiPolygon') return
+			for (let i=0,m=g.coordinates.length;i<m;i++) { 
+				polyOnly.features.push({ ...f, geometry: {...g, type: 'Polygon', coordinates: g.coordinates[i]}})
+			}
+		})
+		return polyOnly
+	}
 
 	function hexToRgb(hex, opacity) {
 		if (hex.length < 6) return null;
@@ -1526,26 +1593,37 @@ private rowDataToFeatureCollection(rowData, geospatialReturnableIDIndex) {
 
 savingImage = false;
 async saveMapImage() {
-	this.savingImage = true;
-	// rerender all layers with preserveDrawingBuffer = true
-	for(let layer of this.queryState.mapView.layers) {
-		const { type, layerID, geospatialReturnableIDIndex } = layer;
-		let { tableData } = layer.data;
-		// convert to rowData
-		let featureCollection = this.rowDataToFeatureCollection(tableData, geospatialReturnableIDIndex);
-		// rerender
-		await this.renderGeography(featureCollection, type, layerID, true);
-	}
-	// Save to a file
-	leafleatImage(this.map, (err, canvas) => {
-		let mapLink = document.createElement('a');
-		mapLink.download = 'TheDataGridMap.png';
-		mapLink.href = canvas.toDataURL()
-		mapLink.click();
-		mapLink.remove();
+	try {
+		this.savingImage = true;
+		setTimeout(async () => {
+			// TODO: large scale rendering on new element
+			// this.mountMap(true); // isImage == true
+			
+			// rerender all layers with preserveDrawingBuffer = true
+			for(let layer of this.queryState.mapView.layers) {
+				const { type, layerID, geospatialReturnableIDIndex } = layer;
+				let { tableData } = layer.data;
+				// convert to rowData
+				let featureCollection = this.rowDataToFeatureCollection(tableData, geospatialReturnableIDIndex);
+				// rerender
+				await this.renderGeography(featureCollection, type, layerID, true);
+			}
+			// Save to a file
+			leafleatImage(this.map, (err, canvas) => {
+				let mapLink = document.createElement('a');
+				mapLink.download = 'TheDataGridMap.png';
+				mapLink.href = canvas.toDataURL()
+				mapLink.click();
+				mapLink.remove();
+				this.savingImage = false;
+				this.toastr.success('Downloaded current map')
+			})
+		});
+	} catch(err) {
+		console.log(err);
+		this.toastr.error("Error saving image");
 		this.savingImage = false;
-		this.toastr.success('Downloaded current map')
-	})
+	}
 }
 
 // =================================================
@@ -1741,7 +1819,7 @@ resetQueryState() {
 			// queryTypes = ['Observations', 'Items'] // Don't need to store this, it's implied
 			queryType: 'Observations',
 			
-			selectedFeature: 2, //Sink
+			selectedFeature: 0,
 			featuresOrItems: [],
 			
 			selectedFields: [],
@@ -1781,6 +1859,7 @@ resetQueryState() {
 				rowCount: null,
 				isCached: null,
 				primaryKeys: [],
+				sql: null,
 			}
 		},
 		mapView: {
@@ -1788,7 +1867,7 @@ resetQueryState() {
 	
 			queryType: 'Observations',
 	
-			selectedFeature: 2, //Sink
+			selectedFeature: 0,
 			featuresOrItems: [],
 
 			selectedFields: [],
