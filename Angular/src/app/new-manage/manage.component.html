@@ -70,7 +70,6 @@
         </mat-form-field>
         <mat-checkbox class="example-margin" style="font-size: 14px; margin-bottom: 10px;" [(ngModel)]="downloadBeforeDelete">Download database before deletion</mat-checkbox>
         <button style="margin: 10px 0;" 
-          [matTooltip]="formError"
           [matTooltipDisabled]="allowDelete"
           [disabled]="!allowDelete"
           [class]="allowDelete ? 'generate-button' : 'disabled-generate-button'"
