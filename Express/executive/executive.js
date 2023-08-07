@@ -9,9 +9,10 @@ const { allInternalObjects } = require("../preprocess/load.js");
 // Time before deletion of temp database, also need to change in SQL in `pruneTempDatabases()`
 const DATABASE_VALIDITY_WINDOW = 3600000; // 1 hour
 // SQL Formatter
-const { postgresClient, connectPostgreSQL, disconnectPostgreSQL, psqlProcess } = require('../pg.js');
+const { postgresClient, connectPostgreSQL, disconnectPostgreSQL } = require('../pg.js');
 const { getConnection, importSql } = postgresClient;
 const V6UserSql = importSql("V6_user.sql");
+const V6Sql = importSql("V6.sql");
 // Deletion timer data store
 const deletionTimers = {};
 
@@ -48,9 +49,12 @@ async function createNewDatabase(res) {
     connectPostgreSQL("construct", { customDatabase: dbSqlName, streamQueryLogs: dbLogFileName, log: false });
     const newlyCreatedDatabase = postgresClient.getConnection[dbSqlName];
     // Run V6 via psql commandline
+    /*
     await psqlProcess(dbSqlName, "V6.sql", (data) => {
         res.write(data);
     });
+    */
+    await newlyCreatedDatabase.none(V6Sql);
     // Generate a single user, organization, audit, and global item
     // Generate a password so the user can log into their database
     const userPassword = nanoid(15);

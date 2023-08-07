@@ -41,7 +41,7 @@ function logNewDatabaseConnection(connectionObject, logConnection) {
 
 const postgresClient = {
     format: pgp.as.format,
-    importSql: (fileName) => new pgp.QueryFile(`${parentDir(__dirname)}/PostgreSQL/${fileName}`),
+    importSql: (fileName) => new pgp.QueryFile(`${__dirname}/sql/${fileName}`),
     getConnection: {},
 };
 
@@ -125,7 +125,7 @@ async function disconnectPostgreSQL(dbName) {
         return false;
     }
 }
-
+/*
 async function psqlProcess(dbName, fileName, streamLogsCallback) {
     const psqlParams = [
         "-U",
@@ -152,10 +152,10 @@ async function psqlProcess(dbName, fileName, streamLogsCallback) {
         }
     });
 }
-
+*/
 module.exports = {
     postgresClient,
     connectPostgreSQL,
     disconnectPostgreSQL,
-    psqlProcess,
+    //psqlProcess,
 };
