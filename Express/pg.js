@@ -42,6 +42,7 @@ function logNewDatabaseConnection(connectionObject, logConnection) {
 const postgresClient = {
     format: pgp.as.format,
     importSql: (fileName) => new pgp.QueryFile(`${__dirname}/sql/${fileName}`),
+    importSqlRaw: (fileName) => fs.readFileSync(`${__dirname}/sql/${fileName}`, "utf-8"),
     getConnection: {},
 };
 

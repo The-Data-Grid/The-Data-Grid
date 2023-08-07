@@ -10,9 +10,10 @@ const { allInternalObjects } = require("../preprocess/load.js");
 const DATABASE_VALIDITY_WINDOW = 3600000; // 1 hour
 // SQL Formatter
 const { postgresClient, connectPostgreSQL, disconnectPostgreSQL } = require('../pg.js');
-const { getConnection, importSql } = postgresClient;
+const { getConnection, importSql, importSqlRaw } = postgresClient;
 const V6UserSql = importSql("V6_user.sql");
 const V6Sql = importSql("V6.sql");
+const V6ProcedureCallSql = importSqlRaw("V6_procedure_calls.sql");
 // Deletion timer data store
 const deletionTimers = {};
 
@@ -54,7 +55,10 @@ async function createNewDatabase(res) {
         res.write(data);
     });
     */
-    await newlyCreatedDatabase.multi(V6Sql);
+    await newlyCreatedDatabase.none(V6Sql);
+    for(let procedure of V6ProcedureCallSql.split("\n")) {
+        await newlyCreatedDatabase.none(procedure);
+    }
     // Generate a single user, organization, audit, and global item
     // Generate a password so the user can log into their database
     const userPassword = nanoid(15);

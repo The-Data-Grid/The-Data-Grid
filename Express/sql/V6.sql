@@ -1356,52 +1356,6 @@ INSERT INTO metadata_item
             (DEFAULT, 'item_global', 'Global Item', 3, 1, null, 2, 1),
             (DEFAULT, 'item_audit', 'Audit', 3, 1, null, 2, 1);
 
-
--- Calling insertion procedure
-CALL "insert_m2m_metadata_item"('item_sop', 'item_organization', TRUE, FALSE, 'Authoring Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_global', 'item_audit', TRUE, FALSE, 'Audit of Observation', NULL);
-CALL "insert_m2m_metadata_item"('item_global', 'item_organization', TRUE, FALSE, 'Auditing Organization', NULL);
-CALL "insert_m2m_metadata_item"('item_global', 'item_user', TRUE, FALSE, 'Auditing User', NULL);
-CALL "insert_m2m_metadata_item"('item_audit', 'item_user', TRUE, FALSE, 'Authoring User', NULL);
-CALL "insert_m2m_metadata_item"('item_audit', 'item_organization', FALSE, TRUE, 'Authoring Organization', NULL);
-
--- History Tables
-BEGIN;
-CALL "add_history_table"('item_organization', TRUE);
-BEGIN;
-CALL "add_history_table"('item_sop', TRUE);
-BEGIN;
-CALL "add_history_table"('item_user', TRUE);
-BEGIN;
-CALL "add_history_table"('item_global', TRUE);
-BEGIN;
-CALL "add_history_table"('item_audit', TRUE);
-
--- Inserting Columns into metadata
-BEGIN;
-CALL "insert_metadata_column"('data_audit_name', 'item_audit', NULL, NULL, 'item_audit', TRUE, FALSE, 'Audit Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id', 'text', TRUE);
-
-BEGIN;
-CALL "insert_metadata_column"('data_name', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text', FALSE);
-BEGIN;
-CALL "insert_metadata_column"('data_body', 'item_sop', NULL, NULL, 'item_sop', TRUE, FALSE, 'Standard Operating Procedure Body', 'text', NULL, 'string', NULL, NULL, 'TEXT', 'item-non-id', 'text', FALSE);
-
-BEGIN;
-CALL "insert_metadata_column"('data_organization_name_text', 'item_organization', NULL, NULL, 'item_organization', TRUE, FALSE, 'Organization Name', 'searchableChecklistDropdown', 'searchableDropdown', 'string', NULL, NULL, 'TEXT', 'item-id', 'text', TRUE);
-BEGIN;
-CALL "insert_metadata_column"('data_organization_name_link', 'item_organization', NULL, NULL, 'item_organization', TRUE, TRUE, 'Organization Website', NULL, NULL, 'hyperlink', NULL, NULL, 'TEXT', 'item-non-id', 'text', FALSE);
-
-BEGIN;
-CALL "insert_metadata_column"('data_is_email_public', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Email visible to Public', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id', 'checkbox', FALSE);
-BEGIN;
-CALL "insert_metadata_column"('data_is_quarterly_updates', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'Receive Quarterly Updates', 'bool', 'bool', 'bool', NULL, NULL, 'BOOLEAN', 'item-non-id', 'checkbox', FALSE);
-BEGIN;
-CALL "insert_metadata_column"('data_first_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User First Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id', 'text', FALSE);
-BEGIN;
-CALL "insert_metadata_column"('data_last_name', 'item_user', NULL, NULL, 'item_user', TRUE, FALSE, 'User Last Name', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-non-id', 'text', FALSE);
-BEGIN;
-CALL "insert_metadata_column"('data_email', 'item_user', NULL, NULL, 'item_user', FALSE, FALSE, 'User Email', 'searchableChecklistDropdown', 'text', 'string', NULL, NULL, 'TEXT', 'item-id', 'text', FALSE);
-
 -- Column Returnable Lookup
 create materialized view lookup_column_returnable as 
     select r.returnable_id, c.column_id from metadata_returnable as r left join metadata_column as c on r.column_id = c.column_id;
