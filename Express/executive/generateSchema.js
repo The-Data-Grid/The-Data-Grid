@@ -13,6 +13,8 @@ const { parentDir } = require("../utils.js");
 const { readInternalObjectsFromDisk } = require('../preprocess/load.js');
 const { computeValidationObjects } = require('../parse/validate.js');
 
+const isDeployment = ['-d', '--deploy'].includes(process.argv[2])
+
 function generationError(type, message, cleanupObject={}) {
     // clean up the temp files asynchronously
     cleanUpDatabaseGeneration(cleanupObject)
@@ -223,6 +225,9 @@ async function construct(req, res, next) {
         if(!res.locals.hasValidDbApiKey) {
             constructionParams.push("--temp")
         }
+        if(isDeployment) {
+            constructionParams.push("--deploy");
+        }
         constructionNodejsProcess = child.execFile("node", constructionParams, (err, stdout, stderr) => {
             if(err) {
                 // clean up
@@ -264,13 +269,16 @@ async function construct(req, res, next) {
 // 4. Fill the submissionObject with correct returnable IDs
 function fillReturnables(req, res, next) {
     try {
-        fillReturnablesNodejsProcess = child.execFile("node",
-            [
-                parentDir(__dirname) + "/construct/convert/fillReturnables.js",
-                "--featureName=" + res.locals.dbFeatureName,
-                "--dbFolderName=" + res.locals.dbTempDirName,
-                "--schema=default" 
-            ],
+        const fillParams = [
+            parentDir(__dirname) + "/construct/convert/fillReturnables.js",
+            "--featureName=" + res.locals.dbFeatureName,
+            "--dbFolderName=" + res.locals.dbTempDirName,
+            "--schema=default" 
+        ];
+        if(isDeployment) {
+            fillParams.push("--deploy");
+        }
+        fillReturnablesNodejsProcess = child.execFile("node", fillParams,
             (err, stdout, stderr) => {
                 if(err) {
                     // clean up
@@ -315,6 +323,9 @@ function preprocess(req, res, next) {
         const setupParams = [parentDir(__dirname) + "/preprocess/setup.js", "--database=" + res.locals.dbSqlName, "--no-log"];
         if(!res.locals.hasValidDbApiKey) {
             setupParams.push("--temp");
+        }
+        if(isDeployment) {
+            setupParams.push("--deploy");
         }
         preprocessNodejsProcess = child.execFile("node",
             setupParams,
@@ -362,14 +373,17 @@ function preprocess(req, res, next) {
 // 6. Insert the data into the database
 function insert(req, res, next) {
     try {
-        insertNodejsProcess = child.execFile("node",
-            [
-                parentDir(__dirname) + "/insert/manual.js",
-                "--postgresdb=" + res.locals.dbSqlName,
-                "--dbFolderName=" + res.locals.dbTempDirName,
-                "--schema=default",
-                "--streamQueryLogs=" + res.locals.dbLogFileNameInsertion
-            ],
+        const insertionParams = [
+            parentDir(__dirname) + "/insert/manual.js",
+            "--postgresdb=" + res.locals.dbSqlName,
+            "--dbFolderName=" + res.locals.dbTempDirName,
+            "--schema=default",
+            "--streamQueryLogs=" + res.locals.dbLogFileNameInsertion
+        ];
+        if(isDeployment) {
+            insertionParams.push("--deploy");
+        }
+        insertNodejsProcess = child.execFile("node", insertionParams,
             (err, stdout, stderr) => {
                 if(err) {
                     // clean up
