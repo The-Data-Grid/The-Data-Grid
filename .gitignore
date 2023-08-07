@@ -36,6 +36,7 @@ Express/Schemas/*/
 !Express/Schemas/_globalSchema
 Express/SchemasOld/*/*/submissionObject.json
 Express/TempSchemas/*
+!Express/TempSchemas/_keep
 
 # helpers
 Express/queryTester.js

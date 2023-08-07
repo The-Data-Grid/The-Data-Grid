@@ -34,7 +34,7 @@ function readInternalObjectsFromDisk() {
             };
         }
     }
-    const nDatabases = dbFolders.length - 2 + dbFoldersTemp.length
+    const nDatabases = dbFolders.length - 3 + dbFoldersTemp.length
     console.log("Loaded internalObjects from " + nDatabases + " database" + (nDatabases > 1 ? "s" : ""));
 }
 
