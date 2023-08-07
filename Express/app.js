@@ -1,18 +1,20 @@
 // SETUP //
 // Deploying?
-const isDeployment = ['-d', '--deploy'].includes(process.argv[2])
+const isDeployment = process.argv.some(e => ['-d', '--deploy'].includes(e));
 // Testing?
 const isTesting = ['-t', '--test'].includes(process.argv[2])
+const isLocalRemote = process.argv.some(e => ['-lr', '--local-remote'].includes(e));
 
 const express = require('express');
 const app = express();
 const cors = require('cors');
 const helmet = require('helmet');
+require("dotenv").config();
 let httpPort;
 let httpsPort;
-if (isDeployment) {
+if (isDeployment && !isLocalRemote) {
     httpPort = 80;
-    httpsPort = 8080;
+    httpsPort = process.env.PORT;
 } else {
     httpPort = 4001;
 }
@@ -85,7 +87,7 @@ const executiveDatabase = require("./executive/router.js");
 // CORS, JSON, URL encoding
 app.use(cors({
     credentials: true,
-    origin: isDeployment ? 'https://www.thedatagrid.org' : 'http://localhost:4200'
+    origin: isDeployment && !isLocalRemote ? 'https://www.thedatagrid.org' : 'http://localhost:4200'
 }));
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false}));
@@ -106,7 +108,7 @@ app.use(helmet.permittedCrossDomainPolicies());
 app.use(helmet.referrerPolicy());
 app.use(helmet.xssFilter());
 // require TLS for production
-app.use(isDeployment ? helmet.hsts() : (req, res, next) => next());
+app.use(isDeployment && !isLocalRemote ? helmet.hsts() : (req, res, next) => next());
 
 // Executive requests like create new db, delete db, check all databases
 app.use('/executive', executiveDatabase);
@@ -118,7 +120,7 @@ app.use('/db/:dbName', attachDatabaseToRequest, mainRouter);
 app.use('*', (req, res) => res.status(404).end());
 
 ////// LISTEN //////
-if(isDeployment) {
+if(isDeployment && !isLocalRemote) {
     app.listen(httpsPort, () => console.log(`TDG Backend Node.js server is running on port ${httpsPort}`));
 }
 else if(isTesting) {
