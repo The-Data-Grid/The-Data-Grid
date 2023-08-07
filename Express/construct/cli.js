@@ -124,16 +124,16 @@ async function makeSchema(commandLineArgs) {
         let columns = [];
         let features = [];
         if(commandLineArgs.isTemp) {
-            commandLineArgs.schemaDir = parentDir(__dirname, 2) + `/TempSchemas/${commandLineArgs.database}`;
+            commandLineArgs.schemaDir = parentDir(__dirname, 1) + `/TempSchemas/${commandLineArgs.database}`;
         } else {
-            commandLineArgs.schemaDir = parentDir(__dirname, 2) + `/Schemas/${commandLineArgs.database}`;
+            commandLineArgs.schemaDir = parentDir(__dirname, 1) + `/Schemas/${commandLineArgs.database}`;
         }
         commandLineArgs.schema.forEach(schema => {
             columns = [...columns, ...readSchema(`${commandLineArgs.schemaDir}/${schema}/columns.jsonc`)];
             features = [...features, ...readSchema(`${commandLineArgs.schemaDir}/${schema}/features.jsonc`)];
         });
-        let globalPresetColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/presetColumns.jsonc');
-        let globalSpecialColumns = readSchema(parentDir(__dirname, 2) + '/Schemas/_globalSchema/specialColumns.jsonc');
+        let globalPresetColumns = readSchema(parentDir(__dirname, 1) + '/Schemas/_globalSchema/presetColumns.jsonc');
+        let globalSpecialColumns = readSchema(parentDir(__dirname, 1) + '/Schemas/_globalSchema/specialColumns.jsonc');
 
         // Add global columns
         columns.filter(col => 'globalPresetName' in col).forEach(preset => {

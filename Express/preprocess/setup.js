@@ -1177,7 +1177,7 @@ async function writeToFile(db) {
         process.exit(1);
     }
 
-    fs.writeFileSync(parentDir(__dirname, 2) + (isTemp ? "/TempSchemas/" : "/Schemas/") + database + "/_internalObjects/internalObjects.json", JSON.stringify(internalObjects));
+    fs.writeFileSync(parentDir(__dirname, 1) + (isTemp ? "/TempSchemas/" : "/Schemas/") + database + "/_internalObjects/internalObjects.json", JSON.stringify(internalObjects));
     console.log('Preprocessing finished. Wrote internalObjects.json to /_internalObjects')
 
     process.exit(0);

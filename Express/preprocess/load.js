@@ -10,12 +10,12 @@ const allInternalObjects = {};
 
 function readInternalObjectsFromDisk() {
     // collect internalObjects from every database
-    const dbFolders = fs.readdirSync(parentDir(__dirname, 2) + "/Schemas", { withFileTypes: true });
-    const dbFoldersTemp = fs.readdirSync(parentDir(__dirname, 2) + "/TempSchemas", { withFileTypes: true });
+    const dbFolders = fs.readdirSync(parentDir(__dirname, 1) + "/Schemas", { withFileTypes: true });
+    const dbFoldersTemp = fs.readdirSync(parentDir(__dirname, 1) + "/TempSchemas", { withFileTypes: true });
     // Permenant
     for(let dbFolder of dbFolders) {
         if(dbFolder.isDirectory() && dbFolder.name !== "_exampleSchema" && dbFolder.name !== "_globalSchema") {
-            const folderName = parentDir(__dirname, 2) + "/Schemas/" + dbFolder.name;
+            const folderName = parentDir(__dirname, 1) + "/Schemas/" + dbFolder.name;
             allInternalObjects[dbFolder.name] = {
                 internalObjects: JSON.parse(fs.readFileSync(folderName + "/_internalObjects/internalObjects.json")),
                 folderName,
@@ -26,7 +26,7 @@ function readInternalObjectsFromDisk() {
     // Temp
     for(let dbFolder of dbFoldersTemp) {
         if(dbFolder.isDirectory()) {
-            const folderName = parentDir(__dirname, 2) + "/TempSchemas/" + dbFolder.name;
+            const folderName = parentDir(__dirname, 1) + "/TempSchemas/" + dbFolder.name;
             allInternalObjects[dbFolder.name] = {
                 internalObjects: JSON.parse(fs.readFileSync(folderName + "/_internalObjects/internalObjects.json")),
                 folderName,

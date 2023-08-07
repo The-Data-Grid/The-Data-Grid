@@ -81,9 +81,9 @@ async function download(req, res, next) {
         // create temp folder and uploader
         let tempDirName;
         if(res.locals.hasValidDbApiKey) {
-            tempDirName = parentDir(__dirname, 2) + "/Schemas/" + res.locals.dbSqlName;
+            tempDirName = parentDir(__dirname, 1) + "/Schemas/" + res.locals.dbSqlName;
         } else {
-            tempDirName = parentDir(__dirname, 2) + "/TempSchemas/" + res.locals.dbSqlName;
+            tempDirName = parentDir(__dirname, 1) + "/TempSchemas/" + res.locals.dbSqlName;
         } 
         // make parent dir
         fs.mkdirSync(tempDirName);

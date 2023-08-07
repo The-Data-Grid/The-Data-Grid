@@ -270,7 +270,7 @@ async function downloadSql(req, res, next) {
             'Content-Type': 'application/zip',
         });
 
-        const readStream = fs.createReadStream(`${parentDir(__dirname, 2)}/${dbParentFolder}/${dbSqlName}/${dbSqlName}_database_image.zip`).on('error', (err) => {
+        const readStream = fs.createReadStream(`${parentDir(__dirname, 1)}/${dbParentFolder}/${dbSqlName}/${dbSqlName}_database_image.zip`).on('error', (err) => {
             console.log(err);
             return res.end();
         });
@@ -289,7 +289,7 @@ async function deleteDatabase(req, res, next) {
         const execDbConn = res.locals.executiveDatabaseConnection;
         
         const dbParentFolder = allInternalObjects[dbSqlName].isTemp ? "TempSchemas" : "Schemas";
-        const dbFolderPath = `${parentDir(__dirname, 2)}/${dbParentFolder}/${dbSqlName}`;
+        const dbFolderPath = `${parentDir(__dirname, 1)}/${dbParentFolder}/${dbSqlName}`;
         
         // First validate the password
         const { password } = req.body;
