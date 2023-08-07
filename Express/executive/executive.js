@@ -54,7 +54,7 @@ async function createNewDatabase(res) {
         res.write(data);
     });
     */
-    await newlyCreatedDatabase.none(V6Sql);
+    await newlyCreatedDatabase.multi(V6Sql);
     // Generate a single user, organization, audit, and global item
     // Generate a password so the user can log into their database
     const userPassword = nanoid(15);
