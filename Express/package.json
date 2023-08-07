@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon app.js --all-databases",
     "dev-tester": "node preprocess/setup.js --postgresdb=schematester && nodemon app.js --postgresdb=schematester",
-    "start": "node preprocess/setup.js --deploy && node app.js --deploy",
+    "start": "node --all-databases --deploy",
     "test-audit": "jest audit.test.js --detectOpenHandles --silent=false",
     "test-upload": "jest upload.test.js --detectOpenHandles --silent=false",
     "test-user": "jest user.test.js --detectOpenHandles --silent=false",
