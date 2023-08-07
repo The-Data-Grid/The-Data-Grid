@@ -1,6 +1,6 @@
 require('dotenv').config();
 const session = require('express-session'); 
-const isDeployment = ['-d', '--deploy'].includes(process.argv[2])
+const isDeployment = process.argv.some(e => ['-d', '--deploy'].includes(e));
 
 // session store init
 let Store = require('memorystore')(session); 

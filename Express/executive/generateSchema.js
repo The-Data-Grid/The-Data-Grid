@@ -13,7 +13,7 @@ const { parentDir } = require("../utils.js");
 const { readInternalObjectsFromDisk } = require('../preprocess/load.js');
 const { computeValidationObjects } = require('../parse/validate.js');
 
-const isDeployment = ['-d', '--deploy'].includes(process.argv[2])
+const isDeployment = process.argv.some(e => ['-d', '--deploy'].includes(e));
 
 function generationError(type, message, cleanupObject={}) {
     // clean up the temp files asynchronously

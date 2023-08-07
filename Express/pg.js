@@ -10,7 +10,7 @@ const pgp = require('pg-promise')({
     }
 });
 require('dotenv').config();
-const isDeployment = process.argv.includes('--deploy');
+const isDeployment = process.argv.some(e => ['-d', '--deploy'].includes(e));
 console.log(isDeployment ? 'DEPLOYMENT' : 'DEVELOPMENT');
 const child = require("child_process");
 const { parentDir } = require("./utils.js");
